@@ -38,6 +38,72 @@ export type Database = {
         }
         Relationships: []
       }
+      companies: {
+        Row: {
+          annual_revenue_cents: number
+          city: string | null
+          cnpj: string | null
+          company_name: string
+          company_type: Database["public"]["Enums"]["company_type"]
+          created_at: string
+          employee_count: number
+          foundation_date: string | null
+          id: string
+          main_activity: string | null
+          monthly_revenue_cents: number
+          onboarding_completed: boolean
+          secondary_activities: string[] | null
+          sector: Database["public"]["Enums"]["company_sector"]
+          state: string | null
+          tax_regime: Database["public"]["Enums"]["tax_regime"]
+          trade_name: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          annual_revenue_cents?: number
+          city?: string | null
+          cnpj?: string | null
+          company_name: string
+          company_type: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          employee_count?: number
+          foundation_date?: string | null
+          id?: string
+          main_activity?: string | null
+          monthly_revenue_cents?: number
+          onboarding_completed?: boolean
+          secondary_activities?: string[] | null
+          sector: Database["public"]["Enums"]["company_sector"]
+          state?: string | null
+          tax_regime: Database["public"]["Enums"]["tax_regime"]
+          trade_name?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          annual_revenue_cents?: number
+          city?: string | null
+          cnpj?: string | null
+          company_name?: string
+          company_type?: Database["public"]["Enums"]["company_type"]
+          created_at?: string
+          employee_count?: number
+          foundation_date?: string | null
+          id?: string
+          main_activity?: string | null
+          monthly_revenue_cents?: number
+          onboarding_completed?: boolean
+          secondary_activities?: string[] | null
+          sector?: Database["public"]["Enums"]["company_sector"]
+          state?: string | null
+          tax_regime?: Database["public"]["Enums"]["tax_regime"]
+          trade_name?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       consultations: {
         Row: {
           completed_at: string | null
@@ -317,8 +383,34 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "contador" | "user"
+      company_sector:
+        | "comercio"
+        | "servicos"
+        | "industria"
+        | "agronegocio"
+        | "tecnologia"
+        | "saude"
+        | "educacao"
+        | "construcao"
+        | "transporte"
+        | "alimentacao"
+        | "outro"
+      company_type:
+        | "mei"
+        | "me"
+        | "epp"
+        | "ltda"
+        | "eireli"
+        | "sa_fechada"
+        | "sa_aberta"
+        | "cooperativa"
       consultation_status: "pending" | "scheduled" | "completed" | "cancelled"
       subscription_status: "active" | "cancelled" | "pending" | "expired"
+      tax_regime:
+        | "simples_nacional"
+        | "lucro_presumido"
+        | "lucro_real"
+        | "lucro_arbitrado"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -447,8 +539,37 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "contador", "user"],
+      company_sector: [
+        "comercio",
+        "servicos",
+        "industria",
+        "agronegocio",
+        "tecnologia",
+        "saude",
+        "educacao",
+        "construcao",
+        "transporte",
+        "alimentacao",
+        "outro",
+      ],
+      company_type: [
+        "mei",
+        "me",
+        "epp",
+        "ltda",
+        "eireli",
+        "sa_fechada",
+        "sa_aberta",
+        "cooperativa",
+      ],
       consultation_status: ["pending", "scheduled", "completed", "cancelled"],
       subscription_status: ["active", "cancelled", "pending", "expired"],
+      tax_regime: [
+        "simples_nacional",
+        "lucro_presumido",
+        "lucro_real",
+        "lucro_arbitrado",
+      ],
     },
   },
 } as const

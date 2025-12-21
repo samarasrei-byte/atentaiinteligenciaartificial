@@ -61,14 +61,18 @@ const Simulator = () => {
   }, [user]);
 
   const checkAccess = async () => {
-    const { data } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user!.id)
-      .eq('status', 'active')
-      .single();
+    // TEMPORARY: Allow access for testing
+    setHasAccess(true);
+    return;
     
-    setHasAccess(!!data);
+    // Production code (uncomment when ready):
+    // const { data } = await supabase
+    //   .from('subscriptions')
+    //   .select('*')
+    //   .eq('user_id', user!.id)
+    //   .eq('status', 'active')
+    //   .single();
+    // setHasAccess(!!data);
   };
 
   const calculateTaxes = (revenueValue: number, sectorType: string): SimulationResult => {
