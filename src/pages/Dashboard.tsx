@@ -15,15 +15,37 @@ import {
   FileText,
   Settings,
   Crown,
-  Loader2
+  Loader2,
+  Building2,
+  TrendingUp,
+  MapPin,
+  Edit
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
+
+interface Company {
+  id: string;
+  company_name: string;
+  trade_name: string | null;
+  company_type: string;
+  tax_regime: string;
+  sector: string;
+  monthly_revenue_cents: number;
+  employee_count: number;
+  state: string | null;
+  city: string | null;
+  onboarding_completed: boolean;
+}
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const { user, profile, roles, signOut, loading, hasRole } = useAuth();
   const { toast } = useToast();
   const [subscription, setSubscription] = useState<any>(null);
+  const [company, setCompany] = useState<Company | null>(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [isLoadingData, setIsLoadingData] = useState(true);
   const [stats, setStats] = useState({
     simulations: 0,
     aiChats: 0,
@@ -44,6 +66,20 @@ const Dashboard = () => {
 
   const fetchUserData = async () => {
     try {
+      // Fetch company
+      const { data: companyData } = await supabase
+        .from('companies')
+        .select('*')
+        .eq('user_id', user!.id)
+        .single();
+      
+      if (companyData) {
+        setCompany(companyData);
+        setShowOnboarding(!companyData.onboarding_completed);
+      } else {
+        setShowOnboarding(true);
+      }
+
       // Fetch subscription
       const { data: subData } = await supabase
         .from('subscriptions')
@@ -68,7 +104,14 @@ const Dashboard = () => {
       });
     } catch (error) {
       console.error('Error fetching user data:', error);
+    } finally {
+      setIsLoadingData(false);
     }
+  };
+
+  const handleOnboardingComplete = () => {
+    setShowOnboarding(false);
+    fetchUserData();
   };
 
   const handleSignOut = async () => {
@@ -80,12 +123,17 @@ const Dashboard = () => {
     navigate('/');
   };
 
-  if (loading) {
+  if (loading || isLoadingData) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
         <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
       </div>
     );
+  }
+
+  // Show onboarding if no company data
+  if (showOnboarding) {
+    return <CompanyOnboarding onComplete={handleOnboardingComplete} />;
   }
 
   const getPlanBadge = () => {
@@ -112,10 +160,61 @@ const Dashboard = () => {
     );
   };
 
+  const formatCurrency = (cents: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+    }).format(cents / 100);
+  };
+
+  const getCompanyTypeLabel = (type: string) => {
+    const types: Record<string, string> = {
+      mei: 'MEI',
+      me: 'ME',
+      epp: 'EPP',
+      ltda: 'LTDA',
+      eireli: 'EIRELI',
+      sa_fechada: 'S.A. Fechada',
+      sa_aberta: 'S.A. Aberta',
+      cooperativa: 'Cooperativa',
+    };
+    return types[type] || type;
+  };
+
+  const getTaxRegimeLabel = (regime: string) => {
+    const regimes: Record<string, string> = {
+      simples_nacional: 'Simples Nacional',
+      lucro_presumido: 'Lucro Presumido',
+      lucro_real: 'Lucro Real',
+      lucro_arbitrado: 'Lucro Arbitrado',
+    };
+    return regimes[regime] || regime;
+  };
+
+  const getSectorLabel = (sector: string) => {
+    const sectors: Record<string, string> = {
+      comercio: 'Comércio',
+      servicos: 'Serviços',
+      industria: 'Indústria',
+      agronegocio: 'Agronegócio',
+      tecnologia: 'Tecnologia',
+      saude: 'Saúde',
+      educacao: 'Educação',
+      construcao: 'Construção',
+      transporte: 'Transporte',
+      alimentacao: 'Alimentação',
+      outro: 'Outro',
+    };
+    return sectors[sector] || sector;
+  };
+
+  // TEMPORARY: Allow access to all features for testing
+  const hasAccess = true; // Remove this and use subscription checks in production
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
       {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <Brain className="h-8 w-8 text-teal-400" />
@@ -146,7 +245,7 @@ const Dashboard = () => {
               </Button>
             )}
             <div className="flex items-center gap-2">
-              <span className="text-slate-300">{profile?.full_name || user?.email}</span>
+              <span className="text-slate-300 hidden md:inline">{profile?.full_name || user?.email}</span>
               {getPlanBadge()}
             </div>
             <Button
@@ -162,6 +261,7 @@ const Dashboard = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
+        {/* Welcome & Company Info */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white mb-2">
             Olá, {profile?.full_name?.split(' ')[0] || 'Usuário'}! 👋
@@ -170,6 +270,66 @@ const Dashboard = () => {
             Bem-vindo ao seu painel de controle da Reforma Tributária
           </p>
         </div>
+
+        {/* Company Card */}
+        {company && (
+          <Card className="bg-gradient-to-br from-slate-800/80 to-slate-700/50 border-slate-600 mb-8">
+            <CardHeader className="pb-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-full bg-teal-500/20">
+                    <Building2 className="h-6 w-6 text-teal-400" />
+                  </div>
+                  <div>
+                    <CardTitle className="text-xl text-white">{company.company_name}</CardTitle>
+                    {company.trade_name && (
+                      <CardDescription className="text-slate-400">{company.trade_name}</CardDescription>
+                    )}
+                  </div>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowOnboarding(true)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="border-teal-500/50 text-teal-400">
+                    {getCompanyTypeLabel(company.company_type)}
+                  </Badge>
+                </div>
+                <div className="flex items-center gap-2 text-slate-300">
+                  <FileText className="h-4 w-4 text-cyan-400" />
+                  <span className="text-sm">{getTaxRegimeLabel(company.tax_regime)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-slate-300">
+                  <TrendingUp className="h-4 w-4 text-green-400" />
+                  <span className="text-sm">{formatCurrency(company.monthly_revenue_cents)}/mês</span>
+                </div>
+                {company.state && (
+                  <div className="flex items-center gap-2 text-slate-300">
+                    <MapPin className="h-4 w-4 text-amber-400" />
+                    <span className="text-sm">{company.city ? `${company.city}/${company.state}` : company.state}</span>
+                  </div>
+                )}
+              </div>
+              <div className="mt-4 pt-4 border-t border-slate-600/50">
+                <p className="text-sm text-slate-400">
+                  Setor: <span className="text-slate-300">{getSectorLabel(company.sector)}</span>
+                  {company.employee_count > 0 && (
+                    <> • {company.employee_count} funcionário{company.employee_count > 1 ? 's' : ''}</>
+                  )}
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -205,6 +365,7 @@ const Dashboard = () => {
         </div>
 
         {/* Feature Cards */}
+        <h2 className="text-xl font-semibold text-white mb-4">Recursos Disponíveis</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* AI Chat */}
           <Card className="bg-slate-800/50 border-slate-700 hover:border-teal-500 transition-colors cursor-pointer group"
@@ -212,8 +373,8 @@ const Dashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <MessageSquare className="h-10 w-10 text-teal-400 group-hover:scale-110 transition-transform" />
-                {!subscription?.plan_type?.includes('ai') && !subscription?.plan_type?.includes('premium') && (
-                  <Badge className="bg-amber-500">Premium</Badge>
+                {hasAccess && (
+                  <Badge className="bg-green-500">Liberado</Badge>
                 )}
               </div>
               <CardTitle className="text-xl text-white">Chat com IA</CardTitle>
@@ -222,7 +383,9 @@ const Dashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-teal-400">R$ 50/mês</div>
+              <Button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600">
+                Iniciar Conversa
+              </Button>
             </CardContent>
           </Card>
 
@@ -232,17 +395,19 @@ const Dashboard = () => {
             <CardHeader>
               <div className="flex items-center justify-between">
                 <Calculator className="h-10 w-10 text-cyan-400 group-hover:scale-110 transition-transform" />
-                {!subscription && (
-                  <Badge className="bg-amber-500">Premium</Badge>
+                {hasAccess && (
+                  <Badge className="bg-green-500">Liberado</Badge>
                 )}
               </div>
               <CardTitle className="text-xl text-white">Simulador de Impostos</CardTitle>
               <CardDescription className="text-slate-400">
-                Compare seus impostos antes e depois da reforma
+                Compare seus impostos antes e depois da reforma tributária
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-cyan-400">R$ 30/mês</div>
+              <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
+                Simular Agora
+              </Button>
             </CardContent>
           </Card>
 
@@ -283,15 +448,33 @@ const Dashboard = () => {
                 </div>
               ) : (
                 <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
-                  Assinar Agora
+                  Ver Planos
                 </Button>
               )}
             </CardContent>
           </Card>
 
+          {/* Company Settings */}
+          <Card className="bg-slate-800/50 border-slate-700 hover:border-purple-500 transition-colors cursor-pointer group"
+                onClick={() => setShowOnboarding(true)}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Building2 className="h-10 w-10 text-purple-400 group-hover:scale-110 transition-transform" />
+              </div>
+              <CardTitle className="text-xl text-white">Dados da Empresa</CardTitle>
+              <CardDescription className="text-slate-400">
+                Atualize as informações da sua empresa
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/10">
+                Editar Dados
+              </Button>
+            </CardContent>
+          </Card>
+
           {/* Payments */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-green-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/payments')}>
+          <Card className="bg-slate-800/50 border-slate-700 hover:border-green-500 transition-colors cursor-pointer group">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CreditCard className="h-10 w-10 text-green-400 group-hover:scale-110 transition-transform" />

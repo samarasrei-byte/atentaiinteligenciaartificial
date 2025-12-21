@@ -55,15 +55,19 @@ const AIChat = () => {
   }, [messages]);
 
   const checkAccess = async () => {
-    const { data } = await supabase
-      .from('subscriptions')
-      .select('*')
-      .eq('user_id', user!.id)
-      .eq('status', 'active')
-      .in('plan_type', ['ai', 'premium'])
-      .single();
+    // TEMPORARY: Allow access for testing
+    setHasAccess(true);
+    return;
     
-    setHasAccess(!!data);
+    // Production code (uncomment when ready):
+    // const { data } = await supabase
+    //   .from('subscriptions')
+    //   .select('*')
+    //   .eq('user_id', user!.id)
+    //   .eq('status', 'active')
+    //   .in('plan_type', ['ai', 'premium'])
+    //   .single();
+    // setHasAccess(!!data);
   };
 
   const loadChatHistory = async () => {
