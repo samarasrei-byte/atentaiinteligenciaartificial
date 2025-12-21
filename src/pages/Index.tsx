@@ -1,12 +1,47 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { useRef } from "react";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { HeroSection } from "@/components/sections/HeroSection";
+import { FeaturesSection } from "@/components/sections/FeaturesSection";
+import { SimulatorSection } from "@/components/sections/SimulatorSection";
+import { AISection } from "@/components/sections/AISection";
+import { AccountantSection } from "@/components/sections/AccountantSection";
+import { FAQSection } from "@/components/sections/FAQSection";
 
 const Index = () => {
+  const scrollToSection = (section: string) => {
+    if (section === "hero") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+    
+    const element = document.getElementById(section);
+    if (element) {
+      const headerOffset = 80;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: "smooth"
+      });
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
+    <div className="min-h-screen bg-background">
+      <Header onNavigate={scrollToSection} />
+      
+      <main>
+        <HeroSection onNavigate={scrollToSection} />
+        <FeaturesSection />
+        <SimulatorSection />
+        <AISection />
+        <AccountantSection />
+        <FAQSection />
+      </main>
+
+      <Footer onNavigate={scrollToSection} />
     </div>
   );
 };
