@@ -20,7 +20,7 @@ import {
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, DAILY_QUESTION_LIMIT } from '@/lib/stripe';
 
-const PlanoAtentoAI = () => {
+const PlanoAtenteAi = () => {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
   const { toast } = useToast();
@@ -162,7 +162,7 @@ const PlanoAtentoAI = () => {
                     Processando...
                   </>
                 ) : (
-                  'Assinar Atento AI'
+                  'Assinar Atente Aí'
                 )}
               </Button>
             )}
@@ -182,7 +182,7 @@ const PlanoAtentoAI = () => {
               <div className="grid grid-cols-3 bg-muted/50 p-4 font-semibold">
                 <div className="text-muted-foreground">Recurso</div>
                 <div className="text-center text-muted-foreground">Gratuito</div>
-                <div className="text-center text-primary">Atento AI</div>
+                <div className="text-center text-primary">Atente Aí</div>
               </div>
               {comparisons.map((item, index) => (
                 <div key={index} className="grid grid-cols-3 p-4 border-t border-border">
@@ -200,7 +200,7 @@ const PlanoAtentoAI = () => {
       <section className="py-16">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center text-foreground mb-12">
-            Por que assinar o Atento AI?
+            Por que assinar o Atente Aí?
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -231,7 +231,7 @@ const PlanoAtentoAI = () => {
               Pronto para dominar a Reforma Tributária?
             </h2>
             <p className="text-muted-foreground mb-8">
-              Tenha acesso ilimitado ao Atento AI e tire todas as suas dúvidas sobre legislação tributária.
+              Tenha acesso ilimitado ao Atente Aí e tire todas as suas dúvidas sobre legislação tributária.
             </p>
             
             {!isCurrentPlan && (
@@ -263,4 +263,4 @@ const PlanoAtentoAI = () => {
   );
 };
 
-export default PlanoAtentoAI;
+export default PlanoAtenteAi;

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, MessageCircle, Users, BookOpen } from "lucide-react";
+import { Menu, X, Calculator, MessageCircle, Users, BookOpen, LogIn } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -27,7 +28,7 @@ export function Header({ onNavigate }: HeaderProps) {
           >
             <img 
               src="/logo.png" 
-              alt="AtentAi" 
+              alt="Atente Aí" 
               className="h-10 w-auto"
             />
           </button>
@@ -47,8 +48,14 @@ export function Header({ onNavigate }: HeaderProps) {
             ))}
           </nav>
 
-          {/* CTA Button */}
-          <div className="hidden md:block">
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center gap-2">
+            <Button variant="ghost" size="sm" asChild>
+              <Link to="/auth" className="flex items-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Login
+              </Link>
+            </Button>
             <Button variant="hero" size="sm" onClick={() => onNavigate("ai")}>
               Começar Grátis
             </Button>
@@ -83,6 +90,16 @@ export function Header({ onNavigate }: HeaderProps) {
                   {item.label}
                 </Button>
               ))}
+              <Button 
+                variant="ghost" 
+                className="mt-2 justify-start gap-3"
+                asChild
+              >
+                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                  <LogIn className="w-5 h-5" />
+                  Login
+                </Link>
+              </Button>
               <Button 
                 variant="hero" 
                 className="mt-2"
