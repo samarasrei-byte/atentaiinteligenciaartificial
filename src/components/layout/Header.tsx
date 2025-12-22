@@ -13,8 +13,7 @@ export function Header({ onNavigate }: HeaderProps) {
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
-    { label: "Contador", icon: Users, section: "accountant" },
-    { label: "FAQ", icon: BookOpen, section: "faq" },
+    { label: "Planos", icon: Users, section: "pricing" },
   ];
 
   return (
@@ -27,9 +26,9 @@ export function Header({ onNavigate }: HeaderProps) {
             className="flex items-center gap-2 group"
           >
             <img 
-              src="/logo.png" 
+              src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="h-12 md:h-14 w-auto"
+              className="h-14 md:h-20 w-auto"
             />
           </button>
 
