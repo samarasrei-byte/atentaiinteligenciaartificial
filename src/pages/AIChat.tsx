@@ -248,15 +248,34 @@ const AIChat = () => {
         <ScrollArea ref={scrollRef} className="flex-1 pr-4">
           <div className="space-y-4 pb-4">
             {messages.length === 0 && (
-              <div className="text-center py-12">
+              <div className="text-center py-8">
                 <Brain className="h-16 w-16 text-teal-400 mx-auto mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold text-white mb-2">
                   Olá! Sou o AITENTO
                 </h3>
-                <p className="text-slate-400 max-w-md mx-auto">
-                  Estou aqui para ajudar com suas dúvidas sobre a Reforma Tributária de 2026.
-                  Pergunte sobre IBS, CBS, Imposto Seletivo, período de transição e muito mais!
+                <p className="text-slate-400 max-w-lg mx-auto mb-6">
+                  Sou especialista em legislação tributária brasileira. Posso ajudar com a Reforma Tributária 2026,
+                  regimes tributários, planejamento fiscal, obrigações acessórias e muito mais!
                 </p>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl mx-auto">
+                  {[
+                    "Qual a diferença entre IBS e CBS na reforma tributária?",
+                    "Como funciona o Simples Nacional para prestadores de serviço?",
+                    "Quando começa a transição para o novo sistema tributário?",
+                    "Minha empresa de tecnologia vai pagar mais ou menos impostos?",
+                    "O que é o Imposto Seletivo e quais produtos são afetados?",
+                    "Como calcular o impacto da reforma para o comércio?"
+                  ].map((suggestion, i) => (
+                    <button
+                      key={i}
+                      onClick={() => { setInput(suggestion); }}
+                      className="text-left p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600 hover:border-teal-500/50 transition-all text-sm text-slate-300 hover:text-white"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
             
