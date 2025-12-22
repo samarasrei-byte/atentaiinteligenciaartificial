@@ -176,12 +176,12 @@ export function SimulatorSection() {
                         <MapPin className="w-4 h-4" />
                         Estado (ICMS)
                       </Label>
-                      <Select value={state} onValueChange={setState}>
+                      <Select value={state || "default"} onValueChange={(value) => setState(value === "default" ? "" : value)}>
                         <SelectTrigger className="h-12">
                           <SelectValue placeholder="Selecione o estado (opcional)" />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
+                          <SelectItem value="default">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
                           {brazilianStates.map((s) => (
                             <SelectItem key={s.value} value={s.value}>
                               {s.label} ({stateICMSRates[s.value]}%)
