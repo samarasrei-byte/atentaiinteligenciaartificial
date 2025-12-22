@@ -7,6 +7,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import PublicOnboarding from "./pages/PublicOnboarding";
 import Dashboard from "./pages/Dashboard";
 import AIChat from "./pages/AIChat";
 import Pricing from "./pages/Pricing";
@@ -32,6 +33,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/onboarding" element={<PublicOnboarding />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/termos" element={<TermosDeUso />} />
             <Route path="/privacidade" element={<PoliticaPrivacidade />} />

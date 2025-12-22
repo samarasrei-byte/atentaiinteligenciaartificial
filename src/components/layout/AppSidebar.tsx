@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  Brain,
   Calculator,
   Users,
   MessageSquare,
@@ -19,8 +18,6 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
-  Building2,
-  Menu,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +33,6 @@ interface SidebarItem {
   label: string;
   href: string;
   badge?: string;
-  roles?: string[];
 }
 
 interface AppSidebarProps {
@@ -99,8 +95,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
         className={cn(
           'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
           active
-            ? 'bg-primary text-primary-foreground shadow-md'
-            : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground'
+            ? 'bg-primary text-white shadow-md'
+            : 'text-white/80 hover:bg-white/10 hover:text-white'
         )}
       >
         <Icon className={cn('h-5 w-5 shrink-0', collapsed && 'mx-auto')} />
@@ -121,7 +117,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2">
+          <TooltipContent side="right" className="flex items-center gap-2 bg-slate-800 text-white border-slate-700">
             {item.label}
             {item.badge && (
               <Badge className="bg-accent text-accent-foreground text-xs">
@@ -140,16 +136,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
     <TooltipProvider>
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 h-screen bg-sidebar-background border-r border-sidebar-border transition-all duration-300 flex flex-col',
+          'fixed left-0 top-0 z-40 h-screen bg-slate-800 border-r border-slate-700 transition-all duration-300 flex flex-col',
           collapsed ? 'w-16' : 'w-64'
         )}
       >
         {/* Logo & Toggle */}
-        <div className="flex items-center justify-between p-4 border-b border-sidebar-border">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700">
           {!collapsed && (
             <div className="flex items-center gap-2">
               <img src="/logo.png" alt="AtentAI" className="h-8 w-8" />
-              <span className="text-lg font-bold text-sidebar-foreground">
+              <span className="text-lg font-bold text-white">
                 AtentAI
               </span>
             </div>
@@ -159,7 +155,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
             size="icon"
             onClick={onToggle}
             className={cn(
-              'text-sidebar-foreground hover:bg-sidebar-accent shrink-0',
+              'text-white hover:bg-white/10 shrink-0',
               collapsed && 'mx-auto'
             )}
           >
@@ -176,12 +172,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
 
         {/* Role Switchers */}
         {(hasRole('admin') || hasRole('contador')) && variant === 'user' && (
-          <div className="p-3 border-t border-sidebar-border space-y-1">
+          <div className="p-3 border-t border-slate-700 space-y-1">
             {hasRole('admin') && (
               <button
                 onClick={() => navigate('/admin')}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sidebar-foreground/80 hover:bg-red-500/20 hover:text-red-400',
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-white/80 hover:bg-red-500/20 hover:text-red-400',
                   collapsed && 'justify-center'
                 )}
               >
@@ -193,7 +189,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
               <button
                 onClick={() => navigate('/contador')}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sidebar-foreground/80 hover:bg-blue-500/20 hover:text-blue-400',
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-white/80 hover:bg-blue-500/20 hover:text-blue-400',
                   collapsed && 'justify-center'
                 )}
               >
@@ -205,19 +201,19 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
         )}
 
         {/* User Info & Logout */}
-        <div className="p-3 border-t border-sidebar-border">
+        <div className="p-3 border-t border-slate-700">
           {!collapsed && (
             <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                <span className="text-sm font-medium text-primary">
+              <div className="h-8 w-8 rounded-full bg-primary/30 flex items-center justify-center">
+                <span className="text-sm font-medium text-white">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-sidebar-foreground truncate">
+                <p className="text-sm font-medium text-white truncate">
                   {profile?.full_name || 'Usuário'}
                 </p>
-                <p className="text-xs text-sidebar-foreground/60 truncate">
+                <p className="text-xs text-white/60 truncate">
                   {user?.email}
                 </p>
               </div>
@@ -228,7 +224,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-sidebar-foreground/80 hover:bg-destructive/20 hover:text-destructive',
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-white/80 hover:bg-red-500/20 hover:text-red-400',
                   collapsed && 'justify-center'
                 )}
               >
@@ -237,7 +233,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right">Sair</TooltipContent>
+              <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700">Sair</TooltipContent>
             )}
           </Tooltip>
         </div>

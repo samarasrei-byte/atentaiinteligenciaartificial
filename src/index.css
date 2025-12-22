@@ -65,13 +65,13 @@
     --shadow-gold: 0 0 30px -8px hsl(45 95% 55% / 0.4);
 
     /* Sidebar - Dark sidebar for modern look */
-    --sidebar-background: 220 35% 15%;
-    --sidebar-foreground: 210 40% 96%;
+    --sidebar-background: 215 35% 20%;
+    --sidebar-foreground: 0 0% 98%;
     --sidebar-primary: 175 65% 45%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 30% 22%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 220 30% 22%;
+    --sidebar-accent: 215 30% 28%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 215 30% 25%;
     --sidebar-ring: 175 65% 45%;
   }
 

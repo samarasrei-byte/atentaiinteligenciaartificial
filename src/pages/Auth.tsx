@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Brain, Mail, Lock, User, Loader2 } from 'lucide-react';
+import { Brain, Mail, Lock, User, Loader2, Building2 } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Email inválido');
@@ -16,6 +17,7 @@ const nameSchema = z.string().min(2, 'Nome deve ter pelo menos 2 caracteres');
 
 const Auth = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, signIn, signUp, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
@@ -26,12 +28,65 @@ const Auth = () => {
   const [signupPassword, setSignupPassword] = useState('');
   const [signupName, setSignupName] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const fromOnboarding = searchParams.get('from') === 'onboarding';
+  const pendingOnboardingData = sessionStorage.getItem('pendingOnboardingData');
 
   useEffect(() => {
     if (user && !authLoading) {
+      // If there's pending onboarding data, save it
+      if (pendingOnboardingData) {
+        saveOnboardingData(user.id);
+      } else {
+        navigate('/dashboard');
+      }
+    }
+  }, [user, authLoading, navigate, pendingOnboardingData]);
+
+  const saveOnboardingData = async (userId: string) => {
+    try {
+      const data = JSON.parse(pendingOnboardingData!);
+      
+      const { error } = await supabase
+        .from('companies')
+        .insert({
+          user_id: userId,
+          company_name: data.company_name,
+          trade_name: data.trade_name || null,
+          cnpj: data.cnpj || null,
+          company_type: data.company_type as any,
+          tax_regime: data.tax_regime as any,
+          sector: data.sector as any,
+          monthly_revenue_cents: data.monthly_revenue_cents,
+          annual_revenue_cents: data.monthly_revenue_cents * 12,
+          employee_count: data.employee_count,
+          state: data.state,
+          city: data.city || null,
+          main_activity: data.main_activity || null,
+          onboarding_completed: true,
+        });
+
+      if (error) throw error;
+
+      // Clear the pending data
+      sessionStorage.removeItem('pendingOnboardingData');
+      
+      toast({
+        title: 'Empresa cadastrada!',
+        description: 'Seus dados foram salvos com sucesso',
+      });
+      
+      navigate('/dashboard');
+    } catch (error: any) {
+      console.error('Error saving onboarding data:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Erro ao salvar dados da empresa',
+      });
       navigate('/dashboard');
     }
-  }, [user, authLoading, navigate]);
+  };
 
   const validateLogin = () => {
     const newErrors: Record<string, string> = {};
@@ -102,7 +157,6 @@ const Auth = () => {
         title: 'Bem-vindo!',
         description: 'Login realizado com sucesso',
       });
-      navigate('/dashboard');
     }
   };
 
@@ -127,9 +181,8 @@ const Auth = () => {
     } else {
       toast({
         title: 'Conta criada!',
-        description: 'Bem-vindo ao AITENTO',
+        description: 'Bem-vindo ao AtentAI',
       });
-      navigate('/dashboard');
     }
   };
 
@@ -148,16 +201,31 @@ const Auth = () => {
           <div className="flex items-center justify-center gap-2 mb-4">
             <Brain className="h-10 w-10 text-teal-400" />
             <span className="text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-300 bg-clip-text text-transparent">
-              AITENTO
+              AtentAI
             </span>
           </div>
-          <CardTitle className="text-2xl text-white">Acesse sua conta</CardTitle>
-          <CardDescription className="text-slate-400">
-            Sua plataforma completa para a Reforma Tributária
-          </CardDescription>
+          {fromOnboarding && pendingOnboardingData ? (
+            <>
+              <div className="flex items-center justify-center gap-2 text-green-400 mb-2">
+                <Building2 className="h-5 w-5" />
+                <span className="text-sm font-medium">Dados da empresa salvos!</span>
+              </div>
+              <CardTitle className="text-2xl text-white">Crie sua conta</CardTitle>
+              <CardDescription className="text-slate-400">
+                Finalize seu cadastro para acessar a plataforma
+              </CardDescription>
+            </>
+          ) : (
+            <>
+              <CardTitle className="text-2xl text-white">Acesse sua conta</CardTitle>
+              <CardDescription className="text-slate-400">
+                Sua plataforma completa para a Reforma Tributária
+              </CardDescription>
+            </>
+          )}
         </CardHeader>
         <CardContent>
-          <Tabs defaultValue="login" className="w-full">
+          <Tabs defaultValue={fromOnboarding ? "signup" : "login"} className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-slate-700/50">
               <TabsTrigger value="login" className="data-[state=active]:bg-teal-600">
                 Entrar
@@ -287,6 +355,22 @@ const Auth = () => {
               </form>
             </TabsContent>
           </Tabs>
+          
+          {!fromOnboarding && (
+            <div className="mt-6 pt-4 border-t border-slate-700">
+              <p className="text-sm text-slate-400 text-center mb-3">
+                Primeira vez aqui?
+              </p>
+              <Button
+                variant="outline"
+                className="w-full border-teal-500 text-teal-400 hover:bg-teal-500/10"
+                onClick={() => navigate('/onboarding')}
+              >
+                <Building2 className="h-4 w-4 mr-2" />
+                Começar configurando minha empresa
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
