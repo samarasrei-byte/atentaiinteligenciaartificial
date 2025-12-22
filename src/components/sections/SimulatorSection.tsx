@@ -1,118 +1,92 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, TrendingUp, TrendingDown, ArrowRight, Minus, RefreshCw } from "lucide-react";
-
-interface SimulationResult {
-  beforeTaxes: {
-    icms: number;
-    iss: number;
-    pis: number;
-    cofins: number;
-    ipi: number;
-    total: number;
-  };
-  afterTaxes: {
-    ibs: number;
-    cbs: number;
-    is: number;
-    total: number;
-  };
-  difference: number;
-  percentChange: number;
-}
+import { Calculator, TrendingUp, TrendingDown, Minus, RefreshCw, Download, MapPin } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import {
+  sectors,
+  companyTypes,
+  brazilianStates,
+  stateICMSRates,
+  calculateTaxes,
+  formatCurrency,
+  formatCurrencyInput,
+  parseCurrencyInput,
+  SimulationResult,
+} from "@/lib/taxData";
+import { exportSimulationToPdf } from "@/lib/exportPdf";
 
 export function SimulatorSection() {
+  const { toast } = useToast();
+  const resultRef = useRef<HTMLDivElement>(null);
   const [revenue, setRevenue] = useState("");
   const [sector, setSector] = useState("");
   const [companyType, setCompanyType] = useState("");
+  const [state, setState] = useState("");
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const sectors = [
-    { value: "comercio", label: "Comércio", icms: 18, iss: 0, pis: 0.65, cofins: 3, ipi: 0 },
-    { value: "servicos", label: "Serviços", icms: 0, iss: 5, pis: 0.65, cofins: 3, ipi: 0 },
-    { value: "industria", label: "Indústria", icms: 18, iss: 0, pis: 0.65, cofins: 3, ipi: 10 },
-    { value: "tecnologia", label: "Tecnologia", icms: 0, iss: 5, pis: 0.65, cofins: 3, ipi: 0 },
-    { value: "alimentacao", label: "Alimentação", icms: 12, iss: 0, pis: 0.65, cofins: 3, ipi: 0 },
-    { value: "saude", label: "Saúde", icms: 0, iss: 3, pis: 0.65, cofins: 3, ipi: 0 },
-  ];
+  const selectedSector = sectors.find(s => s.value === sector);
+  const showStateSelector = selectedSector && selectedSector.icms > 0;
 
-  const companyTypes = [
-    { value: "mei", label: "MEI", multiplier: 0.3 },
-    { value: "simples", label: "Simples Nacional", multiplier: 0.6 },
-    { value: "lucro_presumido", label: "Lucro Presumido", multiplier: 1 },
-    { value: "lucro_real", label: "Lucro Real", multiplier: 1.2 },
-  ];
-
-  const calculateTaxes = () => {
+  const handleCalculate = () => {
     if (!revenue || !sector || !companyType) return;
 
     setIsCalculating(true);
 
     setTimeout(() => {
-      const revenueValue = parseFloat(revenue.replace(/\D/g, "")) / 100;
-      const sectorData = sectors.find(s => s.value === sector)!;
-      const companyData = companyTypes.find(c => c.value === companyType)!;
-      const multiplier = companyData.multiplier;
-
-      // Cálculo impostos atuais
-      const icms = revenueValue * (sectorData.icms / 100) * multiplier;
-      const iss = revenueValue * (sectorData.iss / 100) * multiplier;
-      const pis = revenueValue * (sectorData.pis / 100) * multiplier;
-      const cofins = revenueValue * (sectorData.cofins / 100) * multiplier;
-      const ipi = revenueValue * (sectorData.ipi / 100) * multiplier;
-      const totalBefore = icms + iss + pis + cofins + ipi;
-
-      // Cálculo com reforma (IBS 17.7%, CBS 8.8%, IS variável)
-      const ibsRate = 17.7;
-      const cbsRate = 8.8;
-      const isRate = sector === "alimentacao" ? 0 : (sector === "saude" ? 0 : 3);
+      const revenueValue = parseCurrencyInput(revenue);
       
-      // Aplicando não-cumulatividade (créditos estimados em 40%)
-      const creditFactor = companyType === "mei" ? 0.1 : (companyType === "simples" ? 0.2 : 0.4);
-      
-      const ibs = revenueValue * (ibsRate / 100) * multiplier * (1 - creditFactor);
-      const cbs = revenueValue * (cbsRate / 100) * multiplier * (1 - creditFactor);
-      const is = revenueValue * (isRate / 100) * multiplier;
-      const totalAfter = ibs + cbs + is;
-
-      const difference = totalAfter - totalBefore;
-      const percentChange = ((difference / totalBefore) * 100);
-
-      setResult({
-        beforeTaxes: { icms, iss, pis, cofins, ipi, total: totalBefore },
-        afterTaxes: { ibs, cbs, is, total: totalAfter },
-        difference,
-        percentChange,
+      const simulationResult = calculateTaxes({
+        revenue: revenueValue,
+        sector,
+        companyType,
+        state: state || undefined,
       });
+      
+      setResult(simulationResult);
       setIsCalculating(false);
+      
+      toast({
+        title: "Simulação concluída!",
+        description: "Veja o comparativo abaixo",
+      });
     }, 1000);
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(value);
+  const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRevenue(formatCurrencyInput(e.target.value));
   };
 
-  const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, "");
-    const formatted = new Intl.NumberFormat("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    }).format(parseFloat(value) / 100 || 0);
-    setRevenue(formatted);
+  const handleExportPdf = async () => {
+    if (!result) return;
+    
+    setIsExporting(true);
+    try {
+      await exportSimulationToPdf(result);
+      toast({
+        title: "PDF exportado!",
+        description: "O arquivo foi baixado com sucesso",
+      });
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "Erro ao exportar",
+        description: "Não foi possível gerar o PDF",
+      });
+    }
+    setIsExporting(false);
   };
 
   const reset = () => {
     setRevenue("");
     setSector("");
     setCompanyType("");
+    setState("");
     setResult(null);
   };
 
@@ -150,7 +124,7 @@ export function SimulatorSection() {
             </CardHeader>
             <CardContent className="p-6 md:p-8">
               <div className="grid gap-6">
-                {/* Input Fields */}
+                {/* Input Fields - Row 1 */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="revenue">Faturamento Mensal</Label>
@@ -164,7 +138,7 @@ export function SimulatorSection() {
                   </div>
                   <div className="space-y-2">
                     <Label>Setor de Atuação</Label>
-                    <Select value={sector} onValueChange={setSector}>
+                    <Select value={sector} onValueChange={(value) => { setSector(value); setState(""); }}>
                       <SelectTrigger className="h-12">
                         <SelectValue placeholder="Selecione o setor" />
                       </SelectTrigger>
@@ -178,10 +152,10 @@ export function SimulatorSection() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Tipo de Empresa</Label>
+                    <Label>Regime Tributário</Label>
                     <Select value={companyType} onValueChange={setCompanyType}>
                       <SelectTrigger className="h-12">
-                        <SelectValue placeholder="Selecione o tipo" />
+                        <SelectValue placeholder="Selecione o regime" />
                       </SelectTrigger>
                       <SelectContent>
                         {companyTypes.map((c) => (
@@ -194,13 +168,46 @@ export function SimulatorSection() {
                   </div>
                 </div>
 
+                {/* State Selector - Row 2 (conditional) */}
+                {showStateSelector && (
+                  <div className="grid md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <Label className="flex items-center gap-2">
+                        <MapPin className="w-4 h-4" />
+                        Estado (ICMS)
+                      </Label>
+                      <Select value={state} onValueChange={setState}>
+                        <SelectTrigger className="h-12">
+                          <SelectValue placeholder="Selecione o estado (opcional)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
+                          {brazilianStates.map((s) => (
+                            <SelectItem key={s.value} value={s.value}>
+                              {s.label} ({stateICMSRates[s.value]}%)
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="md:col-span-2 flex items-end">
+                      <p className="text-sm text-muted-foreground">
+                        {state 
+                          ? `Alíquota de ICMS para ${brazilianStates.find(s => s.value === state)?.label}: ${stateICMSRates[state]}%`
+                          : "Selecione um estado para usar a alíquota de ICMS específica"
+                        }
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Action Buttons */}
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Button 
                     variant="hero" 
                     size="lg"
                     className="flex-1"
-                    onClick={calculateTaxes}
+                    onClick={handleCalculate}
                     disabled={!revenue || !sector || !companyType || isCalculating}
                   >
                     {isCalculating ? (
@@ -216,16 +223,26 @@ export function SimulatorSection() {
                     )}
                   </Button>
                   {result && (
-                    <Button variant="outline" size="lg" onClick={reset}>
-                      <RefreshCw className="w-5 h-5" />
-                      Limpar
-                    </Button>
+                    <>
+                      <Button variant="outline" size="lg" onClick={handleExportPdf} disabled={isExporting}>
+                        {isExporting ? (
+                          <RefreshCw className="w-5 h-5 animate-spin" />
+                        ) : (
+                          <Download className="w-5 h-5" />
+                        )}
+                        Exportar PDF
+                      </Button>
+                      <Button variant="ghost" size="lg" onClick={reset}>
+                        <RefreshCw className="w-5 h-5" />
+                        Limpar
+                      </Button>
+                    </>
                   )}
                 </div>
 
                 {/* Results */}
                 {result && (
-                  <div className="mt-8 space-y-6 animate-slide-up">
+                  <div ref={resultRef} className="mt-8 space-y-6 animate-slide-up">
                     {/* Comparison Grid */}
                     <div className="grid md:grid-cols-2 gap-6">
                       {/* Before */}
