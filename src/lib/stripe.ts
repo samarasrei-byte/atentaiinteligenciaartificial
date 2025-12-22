@@ -14,7 +14,7 @@ export const STRIPE_PLANS = {
     ],
   },
   premium: {
-    name: 'Atente Aí Premium',
+    name: 'AtentAI Premium',
     priceId: 'price_1Sh0hm3MU3lG84GwZQFVJ2sU',
     productId: 'prod_TeJKUfneeyp779',
     price: 5600, // cents (R$56,00)

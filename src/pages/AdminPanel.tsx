@@ -441,7 +441,7 @@ const AdminPanel = () => {
           <Card className="bg-card border-border shadow-soft">
             <CardHeader>
               <CardTitle className="text-xl">Configurações do Sistema</CardTitle>
-              <CardDescription>Configurações gerais da plataforma Atente Aí</CardDescription>
+              <CardDescription>Configurações gerais da plataforma AtentAI</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
