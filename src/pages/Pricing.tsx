@@ -12,7 +12,8 @@ import {
   Crown,
   Loader2,
   Sparkles,
-  Settings
+  Settings,
+  Calculator
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
@@ -25,7 +26,6 @@ const Pricing = () => {
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [isManaging, setIsManaging] = useState(false);
 
-  // Check for checkout result
   useEffect(() => {
     const checkoutResult = searchParams.get('checkout');
     if (checkoutResult === 'success') {
@@ -104,8 +104,8 @@ const Pricing = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
@@ -113,23 +113,19 @@ const Pricing = () => {
   const planEntries = Object.entries(STRIPE_PLANS) as [PlanType, typeof STRIPE_PLANS[PlanType]][];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
+      <header className="border-b border-border bg-card/50 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
               variant="ghost"
               onClick={() => navigate(user ? '/dashboard' : '/')}
-              className="text-slate-300 hover:text-white"
+              className="text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
-            <div className="flex items-center gap-2">
-              <Brain className="h-6 w-6 text-teal-400" />
-              <span className="text-xl font-bold text-white">Planos AITENTO</span>
-            </div>
           </div>
           
           {subscription.subscribed && (
@@ -137,7 +133,6 @@ const Pricing = () => {
               variant="outline"
               onClick={handleManageSubscription}
               disabled={isManaging}
-              className="border-slate-600 text-slate-300 hover:text-white"
             >
               {isManaging ? (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
@@ -151,37 +146,38 @@ const Pricing = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">
+      <main className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Escolha seu plano
           </h1>
-          <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-            Desbloqueie o poder da IA e consultoria especializada para dominar a Reforma Tributária
+          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
+            Acesse ferramentas exclusivas para dominar a Reforma Tributária
           </p>
           
           {subscription.subscribed && subscription.plan && (
-            <div className="mt-6 inline-flex items-center gap-2 bg-teal-500/20 text-teal-400 px-4 py-2 rounded-full">
+            <div className="mt-6 inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
               <Crown className="h-5 w-5" />
               <span>Você está no plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {planEntries.map(([key, plan]) => {
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
+            const Icon = key === 'simulator' ? Calculator : Brain;
             
             return (
               <Card 
                 key={key}
-                className={`relative bg-slate-800/50 border-slate-700 hover:border-slate-500 transition-all ${
-                  isPlanPopular ? 'ring-2 ring-teal-500 scale-105' : ''
+                className={`relative bg-card border transition-all hover:shadow-lg ${
+                  isPlanPopular ? 'ring-2 ring-primary scale-105' : 'border-border'
                 } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
               >
                 {isPlanPopular && !isCurrentPlan && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-500">
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Mais Popular
                   </Badge>
@@ -194,29 +190,29 @@ const Pricing = () => {
                 )}
                 <CardHeader className="text-center pt-8">
                   <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                    key === 'basic' ? 'bg-gradient-to-br from-cyan-500 to-blue-500' :
-                    key === 'pro' ? 'bg-gradient-to-br from-teal-500 to-cyan-500' :
-                    'bg-gradient-to-br from-amber-500 to-orange-500'
+                    key === 'simulator' 
+                      ? 'bg-gradient-to-br from-blue-500 to-cyan-500' 
+                      : 'bg-gradient-to-br from-primary to-primary/70'
                   }`}>
-                    <Crown className="h-8 w-8 text-white" />
+                    <Icon className="h-8 w-8 text-white" />
                   </div>
-                  <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
-                  <CardDescription className="text-slate-400">
-                    {key === 'basic' && 'Para começar sua jornada'}
-                    {key === 'pro' && 'Para profissionais e empresas'}
-                    {key === 'enterprise' && 'Solução completa para grandes empresas'}
-                  </CardDescription>
+                  <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
+                  {'description' in plan && (
+                    <CardDescription className="text-muted-foreground mt-2">
+                      {plan.description}
+                    </CardDescription>
+                  )}
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-center">
-                    <span className="text-4xl font-bold text-white">{formatPrice(plan.price)}</span>
-                    <span className="text-slate-400">/mês</span>
+                    <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
+                    <span className="text-muted-foreground">/mês</span>
                   </div>
 
                   <ul className="space-y-3">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-slate-300">
-                        <Check className="h-5 w-5 text-teal-400 flex-shrink-0" />
+                      <li key={index} className="flex items-center gap-2 text-foreground">
+                        <Check className="h-5 w-5 text-primary flex-shrink-0" />
                         <span className="text-sm">{feature}</span>
                       </li>
                     ))}
@@ -228,10 +224,10 @@ const Pricing = () => {
                     className={`w-full ${
                       isCurrentPlan 
                         ? 'bg-green-600 cursor-not-allowed' 
-                        : key === 'basic' ? 'bg-gradient-to-r from-cyan-500 to-blue-500' :
-                          key === 'pro' ? 'bg-gradient-to-r from-teal-500 to-cyan-500' :
-                          'bg-gradient-to-r from-amber-500 to-orange-500'
-                    } hover:opacity-90`}
+                        : key === 'simulator' 
+                          ? 'bg-gradient-to-r from-blue-500 to-cyan-500' 
+                          : 'bg-primary hover:bg-primary/90'
+                    }`}
                   >
                     {isLoading === key ? (
                       <>
@@ -252,10 +248,8 @@ const Pricing = () => {
           })}
         </div>
 
-        {/* Info */}
-        <div className="mt-12 text-center text-slate-400 text-sm">
+        <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
-          <p className="mt-2">Dúvidas? Entre em contato com nosso suporte.</p>
         </div>
       </main>
     </div>

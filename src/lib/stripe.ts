@@ -1,22 +1,23 @@
 // Stripe plan configuration
 export const STRIPE_PLANS = {
-  basic: {
+  simulator: {
     name: 'Simulador de Impacto Tributário',
-    priceId: 'price_1SXl0w3MU3lG84Gw58sMoVfh',
-    productId: 'prod_TUkVf10Uq0C1Dv',
-    price: 4500, // cents (R$45,00)
+    priceId: 'price_1Sh0hO3MU3lG84Gw6TYhkT4W',
+    productId: 'prod_TeJKjnfkaw0JfV',
+    price: 5600, // cents (R$56,00)
+    description: 'Simule o impacto da reforma tributária na sua empresa',
     features: [
-      'Simulador de Impostos',
-      'Chat com IA (5 msgs/dia)',
+      'Simulador completo',
+      'Comparativo antes/depois',
+      'Relatório detalhado',
       'Exportação PDF',
-      'Suporte por email',
     ],
   },
   premium: {
-    name: 'Acesso Premium',
-    priceId: 'price_premium_ai_tributar',
-    productId: 'prod_premium_ai_tributar',
-    price: 5000, // cents (R$50,00)
+    name: 'Assistente TRIBUTAR',
+    priceId: 'price_1Sh0hm3MU3lG84GwZQFVJ2sU',
+    productId: 'prod_TeJKUfneeyp779',
+    price: 5600, // cents (R$56,00)
     description: 'Desbloqueie todo o potencial da IA Tributar',
     features: [
       'Perguntas ilimitadas',
@@ -25,36 +26,6 @@ export const STRIPE_PLANS = {
       'Suporte prioritário',
     ],
     popular: true,
-  },
-  pro: {
-    name: 'Pro',
-    priceId: 'price_1SXl1H3MU3lG84GwhmJxxv5y',
-    productId: 'prod_TUkWyKp9XI3k5A',
-    price: 9990, // cents (R$99,90)
-    features: [
-      'Tudo do Premium',
-      'Chat com IA ilimitado',
-      'Simulador de Locação',
-      'Comparador de Regimes',
-      'Timeline 2026-2033',
-      'Exportação Excel',
-      'Suporte prioritário',
-    ],
-  },
-  enterprise: {
-    name: 'Enterprise',
-    priceId: 'price_1SXl2N3MU3lG84GwjgjSJvfl',
-    productId: 'prod_TUkXlLYZICjl2e',
-    price: 19990, // cents
-    features: [
-      'Tudo do Pro',
-      'Consultoria com Contador',
-      'Relatórios personalizados',
-      'API de integração',
-      'Múltiplas empresas',
-      'Suporte dedicado',
-      'Treinamento incluído',
-    ],
   },
 } as const;
 

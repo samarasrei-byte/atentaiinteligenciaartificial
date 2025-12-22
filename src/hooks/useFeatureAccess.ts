@@ -17,9 +17,8 @@ type Feature =
 
 // Feature access matrix by plan
 const featuresByPlan: Record<PlanType, Feature[]> = {
-  basic: [
+  simulator: [
     'simulator',
-    'ai-chat',
     'pdf-export',
   ],
   premium: [
@@ -27,39 +26,17 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'ai-chat',
     'ai-chat-unlimited',
     'pdf-export',
-  ],
-  pro: [
-    'simulator',
-    'ai-chat',
-    'ai-chat-unlimited',
-    'pdf-export',
     'excel-export',
     'locacao-simulator',
     'regime-comparator',
     'timeline-2026-2033',
-  ],
-  enterprise: [
-    'simulator',
-    'ai-chat',
-    'ai-chat-unlimited',
-    'pdf-export',
-    'excel-export',
-    'locacao-simulator',
-    'regime-comparator',
-    'timeline-2026-2033',
-    'contador-consultation',
-    'custom-reports',
-    'api-integration',
-    'multiple-companies',
   ],
 };
 
 // Plan hierarchy for comparison
 const planHierarchy: Record<PlanType, number> = {
-  basic: 1,
+  simulator: 1,
   premium: 2,
-  pro: 3,
-  enterprise: 4,
 };
 
 export function useFeatureAccess() {
@@ -80,7 +57,7 @@ export function useFeatureAccess() {
   };
 
   const getRequiredPlan = (feature: Feature): PlanType | null => {
-    for (const plan of ['basic', 'pro', 'enterprise'] as PlanType[]) {
+    for (const plan of ['simulator', 'premium'] as PlanType[]) {
       if (featuresByPlan[plan].includes(feature)) {
         return plan;
       }

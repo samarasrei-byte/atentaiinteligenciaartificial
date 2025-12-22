@@ -1,12 +1,9 @@
-import { useRef } from "react";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { SimulatorSection } from "@/components/sections/SimulatorSection";
 import { AISection } from "@/components/sections/AISection";
-import { AccountantSection } from "@/components/sections/AccountantSection";
-import { FAQSection } from "@/components/sections/FAQSection";
 
 const Index = () => {
   const scrollToSection = (section: string) => {
@@ -37,8 +34,6 @@ const Index = () => {
         <FeaturesSection />
         <SimulatorSection />
         <AISection />
-        <AccountantSection />
-        <FAQSection />
       </main>
 
       <Footer onNavigate={scrollToSection} />
