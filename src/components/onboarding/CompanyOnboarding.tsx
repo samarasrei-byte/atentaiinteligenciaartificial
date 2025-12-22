@@ -234,7 +234,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.company_name}
                     onChange={(e) => updateFormData('company_name', e.target.value)}
                     placeholder="Nome oficial da empresa"
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -245,7 +245,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.trade_name}
                     onChange={(e) => updateFormData('trade_name', e.target.value)}
                     placeholder="Nome comercial (opcional)"
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -256,7 +256,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.cnpj}
                     onChange={handleCNPJChange}
                     placeholder="00.000.000/0000-00"
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -320,12 +320,16 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.sector}
                     onValueChange={(value) => updateFormData('sector', value)}
                   >
-                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white [&>span]:text-slate-400 [&>span[data-placeholder]]:text-slate-400">
                       <SelectValue placeholder="Selecione o setor" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectContent className="bg-slate-800 border-slate-700 z-50">
                       {SECTORS.map((sector) => (
-                        <SelectItem key={sector.value} value={sector.value}>
+                        <SelectItem 
+                          key={sector.value} 
+                          value={sector.value}
+                          className="text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white"
+                        >
                           {sector.label}
                         </SelectItem>
                       ))}
@@ -340,7 +344,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.main_activity}
                     onChange={(e) => updateFormData('main_activity', e.target.value)}
                     placeholder="Ex: Desenvolvimento de software, Comércio varejista..."
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
                 </div>
               </div>
@@ -365,7 +369,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                       value={formData.monthly_revenue_cents > 0 ? (formData.monthly_revenue_cents / 100).toFixed(0) : ''}
                       onChange={handleRevenueChange}
                       placeholder="0"
-                      className="bg-slate-700/50 border-slate-600 text-white pl-10"
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 pl-10"
                     />
                   </div>
                   <p className="text-sm text-slate-400">
@@ -382,7 +386,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.employee_count || ''}
                     onChange={(e) => updateFormData('employee_count', parseInt(e.target.value) || 0)}
                     placeholder="0"
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
                 </div>
 
@@ -424,12 +428,16 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.state}
                     onValueChange={(value) => updateFormData('state', value)}
                   >
-                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white [&>span]:text-slate-400 [&>span[data-placeholder]]:text-slate-400">
                       <SelectValue placeholder="Selecione o estado" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 max-h-[200px]">
+                    <SelectContent className="bg-slate-800 border-slate-700 max-h-[200px] z-50">
                       {STATES.map((state) => (
-                        <SelectItem key={state} value={state}>
+                        <SelectItem 
+                          key={state} 
+                          value={state}
+                          className="text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white"
+                        >
                           {state}
                         </SelectItem>
                       ))}
@@ -444,7 +452,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                     value={formData.city}
                     onChange={(e) => updateFormData('city', e.target.value)}
                     placeholder="Nome da cidade"
-                    className="bg-slate-700/50 border-slate-600 text-white"
+                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
                 </div>
 
