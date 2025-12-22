@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Dashboard from "./pages/Dashboard";
@@ -15,6 +16,8 @@ import ContadorPanel from "./pages/ContadorPanel";
 import AdminPanel from "./pages/AdminPanel";
 import LocacaoSimulator from "./pages/LocacaoSimulator";
 import RegimeComparator from "./pages/RegimeComparator";
+import TermosDeUso from "./pages/TermosDeUso";
+import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,15 +32,60 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/ai-chat" element={<AIChat />} />
             <Route path="/pricing" element={<Pricing />} />
-            <Route path="/simulator" element={<Simulator />} />
-            <Route path="/locacao" element={<LocacaoSimulator />} />
-            <Route path="/regime-comparator" element={<RegimeComparator />} />
-            <Route path="/contadores" element={<Contadores />} />
-            <Route path="/contador" element={<ContadorPanel />} />
-            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/termos" element={<TermosDeUso />} />
+            <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+            
+            {/* Protected routes - require authentication */}
+            <Route path="/dashboard" element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } />
+            
+            {/* Basic plan features */}
+            <Route path="/simulator" element={
+              <ProtectedRoute requiredPlan="basic">
+                <Simulator />
+              </ProtectedRoute>
+            } />
+            <Route path="/ai-chat" element={
+              <ProtectedRoute requiredPlan="basic">
+                <AIChat />
+              </ProtectedRoute>
+            } />
+            
+            {/* Pro plan features */}
+            <Route path="/locacao" element={
+              <ProtectedRoute requiredPlan="pro">
+                <LocacaoSimulator />
+              </ProtectedRoute>
+            } />
+            <Route path="/regime-comparator" element={
+              <ProtectedRoute requiredPlan="pro">
+                <RegimeComparator />
+              </ProtectedRoute>
+            } />
+            
+            {/* Enterprise plan features */}
+            <Route path="/contadores" element={
+              <ProtectedRoute requiredPlan="enterprise">
+                <Contadores />
+              </ProtectedRoute>
+            } />
+            
+            {/* Role-based routes */}
+            <Route path="/contador" element={
+              <ProtectedRoute>
+                <ContadorPanel />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <AdminPanel />
+              </ProtectedRoute>
+            } />
+            
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
