@@ -13,6 +13,8 @@ import Simulator from "./pages/Simulator";
 import Contadores from "./pages/Contadores";
 import ContadorPanel from "./pages/ContadorPanel";
 import AdminPanel from "./pages/AdminPanel";
+import LocacaoSimulator from "./pages/LocacaoSimulator";
+import RegimeComparator from "./pages/RegimeComparator";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,6 +33,8 @@ const App = () => (
             <Route path="/ai-chat" element={<AIChat />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/simulator" element={<Simulator />} />
+            <Route path="/locacao" element={<LocacaoSimulator />} />
+            <Route path="/regime-comparator" element={<RegimeComparator />} />
             <Route path="/contadores" element={<Contadores />} />
             <Route path="/contador" element={<ContadorPanel />} />
             <Route path="/admin" element={<AdminPanel />} />
