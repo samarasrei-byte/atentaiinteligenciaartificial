@@ -14,90 +14,108 @@ interface Message {
   content: string;
 }
 
-// Base de conhecimento sobre a Reforma Tributária
+// Base de conhecimento sobre a Reforma Tributária (LC 214/2025)
 const knowledgeBase: Record<string, string> = {
   "ibs": `O **IBS (Imposto sobre Bens e Serviços)** é um tributo que unificará o ICMS (estadual) e o ISS (municipal).
 
-**Características principais:**
-• Alíquota de referência: 17,7%
+**Características principais (LC 214/2025):**
+• Alíquota de referência: **17,7%**
 • Cobrança no destino (onde o consumo ocorre)
 • Não-cumulatividade plena (crédito amplo)
-• Gestão compartilhada entre estados e municípios
+• Gestão pelo Comitê Gestor do IBS
 
-**Transição:** Será implementado gradualmente de 2026 a 2033.`,
+**Transição:** Será implementado gradualmente de 2026 a 2033.
+• 2026: 0,1% (fase de teste)
+• 2027-2028: Aumento gradual
+• 2029-2032: Redução progressiva do ICMS/ISS
+• 2033: Extinção completa dos tributos antigos`,
 
   "cbs": `A **CBS (Contribuição sobre Bens e Serviços)** substituirá o PIS e a COFINS.
 
-**Características principais:**
-• Alíquota de referência: 8,8%
+**Características principais (LC 214/2025):**
+• Alíquota de referência: **8,8%**
 • Tributo federal
 • Não-cumulatividade plena
 • Base de cálculo ampla
 
-A CBS será cobrada em todas as operações de bens e serviços, incluindo importações.`,
+**Início:** A CBS terá alíquota de 0,9% em 2026 (fase de teste).
+A partir de 2027, será implementada gradualmente até atingir a alíquota plena.`,
 
   "is": `O **IS (Imposto Seletivo)** é conhecido como "imposto do pecado".
 
-**Incidirá sobre:**
-• Cigarros e produtos de tabaco
-• Bebidas alcoólicas
+**Incidirá sobre (LC 214/2025):**
+• Cigarros e produtos de tabaco: até **32%**
+• Bebidas alcoólicas: até **25%**
 • Bebidas açucaradas
-• Veículos poluentes
-• Extração de recursos naturais
+• Veículos poluentes: até **18%**
+• Extração de recursos naturais (petróleo, gás, minérios)
 
-**Objetivo:** Desestimular consumo de produtos nocivos à saúde e ao meio ambiente.`,
+**Objetivo:** Desestimular consumo de produtos nocivos à saúde e ao meio ambiente.
+**Início:** 2027`,
 
   "cashback": `O **Cashback Tributário** é um mecanismo de devolução de impostos para famílias de baixa renda.
 
-**Como funciona:**
-• Devolução automática de parte dos tributos pagos
+**Como funciona (LC 214/2025):**
+• Devolução automática de parte do IBS e CBS pagos
 • Público-alvo: famílias inscritas no CadÚnico
-• Produtos essenciais terão maior percentual de devolução
+• Produtos essenciais: devolução de **100%** do CBS e **20%** do IBS
+• Demais bens e serviços: devolução de **20%** do CBS
 • Crédito direto em conta ou via PIX
 
-Estima-se que beneficiará cerca de 70 milhões de brasileiros.`,
+Estima-se que beneficiará cerca de **70 milhões de brasileiros**.`,
 
-  "transicao": `A **transição** da Reforma Tributária ocorrerá entre 2026 e 2033.
+  "transicao": `A **transição** da Reforma Tributária (LC 214/2025) ocorrerá entre 2026 e 2033.
 
-**Cronograma:**
-• **2026:** Início da CBS (0,9%) e IBS (0,1%) - fase de teste
-• **2027-2028:** Aumento gradual das alíquotas
+**Cronograma oficial:**
+• **2026:** CBS (0,9%) + IBS (0,1%) - fase de teste
+• **2027:** Início do Imposto Seletivo, CBS e IBS aumentam
+• **2028:** Alíquotas continuam subindo
 • **2029-2032:** Redução progressiva de ICMS, ISS, PIS e COFINS
 • **2033:** Extinção completa dos tributos antigos
+
+**Alíquota plena combinada:** Entre **26,5% e 28%** (IBS + CBS)
 
 Durante a transição, empresas operarão com os dois sistemas simultaneamente.`,
 
   "simples": `O **Simples Nacional** será mantido após a reforma!
 
-**O que muda:**
-• Opção de recolher IBS e CBS por fora (benefício para quem vende para outras empresas)
-• Possibilidade de creditar compradores
-• Alíquotas do Simples serão ajustadas
+**O que muda (LC 214/2025):**
+• Opção de recolher IBS e CBS por fora do Simples
+• Possibilidade de transferir créditos para compradores
+• Vantagem para quem vende para outras empresas (PJ)
 
-**Vantagem:** MEIs e pequenas empresas podem optar pelo regime mais vantajoso.`,
+**MEI:** Mantém tratamento diferenciado e favorecido.
 
-  "cesta_basica": `A **Cesta Básica Nacional** terá tratamento especial.
+**Dica:** Analise qual regime é mais vantajoso para seu perfil de clientes.`,
 
-**Isenção total (0%):**
+  "cesta_basica": `A **Cesta Básica Nacional** terá tratamento especial (LC 214/2025).
+
+**Isenção total (alíquota 0%):**
 • Arroz, feijão, leite
 • Carnes, ovos, peixes
 • Frutas, verduras, legumes
-• Pão, farinha, café
-• Óleo de cozinha
+• Pão, farinha de trigo, café
+• Óleo de cozinha, manteiga
+• Açúcar, sal
 
 **Alíquota reduzida (60% de desconto):**
 • Outros alimentos não essenciais
 
 Esta é uma das maiores conquistas sociais da reforma!`,
 
-  "profissionais_liberais": `**Profissionais liberais** (advogados, médicos, contadores, etc.) terão regime especial.
+  "profissionais_liberais": `**Profissionais liberais** terão regime especial (LC 214/2025).
+
+**Categorias beneficiadas:**
+• Advogados, médicos, contadores
+• Engenheiros, arquitetos, psicólogos
+• Dentistas, veterinários, fisioterapeutas
 
 **Benefícios:**
-• Alíquota reduzida de 30% sobre a alíquota padrão
+• Alíquota reduzida de **30%** sobre a alíquota padrão
 • Regime simplificado de apuração
 • Possibilidade de creditar insumos
 
-**Atenção:** A redução se aplica apenas a serviços prestados para pessoas físicas.`,
+**Atenção:** A redução se aplica a serviços prestados a pessoas físicas.`,
 
   "default": `Olá! Sou o assistente **AtentAI**, especializado na Reforma Tributária de 2026. 🇧🇷
 
