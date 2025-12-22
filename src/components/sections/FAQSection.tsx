@@ -163,7 +163,7 @@ export function FAQSection() {
               Não encontrou o que procurava?
             </p>
             <p className="font-medium">
-              Use nossa <span className="text-primary">IA Tributar</span> para perguntas específicas 
+              Use nossa <span className="text-primary">IA AtentAi</span> para perguntas específicas 
               ou agende uma <span className="text-primary">consulta com contador</span>.
             </p>
           </div>

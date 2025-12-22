@@ -20,7 +20,7 @@ export default function TermosDeUso() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">1. Aceitação dos Termos</h2>
             <p className="text-muted-foreground mb-4">
-              Ao acessar e usar a plataforma TaxSimulator, você concorda em cumprir e estar vinculado a estes Termos de Uso. 
+              Ao acessar e usar a plataforma AtentAi, você concorda em cumprir e estar vinculado a estes Termos de Uso. 
               Se você não concordar com qualquer parte destes termos, não poderá acessar o serviço.
             </p>
           </section>
@@ -28,7 +28,7 @@ export default function TermosDeUso() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">2. Descrição do Serviço</h2>
             <p className="text-muted-foreground mb-4">
-              O TaxSimulator é uma plataforma de simulação tributária que oferece:
+              O AtentAi é uma plataforma de simulação tributária que oferece:
             </p>
             <ul className="list-disc pl-6 text-muted-foreground space-y-2">
               <li>Simulador de impostos com base na Reforma Tributária</li>
@@ -82,7 +82,7 @@ export default function TermosDeUso() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">6. Isenção de Responsabilidade</h2>
             <p className="text-muted-foreground mb-4">
-              O TaxSimulator fornece simulações e informações tributárias para fins educacionais e de planejamento. 
+              O AtentAi fornece simulações e informações tributárias para fins educacionais e de planejamento. 
               <strong> Nossas simulações não substituem consultoria tributária profissional.</strong> 
               Recomendamos sempre consultar um contador ou advogado tributarista para decisões importantes.
             </p>
@@ -91,7 +91,7 @@ export default function TermosDeUso() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">7. Propriedade Intelectual</h2>
             <p className="text-muted-foreground mb-4">
-              Todo o conteúdo, design, código e funcionalidades do TaxSimulator são protegidos por direitos autorais 
+              Todo o conteúdo, design, código e funcionalidades do AtentAi são protegidos por direitos autorais 
               e outras leis de propriedade intelectual. Você não pode copiar, modificar ou distribuir nosso conteúdo 
               sem autorização prévia.
             </p>
@@ -109,8 +109,8 @@ export default function TermosDeUso() {
             <h2 className="text-xl font-semibold mb-4">9. Contato</h2>
             <p className="text-muted-foreground mb-4">
               Para dúvidas sobre estes termos, entre em contato conosco através do e-mail: 
-              <a href="mailto:contato@taxsimulator.com.br" className="text-primary hover:underline ml-1">
-                contato@taxsimulator.com.br
+              <a href="mailto:contato@atentai.com.br" className="text-primary hover:underline ml-1">
+                contato@atentai.com.br
               </a>
             </p>
           </section>

@@ -20,7 +20,7 @@ export default function PoliticaPrivacidade() {
           <section className="mb-8">
             <h2 className="text-xl font-semibold mb-4">1. Introdução</h2>
             <p className="text-muted-foreground mb-4">
-              O TaxSimulator está comprometido em proteger sua privacidade. Esta Política de Privacidade explica 
+              O AtentAi está comprometido em proteger sua privacidade. Esta Política de Privacidade explica 
               como coletamos, usamos, divulgamos e protegemos suas informações pessoais, em conformidade com a 
               Lei Geral de Proteção de Dados (LGPD - Lei nº 13.709/2018).
             </p>
@@ -133,8 +133,8 @@ export default function PoliticaPrivacidade() {
             </ul>
             <p className="text-muted-foreground mt-4">
               Para exercer seus direitos, entre em contato pelo e-mail: 
-              <a href="mailto:privacidade@taxsimulator.com.br" className="text-primary hover:underline ml-1">
-                privacidade@taxsimulator.com.br
+              <a href="mailto:privacidade@atentai.com.br" className="text-primary hover:underline ml-1">
+                privacidade@atentai.com.br
               </a>
             </p>
           </section>
@@ -180,7 +180,7 @@ export default function PoliticaPrivacidade() {
               Encarregado de Proteção de Dados:
             </p>
             <p className="text-muted-foreground">
-              E-mail: <a href="mailto:dpo@taxsimulator.com.br" className="text-primary hover:underline">dpo@taxsimulator.com.br</a>
+              E-mail: <a href="mailto:dpo@atentai.com.br" className="text-primary hover:underline">dpo@atentai.com.br</a>
             </p>
           </section>
 
@@ -190,7 +190,7 @@ export default function PoliticaPrivacidade() {
               Para dúvidas sobre esta política, entre em contato:
             </p>
             <ul className="list-none text-muted-foreground space-y-1">
-              <li>E-mail: <a href="mailto:contato@taxsimulator.com.br" className="text-primary hover:underline">contato@taxsimulator.com.br</a></li>
+              <li>E-mail: <a href="mailto:contato@atentai.com.br" className="text-primary hover:underline">contato@atentai.com.br</a></li>
               <li>Telefone: (11) 3000-0000</li>
             </ul>
           </section>
