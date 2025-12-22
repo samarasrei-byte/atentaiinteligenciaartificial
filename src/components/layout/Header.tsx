@@ -25,12 +25,11 @@ export function Header({ onNavigate }: HeaderProps) {
             onClick={() => onNavigate("hero")}
             className="flex items-center gap-2 group"
           >
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-glow">
-              <span className="text-primary-foreground font-bold text-lg">T</span>
-            </div>
-            <span className="text-xl font-bold">
-              <span className="gradient-text">AtentAi</span>
-            </span>
+            <img 
+              src="/logo.png" 
+              alt="AtentAi" 
+              className="h-10 w-auto"
+            />
           </button>
 
           {/* Desktop Navigation */}

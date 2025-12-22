@@ -35,10 +35,11 @@ export function Footer({ onNavigate }: FooterProps) {
           {/* Brand */}
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-glow">
-                <span className="text-primary-foreground font-bold text-lg">A</span>
-              </div>
-              <span className="text-xl font-bold text-secondary-foreground">AtentAi</span>
+              <img 
+                src="/logo.png" 
+                alt="AtentAi" 
+                className="h-10 w-auto"
+              />
             </div>
             <p className="text-secondary-foreground/70 text-sm mb-6 leading-relaxed">
               O Waze dos Impostos Brasileiros. Simplificamos a Reforma Tributária de 2026 
