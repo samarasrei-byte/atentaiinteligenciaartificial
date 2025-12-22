@@ -9,11 +9,8 @@ import {
   Brain, 
   Calculator, 
   Users, 
-  CreditCard, 
-  LogOut, 
   MessageSquare, 
   FileText,
-  Settings,
   Crown,
   Loader2,
   Building2,
@@ -21,10 +18,16 @@ import {
   MapPin,
   Edit,
   Home,
-  Scale
+  Scale,
+  ArrowUpRight,
+  Sparkles,
+  Zap,
+  BarChart3,
+  Clock,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
+import AppSidebar from '@/components/layout/AppSidebar';
 
 interface Company {
   id: string;
@@ -48,6 +51,7 @@ const Dashboard = () => {
   const [company, setCompany] = useState<Company | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [stats, setStats] = useState({
     simulations: 0,
     aiChats: 0,
@@ -68,7 +72,6 @@ const Dashboard = () => {
 
   const fetchUserData = async () => {
     try {
-      // Fetch company
       const { data: companyData } = await supabase
         .from('companies')
         .select('*')
@@ -82,7 +85,6 @@ const Dashboard = () => {
         setShowOnboarding(true);
       }
 
-      // Fetch subscription
       const { data: subData } = await supabase
         .from('subscriptions')
         .select('*')
@@ -92,7 +94,6 @@ const Dashboard = () => {
       
       setSubscription(subData);
 
-      // Fetch stats
       const [simRes, chatRes, consultRes] = await Promise.all([
         supabase.from('tax_simulations').select('id', { count: 'exact' }).eq('user_id', user!.id),
         supabase.from('ai_chat_messages').select('id', { count: 'exact' }).eq('user_id', user!.id).eq('role', 'user'),
@@ -116,50 +117,30 @@ const Dashboard = () => {
     fetchUserData();
   };
 
-  const handleSignOut = async () => {
-    await signOut();
-    toast({
-      title: 'Até logo!',
-      description: 'Você saiu da sua conta',
-    });
-    navigate('/');
-  };
-
   if (loading || isLoadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  // Show onboarding if no company data
   if (showOnboarding) {
     return <CompanyOnboarding onComplete={handleOnboardingComplete} />;
   }
 
   const getPlanBadge = () => {
-    if (!subscription) return <Badge variant="outline" className="border-slate-500 text-slate-400">Sem Plano</Badge>;
+    if (!subscription) return <Badge variant="outline" className="border-muted-foreground text-muted-foreground">Sem Plano</Badge>;
     
-    const planColors: Record<string, string> = {
-      basic: 'bg-slate-600',
-      ai: 'bg-teal-600',
-      contador: 'bg-blue-600',
-      premium: 'bg-gradient-to-r from-amber-500 to-orange-500',
+    const planConfig: Record<string, { color: string; name: string }> = {
+      basic: { color: 'bg-muted', name: 'Básico' },
+      ai: { color: 'bg-primary', name: 'IA' },
+      contador: { color: 'bg-info', name: 'Contador' },
+      premium: { color: 'bg-gradient-to-r from-accent to-amber-500', name: 'Premium' },
     };
     
-    const planNames: Record<string, string> = {
-      basic: 'Básico',
-      ai: 'IA',
-      contador: 'Contador',
-      premium: 'Premium',
-    };
-    
-    return (
-      <Badge className={`${planColors[subscription.plan_type] || planColors.basic}`}>
-        {planNames[subscription.plan_type] || 'Básico'}
-      </Badge>
-    );
+    const config = planConfig[subscription.plan_type] || planConfig.basic;
+    return <Badge className={config.color}>{config.name}</Badge>;
   };
 
   const formatCurrency = (cents: number) => {
@@ -171,365 +152,279 @@ const Dashboard = () => {
 
   const getCompanyTypeLabel = (type: string) => {
     const types: Record<string, string> = {
-      mei: 'MEI',
-      me: 'ME',
-      epp: 'EPP',
-      ltda: 'LTDA',
-      eireli: 'EIRELI',
-      sa_fechada: 'S.A. Fechada',
-      sa_aberta: 'S.A. Aberta',
-      cooperativa: 'Cooperativa',
+      mei: 'MEI', me: 'ME', epp: 'EPP', ltda: 'LTDA', eireli: 'EIRELI',
+      sa_fechada: 'S.A. Fechada', sa_aberta: 'S.A. Aberta', cooperativa: 'Cooperativa',
     };
     return types[type] || type;
   };
 
   const getTaxRegimeLabel = (regime: string) => {
     const regimes: Record<string, string> = {
-      simples_nacional: 'Simples Nacional',
-      lucro_presumido: 'Lucro Presumido',
-      lucro_real: 'Lucro Real',
-      lucro_arbitrado: 'Lucro Arbitrado',
+      simples_nacional: 'Simples Nacional', lucro_presumido: 'Lucro Presumido',
+      lucro_real: 'Lucro Real', lucro_arbitrado: 'Lucro Arbitrado',
     };
     return regimes[regime] || regime;
   };
 
   const getSectorLabel = (sector: string) => {
     const sectors: Record<string, string> = {
-      comercio: 'Comércio',
-      servicos: 'Serviços',
-      industria: 'Indústria',
-      agronegocio: 'Agronegócio',
-      tecnologia: 'Tecnologia',
-      saude: 'Saúde',
-      educacao: 'Educação',
-      construcao: 'Construção',
-      transporte: 'Transporte',
-      alimentacao: 'Alimentação',
-      outro: 'Outro',
+      comercio: 'Comércio', servicos: 'Serviços', industria: 'Indústria',
+      agronegocio: 'Agronegócio', tecnologia: 'Tecnologia', saude: 'Saúde',
+      educacao: 'Educação', construcao: 'Construção', transporte: 'Transporte',
+      alimentacao: 'Alimentação', outro: 'Outro',
     };
     return sectors[sector] || sector;
   };
 
-  // TEMPORARY: Allow access to all features for testing
-  const hasAccess = true; // Remove this and use subscription checks in production
+  const quickActions = [
+    {
+      icon: MessageSquare,
+      title: 'Chat IA',
+      description: 'Tire dúvidas sobre a Reforma',
+      href: '/ai-chat',
+      gradient: 'from-primary to-teal-400',
+      iconBg: 'bg-primary/10',
+    },
+    {
+      icon: Calculator,
+      title: 'Simulador',
+      description: 'Compare impostos',
+      href: '/simulator',
+      gradient: 'from-cyan-500 to-blue-500',
+      iconBg: 'bg-cyan-500/10',
+    },
+    {
+      icon: Home,
+      title: 'Locação',
+      description: 'Simule PF × PJ',
+      href: '/locacao',
+      gradient: 'from-rose-500 to-pink-500',
+      iconBg: 'bg-rose-500/10',
+      badge: 'Novo',
+    },
+    {
+      icon: Scale,
+      title: 'Comparador',
+      description: 'Compare regimes tributários',
+      href: '/regime-comparator',
+      gradient: 'from-violet-500 to-purple-500',
+      iconBg: 'bg-violet-500/10',
+      badge: 'Novo',
+    },
+  ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Brain className="h-8 w-8 text-teal-400" />
-            <span className="text-2xl font-bold bg-gradient-to-r from-teal-400 to-cyan-300 bg-clip-text text-transparent">
-              AITENTO
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-4">
-            {hasRole('admin') && (
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/admin')}
-                className="text-slate-300 hover:text-white hover:bg-slate-700"
-              >
-                <Settings className="h-4 w-4 mr-2" />
-                Admin
-              </Button>
-            )}
-            {hasRole('contador') && (
-              <Button
-                variant="ghost"
-                onClick={() => navigate('/contador')}
-                className="text-slate-300 hover:text-white hover:bg-slate-700"
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Painel Contador
-              </Button>
-            )}
-            <div className="flex items-center gap-2">
-              <span className="text-slate-300 hidden md:inline">{profile?.full_name || user?.email}</span>
-              {getPlanBadge()}
+    <div className="min-h-screen bg-background flex">
+      <AppSidebar 
+        collapsed={sidebarCollapsed} 
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        variant="user"
+      />
+      
+      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Top Bar */}
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-2xl font-bold text-foreground">
+                Bem-vindo, {profile?.full_name?.split(' ')[0] || 'Usuário'}!
+              </h1>
+              <p className="text-sm text-muted-foreground">
+                Painel de controle da Reforma Tributária
+              </p>
             </div>
-            <Button
-              variant="ghost"
-              onClick={handleSignOut}
-              className="text-slate-300 hover:text-white hover:bg-slate-700"
-            >
-              <LogOut className="h-4 w-4" />
-            </Button>
+            <div className="flex items-center gap-3">
+              {getPlanBadge()}
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => navigate('/pricing')}
+                className="hidden md:flex"
+              >
+                <Crown className="h-4 w-4 mr-2 text-accent" />
+                Upgrade
+              </Button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Welcome & Company Info */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Olá, {profile?.full_name?.split(' ')[0] || 'Usuário'}! 👋
-          </h1>
-          <p className="text-slate-400">
-            Bem-vindo ao seu painel de controle da Reforma Tributária
-          </p>
-        </div>
+        <div className="p-6 space-y-6">
+          {/* Company Card */}
+          {company && (
+            <Card className="bg-card border-border shadow-soft overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
+              <CardHeader className="relative pb-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-primary/10">
+                      <Building2 className="h-7 w-7 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-xl">{company.company_name}</CardTitle>
+                      {company.trade_name && (
+                        <CardDescription>{company.trade_name}</CardDescription>
+                      )}
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowOnboarding(true)}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Edit className="h-4 w-4" />
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="border-primary/50 text-primary">
+                      {getCompanyTypeLabel(company.company_type)}
+                    </Badge>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <FileText className="h-4 w-4 text-info" />
+                    <span className="text-sm">{getTaxRegimeLabel(company.tax_regime)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground">
+                    <TrendingUp className="h-4 w-4 text-success" />
+                    <span className="text-sm">{formatCurrency(company.monthly_revenue_cents)}/mês</span>
+                  </div>
+                  {company.state && (
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <MapPin className="h-4 w-4 text-accent" />
+                      <span className="text-sm">{company.city ? `${company.city}/${company.state}` : company.state}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="mt-4 pt-4 border-t border-border">
+                  <p className="text-sm text-muted-foreground">
+                    Setor: <span className="text-foreground">{getSectorLabel(company.sector)}</span>
+                    {company.employee_count > 0 && (
+                      <> • {company.employee_count} funcionário{company.employee_count > 1 ? 's' : ''}</>
+                    )}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
-        {/* Company Card */}
-        {company && (
-          <Card className="bg-gradient-to-br from-slate-800/80 to-slate-700/50 border-slate-600 mb-8">
-            <CardHeader className="pb-2">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-card border-border shadow-soft">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Simulações</p>
+                    <p className="text-3xl font-bold text-foreground mt-1">{stats.simulations}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-primary/10">
+                    <BarChart3 className="h-6 w-6 text-primary" />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Simulações realizadas</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-card border-border shadow-soft">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Conversas IA</p>
+                    <p className="text-3xl font-bold text-foreground mt-1">{stats.aiChats}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-info/10">
+                    <Sparkles className="h-6 w-6 text-info" />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Mensagens enviadas</p>
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-card border-border shadow-soft">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">Consultorias</p>
+                    <p className="text-3xl font-bold text-foreground mt-1">{stats.consultations}</p>
+                  </div>
+                  <div className="p-3 rounded-xl bg-success/10">
+                    <Users className="h-6 w-6 text-success" />
+                  </div>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2">Sessões com contadores</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Quick Actions */}
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-foreground">Ações Rápidas</h2>
+              <Button variant="ghost" size="sm" className="text-muted-foreground">
+                Ver todos
+                <ArrowUpRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {quickActions.map((action) => {
+                const Icon = action.icon;
+                return (
+                  <Card 
+                    key={action.href}
+                    className="bg-card border-border shadow-soft hover:shadow-medium transition-all duration-300 cursor-pointer group overflow-hidden"
+                    onClick={() => navigate(action.href)}
+                  >
+                    <CardContent className="p-5 relative">
+                      <div className="absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-5 transition-opacity" 
+                           style={{ backgroundImage: `linear-gradient(to bottom right, var(--primary), transparent)` }} />
+                      <div className="flex items-start justify-between mb-3">
+                        <div className={`p-2.5 rounded-lg ${action.iconBg}`}>
+                          <Icon className="h-5 w-5 text-foreground" />
+                        </div>
+                        {action.badge && (
+                          <Badge className="bg-accent text-accent-foreground text-xs">
+                            {action.badge}
+                          </Badge>
+                        )}
+                      </div>
+                      <h3 className="font-semibold text-foreground mb-1 group-hover:text-primary transition-colors">
+                        {action.title}
+                      </h3>
+                      <p className="text-sm text-muted-foreground">{action.description}</p>
+                      <ArrowUpRight className="absolute bottom-4 right-4 h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* CTA Card */}
+          <Card className="bg-gradient-to-br from-primary to-secondary text-primary-foreground overflow-hidden relative">
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/10 to-transparent" />
+            <CardContent className="p-6 relative">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-full bg-teal-500/20">
-                    <Building2 className="h-6 w-6 text-teal-400" />
+                <div className="flex items-center gap-4">
+                  <div className="p-3 rounded-xl bg-white/10">
+                    <Zap className="h-8 w-8" />
                   </div>
                   <div>
-                    <CardTitle className="text-xl text-white">{company.company_name}</CardTitle>
-                    {company.trade_name && (
-                      <CardDescription className="text-slate-400">{company.trade_name}</CardDescription>
-                    )}
+                    <h3 className="text-xl font-bold mb-1">Precisa de ajuda especializada?</h3>
+                    <p className="text-primary-foreground/80">
+                      Conecte-se com contadores especializados em Reforma Tributária
+                    </p>
                   </div>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setShowOnboarding(true)}
-                  className="text-slate-400 hover:text-white"
+                <Button 
+                  onClick={() => navigate('/contadores')}
+                  className="bg-white text-primary hover:bg-white/90 shadow-lg"
                 >
-                  <Edit className="h-4 w-4" />
+                  <Users className="h-4 w-4 mr-2" />
+                  Encontrar Contador
                 </Button>
               </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="border-teal-500/50 text-teal-400">
-                    {getCompanyTypeLabel(company.company_type)}
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-2 text-slate-300">
-                  <FileText className="h-4 w-4 text-cyan-400" />
-                  <span className="text-sm">{getTaxRegimeLabel(company.tax_regime)}</span>
-                </div>
-                <div className="flex items-center gap-2 text-slate-300">
-                  <TrendingUp className="h-4 w-4 text-green-400" />
-                  <span className="text-sm">{formatCurrency(company.monthly_revenue_cents)}/mês</span>
-                </div>
-                {company.state && (
-                  <div className="flex items-center gap-2 text-slate-300">
-                    <MapPin className="h-4 w-4 text-amber-400" />
-                    <span className="text-sm">{company.city ? `${company.city}/${company.state}` : company.state}</span>
-                  </div>
-                )}
-              </div>
-              <div className="mt-4 pt-4 border-t border-slate-600/50">
-                <p className="text-sm text-slate-400">
-                  Setor: <span className="text-slate-300">{getSectorLabel(company.sector)}</span>
-                  {company.employee_count > 0 && (
-                    <> • {company.employee_count} funcionário{company.employee_count > 1 ? 's' : ''}</>
-                  )}
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-slate-300">Simulações</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-teal-400">{stats.simulations}</div>
-              <p className="text-sm text-slate-400">Simulações realizadas</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-slate-300">Conversas IA</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-cyan-400">{stats.aiChats}</div>
-              <p className="text-sm text-slate-400">Mensagens enviadas</p>
-            </CardContent>
-          </Card>
-          
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg text-slate-300">Consultorias</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-3xl font-bold text-blue-400">{stats.consultations}</div>
-              <p className="text-sm text-slate-400">Sessões com contadores</p>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Feature Cards */}
-        <h2 className="text-xl font-semibold text-white mb-4">Recursos Disponíveis</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* AI Chat */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-teal-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/ai-chat')}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <MessageSquare className="h-10 w-10 text-teal-400 group-hover:scale-110 transition-transform" />
-                {hasAccess && (
-                  <Badge className="bg-green-500">Liberado</Badge>
-                )}
-              </div>
-              <CardTitle className="text-xl text-white">Chat com IA</CardTitle>
-              <CardDescription className="text-slate-400">
-                Tire suas dúvidas sobre a Reforma Tributária com nossa IA especializada
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600">
-                Iniciar Conversa
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Tax Simulator */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-cyan-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/simulator')}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <Calculator className="h-10 w-10 text-cyan-400 group-hover:scale-110 transition-transform" />
-                {hasAccess && (
-                  <Badge className="bg-green-500">Liberado</Badge>
-                )}
-              </div>
-              <CardTitle className="text-xl text-white">Simulador de Impostos</CardTitle>
-              <CardDescription className="text-slate-400">
-                Compare seus impostos antes e depois da reforma tributária
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600">
-                Simular Agora
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Contador */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-blue-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/contadores')}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <Users className="h-10 w-10 text-blue-400 group-hover:scale-110 transition-transform" />
-              </div>
-              <CardTitle className="text-xl text-white">Consultar Contador</CardTitle>
-              <CardDescription className="text-slate-400">
-                Agende uma sessão com um contador especializado
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-blue-400">R$ 150/sessão</div>
-              <p className="text-sm text-slate-400">10% vai para a plataforma</p>
-            </CardContent>
-          </Card>
-
-          {/* Locação Imobiliária */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-rose-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/locacao')}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <Home className="h-10 w-10 text-rose-400 group-hover:scale-110 transition-transform" />
-                <Badge className="bg-green-500">Novo</Badge>
-              </div>
-              <CardTitle className="text-xl text-white">Locação Imobiliária</CardTitle>
-              <CardDescription className="text-slate-400">
-                Simule impostos para locação de imóveis (PF × PJ)
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600">
-                Simular Locação
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Comparador de Regimes */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-violet-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/regime-comparator')}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <Scale className="h-10 w-10 text-violet-400 group-hover:scale-110 transition-transform" />
-                <Badge className="bg-green-500">Novo</Badge>
-              </div>
-              <CardTitle className="text-xl text-white">Comparador de Regimes</CardTitle>
-              <CardDescription className="text-slate-400">
-                Compare Simples × Presumido × Lucro Real
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600">
-                Comparar Regimes
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Subscription */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-amber-500 transition-colors cursor-pointer group"
-                onClick={() => navigate('/pricing')}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <Crown className="h-10 w-10 text-amber-400 group-hover:scale-110 transition-transform" />
-              </div>
-              <CardTitle className="text-xl text-white">Assinatura</CardTitle>
-              <CardDescription className="text-slate-400">
-                Gerencie sua assinatura e desbloqueie recursos premium
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {subscription ? (
-                <div className="text-sm text-slate-300">
-                  Plano ativo: <span className="text-amber-400 font-semibold">{subscription.plan_type}</span>
-                </div>
-              ) : (
-                <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
-                  Ver Planos
-                </Button>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Company Settings */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-purple-500 transition-colors cursor-pointer group"
-                onClick={() => setShowOnboarding(true)}>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <Building2 className="h-10 w-10 text-purple-400 group-hover:scale-110 transition-transform" />
-              </div>
-              <CardTitle className="text-xl text-white">Dados da Empresa</CardTitle>
-              <CardDescription className="text-slate-400">
-                Atualize as informações da sua empresa
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button variant="outline" className="w-full border-purple-500/50 text-purple-400 hover:bg-purple-500/10">
-                Editar Dados
-              </Button>
-            </CardContent>
-          </Card>
-
-          {/* Payments */}
-          <Card className="bg-slate-800/50 border-slate-700 hover:border-green-500 transition-colors cursor-pointer group">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CreditCard className="h-10 w-10 text-green-400 group-hover:scale-110 transition-transform" />
-              </div>
-              <CardTitle className="text-xl text-white">Pagamentos</CardTitle>
-              <CardDescription className="text-slate-400">
-                Histórico de pagamentos e faturas
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate-400">
-                Veja seu histórico completo de transações
-              </p>
             </CardContent>
           </Card>
         </div>

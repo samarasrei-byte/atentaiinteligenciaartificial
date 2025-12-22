@@ -363,11 +363,16 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
                 <div className="space-y-2">
                   <Label htmlFor="revenue" className="text-slate-300">Faturamento Mensal Médio *</Label>
                   <div className="relative">
-                    <span className="absolute left-3 top-3 text-slate-400">R$</span>
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 font-medium">R$</span>
                     <Input
                       id="revenue"
-                      value={formData.monthly_revenue_cents > 0 ? (formData.monthly_revenue_cents / 100).toFixed(0) : ''}
-                      onChange={handleRevenueChange}
+                      type="text"
+                      inputMode="numeric"
+                      value={formData.monthly_revenue_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_cents / 100) : ''}
+                      onChange={(e) => {
+                        const value = e.target.value.replace(/\D/g, '');
+                        updateFormData('monthly_revenue_cents', parseInt(value) * 100 || 0);
+                      }}
                       placeholder="0"
                       className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 pl-10"
                     />

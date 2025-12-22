@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import AppSidebar from '@/components/layout/AppSidebar';
 import { 
-  Brain, 
-  ArrowLeft, 
-  Settings,
   Users,
   DollarSign,
   Calculator,
@@ -20,8 +17,14 @@ import {
   Shield,
   Loader2,
   Search,
+  TrendingUp,
+  BarChart3,
+  ArrowUpRight,
+  Activity,
   UserPlus,
-  TrendingUp
+  Settings,
+  Wallet,
+  Zap,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -46,11 +49,13 @@ interface StatsData {
 
 const AdminPanel = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, hasRole, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<UserWithRoles[]>([]);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [stats, setStats] = useState<StatsData>({
     totalUsers: 0,
     totalContadores: 0,
@@ -61,6 +66,7 @@ const AdminPanel = () => {
     totalMessages: 0,
   });
   const [searchTerm, setSearchTerm] = useState('');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
 
   useEffect(() => {
     if (!authLoading) {
@@ -85,7 +91,6 @@ const AdminPanel = () => {
 
   const fetchAdminData = async () => {
     try {
-      // Fetch stats
       const [
         profilesRes,
         contadorRes,
@@ -116,7 +121,6 @@ const AdminPanel = () => {
         totalMessages: messagesRes.count || 0,
       });
 
-      // Fetch users with roles
       const { data: profilesData } = await supabase
         .from('profiles')
         .select('user_id, full_name, email, created_at')
@@ -206,11 +210,11 @@ const AdminPanel = () => {
 
   const getRoleBadge = (role: string) => {
     const roleConfig: Record<string, string> = {
-      admin: 'bg-red-500',
-      contador: 'bg-blue-500',
-      user: 'bg-slate-500',
+      admin: 'bg-destructive text-destructive-foreground',
+      contador: 'bg-info text-info-foreground',
+      user: 'bg-muted text-muted-foreground',
     };
-    return <Badge className={roleConfig[role] || 'bg-slate-500'}>{role}</Badge>;
+    return <Badge className={roleConfig[role] || 'bg-muted'}>{role}</Badge>;
   };
 
   const filteredUsers = users.filter((u) =>
@@ -220,259 +224,242 @@ const AdminPanel = () => {
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
+  const statsCards = [
+    { icon: Users, label: 'Usuários', value: stats.totalUsers, color: 'text-primary', bgColor: 'bg-primary/10' },
+    { icon: Shield, label: 'Contadores', value: stats.totalContadores, color: 'text-info', bgColor: 'bg-info/10' },
+    { icon: TrendingUp, label: 'Assinaturas', value: stats.totalSubscriptions, color: 'text-success', bgColor: 'bg-success/10' },
+    { icon: Activity, label: 'Consultas', value: stats.totalConsultations, color: 'text-accent', bgColor: 'bg-accent/10' },
+    { icon: Wallet, label: 'Receita', value: formatCurrency(stats.totalRevenue), color: 'text-success', bgColor: 'bg-success/10', isLarge: true },
+    { icon: Calculator, label: 'Simulações', value: stats.totalSimulations, color: 'text-info', bgColor: 'bg-info/10' },
+    { icon: MessageSquare, label: 'Mensagens IA', value: stats.totalMessages, color: 'text-primary', bgColor: 'bg-primary/10' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="text-slate-300 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <div className="flex items-center gap-2">
-            <Shield className="h-6 w-6 text-red-400" />
-            <span className="text-xl font-bold text-white">Painel Admin</span>
+    <div className="min-h-screen bg-background flex">
+      <AppSidebar 
+        collapsed={sidebarCollapsed} 
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        variant="admin"
+      />
+      
+      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Top Bar */}
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-destructive/10">
+                <Shield className="h-6 w-6 text-destructive" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Painel Administrativo</h1>
+                <p className="text-sm text-muted-foreground">Gerencie usuários e monitore métricas</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              onClick={() => navigate('/dashboard')}
+            >
+              Voltar ao Dashboard
+            </Button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-teal-400" />
+        <div className="p-6 space-y-6">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-4">
+            {statsCards.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={stat.label} className="bg-card border-border shadow-soft">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                        <Icon className={`h-5 w-5 ${stat.color}`} />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{stat.label}</p>
+                        <p className={`font-bold ${stat.isLarge ? 'text-lg' : 'text-xl'} text-foreground`}>
+                          {stat.value}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+
+          {/* Quick Actions */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <Card className="bg-gradient-to-br from-primary to-primary/80 text-primary-foreground cursor-pointer hover:shadow-lg transition-shadow">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-white/10">
+                  <UserPlus className="h-6 w-6" />
+                </div>
                 <div>
-                  <p className="text-xs text-slate-400">Usuários</p>
-                  <p className="text-xl font-bold text-white">{stats.totalUsers}</p>
+                  <h3 className="font-semibold">Adicionar Contador</h3>
+                  <p className="text-sm opacity-80">Convide um novo contador</p>
+                </div>
+                <ArrowUpRight className="ml-auto h-5 w-5 opacity-60" />
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-info to-info/80 text-info-foreground cursor-pointer hover:shadow-lg transition-shadow">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-white/10">
+                  <BarChart3 className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Ver Relatórios</h3>
+                  <p className="text-sm opacity-80">Análises detalhadas</p>
+                </div>
+                <ArrowUpRight className="ml-auto h-5 w-5 opacity-60" />
+              </CardContent>
+            </Card>
+            
+            <Card className="bg-gradient-to-br from-success to-success/80 text-success-foreground cursor-pointer hover:shadow-lg transition-shadow">
+              <CardContent className="p-5 flex items-center gap-4">
+                <div className="p-3 rounded-xl bg-white/10">
+                  <Settings className="h-6 w-6" />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Configurações</h3>
+                  <p className="text-sm opacity-80">Ajustes do sistema</p>
+                </div>
+                <ArrowUpRight className="ml-auto h-5 w-5 opacity-60" />
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Users Table */}
+          <Card className="bg-card border-border shadow-soft">
+            <CardHeader>
+              <div className="flex items-center justify-between flex-wrap gap-4">
+                <div>
+                  <CardTitle className="text-xl">Gerenciar Usuários</CardTitle>
+                  <CardDescription>Visualize e gerencie roles dos usuários</CardDescription>
+                </div>
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Buscar usuários..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10"
+                  />
                 </div>
               </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <Shield className="h-5 w-5 text-blue-400" />
-                <div>
-                  <p className="text-xs text-slate-400">Contadores</p>
-                  <p className="text-xl font-bold text-white">{stats.totalContadores}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-400" />
-                <div>
-                  <p className="text-xs text-slate-400">Assinaturas</p>
-                  <p className="text-xl font-bold text-white">{stats.totalSubscriptions}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <Users className="h-5 w-5 text-purple-400" />
-                <div>
-                  <p className="text-xs text-slate-400">Consultas</p>
-                  <p className="text-xl font-bold text-white">{stats.totalConsultations}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <DollarSign className="h-5 w-5 text-amber-400" />
-                <div>
-                  <p className="text-xs text-slate-400">Receita</p>
-                  <p className="text-lg font-bold text-white">{formatCurrency(stats.totalRevenue)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <Calculator className="h-5 w-5 text-cyan-400" />
-                <div>
-                  <p className="text-xs text-slate-400">Simulações</p>
-                  <p className="text-xl font-bold text-white">{stats.totalSimulations}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-4">
-              <div className="flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-teal-400" />
-                <div>
-                  <p className="text-xs text-slate-400">Mensagens IA</p>
-                  <p className="text-xl font-bold text-white">{stats.totalMessages}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="users" className="space-y-6">
-          <TabsList className="bg-slate-800/50 border border-slate-700">
-            <TabsTrigger value="users" className="data-[state=active]:bg-red-600">
-              <Users className="h-4 w-4 mr-2" />
-              Usuários
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="data-[state=active]:bg-red-600">
-              <Settings className="h-4 w-4 mr-2" />
-              Configurações
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="users">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle className="text-xl text-white">Gerenciar Usuários</CardTitle>
-                    <CardDescription className="text-slate-400">
-                      Visualize e gerencie roles dos usuários
-                    </CardDescription>
-                  </div>
-                  <div className="relative w-64">
-                    <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input
-                      placeholder="Buscar usuários..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
-                    />
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {filteredUsers.map((u) => (
-                    <div key={u.id} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
-                      <div className="flex-1">
-                        <p className="font-medium text-white">
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                {filteredUsers.map((u) => (
+                  <div 
+                    key={u.id} 
+                    className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border hover:bg-muted/50 transition-colors"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <span className="text-sm font-medium text-primary">
+                          {u.profile?.full_name?.[0] || u.email[0]?.toUpperCase() || 'U'}
+                        </span>
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground">
                           {u.profile?.full_name || 'Sem nome'}
                         </p>
-                        <p className="text-sm text-slate-400">{u.email}</p>
-                        <p className="text-xs text-slate-500">
+                        <p className="text-sm text-muted-foreground">{u.email}</p>
+                        <p className="text-xs text-muted-foreground">
                           Cadastro: {new Date(u.created_at).toLocaleDateString('pt-BR')}
                         </p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <div className="flex gap-1">
-                          {u.roles.map((role) => (
-                            <div key={role} className="group relative">
-                              {getRoleBadge(role)}
-                              {role !== 'user' && (
-                                <button
-                                  onClick={() => handleRemoveRole(u.id, role as 'admin' | 'contador' | 'user')}
-                                  className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity"
-                                >
-                                  ×
-                                </button>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                        <Select onValueChange={(role) => handleAddRole(u.id, role as 'admin' | 'contador' | 'user')}>
-                          <SelectTrigger className="w-[130px] bg-slate-600 border-slate-500 text-white">
-                            <SelectValue placeholder="Adicionar role" />
-                          </SelectTrigger>
-                          <SelectContent className="bg-slate-800 border-slate-700">
-                            {!u.roles.includes('admin') && (
-                              <SelectItem value="admin">Admin</SelectItem>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <div className="flex gap-1.5">
+                        {u.roles.map((role) => (
+                          <div key={role} className="group relative">
+                            {getRoleBadge(role)}
+                            {role !== 'user' && (
+                              <button
+                                onClick={() => handleRemoveRole(u.id, role as 'admin' | 'contador' | 'user')}
+                                className="absolute -top-1 -right-1 w-4 h-4 bg-destructive rounded-full text-destructive-foreground text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                              >
+                                ×
+                              </button>
                             )}
-                            {!u.roles.includes('contador') && (
-                              <SelectItem value="contador">Contador</SelectItem>
-                            )}
-                          </SelectContent>
-                        </Select>
+                          </div>
+                        ))}
+                      </div>
+                      <Select onValueChange={(role) => handleAddRole(u.id, role as 'admin' | 'contador' | 'user')}>
+                        <SelectTrigger className="w-[130px]">
+                          <SelectValue placeholder="Adicionar role" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {!u.roles.includes('admin') && (
+                            <SelectItem value="admin">Admin</SelectItem>
+                          )}
+                          {!u.roles.includes('contador') && (
+                            <SelectItem value="contador">Contador</SelectItem>
+                          )}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Settings Card */}
+          <Card className="bg-card border-border shadow-soft">
+            <CardHeader>
+              <CardTitle className="text-xl">Configurações do Sistema</CardTitle>
+              <CardDescription>Configurações gerais da plataforma AtentAI</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-muted/30 border-border">
+                  <CardContent className="pt-6">
+                    <h3 className="font-semibold text-foreground mb-2">Taxa da Plataforma</h3>
+                    <p className="text-3xl font-bold text-primary">10%</p>
+                    <p className="text-sm text-muted-foreground mt-2">
+                      Porcentagem retida em cada consultoria
+                    </p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-muted/30 border-border">
+                  <CardContent className="pt-6">
+                    <h3 className="font-semibold text-foreground mb-2">Preços Base</h3>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Plano Simulador:</span>
+                        <span className="text-foreground font-medium">R$ 30/mês</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Plano IA:</span>
+                        <span className="text-foreground font-medium">R$ 50/mês</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Plano Premium:</span>
+                        <span className="text-foreground font-medium">R$ 99/mês</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Consultoria:</span>
+                        <span className="text-foreground font-medium">R$ 150/sessão</span>
                       </div>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="settings">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Configurações do Sistema</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Configurações gerais da plataforma AITENTO
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <Card className="bg-slate-700/50 border-slate-600">
-                    <CardContent className="pt-6">
-                      <h3 className="font-semibold text-white mb-2">Taxa da Plataforma</h3>
-                      <p className="text-3xl font-bold text-teal-400">10%</p>
-                      <p className="text-sm text-slate-400 mt-2">
-                        Porcentagem retida em cada consultoria
-                      </p>
-                    </CardContent>
-                  </Card>
-
-                  <Card className="bg-slate-700/50 border-slate-600">
-                    <CardContent className="pt-6">
-                      <h3 className="font-semibold text-white mb-2">Preços Base</h3>
-                      <div className="space-y-2 text-sm">
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Plano Simulador:</span>
-                          <span className="text-white">R$ 30/mês</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Plano IA:</span>
-                          <span className="text-white">R$ 50/mês</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Plano Premium:</span>
-                          <span className="text-white">R$ 99/mês</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-slate-400">Consultoria:</span>
-                          <span className="text-white">R$ 150/sessão</span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-                  <p className="text-amber-400 text-sm">
-                    ⚠️ Para integrar pagamentos reais, é necessário configurar o Stripe.
-                    Entre em contato para ativar o sistema de pagamentos.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  </CardContent>
+                </Card>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
       </main>
     </div>
   );
