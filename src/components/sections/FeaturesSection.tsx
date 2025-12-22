@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Calculator, MessageCircle, Users, BookOpen, Shield, Zap, TrendingUp, Globe } from "lucide-react";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const features = [
   {
@@ -53,11 +54,15 @@ const features = [
 ];
 
 export function FeaturesSection() {
+  const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
+
   return (
-    <section className="py-20 md:py-32 overflow-hidden">
+    <section ref={ref} className="py-20 md:py-32 overflow-hidden">
       <div className="container mx-auto px-4">
         {/* Section Header */}
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-700 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
           <h2 className="text-3xl md:text-5xl font-bold mb-4">
             Tudo que Você Precisa
             <span className="gradient-text"> em um Lugar</span>
@@ -74,8 +79,10 @@ export function FeaturesSection() {
             <Card 
               key={index}
               variant="elevated"
-              className="group hover:-translate-y-2 transition-all duration-300"
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className={`group hover:-translate-y-2 transition-all duration-500 ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: `${index * 100}ms` }}
             >
               <CardContent className="p-6">
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-medium group-hover:scale-110 transition-transform`}>
