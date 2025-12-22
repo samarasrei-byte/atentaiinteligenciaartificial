@@ -36,7 +36,6 @@ import { exportSimulationToPdf } from '@/lib/exportPdf';
 import { exportSimulationToExcel } from '@/lib/exportExcel';
 import { TaxComparisonChart } from '@/components/simulator/TaxComparisonChart';
 import { TransitionTimeline } from '@/components/simulator/TransitionTimeline';
-import { exportSimulationToPdf } from '@/lib/exportPdf';
 
 const Simulator = () => {
   const navigate = useNavigate();
