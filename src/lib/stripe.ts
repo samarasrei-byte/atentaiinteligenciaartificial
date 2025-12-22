@@ -12,13 +12,27 @@ export const STRIPE_PLANS = {
       'Suporte por email',
     ],
   },
+  premium: {
+    name: 'Acesso Premium',
+    priceId: 'price_premium_ai_tributar',
+    productId: 'prod_premium_ai_tributar',
+    price: 5000, // cents (R$50,00)
+    description: 'Desbloqueie todo o potencial da IA Tributar',
+    features: [
+      'Perguntas ilimitadas',
+      'Respostas detalhadas',
+      'Base atualizada 2024',
+      'Suporte prioritário',
+    ],
+    popular: true,
+  },
   pro: {
     name: 'Pro',
     priceId: 'price_1SXl1H3MU3lG84GwhmJxxv5y',
     productId: 'prod_TUkWyKp9XI3k5A',
-    price: 7990, // cents
+    price: 9990, // cents (R$99,90)
     features: [
-      'Tudo do Básico',
+      'Tudo do Premium',
       'Chat com IA ilimitado',
       'Simulador de Locação',
       'Comparador de Regimes',
@@ -26,7 +40,6 @@ export const STRIPE_PLANS = {
       'Exportação Excel',
       'Suporte prioritário',
     ],
-    popular: true,
   },
   enterprise: {
     name: 'Enterprise',
