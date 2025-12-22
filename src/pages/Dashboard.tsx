@@ -67,6 +67,30 @@ const Dashboard = () => {
   useEffect(() => {
     if (user) {
       fetchUserData();
+      
+      // Setup realtime subscriptions for user data
+      const consultationsChannel = supabase
+        .channel('user-consultations')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'consultations', filter: `user_id=eq.${user.id}` },
+          () => fetchUserData()
+        )
+        .subscribe();
+        
+      const subscriptionsChannel = supabase
+        .channel('user-subscriptions')
+        .on(
+          'postgres_changes',
+          { event: '*', schema: 'public', table: 'subscriptions', filter: `user_id=eq.${user.id}` },
+          () => fetchUserData()
+        )
+        .subscribe();
+        
+      return () => {
+        supabase.removeChannel(consultationsChannel);
+        supabase.removeChannel(subscriptionsChannel);
+      };
     }
   }, [user]);
 

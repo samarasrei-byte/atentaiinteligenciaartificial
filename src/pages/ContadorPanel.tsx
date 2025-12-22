@@ -88,6 +88,27 @@ const ContadorPanel = () => {
   useEffect(() => {
     if (user && (hasRole('contador') || hasRole('admin'))) {
       fetchContadorData();
+      
+      // Setup realtime subscription for consultations
+      const channel = supabase
+        .channel('contador-consultations')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'consultations',
+            filter: `contador_id=eq.${user.id}`
+          },
+          () => {
+            fetchContadorData();
+          }
+        )
+        .subscribe();
+        
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
   }, [user, hasRole]);
 

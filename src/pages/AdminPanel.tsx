@@ -86,6 +86,28 @@ const AdminPanel = () => {
   useEffect(() => {
     if (user && hasRole('admin')) {
       fetchAdminData();
+      
+      // Setup realtime subscriptions for admin data
+      const profilesChannel = supabase
+        .channel('admin-profiles')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchAdminData())
+        .subscribe();
+        
+      const subscriptionsChannel = supabase
+        .channel('admin-subscriptions')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, () => fetchAdminData())
+        .subscribe();
+        
+      const consultationsChannel = supabase
+        .channel('admin-consultations')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'consultations' }, () => fetchAdminData())
+        .subscribe();
+        
+      return () => {
+        supabase.removeChannel(profilesChannel);
+        supabase.removeChannel(subscriptionsChannel);
+        supabase.removeChannel(consultationsChannel);
+      };
     }
   }, [user, hasRole]);
 
