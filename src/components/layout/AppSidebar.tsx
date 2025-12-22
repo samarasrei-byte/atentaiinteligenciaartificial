@@ -144,14 +144,14 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
           {!collapsed && (
             <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="AtentAI" className="h-10 w-auto object-contain" />
+              <img src="/logo-atentai.png" alt="AtentAI" className="h-12 w-auto object-contain" />
               <span className="text-lg font-bold text-white">
                 AtentAI
               </span>
             </div>
           )}
           {collapsed && (
-            <img src="/logo.png" alt="AtentAI" className="h-8 w-8 mx-auto object-contain" />
+            <img src="/logo-atentai.png" alt="AtentAI" className="h-10 w-10 mx-auto object-contain" />
           )}
           <Button
             variant="ghost"
