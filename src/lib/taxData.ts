@@ -82,17 +82,18 @@ export const brazilianStates = [
   { value: "TO", label: "Tocantins" },
 ];
 
-// Alíquotas do Imposto Seletivo por setor
+// Alíquotas do Imposto Seletivo por setor (LC 214/2025)
+// Valores estimados de referência
 export const selectiveTaxRates: Record<string, number> = {
-  comercio: 3,
+  comercio: 0, // Comércio geral não é tributado pelo IS
   servicos: 0,
-  industria: 5,
+  industria: 3, // Depende do produto
   tecnologia: 0,
   alimentacao: 0, // Cesta básica isenta
   saude: 0, // Medicamentos isentos
   agronegocio: 0, // Incentivo ao agro
-  construcao: 2,
-  transporte: 3,
+  construcao: 0,
+  transporte: 0, // Combustíveis terão regime especial
   educacao: 0, // Educação isenta
 };
 
@@ -149,12 +150,16 @@ export function calculateTaxes(input: SimulationInput): SimulationResult {
   const ipi = revenue * (sectorData.ipi / 100) * multiplier;
   const totalBefore = icms + iss + pis + cofins + ipi;
 
-  // Cálculo com reforma (IBS 17.7%, CBS 8.8%, IS variável por setor)
+  // Cálculo com reforma (LC 214/2025)
+  // Alíquota de referência combinada: aproximadamente 26,5% a 28%
+  // IBS (estadual/municipal): 17,7% | CBS (federal): 8,8%
+  // Total padrão: 26,5%
   const ibsRate = 17.7;
   const cbsRate = 8.8;
   const isRate = selectiveTaxRates[sector] || 0;
 
-  // Aplicando não-cumulatividade (créditos conforme regime tributário)
+  // Aplicando não-cumulatividade plena (créditos conforme regime tributário)
+  // A reforma prevê creditamento amplo
   const ibs = revenue * (ibsRate / 100) * multiplier * (1 - creditFactor);
   const cbs = revenue * (cbsRate / 100) * multiplier * (1 - creditFactor);
   const is = revenue * (isRate / 100) * multiplier;

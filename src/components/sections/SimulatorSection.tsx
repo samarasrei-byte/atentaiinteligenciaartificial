@@ -1,11 +1,13 @@
 import { useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, TrendingUp, TrendingDown, Minus, RefreshCw, Download, MapPin } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Minus, RefreshCw, Download, MapPin, Lock, Sparkles } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   sectors,
   companyTypes,
@@ -18,8 +20,11 @@ import {
   SimulationResult,
 } from "@/lib/taxData";
 import { exportSimulationToPdf } from "@/lib/exportPdf";
+import { STRIPE_PLANS, formatPrice } from "@/lib/stripe";
 
 export function SimulatorSection() {
+  const navigate = useNavigate();
+  const { subscription, user } = useAuth();
   const { toast } = useToast();
   const resultRef = useRef<HTMLDivElement>(null);
   const [revenue, setRevenue] = useState("");
@@ -29,6 +34,9 @@ export function SimulatorSection() {
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Verifica se tem plano ativo
+  const hasAccess = subscription.subscribed;
 
   const selectedSector = sectors.find(s => s.value === sector);
   const showStateSelector = selectedSector && selectedSector.icms > 0;
@@ -242,9 +250,41 @@ export function SimulatorSection() {
 
                 {/* Results */}
                 {result && (
-                  <div ref={resultRef} className="mt-8 space-y-6 animate-slide-up">
+                  <div ref={resultRef} className="mt-8 space-y-6 animate-slide-up relative">
+                    {/* Paywall Overlay - shows when user has no access */}
+                    {!hasAccess && (
+                      <div className="absolute inset-0 z-20 flex items-center justify-center">
+                        <div className="absolute inset-0 bg-background/80 backdrop-blur-sm rounded-lg" />
+                        <Card className="relative z-30 max-w-md mx-4 border-2 border-primary/20 shadow-xl">
+                          <CardContent className="p-6 text-center space-y-4">
+                            <div className="w-16 h-16 mx-auto rounded-full bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center shadow-gold">
+                              <Lock className="w-8 h-8 text-accent-foreground" />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-foreground mb-2">Resultado Bloqueado</h3>
+                              <p className="text-sm text-muted-foreground">
+                                Assine um plano para ver o resultado completo da simulação e comparar os impostos antes e depois da reforma.
+                              </p>
+                            </div>
+                            <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                              <Sparkles className="w-4 h-4 text-accent" />
+                              <span>A partir de {formatPrice(STRIPE_PLANS.simulator.price)}/mês</span>
+                            </div>
+                            <Button 
+                              variant="accent" 
+                              className="w-full"
+                              onClick={() => navigate('/pricing')}
+                            >
+                              <Lock className="w-4 h-4" />
+                              Desbloquear Agora
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      </div>
+                    )}
+
                     {/* Comparison Grid */}
-                    <div className="grid md:grid-cols-2 gap-6">
+                    <div className={`grid md:grid-cols-2 gap-6 ${!hasAccess ? 'opacity-20 blur-sm pointer-events-none select-none' : ''}`}>
                       {/* Before */}
                       <Card variant="outlined" className="p-6">
                         <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
@@ -289,7 +329,7 @@ export function SimulatorSection() {
                       <Card variant="premium" className="p-6">
                         <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
                           <span className="w-3 h-3 rounded-full bg-primary" />
-                          Reforma 2026
+                          Reforma 2026 (LC 214/2025)
                         </h4>
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
@@ -315,7 +355,7 @@ export function SimulatorSection() {
                     </div>
 
                     {/* Summary */}
-                    <Card variant="gradient" className="p-6">
+                    <Card variant="gradient" className={`p-6 ${!hasAccess ? 'opacity-20 blur-sm pointer-events-none select-none' : ''}`}>
                       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="text-center md:text-left">
                           <p className="text-sm text-muted-foreground mb-1">Diferença Estimada</p>
@@ -354,9 +394,9 @@ export function SimulatorSection() {
                     </Card>
 
                     {/* Disclaimer */}
-                    <p className="text-xs text-muted-foreground text-center">
-                      * Simulação baseada em estimativas e alíquotas de referência. Valores reais podem variar 
-                      de acordo com regimes especiais, créditos tributários e regulamentações específicas.
+                    <p className={`text-xs text-muted-foreground text-center ${!hasAccess ? 'opacity-20' : ''}`}>
+                      * Simulação baseada na LC 214/2025 e alíquotas de referência (IBS 17,7% + CBS 8,8% = 26,5%). 
+                      Valores reais podem variar de acordo com regimes especiais, créditos tributários e regulamentações específicas.
                     </p>
                   </div>
                 )}
