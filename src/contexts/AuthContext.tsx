@@ -75,7 +75,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const checkSubscription = async () => {
-    if (!session) {
+    // Get fresh session to ensure we have valid token
+    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    
+    if (!currentSession?.access_token) {
       setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
       return;
     }
