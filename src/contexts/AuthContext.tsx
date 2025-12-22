@@ -1,8 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { PlanType } from '@/lib/stripe';
 
 type AppRole = 'admin' | 'contador' | 'user';
+
+interface SubscriptionInfo {
+  subscribed: boolean;
+  plan: PlanType | null;
+  subscriptionEnd: string | null;
+}
 
 interface AuthContextType {
   user: User | null;
@@ -10,10 +17,12 @@ interface AuthContextType {
   loading: boolean;
   roles: AppRole[];
   profile: any | null;
+  subscription: SubscriptionInfo;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   hasRole: (role: AppRole) => boolean;
+  checkSubscription: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,6 +41,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [loading, setLoading] = useState(true);
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [profile, setProfile] = useState<any | null>(null);
+  const [subscription, setSubscription] = useState<SubscriptionInfo>({
+    subscribed: false,
+    plan: null,
+    subscriptionEnd: null,
+  });
 
   const fetchUserData = async (userId: string) => {
     try {
@@ -60,9 +74,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const checkSubscription = async () => {
+    if (!session) {
+      setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
+      return;
+    }
+
+    try {
+      const { data, error } = await supabase.functions.invoke('check-subscription');
+      
+      if (error) {
+        console.error('Error checking subscription:', error);
+        return;
+      }
+
+      if (data) {
+        setSubscription({
+          subscribed: data.subscribed || false,
+          plan: data.plan || null,
+          subscriptionEnd: data.subscription_end || null,
+        });
+      }
+    } catch (error) {
+      console.error('Error checking subscription:', error);
+    }
+  };
+
   useEffect(() => {
     // Set up auth state listener FIRST
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
@@ -75,6 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setRoles([]);
           setProfile(null);
+          setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
         }
         setLoading(false);
       }
@@ -91,8 +132,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setLoading(false);
     });
 
-    return () => subscription.unsubscribe();
+    return () => authSubscription.unsubscribe();
   }, []);
+
+  // Check subscription when session changes
+  useEffect(() => {
+    if (session) {
+      checkSubscription();
+    }
+  }, [session]);
+
+  // Refresh subscription periodically (every minute)
+  useEffect(() => {
+    if (!session) return;
+    
+    const interval = setInterval(() => {
+      checkSubscription();
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [session]);
 
   const signUp = async (email: string, password: string, fullName: string) => {
     const redirectUrl = `${window.location.origin}/`;
@@ -126,6 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setRoles([]);
     setProfile(null);
+    setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
   };
 
   const hasRole = (role: AppRole) => roles.includes(role);
@@ -137,10 +197,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       loading,
       roles,
       profile,
+      subscription,
       signUp,
       signIn,
       signOut,
       hasRole,
+      checkSubscription,
     }}>
       {children}
     </AuthContext.Provider>

@@ -1,6 +1,7 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -8,67 +9,41 @@ import {
   Brain, 
   ArrowLeft, 
   Check,
-  Calculator,
-  MessageSquare,
-  Users,
   Crown,
-  Loader2
+  Loader2,
+  Sparkles,
+  Settings
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-
-const plans = [
-  {
-    id: 'simulator',
-    name: 'Simulador',
-    price: 30,
-    description: 'Acesso ao simulador de impostos',
-    features: [
-      'Simulações ilimitadas',
-      'Comparativo antes/depois',
-      'Relatórios detalhados',
-      'Histórico de simulações',
-    ],
-    icon: Calculator,
-    color: 'from-cyan-500 to-blue-500',
-  },
-  {
-    id: 'ai',
-    name: 'IA Tributária',
-    price: 50,
-    description: 'Chat com IA especializada',
-    features: [
-      'Chat ilimitado com IA',
-      'Respostas personalizadas',
-      'Base de conhecimento atualizada',
-      'Histórico de conversas',
-    ],
-    icon: MessageSquare,
-    color: 'from-teal-500 to-cyan-500',
-    popular: true,
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    price: 99,
-    description: 'Acesso completo à plataforma',
-    features: [
-      'Tudo do Simulador',
-      'Tudo da IA Tributária',
-      '1 consultoria grátis/mês',
-      'Suporte prioritário',
-      'Atualizações exclusivas',
-    ],
-    icon: Crown,
-    color: 'from-amber-500 to-orange-500',
-  },
-];
+import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 
 const Pricing = () => {
   const navigate = useNavigate();
-  const { user, loading } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { user, loading, subscription, checkSubscription } = useAuth();
   const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const [isManaging, setIsManaging] = useState(false);
 
-  const handleSubscribe = (planId: string) => {
+  // Check for checkout result
+  useEffect(() => {
+    const checkoutResult = searchParams.get('checkout');
+    if (checkoutResult === 'success') {
+      toast({
+        title: 'Assinatura realizada!',
+        description: 'Sua assinatura foi ativada com sucesso.',
+      });
+      checkSubscription();
+    } else if (checkoutResult === 'canceled') {
+      toast({
+        variant: 'destructive',
+        title: 'Checkout cancelado',
+        description: 'O processo de checkout foi cancelado.',
+      });
+    }
+  }, [searchParams]);
+
+  const handleSubscribe = async (planKey: PlanType) => {
     if (!user) {
       toast({
         title: 'Faça login primeiro',
@@ -78,11 +53,53 @@ const Pricing = () => {
       return;
     }
 
-    // For now, show a message that Stripe integration is coming
-    toast({
-      title: 'Em breve!',
-      description: 'O sistema de pagamentos será integrado em breve com Stripe.',
-    });
+    setIsLoading(planKey);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId: STRIPE_PLANS[planKey].priceId },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao iniciar checkout',
+        description: error.message || 'Tente novamente mais tarde',
+      });
+    } finally {
+      setIsLoading(null);
+    }
+  };
+
+  const handleManageSubscription = async () => {
+    if (!user) return;
+
+    setIsManaging(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal');
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error: any) {
+      console.error('Portal error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao abrir portal',
+        description: error.message || 'Tente novamente mais tarde',
+      });
+    } finally {
+      setIsManaging(false);
+    }
   };
 
   if (loading) {
@@ -93,23 +110,43 @@ const Pricing = () => {
     );
   }
 
+  const planEntries = Object.entries(STRIPE_PLANS) as [PlanType, typeof STRIPE_PLANS[PlanType]][];
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
       {/* Header */}
       <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate(user ? '/dashboard' : '/')}
-            className="text-slate-300 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <div className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-teal-400" />
-            <span className="text-xl font-bold text-white">Planos AITENTO</span>
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate(user ? '/dashboard' : '/')}
+              className="text-slate-300 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+            <div className="flex items-center gap-2">
+              <Brain className="h-6 w-6 text-teal-400" />
+              <span className="text-xl font-bold text-white">Planos AITENTO</span>
+            </div>
           </div>
+          
+          {subscription.subscribed && (
+            <Button
+              variant="outline"
+              onClick={handleManageSubscription}
+              disabled={isManaging}
+              className="border-slate-600 text-slate-300 hover:text-white"
+            >
+              {isManaging ? (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              ) : (
+                <Settings className="h-4 w-4 mr-2" />
+              )}
+              Gerenciar Assinatura
+            </Button>
+          )}
         </div>
       </header>
 
@@ -122,80 +159,103 @@ const Pricing = () => {
           <p className="text-xl text-slate-400 max-w-2xl mx-auto">
             Desbloqueie o poder da IA e consultoria especializada para dominar a Reforma Tributária
           </p>
+          
+          {subscription.subscribed && subscription.plan && (
+            <div className="mt-6 inline-flex items-center gap-2 bg-teal-500/20 text-teal-400 px-4 py-2 rounded-full">
+              <Crown className="h-5 w-5" />
+              <span>Você está no plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
+            </div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <Card 
-              key={plan.id}
-              className={`relative bg-slate-800/50 border-slate-700 hover:border-slate-500 transition-all ${
-                plan.popular ? 'ring-2 ring-teal-500 scale-105' : ''
-              }`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-500">
-                  Mais Popular
-                </Badge>
-              )}
-              <CardHeader className="text-center pt-8">
-                <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${plan.color} flex items-center justify-center mx-auto mb-4`}>
-                  <plan.icon className="h-8 w-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
-                <CardDescription className="text-slate-400">{plan.description}</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="text-center">
-                  <span className="text-4xl font-bold text-white">R$ {plan.price}</span>
-                  <span className="text-slate-400">/mês</span>
-                </div>
+          {planEntries.map(([key, plan]) => {
+            const isCurrentPlan = subscription.plan === key;
+            const isPlanPopular = 'popular' in plan && plan.popular;
+            
+            return (
+              <Card 
+                key={key}
+                className={`relative bg-slate-800/50 border-slate-700 hover:border-slate-500 transition-all ${
+                  isPlanPopular ? 'ring-2 ring-teal-500 scale-105' : ''
+                } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
+              >
+                {isPlanPopular && !isCurrentPlan && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-teal-500">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    Mais Popular
+                  </Badge>
+                )}
+                {isCurrentPlan && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500">
+                    <Check className="h-3 w-3 mr-1" />
+                    Seu Plano
+                  </Badge>
+                )}
+                <CardHeader className="text-center pt-8">
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
+                    key === 'basic' ? 'bg-gradient-to-br from-cyan-500 to-blue-500' :
+                    key === 'pro' ? 'bg-gradient-to-br from-teal-500 to-cyan-500' :
+                    'bg-gradient-to-br from-amber-500 to-orange-500'
+                  }`}>
+                    <Crown className="h-8 w-8 text-white" />
+                  </div>
+                  <CardTitle className="text-2xl text-white">{plan.name}</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    {key === 'basic' && 'Para começar sua jornada'}
+                    {key === 'pro' && 'Para profissionais e empresas'}
+                    {key === 'enterprise' && 'Solução completa para grandes empresas'}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="text-center">
+                    <span className="text-4xl font-bold text-white">{formatPrice(plan.price)}</span>
+                    <span className="text-slate-400">/mês</span>
+                  </div>
 
-                <ul className="space-y-3">
-                  {plan.features.map((feature, index) => (
-                    <li key={index} className="flex items-center gap-2 text-slate-300">
-                      <Check className="h-5 w-5 text-teal-400 flex-shrink-0" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
+                  <ul className="space-y-3">
+                    {plan.features.map((feature, index) => (
+                      <li key={index} className="flex items-center gap-2 text-slate-300">
+                        <Check className="h-5 w-5 text-teal-400 flex-shrink-0" />
+                        <span className="text-sm">{feature}</span>
+                      </li>
+                    ))}
+                  </ul>
 
-                <Button
-                  onClick={() => handleSubscribe(plan.id)}
-                  className={`w-full bg-gradient-to-r ${plan.color} hover:opacity-90`}
-                >
-                  Assinar Agora
-                </Button>
-              </CardContent>
-            </Card>
-          ))}
+                  <Button
+                    onClick={() => handleSubscribe(key)}
+                    disabled={isLoading === key || isCurrentPlan}
+                    className={`w-full ${
+                      isCurrentPlan 
+                        ? 'bg-green-600 cursor-not-allowed' 
+                        : key === 'basic' ? 'bg-gradient-to-r from-cyan-500 to-blue-500' :
+                          key === 'pro' ? 'bg-gradient-to-r from-teal-500 to-cyan-500' :
+                          'bg-gradient-to-r from-amber-500 to-orange-500'
+                    } hover:opacity-90`}
+                  >
+                    {isLoading === key ? (
+                      <>
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        Processando...
+                      </>
+                    ) : isCurrentPlan ? (
+                      'Plano Atual'
+                    ) : subscription.subscribed ? (
+                      'Trocar Plano'
+                    ) : (
+                      'Assinar Agora'
+                    )}
+                  </Button>
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
 
-        {/* Consultation Section */}
-        <div className="mt-16 max-w-3xl mx-auto">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardHeader className="text-center">
-              <Users className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-              <CardTitle className="text-2xl text-white">Consultoria com Contador</CardTitle>
-              <CardDescription className="text-slate-400">
-                Precisa de ajuda especializada? Agende uma sessão com um contador certificado
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-center space-y-4">
-              <div>
-                <span className="text-4xl font-bold text-white">R$ 150</span>
-                <span className="text-slate-400">/sessão</span>
-              </div>
-              <p className="text-sm text-slate-400">
-                10% do valor vai para a plataforma, 90% para o contador
-              </p>
-              <Button
-                onClick={() => navigate('/contadores')}
-                className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:opacity-90"
-              >
-                Ver Contadores Disponíveis
-              </Button>
-            </CardContent>
-          </Card>
+        {/* Info */}
+        <div className="mt-12 text-center text-slate-400 text-sm">
+          <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
+          <p className="mt-2">Dúvidas? Entre em contato com nosso suporte.</p>
         </div>
       </main>
     </div>
