@@ -6,7 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
+import { useDailyQuestionLimit } from '@/hooks/useDailyQuestionLimit';
+import { DAILY_QUESTION_LIMIT } from '@/lib/stripe';
 import { 
   Brain, 
   Send, 
@@ -14,7 +17,9 @@ import {
   Loader2,
   User,
   Bot,
-  Lock
+  Lock,
+  Crown,
+  AlertCircle
 } from 'lucide-react';
 
 interface Message {
@@ -26,13 +31,13 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`;
 
 const AIChat = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const { toast } = useToast();
+  const { questionsUsed, questionsRemaining, canAsk, isPremium, loading: limitLoading, incrementUsage, refreshUsage } = useDailyQuestionLimit();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,7 +48,6 @@ const AIChat = () => {
 
   useEffect(() => {
     if (user) {
-      checkAccess();
       loadChatHistory();
     }
   }, [user]);
@@ -53,22 +57,6 @@ const AIChat = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages]);
-
-  const checkAccess = async () => {
-    // TEMPORARY: Allow access for testing
-    setHasAccess(true);
-    return;
-    
-    // Production code (uncomment when ready):
-    // const { data } = await supabase
-    //   .from('subscriptions')
-    //   .select('*')
-    //   .eq('user_id', user!.id)
-    //   .eq('status', 'active')
-    //   .in('plan_type', ['ai', 'premium'])
-    //   .single();
-    // setHasAccess(!!data);
-  };
 
   const loadChatHistory = async () => {
     const { data } = await supabase
@@ -94,12 +82,27 @@ const AIChat = () => {
   const sendMessage = async () => {
     if (!input.trim() || isLoading) return;
 
+    // Check daily limit for non-premium users
+    if (!isPremium && !canAsk) {
+      toast({
+        variant: 'destructive',
+        title: 'Limite diário atingido',
+        description: `Você usou todas as ${DAILY_QUESTION_LIMIT} perguntas de hoje. Assine o Premium para perguntas ilimitadas.`,
+      });
+      return;
+    }
+
     const userMessage = input.trim();
     setInput('');
     
     const newMessages: Message[] = [...messages, { role: 'user', content: userMessage }];
     setMessages(newMessages);
     await saveMessage('user', userMessage);
+
+    // Increment usage for non-premium users
+    if (!isPremium) {
+      await incrementUsage();
+    }
     
     setIsLoading(true);
     let assistantContent = '';
@@ -186,39 +189,14 @@ const AIChat = () => {
     }
   };
 
-  if (authLoading || hasAccess === null) {
+  const handleUpgrade = () => {
+    navigate('/plano/atento-ai');
+  };
+
+  if (authLoading || limitLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
         <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
-      </div>
-    );
-  }
-
-  if (!hasAccess) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 flex items-center justify-center p-4">
-        <Card className="max-w-md bg-slate-800/50 border-slate-700 p-8 text-center">
-          <Lock className="h-16 w-16 text-amber-400 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-white mb-2">Acesso Premium</h2>
-          <p className="text-slate-400 mb-6">
-            Você precisa de uma assinatura ativa para usar o Chat com IA.
-          </p>
-          <div className="space-y-3">
-            <Button 
-              onClick={() => navigate('/pricing')}
-              className="w-full bg-gradient-to-r from-teal-500 to-cyan-500"
-            >
-              Ver Planos
-            </Button>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/dashboard')}
-              className="w-full text-slate-400 hover:text-white"
-            >
-              Voltar ao Dashboard
-            </Button>
-          </div>
-        </Card>
       </div>
     );
   }
@@ -227,21 +205,87 @@ const AIChat = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 flex flex-col">
       {/* Header */}
       <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="text-slate-300 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <div className="flex items-center gap-2">
-            <Brain className="h-6 w-6 text-teal-400" />
-            <span className="text-xl font-bold text-white">Chat AITENTO</span>
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              variant="ghost"
+              onClick={() => navigate('/dashboard')}
+              className="text-slate-300 hover:text-white"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
+            <div className="flex items-center gap-2">
+              <Brain className="h-6 w-6 text-teal-400" />
+              <span className="text-xl font-bold text-white">Atento AI</span>
+            </div>
+          </div>
+
+          {/* Usage Badge */}
+          <div className="flex items-center gap-3">
+            {isPremium ? (
+              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                <Crown className="h-3 w-3 mr-1" />
+                Premium
+              </Badge>
+            ) : (
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className={`text-slate-300 border-slate-600 ${questionsRemaining === 0 ? 'border-red-500 text-red-400' : ''}`}>
+                  {questionsRemaining}/{DAILY_QUESTION_LIMIT} perguntas restantes
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleUpgrade}
+                  className="text-teal-400 hover:text-teal-300"
+                >
+                  <Crown className="h-4 w-4 mr-1" />
+                  Upgrade
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </header>
+
+      {/* Limit Warning */}
+      {!isPremium && questionsRemaining <= 2 && questionsRemaining > 0 && (
+        <div className="bg-amber-500/10 border-b border-amber-500/20 px-4 py-2">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2 text-amber-400 text-sm">
+              <AlertCircle className="h-4 w-4" />
+              <span>Você tem apenas {questionsRemaining} pergunta{questionsRemaining !== 1 ? 's' : ''} restante{questionsRemaining !== 1 ? 's' : ''} hoje</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleUpgrade}
+              className="text-amber-400 hover:text-amber-300"
+            >
+              Fazer Upgrade
+            </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Limit Reached Warning */}
+      {!isPremium && questionsRemaining === 0 && (
+        <div className="bg-red-500/10 border-b border-red-500/20 px-4 py-3">
+          <div className="container mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2 text-red-400">
+              <Lock className="h-4 w-4" />
+              <span className="text-sm">Limite diário atingido. Assine o Premium para continuar.</span>
+            </div>
+            <Button
+              size="sm"
+              onClick={handleUpgrade}
+              className="bg-gradient-to-r from-teal-500 to-cyan-500"
+            >
+              Desbloquear Perguntas Ilimitadas
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Chat Area */}
       <div className="flex-1 container mx-auto px-4 py-4 flex flex-col max-w-4xl">
@@ -251,7 +295,7 @@ const AIChat = () => {
               <div className="text-center py-8">
                 <Brain className="h-16 w-16 text-teal-400 mx-auto mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold text-white mb-2">
-                  Olá! Sou o AITENTO
+                  Olá! Sou o Atento AI
                 </h3>
                 <p className="text-slate-400 max-w-lg mx-auto mb-6">
                   Sou especialista em legislação tributária brasileira. Posso ajudar com a Reforma Tributária 2026,
@@ -270,7 +314,8 @@ const AIChat = () => {
                     <button
                       key={i}
                       onClick={() => { setInput(suggestion); }}
-                      className="text-left p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600 hover:border-teal-500/50 transition-all text-sm text-slate-300 hover:text-white"
+                      disabled={!canAsk && !isPremium}
+                      className="text-left p-3 rounded-lg bg-slate-700/50 hover:bg-slate-600/50 border border-slate-600 hover:border-teal-500/50 transition-all text-sm text-slate-300 hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {suggestion}
                     </button>
@@ -325,13 +370,13 @@ const AIChat = () => {
             <Input
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Digite sua pergunta sobre a Reforma Tributária..."
+              placeholder={canAsk || isPremium ? "Digite sua pergunta sobre a Reforma Tributária..." : "Limite diário atingido. Faça upgrade para continuar."}
               className="flex-1 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-              disabled={isLoading}
+              disabled={isLoading || (!canAsk && !isPremium)}
             />
             <Button
               type="submit"
-              disabled={!input.trim() || isLoading}
+              disabled={!input.trim() || isLoading || (!canAsk && !isPremium)}
               className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
             >
               <Send className="h-4 w-4" />

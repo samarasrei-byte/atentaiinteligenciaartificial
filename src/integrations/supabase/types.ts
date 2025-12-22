@@ -191,6 +191,33 @@ export type Database = {
         }
         Relationships: []
       }
+      daily_question_usage: {
+        Row: {
+          created_at: string
+          id: string
+          question_count: number
+          updated_at: string
+          usage_date: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          question_count?: number
+          updated_at?: string
+          usage_date?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          question_count?: number
+          updated_at?: string
+          usage_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_cents: number
@@ -373,12 +400,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      get_daily_question_count: { Args: { p_user_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
         Returns: boolean
+      }
+      increment_daily_questions: {
+        Args: { p_user_id: string }
+        Returns: number
       }
     }
     Enums: {

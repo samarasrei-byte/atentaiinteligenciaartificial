@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, Bot, User, Loader2, Lock, Sparkles, CheckCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
+import { STRIPE_PLANS, formatPrice, DAILY_QUESTION_LIMIT } from "@/lib/stripe";
 
 interface Message {
   role: "user" | "assistant";
@@ -95,7 +99,7 @@ Esta é uma das maiores conquistas sociais da reforma!`,
 
 **Atenção:** A redução se aplica apenas a serviços prestados para pessoas físicas.`,
 
-  "default": `Olá! Sou sua assistente especializada na **Reforma Tributária de 2026**. 🇧🇷
+  "default": `Olá! Sou o **Atento AI**, seu assistente especializado na Reforma Tributária de 2026. 🇧🇷
 
 Posso te ajudar com informações sobre:
 • **IBS e CBS** - Os novos tributos
@@ -156,14 +160,19 @@ Posso ajudar com mais alguma dúvida específica?`;
 };
 
 export function AISection() {
+  const navigate = useNavigate();
+  const { user, subscription } = useAuth();
+  const { toast } = useToast();
   const [messages, setMessages] = useState<Message[]>([
     { role: "assistant", content: knowledgeBase["default"] }
   ]);
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const [hasAccess, setHasAccess] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { toast } = useToast();
+
+  const isPremium = subscription.subscribed && subscription.plan === 'premium';
+  const plan = STRIPE_PLANS.premium;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -191,12 +200,38 @@ export function AISection() {
     setIsTyping(false);
   };
 
-  const handlePurchase = () => {
-    toast({
-      title: "Acesso Desbloqueado! 🎉",
-      description: "Agora você tem acesso ilimitado à IA AtentAi por 30 dias.",
-    });
-    setHasAccess(true);
+  const handlePurchase = async () => {
+    if (!user) {
+      toast({
+        title: "Faça login primeiro",
+        description: "Você precisa estar logado para assinar o plano premium",
+      });
+      navigate('/auth');
+      return;
+    }
+
+    setIsCheckingOut(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout', {
+        body: { priceId: plan.priceId },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao iniciar checkout',
+        description: error.message || 'Tente novamente mais tarde',
+      });
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   const features = [
@@ -221,7 +256,7 @@ export function AISection() {
               <span className="gradient-text"> Instantaneamente</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Nossa IA foi treinada com toda a legislação da Reforma Tributária. 
+              O Atento AI foi treinado com toda a legislação da Reforma Tributária. 
               Pergunte qualquer coisa sobre IBS, CBS, IS, transição e muito mais.
             </p>
           </div>
@@ -235,7 +270,7 @@ export function AISection() {
                     <Bot className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">Assistente TRIBUTAR</CardTitle>
+                    <CardTitle className="text-lg">Atento AI</CardTitle>
                     <CardDescription className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
                       Online • Pronta para ajudar
@@ -329,9 +364,9 @@ export function AISection() {
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-4 shadow-gold">
                   <Sparkles className="w-6 h-6 text-accent-foreground" />
                 </div>
-                <CardTitle>Acesso Premium</CardTitle>
+                <CardTitle>Atento AI Premium</CardTitle>
                 <CardDescription>
-                  Desbloqueie todo o potencial da IA Tributar
+                  Desbloqueie todo o potencial do Atento AI
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
@@ -344,13 +379,18 @@ export function AISection() {
                   ))}
                 </div>
 
+                <div className="p-3 bg-muted/50 rounded-lg text-sm text-muted-foreground">
+                  <p>Usuários gratuitos: <strong>{DAILY_QUESTION_LIMIT} perguntas/dia</strong></p>
+                  <p>Premium: <strong>Perguntas ilimitadas</strong></p>
+                </div>
+
                 <div className="pt-4 border-t">
                   <div className="flex items-baseline gap-2 mb-4">
-                    <span className="text-4xl font-bold">R$50</span>
+                    <span className="text-4xl font-bold">{formatPrice(plan.price)}</span>
                     <span className="text-muted-foreground">/mês</span>
                   </div>
                   
-                  {hasAccess ? (
+                  {isPremium ? (
                     <Button variant="success" className="w-full" disabled>
                       <CheckCircle className="w-4 h-4" />
                       Acesso Ativo
@@ -360,9 +400,14 @@ export function AISection() {
                       variant="accent" 
                       className="w-full"
                       onClick={handlePurchase}
+                      disabled={isCheckingOut}
                     >
-                      <Lock className="w-4 h-4" />
-                      Desbloquear Agora
+                      {isCheckingOut ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <Lock className="w-4 h-4" />
+                      )}
+                      {isCheckingOut ? 'Processando...' : 'Desbloquear Agora'}
                     </Button>
                   )}
                 </div>
