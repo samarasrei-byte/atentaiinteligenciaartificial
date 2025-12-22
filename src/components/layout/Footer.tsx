@@ -11,8 +11,7 @@ export function Footer({ onNavigate }: FooterProps) {
   const navigation = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
-    { label: "Contadores", icon: Users, section: "accountant" },
-    { label: "FAQ", icon: BookOpen, section: "faq" },
+    { label: "Planos", icon: Users, section: "pricing" },
   ];
 
   const resources = [
@@ -36,9 +35,9 @@ export function Footer({ onNavigate }: FooterProps) {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-3 mb-4">
               <img 
-                src="/logo.png" 
+                src="/logo-atentai.png" 
                 alt="AtentAI" 
-                className="h-12 w-auto object-contain"
+                className="h-16 w-auto object-contain"
               />
             </div>
             <p className="text-secondary-foreground/70 text-sm mb-6 leading-relaxed">
