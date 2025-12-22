@@ -19,7 +19,9 @@ import {
   Building2,
   TrendingUp,
   MapPin,
-  Edit
+  Edit,
+  Home,
+  Scale
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
@@ -426,6 +428,46 @@ const Dashboard = () => {
             <CardContent>
               <div className="text-2xl font-bold text-blue-400">R$ 150/sessão</div>
               <p className="text-sm text-slate-400">10% vai para a plataforma</p>
+            </CardContent>
+          </Card>
+
+          {/* Locação Imobiliária */}
+          <Card className="bg-slate-800/50 border-slate-700 hover:border-rose-500 transition-colors cursor-pointer group"
+                onClick={() => navigate('/locacao')}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Home className="h-10 w-10 text-rose-400 group-hover:scale-110 transition-transform" />
+                <Badge className="bg-green-500">Novo</Badge>
+              </div>
+              <CardTitle className="text-xl text-white">Locação Imobiliária</CardTitle>
+              <CardDescription className="text-slate-400">
+                Simule impostos para locação de imóveis (PF × PJ)
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600">
+                Simular Locação
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Comparador de Regimes */}
+          <Card className="bg-slate-800/50 border-slate-700 hover:border-violet-500 transition-colors cursor-pointer group"
+                onClick={() => navigate('/regime-comparator')}>
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <Scale className="h-10 w-10 text-violet-400 group-hover:scale-110 transition-transform" />
+                <Badge className="bg-green-500">Novo</Badge>
+              </div>
+              <CardTitle className="text-xl text-white">Comparador de Regimes</CardTitle>
+              <CardDescription className="text-slate-400">
+                Compare Simples × Presumido × Lucro Real
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600">
+                Comparar Regimes
+              </Button>
             </CardContent>
           </Card>
 

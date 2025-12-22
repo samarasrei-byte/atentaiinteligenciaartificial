@@ -429,6 +429,14 @@ const Simulator = () => {
           )}
         </div>
 
+        {/* Charts Section */}
+        {result && (
+          <div className="mt-8 space-y-8">
+            <TaxComparisonChart result={result} />
+            <TransitionTimeline result={result} />
+          </div>
+        )}
+
         {/* Info Section */}
         <Card className="mt-8 bg-slate-800/50 border-slate-700">
           <CardContent className="pt-6">
