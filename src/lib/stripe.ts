@@ -1,10 +1,10 @@
 // Stripe plan configuration
 export const STRIPE_PLANS = {
   basic: {
-    name: 'Básico',
+    name: 'Simulador de Impacto Tributário',
     priceId: 'price_1SXl0w3MU3lG84Gw58sMoVfh',
     productId: 'prod_TUkVf10Uq0C1Dv',
-    price: 2990, // cents
+    price: 4500, // cents (R$45,00)
     features: [
       'Simulador de Impostos',
       'Chat com IA (5 msgs/dia)',
