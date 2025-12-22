@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -18,7 +18,8 @@ import {
   Loader2,
   ArrowRight,
   Download,
-  MapPin
+  MapPin,
+  FileSpreadsheet
 } from 'lucide-react';
 import {
   sectors,
@@ -31,6 +32,10 @@ import {
   parseCurrencyInput,
   SimulationResult,
 } from '@/lib/taxData';
+import { exportSimulationToPdf } from '@/lib/exportPdf';
+import { exportSimulationToExcel } from '@/lib/exportExcel';
+import { TaxComparisonChart } from '@/components/simulator/TaxComparisonChart';
+import { TransitionTimeline } from '@/components/simulator/TransitionTimeline';
 import { exportSimulationToPdf } from '@/lib/exportPdf';
 
 const Simulator = () => {
@@ -129,22 +134,24 @@ const Simulator = () => {
 
   const handleExportPdf = async () => {
     if (!result) return;
-    
     setIsExporting(true);
     try {
       await exportSimulationToPdf(result);
-      toast({
-        title: 'PDF exportado!',
-        description: 'O arquivo foi baixado com sucesso',
-      });
+      toast({ title: 'PDF exportado!' });
     } catch (error) {
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao exportar',
-        description: 'Não foi possível gerar o PDF',
-      });
+      toast({ variant: 'destructive', title: 'Erro ao exportar PDF' });
     }
     setIsExporting(false);
+  };
+
+  const handleExportExcel = () => {
+    if (!result) return;
+    try {
+      exportSimulationToExcel(result);
+      toast({ title: 'Excel exportado!' });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Erro ao exportar Excel' });
+    }
   };
 
   if (authLoading || hasAccess === null) {
@@ -312,20 +319,27 @@ const Simulator = () => {
                     Comparativo antes e depois da reforma
                   </CardDescription>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleExportPdf}
-                  disabled={isExporting}
-                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
-                >
-                  {isExporting ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <Download className="h-4 w-4" />
-                  )}
-                  <span className="ml-2">PDF</span>
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportPdf}
+                    disabled={isExporting}
+                    className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
+                  >
+                    {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                    <span className="ml-1">PDF</span>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExportExcel}
+                    className="border-green-500 text-green-400 hover:bg-green-500/10"
+                  >
+                    <FileSpreadsheet className="h-4 w-4" />
+                    <span className="ml-1">Excel</span>
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Current Taxes */}
