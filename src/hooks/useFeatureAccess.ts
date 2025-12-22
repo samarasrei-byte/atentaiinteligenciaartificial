@@ -22,6 +22,12 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'ai-chat',
     'pdf-export',
   ],
+  premium: [
+    'simulator',
+    'ai-chat',
+    'ai-chat-unlimited',
+    'pdf-export',
+  ],
   pro: [
     'simulator',
     'ai-chat',
@@ -51,8 +57,9 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
 // Plan hierarchy for comparison
 const planHierarchy: Record<PlanType, number> = {
   basic: 1,
-  pro: 2,
-  enterprise: 3,
+  premium: 2,
+  pro: 3,
+  enterprise: 4,
 };
 
 export function useFeatureAccess() {
