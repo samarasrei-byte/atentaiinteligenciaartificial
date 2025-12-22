@@ -34,11 +34,11 @@ export function Footer({ onNavigate }: FooterProps) {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2 mb-4">
+            <div className="flex items-center gap-3 mb-4">
               <img 
                 src="/logo.png" 
                 alt="AtentAI" 
-                className="h-10 w-auto"
+                className="h-12 w-auto object-contain"
               />
             </div>
             <p className="text-secondary-foreground/70 text-sm mb-6 leading-relaxed">

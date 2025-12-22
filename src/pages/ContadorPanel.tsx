@@ -11,6 +11,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import AppSidebar from '@/components/layout/AppSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
@@ -39,6 +41,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Menu,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -80,6 +83,7 @@ const ContadorPanel = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, profile, hasRole, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
   
   const [isLoading, setIsLoading] = useState(true);
   const [contadorProfile, setContadorProfile] = useState<ContadorProfile | null>(null);
@@ -87,6 +91,7 @@ const ContadorPanel = () => {
   const [clients, setClients] = useState<ClientInfo[]>([]);
   const [isSaving, setIsSaving] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -357,57 +362,55 @@ const ContadorPanel = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <AppSidebar 
-        collapsed={sidebarCollapsed} 
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-        variant="contador"
-      />
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 bg-black/50 z-40 lg:hidden" onClick={() => setMobileMenuOpen(false)} />
+      )}
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-6 py-4">
+      <div className="hidden lg:block">
+        <AppSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} variant="contador" />
+      </div>
+      
+      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <AppSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} variant="contador" />
+      </div>
+      
+      <main className={`flex-1 transition-all duration-300 lg:${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-info/10">
-                <FileText className="h-6 w-6 text-info" />
+            <div className="flex items-center gap-2 lg:gap-3">
+              <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileMenuOpen(true)}>
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div className="p-2 rounded-lg bg-info/10 hidden sm:flex">
+                <FileText className="h-5 w-5 text-info" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Painel do Contador</h1>
-                <p className="text-sm text-muted-foreground">
-                  {profile?.full_name || 'Contador'} • {contadorProfile?.specialty || 'Especialista em Tributos'}
+                <h1 className="text-lg lg:text-2xl font-bold text-foreground">Painel do Contador</h1>
+                <p className="text-xs lg:text-sm text-muted-foreground hidden sm:block">
+                  {profile?.full_name || 'Contador'} • {contadorProfile?.specialty || 'Especialista'}
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <Badge className={isAvailable ? 'bg-success' : 'bg-muted'}>
+            <div className="flex items-center gap-2">
+              <NotificationCenter notifications={notifications} unreadCount={unreadCount} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllAsRead} onClear={clearNotifications} />
+              <Badge className={`hidden sm:flex ${isAvailable ? 'bg-success' : 'bg-muted'}`}>
                 {isAvailable ? 'Disponível' : 'Indisponível'}
               </Badge>
-              <Button 
-                variant="outline" 
-                size="sm"
-                onClick={handleRefresh}
-                disabled={isRefreshing}
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Atualizar
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => navigate('/dashboard')}
-              >
-                Dashboard
+              <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing} className="hidden sm:flex">
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
               </Button>
             </div>
           </div>
         </header>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 lg:p-6 space-y-6">
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setSearchParams({ tab: v }); }}>
-            <TabsList className="grid w-full grid-cols-5 max-w-2xl">
-              <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-              <TabsTrigger value="consultations">Consultas</TabsTrigger>
-              <TabsTrigger value="clients">Clientes</TabsTrigger>
-              <TabsTrigger value="earnings">Ganhos</TabsTrigger>
-              <TabsTrigger value="profile">Perfil</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 max-w-2xl">
+              <TabsTrigger value="overview" className="text-xs lg:text-sm">Visão Geral</TabsTrigger>
+              <TabsTrigger value="consultations" className="text-xs lg:text-sm">Consultas</TabsTrigger>
+              <TabsTrigger value="clients" className="text-xs lg:text-sm hidden lg:flex">Clientes</TabsTrigger>
+              <TabsTrigger value="earnings" className="text-xs lg:text-sm hidden lg:flex">Ganhos</TabsTrigger>
+              <TabsTrigger value="profile" className="text-xs lg:text-sm">Perfil</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6 mt-6">
