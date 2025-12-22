@@ -45,33 +45,31 @@ const App = () => (
               </ProtectedRoute>
             } />
             
-            {/* Basic plan features */}
+            {/* Simulator plan features */}
             <Route path="/simulator" element={
-              <ProtectedRoute requiredPlan="basic">
+              <ProtectedRoute requiredPlan="simulator">
                 <Simulator />
               </ProtectedRoute>
             } />
+            
+            {/* Premium plan features */}
             <Route path="/ai-chat" element={
-              <ProtectedRoute requiredPlan="basic">
+              <ProtectedRoute requiredPlan="premium">
                 <AIChat />
               </ProtectedRoute>
             } />
-            
-            {/* Pro plan features */}
             <Route path="/locacao" element={
-              <ProtectedRoute requiredPlan="pro">
+              <ProtectedRoute requiredPlan="premium">
                 <LocacaoSimulator />
               </ProtectedRoute>
             } />
             <Route path="/regime-comparator" element={
-              <ProtectedRoute requiredPlan="pro">
+              <ProtectedRoute requiredPlan="premium">
                 <RegimeComparator />
               </ProtectedRoute>
             } />
-            
-            {/* Enterprise plan features */}
             <Route path="/contadores" element={
-              <ProtectedRoute requiredPlan="enterprise">
+              <ProtectedRoute requiredPlan="premium">
                 <Contadores />
               </ProtectedRoute>
             } />
