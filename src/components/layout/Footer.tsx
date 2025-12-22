@@ -1,5 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Calculator, MessageCircle, Users, BookOpen, Mail, Phone, MapPin } from "lucide-react";
+import { Link } from "react-router-dom";
 
 interface FooterProps {
   onNavigate: (section: string) => void;
@@ -20,6 +20,11 @@ export function Footer({ onNavigate }: FooterProps) {
     { label: "Legislação Oficial", href: "#" },
     { label: "Blog", href: "#" },
     { label: "Glossário Tributário", href: "#" },
+  ];
+
+  const legal = [
+    { label: "Termos de Uso", to: "/termos" },
+    { label: "Privacidade", to: "/privacidade" },
   ];
 
   return (
@@ -131,9 +136,15 @@ export function Footer({ onNavigate }: FooterProps) {
               © {currentYear} TRIBUTAR. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-6 text-sm text-secondary-foreground/60">
-              <a href="#" className="hover:text-primary transition-colors">Termos de Uso</a>
-              <a href="#" className="hover:text-primary transition-colors">Privacidade</a>
-              <a href="#" className="hover:text-primary transition-colors">Cookies</a>
+              {legal.map((item) => (
+                <Link 
+                  key={item.to} 
+                  to={item.to} 
+                  className="hover:text-primary transition-colors"
+                >
+                  {item.label}
+                </Link>
+              ))}
             </div>
           </div>
         </div>
