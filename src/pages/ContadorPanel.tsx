@@ -9,11 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import AppSidebar from '@/components/layout/AppSidebar';
 import { 
-  Brain, 
-  ArrowLeft, 
   FileText,
   Calendar,
   DollarSign,
@@ -23,7 +21,11 @@ import {
   X,
   Clock,
   Loader2,
-  Shield
+  ArrowUpRight,
+  Wallet,
+  TrendingUp,
+  Activity,
+  Save,
 } from 'lucide-react';
 
 interface ContadorProfile {
@@ -47,10 +49,6 @@ interface Consultation {
   notes: string | null;
   rating: number | null;
   created_at: string;
-  user_profile?: {
-    full_name: string | null;
-    email: string | null;
-  };
 }
 
 const ContadorPanel = () => {
@@ -62,6 +60,8 @@ const ContadorPanel = () => {
   const [contadorProfile, setContadorProfile] = useState<ContadorProfile | null>(null);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
 
   // Form state
   const [crcNumber, setCrcNumber] = useState('');
@@ -93,7 +93,6 @@ const ContadorPanel = () => {
 
   const fetchContadorData = async () => {
     try {
-      // Fetch contador profile
       const { data: profileData } = await supabase
         .from('contador_profiles')
         .select('*')
@@ -109,7 +108,6 @@ const ContadorPanel = () => {
         setIsAvailable(profileData.available);
       }
 
-      // Fetch consultations
       const { data: consultData } = await supabase
         .from('consultations')
         .select('*')
@@ -206,10 +204,10 @@ const ContadorPanel = () => {
 
   const getStatusBadge = (status: string) => {
     const statusConfig: Record<string, { color: string; label: string }> = {
-      pending: { color: 'bg-amber-500', label: 'Pendente' },
-      scheduled: { color: 'bg-blue-500', label: 'Agendada' },
-      completed: { color: 'bg-green-500', label: 'Concluída' },
-      cancelled: { color: 'bg-red-500', label: 'Cancelada' },
+      pending: { color: 'bg-accent text-accent-foreground', label: 'Pendente' },
+      scheduled: { color: 'bg-info text-info-foreground', label: 'Agendada' },
+      completed: { color: 'bg-success text-success-foreground', label: 'Concluída' },
+      cancelled: { color: 'bg-destructive text-destructive-foreground', label: 'Cancelada' },
     };
     const config = statusConfig[status] || statusConfig.pending;
     return <Badge className={config.color}>{config.label}</Badge>;
@@ -217,264 +215,289 @@ const ContadorPanel = () => {
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   const pendingConsultations = consultations.filter(c => c.status === 'pending');
+  const scheduledConsultations = consultations.filter(c => c.status === 'scheduled');
   const completedConsultations = consultations.filter(c => c.status === 'completed');
   const totalEarnings = completedConsultations.reduce((sum, c) => sum + c.price_cents - c.platform_fee_cents, 0);
 
+  const statsCards = [
+    { icon: Clock, label: 'Pendentes', value: pendingConsultations.length, color: 'text-accent', bgColor: 'bg-accent/10' },
+    { icon: Calendar, label: 'Agendadas', value: scheduledConsultations.length, color: 'text-info', bgColor: 'bg-info/10' },
+    { icon: Check, label: 'Concluídas', value: completedConsultations.length, color: 'text-success', bgColor: 'bg-success/10' },
+    { icon: Wallet, label: 'Ganhos', value: formatCurrency(totalEarnings), color: 'text-success', bgColor: 'bg-success/10', isLarge: true },
+    { icon: Star, label: 'Avaliação', value: contadorProfile?.rating ? Number(contadorProfile.rating).toFixed(1) : '5.0', color: 'text-accent', bgColor: 'bg-accent/10' },
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-      {/* Header */}
-      <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-4 flex items-center gap-4">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/dashboard')}
-            className="text-slate-300 hover:text-white"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Voltar
-          </Button>
-          <div className="flex items-center gap-2">
-            <FileText className="h-6 w-6 text-blue-400" />
-            <span className="text-xl font-bold text-white">Painel do Contador</span>
+    <div className="min-h-screen bg-background flex">
+      <AppSidebar 
+        collapsed={sidebarCollapsed} 
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+        variant="contador"
+      />
+      
+      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        {/* Top Bar */}
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-info/10">
+                <FileText className="h-6 w-6 text-info" />
+              </div>
+              <div>
+                <h1 className="text-2xl font-bold text-foreground">Painel do Contador</h1>
+                <p className="text-sm text-muted-foreground">Gerencie suas consultas e perfil</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <Badge className={isAvailable ? 'bg-success' : 'bg-muted'}>
+                {isAvailable ? 'Disponível' : 'Indisponível'}
+              </Badge>
+              <Button 
+                variant="outline" 
+                onClick={() => navigate('/dashboard')}
+              >
+                Voltar ao Dashboard
+              </Button>
+            </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 py-8">
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-amber-500/20">
-                  <Clock className="h-6 w-6 text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Pendentes</p>
-                  <p className="text-2xl font-bold text-white">{pendingConsultations.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="p-6 space-y-6">
+          {/* Stats Grid */}
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+            {statsCards.map((stat) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={stat.label} className="bg-card border-border shadow-soft">
+                  <CardContent className="p-4">
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${stat.bgColor}`}>
+                        <Icon className={`h-5 w-5 ${stat.color}`} />
+                      </div>
+                      <div>
+                        <p className="text-xs text-muted-foreground">{stat.label}</p>
+                        <p className={`font-bold ${stat.isLarge ? 'text-lg' : 'text-xl'} text-foreground`}>
+                          {stat.value}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
 
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-green-500/20">
-                  <Check className="h-6 w-6 text-green-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Concluídas</p>
-                  <p className="text-2xl font-bold text-white">{completedConsultations.length}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-blue-500/20">
-                  <DollarSign className="h-6 w-6 text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Ganhos Totais</p>
-                  <p className="text-2xl font-bold text-white">{formatCurrency(totalEarnings)}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-slate-800/50 border-slate-700">
-            <CardContent className="pt-6">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-full bg-amber-500/20">
-                  <Star className="h-6 w-6 text-amber-400" />
-                </div>
-                <div>
-                  <p className="text-sm text-slate-400">Avaliação</p>
-                  <p className="text-2xl font-bold text-white">
-                    {contadorProfile?.rating ? Number(contadorProfile.rating).toFixed(1) : '5.0'}
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="consultations" className="space-y-6">
-          <TabsList className="bg-slate-800/50 border border-slate-700">
-            <TabsTrigger value="consultations" className="data-[state=active]:bg-blue-600">
-              <Calendar className="h-4 w-4 mr-2" />
-              Consultas
-            </TabsTrigger>
-            <TabsTrigger value="profile" className="data-[state=active]:bg-blue-600">
-              <Users className="h-4 w-4 mr-2" />
-              Meu Perfil
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="consultations">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Consultas Solicitadas</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Gerencie as solicitações de consultoria dos clientes
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                {consultations.length === 0 ? (
-                  <div className="text-center py-12">
-                    <Calendar className="h-12 w-12 text-slate-500 mx-auto mb-4" />
-                    <p className="text-slate-400">Nenhuma consulta solicitada ainda</p>
+          {/* Main Content Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Consultations */}
+            <div className="lg:col-span-2 space-y-6">
+              <Card className="bg-card border-border shadow-soft">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <CardTitle className="text-xl">Consultas Pendentes</CardTitle>
+                      <CardDescription>Solicitações aguardando sua resposta</CardDescription>
+                    </div>
+                    <Badge variant="outline" className="text-accent border-accent">
+                      {pendingConsultations.length} pendentes
+                    </Badge>
                   </div>
-                ) : (
-                  <div className="space-y-4">
-                    {consultations.map((consultation) => (
-                      <div key={consultation.id} className="flex items-center justify-between p-4 bg-slate-700/50 rounded-lg">
-                        <div>
-                          <p className="font-medium text-white">
-                            Cliente #{consultation.user_id.slice(0, 8)}
-                          </p>
-                          <p className="text-sm text-slate-400">
-                            {new Date(consultation.created_at).toLocaleDateString('pt-BR')}
-                          </p>
-                          <p className="text-sm text-slate-400">
-                            Valor: {formatCurrency(consultation.price_cents)} (você recebe {formatCurrency(consultation.price_cents - consultation.platform_fee_cents)})
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {getStatusBadge(consultation.status)}
-                          {consultation.status === 'pending' && (
-                            <div className="flex gap-2">
-                              <Button
-                                size="sm"
-                                onClick={() => handleUpdateConsultation(consultation.id, 'scheduled')}
-                                className="bg-blue-600 hover:bg-blue-700"
-                              >
-                                <Check className="h-4 w-4" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="destructive"
-                                onClick={() => handleUpdateConsultation(consultation.id, 'cancelled')}
-                              >
-                                <X className="h-4 w-4" />
-                              </Button>
-                            </div>
-                          )}
-                          {consultation.status === 'scheduled' && (
+                </CardHeader>
+                <CardContent>
+                  {pendingConsultations.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Calendar className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+                      <p className="text-muted-foreground">Nenhuma consulta pendente</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {pendingConsultations.slice(0, 5).map((consultation) => (
+                        <div 
+                          key={consultation.id} 
+                          className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-border"
+                        >
+                          <div>
+                            <p className="font-medium text-foreground">
+                              Cliente #{consultation.user_id.slice(0, 8)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {new Date(consultation.created_at).toLocaleDateString('pt-BR')}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Valor: {formatCurrency(consultation.price_cents)} 
+                              <span className="text-success ml-1">
+                                (você recebe {formatCurrency(consultation.price_cents - consultation.platform_fee_cents)})
+                              </span>
+                            </p>
+                          </div>
+                          <div className="flex gap-2">
                             <Button
                               size="sm"
-                              onClick={() => handleUpdateConsultation(consultation.id, 'completed')}
-                              className="bg-green-600 hover:bg-green-700"
+                              onClick={() => handleUpdateConsultation(consultation.id, 'scheduled')}
+                              className="bg-success hover:bg-success/90"
                             >
-                              Concluir
+                              <Check className="h-4 w-4" />
                             </Button>
-                          )}
+                            <Button
+                              size="sm"
+                              variant="destructive"
+                              onClick={() => handleUpdateConsultation(consultation.id, 'cancelled')}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
 
-          <TabsContent value="profile">
-            <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Configurações do Perfil</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Configure suas informações que serão exibidas para os clientes
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* Scheduled Consultations */}
+              <Card className="bg-card border-border shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-xl">Consultas Agendadas</CardTitle>
+                  <CardDescription>Próximas sessões com clientes</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {scheduledConsultations.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Activity className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                      <p className="text-muted-foreground text-sm">Nenhuma consulta agendada</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {scheduledConsultations.map((consultation) => (
+                        <div 
+                          key={consultation.id} 
+                          className="flex items-center justify-between p-4 bg-info/5 rounded-lg border border-info/20"
+                        >
+                          <div>
+                            <p className="font-medium text-foreground">
+                              Cliente #{consultation.user_id.slice(0, 8)}
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              {formatCurrency(consultation.price_cents - consultation.platform_fee_cents)}
+                            </p>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => handleUpdateConsultation(consultation.id, 'completed')}
+                            className="bg-success hover:bg-success/90"
+                          >
+                            Concluir
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Profile Settings */}
+            <div className="space-y-6">
+              <Card className="bg-card border-border shadow-soft">
+                <CardHeader>
+                  <CardTitle className="text-xl">Meu Perfil</CardTitle>
+                  <CardDescription>Configure suas informações</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <div className="space-y-2">
-                    <Label htmlFor="crc" className="text-slate-300">Número CRC</Label>
+                    <Label htmlFor="crc">Número CRC</Label>
                     <Input
                       id="crc"
                       value={crcNumber}
                       onChange={(e) => setCrcNumber(e.target.value)}
                       placeholder="Ex: 12345/O-SP"
-                      className="bg-slate-700/50 border-slate-600 text-white"
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label htmlFor="specialty" className="text-slate-300">Especialidade</Label>
+                    <Label htmlFor="specialty">Especialidade</Label>
                     <Input
                       id="specialty"
                       value={specialty}
                       onChange={(e) => setSpecialty(e.target.value)}
-                      placeholder="Ex: Reforma Tributária, Planejamento Fiscal"
-                      className="bg-slate-700/50 border-slate-600 text-white"
+                      placeholder="Ex: Reforma Tributária"
                     />
                   </div>
-                </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-slate-300">Biografia</Label>
-                  <Textarea
-                    id="bio"
-                    value={bio}
-                    onChange={(e) => setBio(e.target.value)}
-                    placeholder="Conte um pouco sobre sua experiência..."
-                    className="bg-slate-700/50 border-slate-600 text-white min-h-[100px]"
-                  />
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <Label htmlFor="rate" className="text-slate-300">Valor por Sessão (R$)</Label>
+                    <Label htmlFor="bio">Biografia</Label>
+                    <Textarea
+                      id="bio"
+                      value={bio}
+                      onChange={(e) => setBio(e.target.value)}
+                      placeholder="Conte sobre sua experiência..."
+                      className="min-h-[80px]"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="rate">Valor por Sessão (R$)</Label>
                     <Input
                       id="rate"
                       type="number"
                       value={hourlyRate}
                       onChange={(e) => setHourlyRate(e.target.value)}
                       placeholder="150"
-                      className="bg-slate-700/50 border-slate-600 text-white"
                     />
-                    <p className="text-xs text-slate-500">10% será destinado à plataforma</p>
+                    <p className="text-xs text-muted-foreground">10% destinado à plataforma</p>
                   </div>
 
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Disponibilidade</Label>
-                    <div className="flex items-center gap-3 pt-2">
-                      <Switch
-                        checked={isAvailable}
-                        onCheckedChange={setIsAvailable}
-                      />
-                      <span className="text-slate-300">
-                        {isAvailable ? 'Disponível para consultas' : 'Indisponível'}
-                      </span>
+                  <div className="flex items-center justify-between pt-2">
+                    <Label>Disponibilidade</Label>
+                    <Switch
+                      checked={isAvailable}
+                      onCheckedChange={setIsAvailable}
+                    />
+                  </div>
+
+                  <Button
+                    onClick={handleSaveProfile}
+                    disabled={isSaving}
+                    className="w-full"
+                  >
+                    {isSaving ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <Save className="h-4 w-4 mr-2" />
+                    )}
+                    Salvar Perfil
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Earnings Summary */}
+              <Card className="bg-gradient-to-br from-success to-success/80 text-success-foreground">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-white/10">
+                      <TrendingUp className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <p className="text-sm opacity-80">Total Ganhos</p>
+                      <p className="text-2xl font-bold">{formatCurrency(totalEarnings)}</p>
                     </div>
                   </div>
-                </div>
-
-                <Button
-                  onClick={handleSaveProfile}
-                  disabled={isSaving}
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
-                >
-                  {isSaving ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
-                  Salvar Perfil
-                </Button>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+                  <div className="mt-4 pt-4 border-t border-white/20">
+                    <p className="text-sm opacity-80">
+                      {completedConsultations.length} consultas concluídas
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );
