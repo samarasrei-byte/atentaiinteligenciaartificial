@@ -4,6 +4,8 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { SimulatorSection } from "@/components/sections/SimulatorSection";
 import { AISection } from "@/components/sections/AISection";
+import { PricingSection } from "@/components/sections/PricingSection";
+import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 
 const Index = () => {
   const scrollToSection = (section: string) => {
@@ -34,6 +36,8 @@ const Index = () => {
         <FeaturesSection />
         <SimulatorSection />
         <AISection />
+        <PricingSection />
+        <TestimonialsSection />
       </main>
 
       <Footer onNavigate={scrollToSection} />

@@ -55,7 +55,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* Price hint */}
           <p className="mt-6 text-white/50 text-sm animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            A partir de R$56/mês
+            A partir de R$56/mês • AtentAI Premium R$98/mês
           </p>
         </div>
       </div>

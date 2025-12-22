@@ -17,7 +17,7 @@ export const STRIPE_PLANS = {
     name: 'AtentAI Premium',
     priceId: 'price_1Sh0hm3MU3lG84GwZQFVJ2sU',
     productId: 'prod_TeJKUfneeyp779',
-    price: 5600, // cents (R$56,00)
+    price: 9800, // cents (R$98,00)
     description: 'Assistente de IA especializado em legislação tributária',
     features: [
       'Perguntas ilimitadas',
