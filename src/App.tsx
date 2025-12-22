@@ -20,6 +20,8 @@ import RegimeComparator from "./pages/RegimeComparator";
 import TermosDeUso from "./pages/TermosDeUso";
 import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import NotFound from "./pages/NotFound";
+import PlanoSimulador from "./pages/PlanoSimulador";
+import PlanoAtentoAI from "./pages/PlanoAtentoAI";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +37,8 @@ const App = () => (
             <Route path="/auth" element={<Auth />} />
             <Route path="/onboarding" element={<PublicOnboarding />} />
             <Route path="/pricing" element={<Pricing />} />
+            <Route path="/plano/simulador" element={<PlanoSimulador />} />
+            <Route path="/plano/atento-ai" element={<PlanoAtentoAI />} />
             <Route path="/termos" element={<TermosDeUso />} />
             <Route path="/privacidade" element={<PoliticaPrivacidade />} />
             

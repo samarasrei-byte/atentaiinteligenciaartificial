@@ -14,11 +14,11 @@ export const STRIPE_PLANS = {
     ],
   },
   premium: {
-    name: 'Assistente TRIBUTAR',
+    name: 'Atento AI',
     priceId: 'price_1Sh0hm3MU3lG84GwZQFVJ2sU',
     productId: 'prod_TeJKUfneeyp779',
     price: 5600, // cents (R$56,00)
-    description: 'Desbloqueie todo o potencial da IA Tributar',
+    description: 'Assistente de IA especializado em legislação tributária',
     features: [
       'Perguntas ilimitadas',
       'Respostas detalhadas',
@@ -30,6 +30,9 @@ export const STRIPE_PLANS = {
 } as const;
 
 export type PlanType = keyof typeof STRIPE_PLANS;
+
+// Daily question limit for non-premium users
+export const DAILY_QUESTION_LIMIT = 5;
 
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat('pt-BR', {
