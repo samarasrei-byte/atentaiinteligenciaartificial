@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -16,26 +16,22 @@ import {
   TrendingUp,
   Lock,
   Loader2,
-  ArrowRight
+  ArrowRight,
+  Download,
+  MapPin
 } from 'lucide-react';
-
-interface SimulationResult {
-  current: {
-    icms: number;
-    iss: number;
-    pis: number;
-    cofins: number;
-    total: number;
-  };
-  new: {
-    ibs: number;
-    cbs: number;
-    is: number;
-    total: number;
-  };
-  difference: number;
-  percentChange: number;
-}
+import {
+  sectors,
+  companyTypes,
+  brazilianStates,
+  stateICMSRates,
+  calculateTaxes,
+  formatCurrency,
+  formatCurrencyInput,
+  parseCurrencyInput,
+  SimulationResult,
+} from '@/lib/taxData';
+import { exportSimulationToPdf } from '@/lib/exportPdf';
 
 const Simulator = () => {
   const navigate = useNavigate();
@@ -45,7 +41,10 @@ const Simulator = () => {
   const [hasAccess, setHasAccess] = useState<boolean | null>(null);
   const [revenue, setRevenue] = useState('');
   const [sector, setSector] = useState('');
+  const [companyType, setCompanyType] = useState('');
+  const [state, setState] = useState('');
   const [isSimulating, setIsSimulating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [result, setResult] = useState<SimulationResult | null>(null);
 
   useEffect(() => {
@@ -64,76 +63,22 @@ const Simulator = () => {
     // TEMPORARY: Allow access for testing
     setHasAccess(true);
     return;
-    
-    // Production code (uncomment when ready):
-    // const { data } = await supabase
-    //   .from('subscriptions')
-    //   .select('*')
-    //   .eq('user_id', user!.id)
-    //   .eq('status', 'active')
-    //   .single();
-    // setHasAccess(!!data);
   };
 
-  const calculateTaxes = (revenueValue: number, sectorType: string): SimulationResult => {
-    // Current tax rates (simplified)
-    const currentRates = {
-      comercio: { icms: 0.18, iss: 0, pis: 0.0165, cofins: 0.076 },
-      servicos: { icms: 0, iss: 0.05, pis: 0.0165, cofins: 0.076 },
-      industria: { icms: 0.12, iss: 0, pis: 0.0165, cofins: 0.076 },
-      tecnologia: { icms: 0, iss: 0.02, pis: 0.0165, cofins: 0.076 },
-    };
-
-    // New tax rates (2026+)
-    const newRates = {
-      comercio: { ibs: 0.175, cbs: 0.088, is: 0 },
-      servicos: { ibs: 0.175, cbs: 0.088, is: 0 },
-      industria: { ibs: 0.175, cbs: 0.088, is: 0.02 },
-      tecnologia: { ibs: 0.175, cbs: 0.088, is: 0 },
-    };
-
-    const currentRate = currentRates[sectorType as keyof typeof currentRates] || currentRates.comercio;
-    const newRate = newRates[sectorType as keyof typeof newRates] || newRates.comercio;
-
-    const current = {
-      icms: revenueValue * currentRate.icms,
-      iss: revenueValue * currentRate.iss,
-      pis: revenueValue * currentRate.pis,
-      cofins: revenueValue * currentRate.cofins,
-      total: 0,
-    };
-    current.total = current.icms + current.iss + current.pis + current.cofins;
-
-    const newTaxes = {
-      ibs: revenueValue * newRate.ibs,
-      cbs: revenueValue * newRate.cbs,
-      is: revenueValue * newRate.is,
-      total: 0,
-    };
-    newTaxes.total = newTaxes.ibs + newTaxes.cbs + newTaxes.is;
-
-    const difference = newTaxes.total - current.total;
-    const percentChange = current.total > 0 ? ((difference / current.total) * 100) : 0;
-
-    return {
-      current,
-      new: newTaxes,
-      difference,
-      percentChange,
-    };
-  };
+  const selectedSector = sectors.find(s => s.value === sector);
+  const showStateSelector = selectedSector && selectedSector.icms > 0;
 
   const handleSimulate = async () => {
-    if (!revenue || !sector) {
+    if (!revenue || !sector || !companyType) {
       toast({
         variant: 'destructive',
         title: 'Preencha todos os campos',
-        description: 'Informe o faturamento e o setor da empresa',
+        description: 'Informe o faturamento, setor e regime tributário',
       });
       return;
     }
 
-    const revenueValue = parseFloat(revenue.replace(/\D/g, '')) / 100;
+    const revenueValue = parseCurrencyInput(revenue);
     if (isNaN(revenueValue) || revenueValue <= 0) {
       toast({
         variant: 'destructive',
@@ -145,10 +90,15 @@ const Simulator = () => {
 
     setIsSimulating(true);
     
-    // Simulate calculation delay
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const simulationResult = calculateTaxes(revenueValue, sector);
+    const simulationResult = calculateTaxes({
+      revenue: revenueValue,
+      sector,
+      companyType,
+      state: state || undefined,
+    });
+    
     setResult(simulationResult);
 
     // Save simulation to database
@@ -156,14 +106,14 @@ const Simulator = () => {
       user_id: user!.id,
       revenue_cents: Math.round(revenueValue * 100),
       tax_type: 'comparison',
-      icms_cents: Math.round(simulationResult.current.icms * 100),
-      iss_cents: Math.round(simulationResult.current.iss * 100),
-      pis_cents: Math.round(simulationResult.current.pis * 100),
-      cofins_cents: Math.round(simulationResult.current.cofins * 100),
-      ibs_cents: Math.round(simulationResult.new.ibs * 100),
-      cbs_cents: Math.round(simulationResult.new.cbs * 100),
-      is_cents: Math.round(simulationResult.new.is * 100),
-      total_tax_cents: Math.round(simulationResult.new.total * 100),
+      icms_cents: Math.round(simulationResult.beforeTaxes.icms * 100),
+      iss_cents: Math.round(simulationResult.beforeTaxes.iss * 100),
+      pis_cents: Math.round(simulationResult.beforeTaxes.pis * 100),
+      cofins_cents: Math.round(simulationResult.beforeTaxes.cofins * 100),
+      ibs_cents: Math.round(simulationResult.afterTaxes.ibs * 100),
+      cbs_cents: Math.round(simulationResult.afterTaxes.cbs * 100),
+      is_cents: Math.round(simulationResult.afterTaxes.is * 100),
+      total_tax_cents: Math.round(simulationResult.afterTaxes.total * 100),
     });
 
     setIsSimulating(false);
@@ -173,21 +123,28 @@ const Simulator = () => {
     });
   };
 
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
+  const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setRevenue(formatCurrencyInput(e.target.value));
   };
 
-  const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '');
-    const numValue = parseInt(value) / 100;
-    if (!isNaN(numValue)) {
-      setRevenue(formatCurrency(numValue));
-    } else {
-      setRevenue('');
+  const handleExportPdf = async () => {
+    if (!result) return;
+    
+    setIsExporting(true);
+    try {
+      await exportSimulationToPdf(result);
+      toast({
+        title: 'PDF exportado!',
+        description: 'O arquivo foi baixado com sucesso',
+      });
+    } catch (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao exportar',
+        description: 'Não foi possível gerar o PDF',
+      });
     }
+    setIsExporting(false);
   };
 
   if (authLoading || hasAccess === null) {
@@ -272,18 +229,58 @@ const Simulator = () => {
 
               <div className="space-y-2">
                 <Label htmlFor="sector" className="text-slate-300">Setor de Atuação</Label>
-                <Select value={sector} onValueChange={setSector}>
+                <Select value={sector} onValueChange={(value) => { setSector(value); setState(''); }}>
                   <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
                     <SelectValue placeholder="Selecione o setor" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800 border-slate-700">
-                    <SelectItem value="comercio">Comércio</SelectItem>
-                    <SelectItem value="servicos">Serviços</SelectItem>
-                    <SelectItem value="industria">Indústria</SelectItem>
-                    <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                    {sectors.map((s) => (
+                      <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="companyType" className="text-slate-300">Regime Tributário</Label>
+                <Select value={companyType} onValueChange={setCompanyType}>
+                  <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                    <SelectValue placeholder="Selecione o regime" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-slate-800 border-slate-700">
+                    {companyTypes.map((c) => (
+                      <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {showStateSelector && (
+                <div className="space-y-2">
+                  <Label className="text-slate-300 flex items-center gap-2">
+                    <MapPin className="h-4 w-4" />
+                    Estado (Alíquota ICMS)
+                  </Label>
+                  <Select value={state} onValueChange={setState}>
+                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                      <SelectValue placeholder="Selecione o estado (opcional)" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+                      <SelectItem value="">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
+                      {brazilianStates.map((s) => (
+                        <SelectItem key={s.value} value={s.value}>
+                          {s.label} ({stateICMSRates[s.value]}%)
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  {state && (
+                    <p className="text-xs text-cyan-400">
+                      Alíquota de ICMS para {brazilianStates.find(s => s.value === state)?.label}: {stateICMSRates[state]}%
+                    </p>
+                  )}
+                </div>
+              )}
 
               <Button
                 onClick={handleSimulate}
@@ -308,11 +305,27 @@ const Simulator = () => {
           {/* Results */}
           {result && (
             <Card className="bg-slate-800/50 border-slate-700">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Resultado da Simulação</CardTitle>
-                <CardDescription className="text-slate-400">
-                  Comparativo antes e depois da reforma
-                </CardDescription>
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="text-xl text-white">Resultado da Simulação</CardTitle>
+                  <CardDescription className="text-slate-400">
+                    Comparativo antes e depois da reforma
+                  </CardDescription>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleExportPdf}
+                  disabled={isExporting}
+                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
+                >
+                  {isExporting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  <span className="ml-2">PDF</span>
+                </Button>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Current Taxes */}
@@ -321,18 +334,32 @@ const Simulator = () => {
                     Sistema Atual
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-slate-400">ICMS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.current.icms)}</span>
-                    <span className="text-slate-400">ISS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.current.iss)}</span>
+                    {result.beforeTaxes.icms > 0 && (
+                      <>
+                        <span className="text-slate-400">ICMS:</span>
+                        <span className="text-white text-right">{formatCurrency(result.beforeTaxes.icms)}</span>
+                      </>
+                    )}
+                    {result.beforeTaxes.iss > 0 && (
+                      <>
+                        <span className="text-slate-400">ISS:</span>
+                        <span className="text-white text-right">{formatCurrency(result.beforeTaxes.iss)}</span>
+                      </>
+                    )}
                     <span className="text-slate-400">PIS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.current.pis)}</span>
+                    <span className="text-white text-right">{formatCurrency(result.beforeTaxes.pis)}</span>
                     <span className="text-slate-400">COFINS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.current.cofins)}</span>
+                    <span className="text-white text-right">{formatCurrency(result.beforeTaxes.cofins)}</span>
+                    {result.beforeTaxes.ipi > 0 && (
+                      <>
+                        <span className="text-slate-400">IPI:</span>
+                        <span className="text-white text-right">{formatCurrency(result.beforeTaxes.ipi)}</span>
+                      </>
+                    )}
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-slate-700">
                     <span className="font-semibold text-slate-300">Total Atual:</span>
-                    <span className="text-xl font-bold text-orange-400">{formatCurrency(result.current.total)}</span>
+                    <span className="text-xl font-bold text-orange-400">{formatCurrency(result.beforeTaxes.total)}</span>
                   </div>
                 </div>
 
@@ -347,15 +374,19 @@ const Simulator = () => {
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="text-slate-400">IBS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.new.ibs)}</span>
+                    <span className="text-white text-right">{formatCurrency(result.afterTaxes.ibs)}</span>
                     <span className="text-slate-400">CBS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.new.cbs)}</span>
-                    <span className="text-slate-400">Imp. Seletivo:</span>
-                    <span className="text-white text-right">{formatCurrency(result.new.is)}</span>
+                    <span className="text-white text-right">{formatCurrency(result.afterTaxes.cbs)}</span>
+                    {result.afterTaxes.is > 0 && (
+                      <>
+                        <span className="text-slate-400">Imp. Seletivo:</span>
+                        <span className="text-white text-right">{formatCurrency(result.afterTaxes.is)}</span>
+                      </>
+                    )}
                   </div>
                   <div className="flex justify-between items-center pt-2 border-t border-slate-700">
                     <span className="font-semibold text-slate-300">Total Novo:</span>
-                    <span className="text-xl font-bold text-cyan-400">{formatCurrency(result.new.total)}</span>
+                    <span className="text-xl font-bold text-cyan-400">{formatCurrency(result.afterTaxes.total)}</span>
                   </div>
                 </div>
 
