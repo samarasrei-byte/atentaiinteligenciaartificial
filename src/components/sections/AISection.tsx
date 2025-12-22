@@ -194,7 +194,7 @@ export function AISection() {
   const handlePurchase = () => {
     toast({
       title: "Acesso Desbloqueado! 🎉",
-      description: "Agora você tem acesso ilimitado à IA Tributar por 30 dias.",
+      description: "Agora você tem acesso ilimitado à IA AtentAi por 30 dias.",
     });
     setHasAccess(true);
   };

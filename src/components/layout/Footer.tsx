@@ -36,9 +36,9 @@ export function Footer({ onNavigate }: FooterProps) {
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center shadow-glow">
-                <span className="text-primary-foreground font-bold text-lg">T</span>
+                <span className="text-primary-foreground font-bold text-lg">A</span>
               </div>
-              <span className="text-xl font-bold text-secondary-foreground">TRIBUTAR</span>
+              <span className="text-xl font-bold text-secondary-foreground">AtentAi</span>
             </div>
             <p className="text-secondary-foreground/70 text-sm mb-6 leading-relaxed">
               O Waze dos Impostos Brasileiros. Simplificamos a Reforma Tributária de 2026 
@@ -113,7 +113,7 @@ export function Footer({ onNavigate }: FooterProps) {
             <ul className="space-y-3">
               <li className="flex items-center gap-3 text-sm text-secondary-foreground/70">
                 <Mail className="w-4 h-4" />
-                contato@tributar.com.br
+                contato@atentai.com.br
               </li>
               <li className="flex items-center gap-3 text-sm text-secondary-foreground/70">
                 <Phone className="w-4 h-4" />
@@ -133,7 +133,7 @@ export function Footer({ onNavigate }: FooterProps) {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-secondary-foreground/60">
-              © {currentYear} TRIBUTAR. Todos os direitos reservados.
+              © {currentYear} AtentAi. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-6 text-sm text-secondary-foreground/60">
               {legal.map((item) => (

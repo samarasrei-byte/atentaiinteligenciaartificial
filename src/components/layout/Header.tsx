@@ -29,7 +29,7 @@ export function Header({ onNavigate }: HeaderProps) {
               <span className="text-primary-foreground font-bold text-lg">T</span>
             </div>
             <span className="text-xl font-bold">
-              <span className="gradient-text">TRIBUTAR</span>
+              <span className="gradient-text">AtentAi</span>
             </span>
           </button>
 
