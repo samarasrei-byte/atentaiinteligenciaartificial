@@ -9,6 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import AppSidebar from '@/components/layout/AppSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
@@ -40,6 +42,7 @@ import {
   AlertCircle,
   XCircle,
   RefreshCw,
+  Menu,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -97,12 +100,14 @@ const AdminPanel = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const { user, hasRole, loading: authLoading } = useAuth();
   const { toast } = useToast();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
   
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState<StatsData>({
     totalUsers: 0,
     totalContadores: 0,
@@ -387,30 +392,67 @@ const AdminPanel = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <AppSidebar 
-        collapsed={sidebarCollapsed} 
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-        variant="admin"
-      />
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-6 py-4">
+      {/* Desktop Sidebar */}
+      <div className="hidden lg:block">
+        <AppSidebar 
+          collapsed={sidebarCollapsed} 
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+          variant="admin"
+        />
+      </div>
+      
+      {/* Mobile Sidebar */}
+      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <AppSidebar 
+          collapsed={false} 
+          onToggle={() => setMobileMenuOpen(false)} 
+          variant="admin"
+        />
+      </div>
+      
+      <main className={`flex-1 transition-all duration-300 lg:${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-destructive/10">
-                <Shield className="h-6 w-6 text-destructive" />
+            <div className="flex items-center gap-2 lg:gap-3">
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div className="p-2 rounded-lg bg-destructive/10 hidden sm:flex">
+                <Shield className="h-5 lg:h-6 w-5 lg:w-6 text-destructive" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-foreground">Painel Master Admin</h1>
-                <p className="text-sm text-muted-foreground">Controle total do AtentAI</p>
+                <h1 className="text-lg lg:text-2xl font-bold text-foreground">Painel Master Admin</h1>
+                <p className="text-xs lg:text-sm text-muted-foreground hidden sm:block">Controle total do AtentAI</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 lg:gap-3">
+              <NotificationCenter
+                notifications={notifications}
+                unreadCount={unreadCount}
+                onMarkAsRead={markAsRead}
+                onMarkAllAsRead={markAllAsRead}
+                onClear={clearNotifications}
+              />
               <Button 
                 variant="outline" 
                 size="sm"
                 onClick={handleRefresh}
                 disabled={isRefreshing}
+                className="hidden sm:flex"
               >
                 <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
                 Atualizar
@@ -418,21 +460,23 @@ const AdminPanel = () => {
               <Button 
                 variant="outline" 
                 onClick={() => navigate('/dashboard')}
+                className="hidden md:flex"
+                size="sm"
               >
-                Voltar ao Dashboard
+                Dashboard
               </Button>
             </div>
           </div>
         </header>
 
-        <div className="p-6 space-y-6">
+        <div className="p-4 lg:p-6 space-y-6">
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setSearchParams({ tab: v }); }}>
-            <TabsList className="grid w-full grid-cols-5 max-w-2xl">
-              <TabsTrigger value="overview">Visão Geral</TabsTrigger>
-              <TabsTrigger value="users">Usuários</TabsTrigger>
-              <TabsTrigger value="subscriptions">Assinaturas</TabsTrigger>
-              <TabsTrigger value="consultations">Consultas</TabsTrigger>
-              <TabsTrigger value="settings">Config</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 max-w-2xl">
+              <TabsTrigger value="overview" className="text-xs lg:text-sm">Visão Geral</TabsTrigger>
+              <TabsTrigger value="users" className="text-xs lg:text-sm">Usuários</TabsTrigger>
+              <TabsTrigger value="subscriptions" className="text-xs lg:text-sm hidden lg:flex">Assinaturas</TabsTrigger>
+              <TabsTrigger value="consultations" className="text-xs lg:text-sm hidden lg:flex">Consultas</TabsTrigger>
+              <TabsTrigger value="settings" className="text-xs lg:text-sm">Config</TabsTrigger>
             </TabsList>
 
             <TabsContent value="overview" className="space-y-6 mt-6">

@@ -29,7 +29,7 @@ export function Header({ onNavigate }: HeaderProps) {
             <img 
               src="/logo.png" 
               alt="AtentAI" 
-              className="h-10 w-auto"
+              className="h-12 md:h-14 w-auto"
             />
           </button>
 

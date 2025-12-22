@@ -143,12 +143,15 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
         {/* Logo & Toggle */}
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
           {!collapsed && (
-            <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="AtentAI" className="h-8 w-8" />
+            <div className="flex items-center gap-3">
+              <img src="/logo.png" alt="AtentAI" className="h-10 w-auto object-contain" />
               <span className="text-lg font-bold text-white">
                 AtentAI
               </span>
             </div>
+          )}
+          {collapsed && (
+            <img src="/logo.png" alt="AtentAI" className="h-8 w-8 mx-auto object-contain" />
           )}
           <Button
             variant="ghost"
@@ -156,7 +159,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
             onClick={onToggle}
             className={cn(
               'text-white hover:bg-white/10 shrink-0',
-              collapsed && 'mx-auto'
+              collapsed && 'absolute right-1 top-3'
             )}
           >
             {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}

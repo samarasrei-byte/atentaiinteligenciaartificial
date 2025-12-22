@@ -24,8 +24,11 @@ import {
   Zap,
   BarChart3,
   Clock,
+  Menu,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useNotifications } from '@/hooks/useNotifications';
+import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
 import AppSidebar from '@/components/layout/AppSidebar';
 
@@ -47,11 +50,13 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const { user, profile, roles, signOut, loading, hasRole } = useAuth();
   const { toast } = useToast();
+  const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
   const [subscription, setSubscription] = useState<any>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState({
     simulations: 0,
     aiChats: 0,
@@ -239,26 +244,64 @@ const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <AppSidebar 
-        collapsed={sidebarCollapsed} 
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-        variant="user"
-      />
+      {/* Mobile Sidebar Overlay */}
+      {mobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
+      {/* Sidebar - Hidden on mobile */}
+      <div className="hidden lg:block">
+        <AppSidebar 
+          collapsed={sidebarCollapsed} 
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
+          variant="user"
+        />
+      </div>
+      
+      {/* Mobile Sidebar */}
+      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <AppSidebar 
+          collapsed={false} 
+          onToggle={() => setMobileMenuOpen(false)} 
+          variant="user"
+        />
+      </div>
+      
+      <main className={`flex-1 transition-all duration-300 lg:${sidebarCollapsed ? 'ml-16' : 'ml-64'}`}>
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-6 py-4">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-lg border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-foreground">
-                Bem-vindo, {profile?.full_name?.split(' ')[0] || 'Usuário'}!
-              </h1>
-              <p className="text-sm text-muted-foreground">
-                Painel de controle da Reforma Tributária
-              </p>
-            </div>
             <div className="flex items-center gap-3">
-              {getPlanBadge()}
+              {/* Mobile Menu Button */}
+              <Button
+                variant="ghost"
+                size="icon"
+                className="lg:hidden"
+                onClick={() => setMobileMenuOpen(true)}
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+              <div>
+                <h1 className="text-lg lg:text-2xl font-bold text-foreground">
+                  Bem-vindo, {profile?.full_name?.split(' ')[0] || 'Usuário'}!
+                </h1>
+                <p className="text-xs lg:text-sm text-muted-foreground hidden sm:block">
+                  Painel de controle da Reforma Tributária
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 lg:gap-3">
+              <NotificationCenter
+                notifications={notifications}
+                unreadCount={unreadCount}
+                onMarkAsRead={markAsRead}
+                onMarkAllAsRead={markAllAsRead}
+                onClear={clearNotifications}
+              />
+              <div className="hidden sm:block">{getPlanBadge()}</div>
               <Button 
                 variant="outline" 
                 size="sm"
