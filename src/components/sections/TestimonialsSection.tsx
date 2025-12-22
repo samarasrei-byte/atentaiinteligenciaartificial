@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 
 const testimonials = [
   {
@@ -71,10 +72,14 @@ const testimonials = [
 ];
 
 export function TestimonialsSection() {
+  const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
+
   return (
-    <section id="testimonials" className="py-24 bg-background">
+    <section ref={ref} id="testimonials" className="py-24 bg-background">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
+        <div className={`text-center mb-16 transition-all duration-700 ${
+          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+        }`}>
           <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
             Depoimentos
           </Badge>
@@ -90,7 +95,10 @@ export function TestimonialsSection() {
           {testimonials.map((testimonial, index) => (
             <Card 
               key={index} 
-              className="bg-card border-border hover:shadow-lg transition-all hover:scale-[1.02] relative overflow-hidden"
+              className={`bg-card border-border hover:shadow-lg transition-all hover:scale-[1.02] relative overflow-hidden ${
+                isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: `${index * 100}ms`, transitionDuration: '500ms' }}
             >
               <CardContent className="pt-6">
                 <Quote className="absolute top-4 right-4 h-8 w-8 text-primary/10" />
