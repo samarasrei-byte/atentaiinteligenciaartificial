@@ -142,11 +142,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
       >
         {/* Logo & Toggle */}
         <div className="flex items-center justify-between p-4 border-b border-slate-700">
-        {!collapsed && (
+          {!collapsed && (
             <div className="flex items-center gap-2">
-              <img src="/logo.png" alt="Atente Aí" className="h-8 w-8" />
+              <img src="/logo.png" alt="AtentAI" className="h-8 w-8" />
               <span className="text-lg font-bold text-white">
-                Atente Aí
+                AtentAI
               </span>
             </div>
           )}

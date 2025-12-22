@@ -37,7 +37,7 @@ export function Footer({ onNavigate }: FooterProps) {
             <div className="flex items-center gap-2 mb-4">
               <img 
                 src="/logo.png" 
-                alt="Atente Aí" 
+                alt="AtentAI" 
                 className="h-10 w-auto"
               />
             </div>
@@ -134,7 +134,7 @@ export function Footer({ onNavigate }: FooterProps) {
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-sm text-secondary-foreground/60">
-              © {currentYear} Atente Aí. Todos os direitos reservados.
+              © {currentYear} AtentAI. Todos os direitos reservados.
             </p>
             <div className="flex items-center gap-6 text-sm text-secondary-foreground/60">
               {legal.map((item) => (
