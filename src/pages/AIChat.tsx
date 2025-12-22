@@ -190,7 +190,7 @@ const AIChat = () => {
   };
 
   const handleUpgrade = () => {
-    navigate('/plano/atento-ai');
+    navigate('/plano/atente-ai');
   };
 
   if (authLoading || limitLoading) {
@@ -217,7 +217,7 @@ const AIChat = () => {
             </Button>
             <div className="flex items-center gap-2">
               <Brain className="h-6 w-6 text-teal-400" />
-              <span className="text-xl font-bold text-white">Atento AI</span>
+              <span className="text-xl font-bold text-white">Atente Aí</span>
             </div>
           </div>
 
@@ -295,7 +295,7 @@ const AIChat = () => {
               <div className="text-center py-8">
                 <Brain className="h-16 w-16 text-teal-400 mx-auto mb-4 opacity-50" />
                 <h3 className="text-xl font-semibold text-white mb-2">
-                  Olá! Sou o Atento AI
+                  Olá! Sou o Atente Aí
                 </h3>
                 <p className="text-slate-400 max-w-lg mx-auto mb-6">
                   Sou especialista em legislação tributária brasileira. Posso ajudar com a Reforma Tributária 2026,

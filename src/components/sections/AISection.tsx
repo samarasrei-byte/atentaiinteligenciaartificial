@@ -99,7 +99,7 @@ Esta é uma das maiores conquistas sociais da reforma!`,
 
 **Atenção:** A redução se aplica apenas a serviços prestados para pessoas físicas.`,
 
-  "default": `Olá! Sou o **Atento AI**, seu assistente especializado na Reforma Tributária de 2026. 🇧🇷
+  "default": `Olá! Sou o assistente **Atente Aí**, especializado na Reforma Tributária de 2026. 🇧🇷
 
 Posso te ajudar com informações sobre:
 • **IBS e CBS** - Os novos tributos
@@ -256,7 +256,7 @@ export function AISection() {
               <span className="gradient-text"> Instantaneamente</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              O Atento AI foi treinado com toda a legislação da Reforma Tributária. 
+              O Atente Aí foi treinado com toda a legislação da Reforma Tributária. 
               Pergunte qualquer coisa sobre IBS, CBS, IS, transição e muito mais.
             </p>
           </div>
@@ -270,7 +270,7 @@ export function AISection() {
                     <Bot className="w-5 h-5 text-primary" />
                   </div>
                   <div>
-                    <CardTitle className="text-lg">Atento AI</CardTitle>
+                    <CardTitle className="text-lg">Atente Aí</CardTitle>
                     <CardDescription className="flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
                       Online • Pronta para ajudar
@@ -364,9 +364,9 @@ export function AISection() {
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-accent to-accent/80 flex items-center justify-center mb-4 shadow-gold">
                   <Sparkles className="w-6 h-6 text-accent-foreground" />
                 </div>
-                <CardTitle>Atento AI Premium</CardTitle>
+                <CardTitle>Atente Aí Premium</CardTitle>
                 <CardDescription>
-                  Desbloqueie todo o potencial do Atento AI
+                  Desbloqueie todo o potencial do Atente Aí
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
