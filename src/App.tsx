@@ -25,6 +25,7 @@ import PlanoSimulador from "./pages/PlanoSimulador";
 import PlanoAtenteAi from "./pages/PlanoAtenteAi";
 import ConsultationChatPage from "./pages/ConsultationChatPage";
 import ConsultationHistory from "./pages/ConsultationHistory";
+import Profile from "./pages/Profile";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,11 @@ const App = () => (
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } />
             
