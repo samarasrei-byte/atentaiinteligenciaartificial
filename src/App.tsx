@@ -28,6 +28,7 @@ import ConsultationHistory from "./pages/ConsultationHistory";
 import Profile from "./pages/Profile";
 import PlanComparison from "./pages/PlanComparison";
 import PaymentSuccess from "./pages/PaymentSuccess";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/termos" element={<TermosDeUso />} />
             <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+            <Route path="/faq" element={<FAQ />} />
             
             {/* Protected routes - require authentication */}
             <Route path="/dashboard" element={
