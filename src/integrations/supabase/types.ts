@@ -447,6 +447,92 @@ export type Database = {
         }
         Relationships: []
       }
+      tax_autopilot: {
+        Row: {
+          accumulated_savings_cents: number
+          activity_type: string
+          created_at: string
+          current_structure: string
+          id: string
+          is_active: boolean
+          last_optimization_at: string | null
+          last_optimization_description: string | null
+          monthly_expenses_cents: number
+          monthly_revenue_cents: number
+          next_reevaluation_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          accumulated_savings_cents?: number
+          activity_type?: string
+          created_at?: string
+          current_structure?: string
+          id?: string
+          is_active?: boolean
+          last_optimization_at?: string | null
+          last_optimization_description?: string | null
+          monthly_expenses_cents?: number
+          monthly_revenue_cents?: number
+          next_reevaluation_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          accumulated_savings_cents?: number
+          activity_type?: string
+          created_at?: string
+          current_structure?: string
+          id?: string
+          is_active?: boolean
+          last_optimization_at?: string | null
+          last_optimization_description?: string | null
+          monthly_expenses_cents?: number
+          monthly_revenue_cents?: number
+          next_reevaluation_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tax_autopilot_alerts: {
+        Row: {
+          alert_type: string
+          autopilot_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          autopilot_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          autopilot_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tax_autopilot_alerts_autopilot_id_fkey"
+            columns: ["autopilot_id"]
+            isOneToOne: false
+            referencedRelation: "tax_autopilot"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       tax_simulations: {
         Row: {
           cbs_cents: number | null
