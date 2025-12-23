@@ -629,10 +629,10 @@ const AdminPanel = () => {
                 />
                 <QuickAction 
                   icon={BarChart3}
-                  title="Ver Relatórios"
-                  description="Análises detalhadas e métricas"
+                  title="Relatórios Avançados"
+                  description="Exporte métricas em PDF/Excel"
                   gradient="from-info to-info/80"
-                  onClick={() => setActiveTab('subscriptions')}
+                  onClick={() => navigate('/admin/reports')}
                 />
                 <QuickAction 
                   icon={Settings}

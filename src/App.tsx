@@ -15,6 +15,7 @@ import Simulator from "./pages/Simulator";
 import Contadores from "./pages/Contadores";
 import ContadorPanel from "./pages/ContadorPanel";
 import AdminPanel from "./pages/AdminPanel";
+import AdminReports from "./pages/AdminReports";
 import LocacaoSimulator from "./pages/LocacaoSimulator";
 import RegimeComparator from "./pages/RegimeComparator";
 import TermosDeUso from "./pages/TermosDeUso";
@@ -89,6 +90,11 @@ const App = () => (
             <Route path="/admin" element={
               <ProtectedRoute>
                 <AdminPanel />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/reports" element={
+              <ProtectedRoute>
+                <AdminReports />
               </ProtectedRoute>
             } />
             <Route path="/chat/:consultationId" element={
