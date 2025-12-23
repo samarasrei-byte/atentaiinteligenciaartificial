@@ -19,6 +19,12 @@ import {
   Calendar,
   DollarSign,
   ClipboardList,
+  BarChart3,
+  Headphones,
+  UserCheck,
+  PieChart,
+  Wallet,
+  Star,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -32,7 +38,7 @@ import {
 interface SidebarItem {
   icon: React.ElementType;
   label: string;
-  href: string;
+  tabId: string;
   badge?: string;
 }
 
@@ -40,36 +46,49 @@ interface AppSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   variant?: 'user' | 'admin' | 'contador';
+  activeTab?: string;
+  onTabChange?: (tab: string) => void;
 }
 
 const userItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', href: '/dashboard' },
-  { icon: MessageSquare, label: 'Chat IA', href: '/ai-chat' },
-  { icon: Calculator, label: 'Simulador', href: '/simulator' },
-  { icon: Home, label: 'Locação', href: '/locacao', badge: 'Novo' },
-  { icon: Scale, label: 'Comparador', href: '/regime-comparator', badge: 'Novo' },
-  { icon: Users, label: 'Contadores', href: '/contadores' },
-  { icon: ClipboardList, label: 'Histórico', href: '/consultations' },
+  { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+  { icon: MessageSquare, label: 'Chat IA', tabId: 'ai-chat' },
+  { icon: Calculator, label: 'Simulador', tabId: 'simulator' },
+  { icon: Home, label: 'Locação', tabId: 'locacao', badge: 'Novo' },
+  { icon: Scale, label: 'Comparador', tabId: 'comparator', badge: 'Novo' },
+  { icon: Users, label: 'Contadores', tabId: 'contadores' },
+  { icon: ClipboardList, label: 'Histórico', tabId: 'history' },
+  { icon: Headphones, label: 'Suporte', tabId: 'support' },
 ];
 
 const adminItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Visão Geral', href: '/admin' },
-  { icon: Users, label: 'Usuários', href: '/admin?tab=users' },
-  { icon: TrendingUp, label: 'Métricas', href: '/admin?tab=metrics' },
-  { icon: DollarSign, label: 'Receitas', href: '/admin?tab=revenue' },
-  { icon: Settings, label: 'Configurações', href: '/admin?tab=settings' },
+  { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+  { icon: Users, label: 'Usuários', tabId: 'users' },
+  { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
+  { icon: DollarSign, label: 'Receitas', tabId: 'revenue' },
+  { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
+  { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
+  { icon: Headphones, label: 'Suporte', tabId: 'support' },
+  { icon: Settings, label: 'Configurações', tabId: 'settings' },
 ];
 
 const contadorItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Visão Geral', href: '/contador' },
-  { icon: Calendar, label: 'Consultas', href: '/contador?tab=consultations' },
-  { icon: ClipboardList, label: 'Histórico', href: '/consultations' },
-  { icon: Users, label: 'Clientes', href: '/contador?tab=clients' },
-  { icon: DollarSign, label: 'Ganhos', href: '/contador?tab=earnings' },
-  { icon: FileText, label: 'Perfil', href: '/contador?tab=profile' },
+  { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+  { icon: BarChart3, label: 'Estatísticas', tabId: 'stats' },
+  { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
+  { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
+  { icon: Wallet, label: 'Ganhos', tabId: 'earnings' },
+  { icon: Star, label: 'Avaliações', tabId: 'reviews' },
+  { icon: FileText, label: 'Meu Perfil', tabId: 'profile' },
 ];
 
-const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 'user' }) => {
+const AppSidebar: React.FC<AppSidebarProps> = ({ 
+  collapsed, 
+  onToggle, 
+  variant = 'user',
+  activeTab = 'overview',
+  onTabChange
+}) => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, profile, signOut, hasRole } = useAuth();
@@ -81,37 +100,44 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
     navigate('/');
   };
 
-  const isActive = (href: string) => {
-    if (href.includes('?')) {
-      return location.pathname + location.search === href;
+  const handleItemClick = (tabId: string) => {
+    if (onTabChange) {
+      onTabChange(tabId);
     }
-    return location.pathname === href;
   };
 
   const SidebarLink = ({ item }: { item: SidebarItem }) => {
     const Icon = item.icon;
-    const active = isActive(item.href);
+    const active = activeTab === item.tabId;
 
     const content = (
       <button
-        onClick={() => navigate(item.href)}
+        onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group',
+          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
           active
-            ? 'bg-primary text-white shadow-md'
-            : 'text-white/80 hover:bg-white/10 hover:text-white'
+            ? 'bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25'
+            : 'text-slate-300 hover:bg-white/10 hover:text-white'
         )}
       >
-        <Icon className={cn('h-5 w-5 shrink-0', collapsed && 'mx-auto')} />
+        <div className={cn(
+          'p-1.5 rounded-lg transition-all',
+          active ? 'bg-white/20' : 'bg-transparent group-hover:bg-white/5'
+        )}>
+          <Icon className={cn('h-4 w-4 shrink-0', collapsed && 'mx-auto')} />
+        </div>
         {!collapsed && (
           <>
             <span className="font-medium text-sm">{item.label}</span>
             {item.badge && (
-              <Badge className="ml-auto bg-accent text-accent-foreground text-xs">
+              <Badge className="ml-auto bg-accent text-accent-foreground text-[10px] px-1.5 py-0.5">
                 {item.badge}
               </Badge>
             )}
           </>
+        )}
+        {active && (
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-l-full" />
         )}
       </button>
     );
@@ -120,7 +146,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2 bg-slate-800 text-white border-slate-700">
+          <TooltipContent side="right" className="flex items-center gap-2 bg-slate-900 text-white border-slate-700 shadow-xl">
             {item.label}
             {item.badge && (
               <Badge className="bg-accent text-accent-foreground text-xs">
@@ -139,79 +165,162 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
     <TooltipProvider>
       <aside
         className={cn(
-          'fixed left-0 top-0 z-40 h-screen bg-slate-800 border-r border-slate-700 transition-all duration-300 flex flex-col',
-          collapsed ? 'w-16' : 'w-64'
+          'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
+          'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800',
+          'border-r border-slate-700/50',
+          collapsed ? 'w-20' : 'w-72'
         )}
       >
         {/* Logo & Toggle */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700">
+        <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
           {!collapsed && (
             <div className="flex items-center gap-3">
-              <img src="/logo-atentai.png" alt="AtentAI" className="h-12 w-auto object-contain" />
-              <span className="text-lg font-bold text-white">
-                AtentAI
-              </span>
+              <div className="relative">
+                <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full" />
+                <img 
+                  src="/logo-atentai.png" 
+                  alt="AtentAI" 
+                  className="h-10 w-10 object-contain relative z-10" 
+                />
+              </div>
+              <div className="flex flex-col">
+                <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
+                  AtentAI
+                </span>
+                <span className="text-[10px] text-slate-400 uppercase tracking-wider">
+                  {variant === 'admin' ? 'Administração' : variant === 'contador' ? 'Contador' : 'Plataforma'}
+                </span>
+              </div>
             </div>
           )}
           {collapsed && (
-            <img src="/logo-atentai.png" alt="AtentAI" className="h-10 w-10 mx-auto object-contain" />
+            <div className="mx-auto relative">
+              <div className="absolute inset-0 bg-primary/30 blur-lg rounded-full" />
+              <img 
+                src="/logo-atentai.png" 
+                alt="AtentAI" 
+                className="h-10 w-10 object-contain relative z-10" 
+              />
+            </div>
           )}
           <Button
             variant="ghost"
             size="icon"
             onClick={onToggle}
             className={cn(
-              'text-white hover:bg-white/10 shrink-0',
-              collapsed && 'absolute right-1 top-3'
+              'text-slate-400 hover:text-white hover:bg-white/10 shrink-0 rounded-lg',
+              collapsed && 'absolute -right-3 top-6 bg-slate-800 border border-slate-700 shadow-lg h-6 w-6'
             )}
           >
-            {collapsed ? <ChevronRight className="h-5 w-5" /> : <ChevronLeft className="h-5 w-5" />}
+            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
           </Button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700">
+          {!collapsed && (
+            <p className="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+              Menu Principal
+            </p>
+          )}
           {items.map((item) => (
-            <SidebarLink key={item.href} item={item} />
+            <SidebarLink key={item.tabId} item={item} />
           ))}
         </nav>
 
         {/* Role Switchers */}
         {(hasRole('admin') || hasRole('contador')) && variant === 'user' && (
-          <div className="p-3 border-t border-slate-700 space-y-1">
+          <div className="p-3 border-t border-slate-700/50 space-y-1">
+            {!collapsed && (
+              <p className="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                Outros Painéis
+              </p>
+            )}
             {hasRole('admin') && (
-              <button
-                onClick={() => navigate('/admin')}
-                className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-white/80 hover:bg-red-500/20 hover:text-red-400',
-                  collapsed && 'justify-center'
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
+                      'text-slate-300 hover:bg-red-500/10 hover:text-red-400 group',
+                      collapsed && 'justify-center'
+                    )}
+                  >
+                    <div className="p-1.5 rounded-lg bg-red-500/10 group-hover:bg-red-500/20">
+                      <Shield className="h-4 w-4 shrink-0" />
+                    </div>
+                    {!collapsed && <span className="font-medium text-sm">Painel Admin</span>}
+                  </button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+                    Painel Admin
+                  </TooltipContent>
                 )}
-              >
-                <Shield className="h-5 w-5 shrink-0" />
-                {!collapsed && <span className="font-medium text-sm">Painel Admin</span>}
-              </button>
+              </Tooltip>
             )}
             {hasRole('contador') && (
-              <button
-                onClick={() => navigate('/contador')}
-                className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-white/80 hover:bg-blue-500/20 hover:text-blue-400',
-                  collapsed && 'justify-center'
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => navigate('/contador')}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
+                      'text-slate-300 hover:bg-blue-500/10 hover:text-blue-400 group',
+                      collapsed && 'justify-center'
+                    )}
+                  >
+                    <div className="p-1.5 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20">
+                      <FileText className="h-4 w-4 shrink-0" />
+                    </div>
+                    {!collapsed && <span className="font-medium text-sm">Painel Contador</span>}
+                  </button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+                    Painel Contador
+                  </TooltipContent>
                 )}
-              >
-                <FileText className="h-5 w-5 shrink-0" />
-                {!collapsed && <span className="font-medium text-sm">Painel Contador</span>}
-              </button>
+              </Tooltip>
             )}
           </div>
         )}
 
+        {/* Back to User Dashboard for Admin/Contador */}
+        {(variant === 'admin' || variant === 'contador') && (
+          <div className="p-3 border-t border-slate-700/50">
+            <Tooltip delayDuration={0}>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className={cn(
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
+                    'text-slate-300 hover:bg-primary/10 hover:text-primary group',
+                    collapsed && 'justify-center'
+                  )}
+                >
+                  <div className="p-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20">
+                    <Home className="h-4 w-4 shrink-0" />
+                  </div>
+                  {!collapsed && <span className="font-medium text-sm">Painel Usuário</span>}
+                </button>
+              </TooltipTrigger>
+              {collapsed && (
+                <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+                  Painel Usuário
+                </TooltipContent>
+              )}
+            </Tooltip>
+          </div>
+        )}
+
         {/* User Info & Logout */}
-        <div className="p-3 border-t border-slate-700">
+        <div className="p-3 border-t border-slate-700/50">
           {!collapsed && (
-            <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="h-8 w-8 rounded-full bg-primary/30 flex items-center justify-center">
-                <span className="text-sm font-medium text-white">
+            <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-slate-800/50">
+              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+                <span className="text-sm font-bold text-white">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
@@ -219,7 +328,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
                 <p className="text-sm font-medium text-white truncate">
                   {profile?.full_name || 'Usuário'}
                 </p>
-                <p className="text-xs text-white/60 truncate">
+                <p className="text-xs text-slate-400 truncate">
                   {user?.email}
                 </p>
               </div>
@@ -230,16 +339,21 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ collapsed, onToggle, variant = 
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all text-white/80 hover:bg-red-500/20 hover:text-red-400',
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
+                  'text-slate-400 hover:bg-red-500/10 hover:text-red-400 group',
                   collapsed && 'justify-center'
                 )}
               >
-                <LogOut className="h-5 w-5 shrink-0" />
-                {!collapsed && <span className="font-medium text-sm">Sair</span>}
+                <div className="p-1.5 rounded-lg group-hover:bg-red-500/10">
+                  <LogOut className="h-4 w-4 shrink-0" />
+                </div>
+                {!collapsed && <span className="font-medium text-sm">Sair da Conta</span>}
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700">Sair</TooltipContent>
+              <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+                Sair
+              </TooltipContent>
             )}
           </Tooltip>
         </div>
