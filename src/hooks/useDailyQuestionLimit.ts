@@ -1,16 +1,20 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { DAILY_QUESTION_LIMIT } from '@/lib/stripe';
+import { DAILY_QUESTION_LIMIT, PREMIUM_DAILY_LIMIT, CONTADOR_DAILY_LIMIT } from '@/lib/stripe';
 
 export function useDailyQuestionLimit() {
   const { user, subscription } = useAuth();
   const [questionsUsed, setQuestionsUsed] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  const isPremium = subscription.subscribed && subscription.plan === 'premium';
-  const questionsRemaining = isPremium ? Infinity : Math.max(0, DAILY_QUESTION_LIMIT - questionsUsed);
-  const canAsk = isPremium || questionsRemaining > 0;
+  // Determine limit based on plan
+  const isContador = subscription.subscribed && subscription.plan === 'contador';
+  const isPremium = subscription.subscribed && (subscription.plan === 'premium' || subscription.plan === 'autonomo');
+  
+  const dailyLimit = isContador ? CONTADOR_DAILY_LIMIT : isPremium ? PREMIUM_DAILY_LIMIT : DAILY_QUESTION_LIMIT;
+  const questionsRemaining = Math.max(0, dailyLimit - questionsUsed);
+  const canAsk = questionsRemaining > 0 || isContador;
 
   const fetchUsage = useCallback(async () => {
     if (!user) {
@@ -39,7 +43,7 @@ export function useDailyQuestionLimit() {
   }, [user]);
 
   const incrementUsage = useCallback(async () => {
-    if (!user || isPremium) return true;
+    if (!user || isContador) return true;
 
     try {
       const { data, error } = await supabase.rpc('increment_daily_questions', {
@@ -57,7 +61,7 @@ export function useDailyQuestionLimit() {
       console.error('Error incrementing usage:', error);
       return false;
     }
-  }, [user, isPremium, questionsUsed]);
+  }, [user, isContador, questionsUsed]);
 
   useEffect(() => {
     fetchUsage();
@@ -68,9 +72,10 @@ export function useDailyQuestionLimit() {
     questionsRemaining,
     canAsk,
     isPremium,
+    isContador,
     loading,
     incrementUsage,
     refreshUsage: fetchUsage,
-    limit: DAILY_QUESTION_LIMIT,
+    limit: dailyLimit,
   };
 }
