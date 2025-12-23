@@ -14,8 +14,10 @@ import Pricing from "./pages/Pricing";
 import Simulator from "./pages/Simulator";
 import Contadores from "./pages/Contadores";
 import ContadorPanel from "./pages/ContadorPanel";
+import ContadorOnboarding from "./pages/ContadorOnboarding";
 import AdminPanel from "./pages/AdminPanel";
 import AdminReports from "./pages/AdminReports";
+import RoleManagement from "./pages/RoleManagement";
 import LocacaoSimulator from "./pages/LocacaoSimulator";
 import RegimeComparator from "./pages/RegimeComparator";
 import TermosDeUso from "./pages/TermosDeUso";
@@ -99,9 +101,19 @@ const App = () => (
                 <ContadorPanel />
               </ProtectedRoute>
             } />
+            <Route path="/contador/onboarding" element={
+              <ProtectedRoute>
+                <ContadorOnboarding />
+              </ProtectedRoute>
+            } />
             <Route path="/admin" element={
               <ProtectedRoute>
                 <AdminPanel />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin/roles" element={
+              <ProtectedRoute>
+                <RoleManagement />
               </ProtectedRoute>
             } />
             <Route path="/admin/reports" element={

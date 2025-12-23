@@ -157,12 +157,21 @@ const ContadorPanel = () => {
         .single();
 
       if (profileData) {
+        // Check if profile is complete (has CRC number)
+        if (!profileData.crc_number) {
+          navigate('/contador/onboarding');
+          return;
+        }
         setContadorProfile(profileData);
         setCrcNumber(profileData.crc_number || '');
         setSpecialty(profileData.specialty || '');
         setBio(profileData.bio || '');
         setHourlyRate(((profileData.hourly_rate_cents || 15000) / 100).toString());
         setIsAvailable(profileData.available);
+      } else {
+        // No profile exists, redirect to onboarding
+        navigate('/contador/onboarding');
+        return;
       }
 
       const { data: consultData } = await supabase
