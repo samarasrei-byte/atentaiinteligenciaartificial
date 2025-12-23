@@ -45,7 +45,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             <Button 
               variant="accent" 
               size="xl" 
-              onClick={() => navigate('/pricing')}
+              onClick={() => navigate('/onboarding')}
               className="w-full sm:w-auto group text-lg px-8"
             >
               Começar Agora
@@ -58,13 +58,13 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               className="w-full sm:w-auto border-white/20 text-white hover:bg-white/10"
             >
               <Users className="w-5 h-5 mr-2" />
-              Ver Plano Contador
+              Ver Planos
             </Button>
           </div>
 
           {/* Price hint */}
           <p className="mt-6 text-white/50 text-sm animate-fade-in" style={{ animationDelay: "0.3s" }}>
-            A partir de R$56/mês • AtentAI Premium R$98/mês • <span className="text-accent font-semibold">Contador Premium R$170/mês</span>
+            Simulador R$56/mês • AtentAI Premium R$98/mês • <span className="text-accent font-semibold">Contador Premium R$170/mês</span>
           </p>
         </div>
       </div>
