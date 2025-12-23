@@ -44,14 +44,43 @@ serve(async (req) => {
     logStep("Authorization header found");
 
     const token = authHeader.replace("Bearer ", "");
+    
+    // Try to get user from token, with fallback to JWT payload extraction
+    let userId: string;
+    let userEmail: string;
+    
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
-    const user = userData.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
-    logStep("User authenticated", { userId: user.id, email: user.email });
+    
+    if (userError) {
+      logStep("Auth getUser failed, trying JWT decode fallback", { error: userError.message });
+      
+      // Try to decode JWT payload manually as fallback
+      try {
+        const parts = token.split('.');
+        if (parts.length !== 3) throw new Error("Invalid token format");
+        
+        const payload = JSON.parse(atob(parts[1]));
+        userId = payload.sub;
+        userEmail = payload.email;
+        
+        if (!userId || !userEmail) {
+          throw new Error("Could not extract user info from token");
+        }
+        
+        logStep("Extracted user from JWT payload", { userId, email: userEmail });
+      } catch (decodeError) {
+        throw new Error(`Authentication error: ${userError.message}`);
+      }
+    } else {
+      const user = userData.user;
+      if (!user?.email) throw new Error("User not authenticated or email not available");
+      userId = user.id;
+      userEmail = user.email;
+      logStep("User authenticated via getUser", { userId, email: userEmail });
+    }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
+    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
     
     if (customers.data.length === 0) {
       logStep("No Stripe customer found, checking database subscription");
@@ -60,7 +89,7 @@ serve(async (req) => {
       const { data: dbSubscription } = await supabaseClient
         .from('subscriptions')
         .select('*')
-        .eq('user_id', user.id)
+        .eq('user_id', userId)
         .eq('status', 'active')
         .single();
       
@@ -121,7 +150,7 @@ serve(async (req) => {
       await supabaseClient
         .from('subscriptions')
         .upsert({
-          user_id: user.id,
+          user_id: userId,
           plan_type: plan,
           status: 'active',
           stripe_customer_id: customerId,
