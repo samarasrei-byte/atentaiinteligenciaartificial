@@ -18,18 +18,19 @@ export function useScheduleNotifications() {
   const checkUpcomingConsultations = useCallback(async () => {
     if (!user) return;
 
-    const isContador = hasRole('contador');
     const now = new Date();
     const oneHourFromNow = new Date(now.getTime() + 60 * 60 * 1000);
+    const twentyFourHoursFromNow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
     const thirtyMinutesFromNow = new Date(now.getTime() + 30 * 60 * 1000);
+    const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
 
-    // Query for consultations within the next hour
+    // Query for consultations within the next 24 hours
     const { data: consultations } = await supabase
       .from('consultations')
       .select('id, scheduled_at, status, user_id, contador_id')
       .eq('status', 'scheduled')
       .gte('scheduled_at', now.toISOString())
-      .lte('scheduled_at', oneHourFromNow.toISOString())
+      .lte('scheduled_at', twentyFourHoursFromNow.toISOString())
       .or(`user_id.eq.${user.id},contador_id.eq.${user.id}`);
 
     if (!consultations) return;
@@ -39,7 +40,42 @@ export function useScheduleNotifications() {
       
       const scheduledTime = new Date(consultation.scheduled_at);
       const timeDiff = scheduledTime.getTime() - now.getTime();
+      const hoursUntil = Math.round(timeDiff / (60 * 60 * 1000));
       const minutesUntil = Math.round(timeDiff / (60 * 1000));
+
+      // Check for 24-hour warning (between 23.5h and 24.5h)
+      const twentyThreeHalfHoursFromNow = new Date(now.getTime() + 23.5 * 60 * 60 * 1000);
+      const twentyFourHalfHoursFromNow = new Date(now.getTime() + 24.5 * 60 * 60 * 1000);
+      if (scheduledTime > twentyThreeHalfHoursFromNow && scheduledTime <= twentyFourHalfHoursFromNow) {
+        const notificationKey = `consultation-reminder-${consultation.id}-24h`;
+        const alreadyNotified = localStorage.getItem(notificationKey);
+        
+        if (!alreadyNotified) {
+          toast({
+            title: '📅 Consulta em 24 horas',
+            description: `Você tem uma consulta agendada para amanhã às ${scheduledTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}.`,
+            duration: 10000,
+          });
+          localStorage.setItem(notificationKey, 'true');
+        }
+      }
+
+      // Check for 1-hour warning (between 55min and 65min)
+      const fiftyFiveMinutesFromNow = new Date(now.getTime() + 55 * 60 * 1000);
+      const sixtyFiveMinutesFromNow = new Date(now.getTime() + 65 * 60 * 1000);
+      if (scheduledTime > fiftyFiveMinutesFromNow && scheduledTime <= sixtyFiveMinutesFromNow) {
+        const notificationKey = `consultation-reminder-${consultation.id}-1h`;
+        const alreadyNotified = localStorage.getItem(notificationKey);
+        
+        if (!alreadyNotified) {
+          toast({
+            title: '⏰ Consulta em 1 hora!',
+            description: `Sua consulta começa às ${scheduledTime.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}. Prepare-se!`,
+            duration: 15000,
+          });
+          localStorage.setItem(notificationKey, 'true');
+        }
+      }
 
       // Check for 30-minute warning
       if (scheduledTime <= thirtyMinutesFromNow && scheduledTime > now) {
@@ -57,7 +93,6 @@ export function useScheduleNotifications() {
       }
 
       // Check for 5-minute warning
-      const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
       if (scheduledTime <= fiveMinutesFromNow && scheduledTime > now) {
         const notificationKey = `consultation-reminder-${consultation.id}-5`;
         const alreadyNotified = sessionStorage.getItem(notificationKey);

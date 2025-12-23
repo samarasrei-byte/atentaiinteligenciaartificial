@@ -1,10 +1,10 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -19,15 +19,17 @@ import {
   ChevronLeft,
   ChevronRight,
   Plus,
-  Filter,
   LayoutGrid,
   List,
-  AlertCircle,
-  Zap
+  Zap,
+  RefreshCw
 } from 'lucide-react';
-import { format, addDays, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, isToday, isBefore, addHours } from 'date-fns';
+import { format, addDays, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, isToday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 interface Appointment {
   id: string;
@@ -37,112 +39,109 @@ interface Appointment {
   date: Date;
   time: string;
   duration: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'completed' | 'cancelled' | 'scheduled';
   notes?: string;
   type: 'consultation' | 'followup' | 'urgent';
   meetingType: 'video' | 'presencial' | 'phone';
+  userId: string;
 }
 
-const generateMockAppointments = (): Appointment[] => {
-  const today = new Date();
-  return [
-    {
-      id: '1',
-      clientName: 'Maria Silva',
-      clientEmail: 'maria@empresa.com',
-      clientPhone: '(11) 99999-1111',
-      date: today,
-      time: '09:00',
-      duration: 60,
-      status: 'confirmed',
-      notes: 'Discussão sobre mudança de regime tributário para Lucro Presumido',
-      type: 'consultation',
-      meetingType: 'video',
-    },
-    {
-      id: '2',
-      clientName: 'João Santos',
-      clientEmail: 'joao@tech.com',
-      clientPhone: '(11) 99999-2222',
-      date: today,
-      time: '11:30',
-      duration: 30,
-      status: 'pending',
-      type: 'followup',
-      meetingType: 'phone',
-    },
-    {
-      id: '3',
-      clientName: 'Carlos Mendes',
-      clientEmail: 'carlos@comercio.com',
-      date: today,
-      time: '14:00',
-      duration: 45,
-      status: 'confirmed',
-      notes: 'Análise de documentos para Reforma Tributária',
-      type: 'urgent',
-      meetingType: 'video',
-    },
-    {
-      id: '4',
-      clientName: 'Ana Costa',
-      clientEmail: 'ana@startup.com',
-      date: addDays(today, 1),
-      time: '10:00',
-      duration: 60,
-      status: 'confirmed',
-      notes: 'Planejamento tributário anual',
-      type: 'consultation',
-      meetingType: 'presencial',
-    },
-    {
-      id: '5',
-      clientName: 'Pedro Oliveira',
-      clientEmail: 'pedro@industria.com',
-      date: addDays(today, 1),
-      time: '15:00',
-      duration: 45,
-      status: 'pending',
-      type: 'consultation',
-      meetingType: 'video',
-    },
-    {
-      id: '6',
-      clientName: 'Fernanda Lima',
-      clientEmail: 'fernanda@servicos.com',
-      date: addDays(today, 2),
-      time: '09:30',
-      duration: 60,
-      status: 'confirmed',
-      type: 'followup',
-      meetingType: 'phone',
-    },
-    {
-      id: '7',
-      clientName: 'Ricardo Souza',
-      clientEmail: 'ricardo@tech.com',
-      date: addDays(today, 3),
-      time: '11:00',
-      duration: 30,
-      status: 'pending',
-      type: 'urgent',
-      meetingType: 'video',
-    },
-  ];
-};
-
-const timeSlots = [
-  '08:00', '08:30', '09:00', '09:30', '10:00', '10:30',
-  '11:00', '11:30', '12:00', '12:30', '13:00', '13:30',
-  '14:00', '14:30', '15:00', '15:30', '16:00', '16:30',
-  '17:00', '17:30', '18:00'
-];
-
 export const ContadorAgenda: React.FC = () => {
-  const [appointments, setAppointments] = useState<Appointment[]>(generateMockAppointments);
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<'day' | 'week' | 'list'>('day');
   const [filterStatus, setFilterStatus] = useState<string>('all');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+
+  const fetchConsultations = async () => {
+    if (!user) return;
+
+    try {
+      // Fetch consultations where user is contador
+      const { data: consultations, error } = await supabase
+        .from('consultations')
+        .select('*')
+        .eq('contador_id', user.id)
+        .order('scheduled_at', { ascending: true });
+
+      if (error) throw error;
+
+      // Fetch profiles for client names
+      const userIds = [...new Set(consultations?.map(c => c.user_id) || [])];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, email, phone')
+        .in('user_id', userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.user_id, p]) || []);
+
+      // Transform consultations to appointments
+      const transformedAppointments: Appointment[] = (consultations || []).map(c => {
+        const profile = profileMap.get(c.user_id);
+        const scheduledDate = c.scheduled_at ? new Date(c.scheduled_at) : new Date(c.created_at);
+
+        return {
+          id: c.id,
+          clientName: profile?.full_name || 'Cliente',
+          clientEmail: profile?.email || '',
+          clientPhone: profile?.phone || undefined,
+          date: scheduledDate,
+          time: format(scheduledDate, 'HH:mm'),
+          duration: 60, // Default duration
+          status: c.status as Appointment['status'],
+          notes: c.notes || undefined,
+          type: c.status === 'pending' ? 'urgent' : 'consultation',
+          meetingType: 'video',
+          userId: c.user_id,
+        };
+      });
+
+      setAppointments(transformedAppointments);
+    } catch (error) {
+      console.error('Error fetching consultations:', error);
+      toast({
+        variant: 'destructive',
+        title: 'Erro ao carregar agenda',
+        description: 'Não foi possível carregar as consultas.',
+      });
+    } finally {
+      setIsLoading(false);
+      setIsRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchConsultations();
+
+    // Subscribe to realtime updates
+    const channel = supabase
+      .channel('contador-agenda')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'consultations',
+          filter: `contador_id=eq.${user?.id}`,
+        },
+        () => {
+          fetchConsultations();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user]);
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    fetchConsultations();
+  };
 
   const getStatusConfig = (status: Appointment['status']) => {
     const configs = {
@@ -150,8 +149,9 @@ export const ContadorAgenda: React.FC = () => {
       confirmed: { bg: 'bg-success/20', text: 'text-success', border: 'border-success/50', label: 'Confirmado', icon: CheckCircle },
       completed: { bg: 'bg-info/20', text: 'text-info', border: 'border-info/50', label: 'Concluído', icon: CheckCircle },
       cancelled: { bg: 'bg-destructive/20', text: 'text-destructive', border: 'border-destructive/50', label: 'Cancelado', icon: X },
+      scheduled: { bg: 'bg-success/20', text: 'text-success', border: 'border-success/50', label: 'Agendado', icon: CalendarIcon },
     };
-    return configs[status];
+    return configs[status] || configs.pending;
   };
 
   const getTypeConfig = (type: Appointment['type']) => {
@@ -172,16 +172,46 @@ export const ContadorAgenda: React.FC = () => {
     return icons[type];
   };
 
-  const handleConfirm = (id: string) => {
-    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'confirmed' as const } : a));
+  const handleConfirm = async (id: string) => {
+    const { error } = await supabase
+      .from('consultations')
+      .update({ status: 'scheduled' })
+      .eq('id', id);
+
+    if (error) {
+      toast({ variant: 'destructive', title: 'Erro ao confirmar consulta' });
+    } else {
+      toast({ title: 'Consulta confirmada!' });
+      fetchConsultations();
+    }
   };
 
-  const handleCancel = (id: string) => {
-    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled' as const } : a));
+  const handleCancel = async (id: string) => {
+    const { error } = await supabase
+      .from('consultations')
+      .update({ status: 'cancelled' })
+      .eq('id', id);
+
+    if (error) {
+      toast({ variant: 'destructive', title: 'Erro ao cancelar consulta' });
+    } else {
+      toast({ title: 'Consulta cancelada' });
+      fetchConsultations();
+    }
   };
 
-  const handleComplete = (id: string) => {
-    setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'completed' as const } : a));
+  const handleComplete = async (id: string) => {
+    const { error } = await supabase
+      .from('consultations')
+      .update({ status: 'completed', completed_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) {
+      toast({ variant: 'destructive', title: 'Erro ao concluir consulta' });
+    } else {
+      toast({ title: 'Consulta concluída!' });
+      fetchConsultations();
+    }
   };
 
   const filteredAppointments = useMemo(() => {
@@ -210,7 +240,7 @@ export const ContadorAgenda: React.FC = () => {
   const stats = useMemo(() => ({
     today: appointments.filter(a => isSameDay(a.date, new Date())).length,
     pending: appointments.filter(a => a.status === 'pending').length,
-    confirmed: appointments.filter(a => a.status === 'confirmed').length,
+    confirmed: appointments.filter(a => a.status === 'scheduled' || a.status === 'confirmed').length,
     urgent: appointments.filter(a => a.type === 'urgent' && a.status !== 'completed' && a.status !== 'cancelled').length,
   }), [appointments]);
 
@@ -258,7 +288,7 @@ export const ContadorAgenda: React.FC = () => {
               </div>
             </div>
             
-            <div className="flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-4 text-sm flex-wrap">
               <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-muted/50">
                 <Clock className="h-4 w-4 text-primary" />
                 <span className="font-medium">{appointment.time}</span>
@@ -302,7 +332,7 @@ export const ContadorAgenda: React.FC = () => {
                 </Button>
               </>
             )}
-            {appointment.status === 'confirmed' && (
+            {(appointment.status === 'scheduled' || appointment.status === 'confirmed') && (
               <>
                 <Button size="sm" variant="outline" className="border-primary/50">
                   <Video className="h-4 w-4" />
@@ -318,6 +348,26 @@ export const ContadorAgenda: React.FC = () => {
     );
   };
 
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-10 w-32" />
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {[1, 2, 3, 4].map(i => (
+            <Skeleton key={i} className="h-24" />
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-96" />
+          <Skeleton className="h-96 lg:col-span-2" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -326,10 +376,20 @@ export const ContadorAgenda: React.FC = () => {
           <h2 className="text-2xl font-bold text-foreground">Agenda de Consultas</h2>
           <p className="text-muted-foreground">Gerencie seus atendimentos de forma eficiente</p>
         </div>
-        <Button className="bg-primary hover:bg-primary/90 gap-2">
-          <Plus className="h-4 w-4" />
-          Nova Consulta
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
+          </Button>
+          <Button className="bg-primary hover:bg-primary/90 gap-2">
+            <Plus className="h-4 w-4" />
+            Nova Consulta
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -426,7 +486,7 @@ export const ContadorAgenda: React.FC = () => {
             <div className="mt-4 space-y-2">
               <p className="text-sm font-medium text-muted-foreground">Filtrar por status</p>
               <div className="flex flex-wrap gap-2">
-                {['all', 'pending', 'confirmed', 'completed'].map(status => (
+                {['all', 'pending', 'scheduled', 'completed'].map(status => (
                   <Button
                     key={status}
                     size="sm"
@@ -437,7 +497,7 @@ export const ContadorAgenda: React.FC = () => {
                     )}
                     onClick={() => setFilterStatus(status)}
                   >
-                    {status === 'all' ? 'Todos' : status === 'pending' ? 'Pendentes' : status === 'confirmed' ? 'Confirmadas' : 'Concluídas'}
+                    {status === 'all' ? 'Todos' : status === 'pending' ? 'Pendentes' : status === 'scheduled' ? 'Agendadas' : 'Concluídas'}
                   </Button>
                 ))}
               </div>
@@ -509,41 +569,39 @@ export const ContadorAgenda: React.FC = () => {
                       </div>
                       <h3 className="text-lg font-medium text-foreground mb-2">Nenhuma consulta</h3>
                       <p className="text-muted-foreground max-w-sm">
-                        Não há consultas agendadas para este dia. Clique em "Nova Consulta" para agendar.
+                        Não há consultas agendadas para este dia.
                       </p>
                     </div>
                   ) : (
-                    <>
-                      <div className="relative">
-                        {selectedDateAppointments.map((appointment, index) => (
-                          <div key={appointment.id} className="relative pl-8 pb-4">
-                            {index < selectedDateAppointments.length - 1 && (
-                              <div className="absolute left-[11px] top-8 bottom-0 w-0.5 bg-border" />
+                    <div className="relative">
+                      {selectedDateAppointments.map((appointment, index) => (
+                        <div key={appointment.id} className="relative pl-8 pb-4">
+                          {index < selectedDateAppointments.length - 1 && (
+                            <div className="absolute left-[11px] top-8 bottom-0 w-0.5 bg-border" />
+                          )}
+                          <div
+                            className={cn(
+                              "absolute left-0 top-2 w-6 h-6 rounded-full flex items-center justify-center",
+                              getStatusConfig(appointment.status).bg
                             )}
+                          >
                             <div
                               className={cn(
-                                "absolute left-0 top-2 w-6 h-6 rounded-full flex items-center justify-center",
-                                getStatusConfig(appointment.status).bg
+                                "w-3 h-3 rounded-full",
+                                appointment.status === 'scheduled' || appointment.status === 'confirmed'
+                                  ? 'bg-success'
+                                  : appointment.status === 'pending'
+                                    ? 'bg-accent'
+                                    : appointment.status === 'completed'
+                                      ? 'bg-info'
+                                      : 'bg-destructive'
                               )}
-                            >
-                              <div
-                                className={cn(
-                                  "w-3 h-3 rounded-full",
-                                  appointment.status === 'confirmed'
-                                    ? 'bg-success'
-                                    : appointment.status === 'pending'
-                                      ? 'bg-accent'
-                                      : appointment.status === 'completed'
-                                        ? 'bg-info'
-                                        : 'bg-destructive'
-                                )}
-                              />
-                            </div>
-                            <AppointmentCard appointment={appointment} />
+                            />
                           </div>
-                        ))}
-                      </div>
-                    </>
+                          <AppointmentCard appointment={appointment} />
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               ) : viewMode === 'week' ? (
