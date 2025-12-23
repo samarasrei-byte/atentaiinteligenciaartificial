@@ -114,30 +114,30 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
+          'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200 group relative',
           active
-            ? 'bg-gradient-to-r from-primary to-primary/80 text-white shadow-lg shadow-primary/25'
-            : 'text-slate-300 hover:bg-white/10 hover:text-white'
+            ? 'bg-gradient-to-r from-primary to-primary/80 text-white shadow-md shadow-primary/20'
+            : 'text-slate-400 hover:bg-white/5 hover:text-white'
         )}
       >
         <div className={cn(
-          'p-1.5 rounded-lg transition-all',
-          active ? 'bg-white/20' : 'bg-transparent group-hover:bg-white/5'
+          'p-1 rounded-md transition-all',
+          active ? 'bg-white/20' : 'bg-transparent'
         )}>
           <Icon className={cn('h-4 w-4 shrink-0', collapsed && 'mx-auto')} />
         </div>
         {!collapsed && (
           <>
-            <span className="font-medium text-sm">{item.label}</span>
+            <span className="font-medium text-xs tracking-wide">{item.label}</span>
             {item.badge && (
-              <Badge className="ml-auto bg-accent text-accent-foreground text-[10px] px-1.5 py-0.5">
+              <Badge className="ml-auto bg-accent/80 text-accent-foreground text-[9px] px-1.5 py-0">
                 {item.badge}
               </Badge>
             )}
           </>
         )}
         {active && (
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-white rounded-l-full" />
+          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-l-full" />
         )}
       </button>
     );
@@ -217,10 +217,10 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700">
+        <nav className="flex-1 p-2 space-y-0.5 overflow-hidden">
           {!collapsed && (
-            <p className="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-              Menu Principal
+            <p className="px-3 py-1.5 text-[9px] font-semibold text-slate-500 uppercase tracking-widest">
+              Menu
             </p>
           )}
           {items.map((item) => (
