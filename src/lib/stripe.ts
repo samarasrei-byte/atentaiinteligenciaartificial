@@ -4,7 +4,7 @@ export const STRIPE_PLANS = {
     name: 'Simulador Tributário',
     priceId: 'price_1Sh0hO3MU3lG84Gw6TYhkT4W',
     productId: 'prod_TeJKjnfkaw0JfV',
-    price: 5600, // cents (R$56,00)
+    price: 3900, // cents (R$39,00)
     description: 'Simule o impacto da reforma tributária na sua empresa',
     features: [
       'Simulador de impacto tributário',
