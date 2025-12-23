@@ -237,7 +237,6 @@ const Pricing = () => {
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
             const isHighlight = 'highlight' in plan && plan.highlight;
-            const hasInstallments = 'installments' in plan && plan.installments;
             const Icon = getIcon(key);
             const originalPrice = plan.price;
             const discountedPrice = calculateDiscountedPrice(originalPrice);
@@ -300,11 +299,6 @@ const Pricing = () => {
                         <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
                         <span className="text-muted-foreground">/mês</span>
                       </>
-                    )}
-                    {hasInstallments && (
-                      <p className="text-sm text-accent mt-1 font-medium">
-                        ou {plan.installments}x de {formatPrice(discountedPrice / plan.installments)}
-                      </p>
                     )}
                   </div>
 
