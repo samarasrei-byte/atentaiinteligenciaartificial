@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useDailyQuestionLimit } from '@/hooks/useDailyQuestionLimit';
-import { DAILY_QUESTION_LIMIT } from '@/lib/stripe';
+
 import { 
   Brain, 
   Send, 
@@ -36,7 +36,7 @@ const AIChat = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading, subscription } = useAuth();
   const { toast } = useToast();
-  const { questionsUsed, questionsRemaining, canAsk, isPremium, loading: limitLoading, incrementUsage, refreshUsage } = useDailyQuestionLimit();
+  const { questionsUsed, questionsRemaining, canAsk, isPremium, isContador, loading: limitLoading, incrementUsage, refreshUsage, limit } = useDailyQuestionLimit();
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -107,7 +107,7 @@ const AIChat = () => {
       toast({
         variant: 'destructive',
         title: 'Limite diário atingido',
-        description: `Você usou todas as ${DAILY_QUESTION_LIMIT} perguntas de hoje. Assine o Premium para perguntas ilimitadas.`,
+        description: `Você usou todas as suas ${limit} perguntas de hoje. Assine o Premium para mais perguntas.`,
       });
       return;
     }
@@ -299,15 +299,25 @@ const AIChat = () => {
           </div>
           {/* Usage Badge */}
           <div className="flex items-center gap-3">
-            {isPremium ? (
-              <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+            {isContador ? (
+              <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
                 <Crown className="h-3 w-3 mr-1" />
-                Premium
+                Contador - Ilimitado
               </Badge>
+            ) : isPremium ? (
+              <div className="flex items-center gap-2">
+                <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                  <Crown className="h-3 w-3 mr-1" />
+                  Premium
+                </Badge>
+                <Badge variant="outline" className="text-slate-300 border-slate-600">
+                  {questionsRemaining}/{limit} perguntas hoje
+                </Badge>
+              </div>
             ) : (
               <div className="flex items-center gap-2">
                 <Badge variant="outline" className={`text-slate-300 border-slate-600 ${questionsRemaining === 0 ? 'border-red-500 text-red-400' : ''}`}>
-                  {questionsRemaining}/{DAILY_QUESTION_LIMIT} perguntas restantes
+                  {questionsRemaining}/{limit} perguntas restantes
                 </Badge>
                 <Button
                   variant="ghost"
