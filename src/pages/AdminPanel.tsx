@@ -16,6 +16,8 @@ import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { RevenueChart } from '@/components/dashboard/RevenueChart';
 import { QuickAction } from '@/components/dashboard/QuickAction';
+import { UsageMetrics } from '@/components/dashboard/UsageMetrics';
+import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
 import { 
   Users,
   DollarSign,
@@ -93,6 +95,21 @@ interface StatsData {
   pendingConsultations: number;
   monthlyRevenue: number;
   newUsersThisMonth: number;
+  // Usage metrics
+  aiQuestionsToday: number;
+  aiQuestionsThisWeek: number;
+  aiQuestionsThisMonth: number;
+  simulationsToday: number;
+  simulationsThisWeek: number;
+  simulationsThisMonth: number;
+  activeUsersToday: number;
+  activeUsersThisWeek: number;
+  consultationsScheduledThisWeek: number;
+  consultationsCompletedThisWeek: number;
+  // Plan distribution
+  simulatorPlanCount: number;
+  premiumPlanCount: number;
+  contadorPlanCount: number;
 }
 
 const AdminPanel = () => {
@@ -119,6 +136,19 @@ const AdminPanel = () => {
     pendingConsultations: 0,
     monthlyRevenue: 0,
     newUsersThisMonth: 0,
+    aiQuestionsToday: 0,
+    aiQuestionsThisWeek: 0,
+    aiQuestionsThisMonth: 0,
+    simulationsToday: 0,
+    simulationsThisWeek: 0,
+    simulationsThisMonth: 0,
+    activeUsersToday: 0,
+    activeUsersThisWeek: 0,
+    consultationsScheduledThisWeek: 0,
+    consultationsCompletedThisWeek: 0,
+    simulatorPlanCount: 0,
+    premiumPlanCount: 0,
+    contadorPlanCount: 0,
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
@@ -172,6 +202,13 @@ const AdminPanel = () => {
       startOfMonth.setDate(1);
       startOfMonth.setHours(0, 0, 0, 0);
 
+      const startOfWeek = new Date();
+      startOfWeek.setDate(startOfWeek.getDate() - 7);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
       const [
         profilesRes,
         contadorRes,
@@ -185,6 +222,21 @@ const AdminPanel = () => {
         newUsersRes,
         allSubscriptions,
         allConsultations,
+        // New usage metrics queries
+        aiTodayRes,
+        aiWeekRes,
+        aiMonthRes,
+        simTodayRes,
+        simWeekRes,
+        simMonthRes,
+        activeUsersTodayRes,
+        activeUsersWeekRes,
+        consultScheduledWeekRes,
+        consultCompletedWeekRes,
+        // Plan distribution
+        simulatorPlansRes,
+        premiumPlansRes,
+        contadorPlansRes,
       ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact' }),
         supabase.from('contador_profiles').select('id', { count: 'exact' }),
@@ -198,6 +250,24 @@ const AdminPanel = () => {
         supabase.from('profiles').select('id', { count: 'exact' }).gte('created_at', startOfMonth.toISOString()),
         supabase.from('subscriptions').select('*').order('created_at', { ascending: false }).limit(50),
         supabase.from('consultations').select('*').order('created_at', { ascending: false }).limit(50),
+        // AI questions by period
+        supabase.from('ai_chat_messages').select('id', { count: 'exact' }).eq('role', 'user').gte('created_at', startOfDay.toISOString()),
+        supabase.from('ai_chat_messages').select('id', { count: 'exact' }).eq('role', 'user').gte('created_at', startOfWeek.toISOString()),
+        supabase.from('ai_chat_messages').select('id', { count: 'exact' }).eq('role', 'user').gte('created_at', startOfMonth.toISOString()),
+        // Simulations by period
+        supabase.from('tax_simulations').select('id', { count: 'exact' }).gte('created_at', startOfDay.toISOString()),
+        supabase.from('tax_simulations').select('id', { count: 'exact' }).gte('created_at', startOfWeek.toISOString()),
+        supabase.from('tax_simulations').select('id', { count: 'exact' }).gte('created_at', startOfMonth.toISOString()),
+        // Active users (users with activity today/week)
+        supabase.from('daily_question_usage').select('user_id', { count: 'exact' }).gte('updated_at', startOfDay.toISOString()),
+        supabase.from('daily_question_usage').select('user_id', { count: 'exact' }).gte('updated_at', startOfWeek.toISOString()),
+        // Consultations this week
+        supabase.from('consultations').select('id', { count: 'exact' }).eq('status', 'scheduled').gte('created_at', startOfWeek.toISOString()),
+        supabase.from('consultations').select('id', { count: 'exact' }).eq('status', 'completed').gte('completed_at', startOfWeek.toISOString()),
+        // Plan counts
+        supabase.from('subscriptions').select('id', { count: 'exact' }).eq('status', 'active').eq('plan_type', 'simulator'),
+        supabase.from('subscriptions').select('id', { count: 'exact' }).eq('status', 'active').eq('plan_type', 'premium'),
+        supabase.from('subscriptions').select('id', { count: 'exact' }).eq('status', 'active').eq('plan_type', 'contador'),
       ]);
 
       const totalRevenue = (paymentsRes.data || []).reduce((sum, p) => sum + p.amount_cents, 0);
@@ -214,6 +284,21 @@ const AdminPanel = () => {
         pendingConsultations: pendingConsultRes.count || 0,
         monthlyRevenue,
         newUsersThisMonth: newUsersRes.count || 0,
+        // Usage metrics
+        aiQuestionsToday: aiTodayRes.count || 0,
+        aiQuestionsThisWeek: aiWeekRes.count || 0,
+        aiQuestionsThisMonth: aiMonthRes.count || 0,
+        simulationsToday: simTodayRes.count || 0,
+        simulationsThisWeek: simWeekRes.count || 0,
+        simulationsThisMonth: simMonthRes.count || 0,
+        activeUsersToday: activeUsersTodayRes.count || 0,
+        activeUsersThisWeek: activeUsersWeekRes.count || 0,
+        consultationsScheduledThisWeek: consultScheduledWeekRes.count || 0,
+        consultationsCompletedThisWeek: consultCompletedWeekRes.count || 0,
+        // Plan distribution
+        simulatorPlanCount: simulatorPlansRes.count || 0,
+        premiumPlanCount: premiumPlansRes.count || 0,
+        contadorPlanCount: contadorPlansRes.count || 0,
       });
 
       setSubscriptions(allSubscriptions.data || []);
@@ -471,8 +556,9 @@ const AdminPanel = () => {
 
         <div className="p-4 lg:p-6 space-y-6">
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setSearchParams({ tab: v }); }}>
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 max-w-2xl">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6 max-w-3xl">
               <TabsTrigger value="overview" className="text-xs lg:text-sm">Visão Geral</TabsTrigger>
+              <TabsTrigger value="metrics" className="text-xs lg:text-sm">Métricas</TabsTrigger>
               <TabsTrigger value="users" className="text-xs lg:text-sm">Usuários</TabsTrigger>
               <TabsTrigger value="subscriptions" className="text-xs lg:text-sm hidden lg:flex">Assinaturas</TabsTrigger>
               <TabsTrigger value="consultations" className="text-xs lg:text-sm hidden lg:flex">Consultas</TabsTrigger>
@@ -554,6 +640,40 @@ const AdminPanel = () => {
                   description="Ajustes gerais do sistema"
                   gradient="from-success to-success/80"
                   onClick={() => setActiveTab('settings')}
+                />
+              </div>
+            </TabsContent>
+
+            {/* New Metrics Tab */}
+            <TabsContent value="metrics" className="space-y-6 mt-6">
+              <UsageMetrics 
+                data={{
+                  aiQuestionsToday: stats.aiQuestionsToday,
+                  aiQuestionsThisWeek: stats.aiQuestionsThisWeek,
+                  aiQuestionsThisMonth: stats.aiQuestionsThisMonth,
+                  simulationsToday: stats.simulationsToday,
+                  simulationsThisWeek: stats.simulationsThisWeek,
+                  simulationsThisMonth: stats.simulationsThisMonth,
+                  activeUsersToday: stats.activeUsersToday,
+                  activeUsersThisWeek: stats.activeUsersThisWeek,
+                  consultationsScheduledThisWeek: stats.consultationsScheduledThisWeek,
+                  consultationsCompletedThisWeek: stats.consultationsCompletedThisWeek,
+                  averageResponseTime: 2.5,
+                  peakHour: '14:00',
+                }}
+              />
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <PlanDistributionChart 
+                  simulatorCount={stats.simulatorPlanCount}
+                  premiumCount={stats.premiumPlanCount}
+                  contadorCount={stats.contadorPlanCount}
+                />
+                
+                <RevenueChart 
+                  data={revenueChartData}
+                  title="Evolução de Receita"
+                  description="Receita mensal dos últimos 6 meses"
                 />
               </div>
             </TabsContent>
@@ -754,7 +874,14 @@ const AdminPanel = () => {
                     </div>
                     <div className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
                       <span className="font-medium">AtentAI Premium</span>
-                      <span className="text-success">R$ 56,00/mês</span>
+                      <span className="text-success">R$ 98,00/mês</span>
+                    </div>
+                    <div className="flex justify-between items-center p-3 bg-accent/10 rounded-lg border border-accent/20">
+                      <div>
+                        <span className="font-medium">Contador Premium</span>
+                        <p className="text-xs text-muted-foreground">3 consultas/mês incluídas</p>
+                      </div>
+                      <span className="text-accent font-bold">R$ 170,00/mês</span>
                     </div>
                   </CardContent>
                 </Card>
