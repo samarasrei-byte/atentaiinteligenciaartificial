@@ -17,7 +17,7 @@ import {
   MapPin,
   Edit,
   Home,
-  Scale,
+  Target,
   ArrowUpRight,
   Sparkles,
   BarChart3,
@@ -56,9 +56,9 @@ interface Company {
 import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { EmbeddedLocacaoSimulator } from '@/components/simulator/EmbeddedLocacaoSimulator';
-import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 import { EconomyCalculator } from '@/components/calculator/EconomyCalculator';
+import { PFPJDecision } from '@/components/calculator/PFPJDecision';
 
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
@@ -438,10 +438,10 @@ const Dashboard = () => {
       iconBg: 'bg-rose-500/10',
     },
     {
-      icon: Scale,
-      title: 'Comparador',
-      description: 'Compare regimes tributários',
-      tabId: 'comparator',
+      icon: Target,
+      title: 'PF ou PJ?',
+      description: 'Descubra a estrutura ideal',
+      tabId: 'pf-pj-decision',
       gradient: 'from-violet-500 to-purple-500',
       iconBg: 'bg-violet-500/10',
     },
@@ -458,8 +458,18 @@ const Dashboard = () => {
         return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
       case 'locacao':
         return <EmbeddedLocacaoSimulator />;
-      case 'comparator':
-        return <EmbeddedRegimeComparator />;
+      case 'pf-pj-decision':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Decisão Automática: PF ou PJ</h2>
+              <p className="text-muted-foreground">Descubra qual estrutura tributária resulta em menor carga para você</p>
+            </div>
+            <div className="max-w-2xl">
+              <PFPJDecision />
+            </div>
+          </div>
+        );
       case 'contadores':
         return <EmbeddedContadoresList />;
       case 'economia':

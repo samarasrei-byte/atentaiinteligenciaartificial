@@ -5,7 +5,7 @@ import { cn } from '@/lib/utils';
 import {
   Users,
   Home,
-  Scale,
+  Target,
   FileText,
   Shield,
   LogOut,
@@ -57,7 +57,7 @@ const userItems: SidebarItem[] = [
   { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
   { icon: MessagesSquare, label: 'Contador', tabId: 'chat-contador' },
   { icon: Home, label: 'Locação', tabId: 'locacao' },
-  { icon: Scale, label: 'Comparador', tabId: 'comparator' },
+  { icon: Target, label: 'PF ou PJ?', tabId: 'pf-pj-decision' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
   { icon: User, label: 'Perfil', tabId: 'profile' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
