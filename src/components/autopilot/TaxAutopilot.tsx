@@ -20,7 +20,9 @@ import {
   Rocket,
   User,
   Building2,
-  Clock
+  Clock,
+  Edit,
+  ArrowRight,
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -77,6 +79,27 @@ const parseCurrencyInput = (value: string): number => {
   return parseInt(numbers || '0');
 };
 
+// Mapeamento de setores do onboarding para tipos de atividade
+const SECTOR_TO_ACTIVITY: Record<string, string> = {
+  comercio: 'commercial',
+  servicos: 'services',
+  industria: 'commercial',
+  agronegocio: 'commercial',
+  tecnologia: 'services',
+  saude: 'services',
+  educacao: 'services',
+  construcao: 'commercial',
+  transporte: 'commercial',
+  alimentacao: 'commercial',
+  outro: 'services',
+};
+
+interface CompanyData {
+  company_name: string;
+  sector: string;
+  monthly_revenue_cents: number;
+}
+
 export const TaxAutopilot = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(true);
@@ -90,13 +113,56 @@ export const TaxAutopilot = () => {
   const [monthlyExpenses, setMonthlyExpenses] = useState('R$ 0,00');
   const [currentStructure, setCurrentStructure] = useState('pf');
   const [isActive, setIsActive] = useState(false);
+  
+  // Company data from onboarding
+  const [companyData, setCompanyData] = useState<CompanyData | null>(null);
+  const [dataSource, setDataSource] = useState<'company' | 'manual' | null>(null);
 
   useEffect(() => {
     if (user) {
       fetchAutopilotData();
       fetchAlerts();
+      fetchCompanyData();
     }
   }, [user]);
+
+  const fetchCompanyData = async () => {
+    if (!user) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('companies')
+        .select('company_name, sector, monthly_revenue_cents')
+        .eq('user_id', user.id)
+        .single();
+      
+      if (data && !error) {
+        setCompanyData(data);
+      }
+    } catch (error) {
+      console.error('Error fetching company:', error);
+    }
+  };
+
+  const useCompanyDataForAutopilot = () => {
+    if (!companyData) return;
+    
+    const revenueValue = companyData.monthly_revenue_cents / 100;
+    setMonthlyRevenue(formatCurrency(revenueValue));
+    setActivityType(SECTOR_TO_ACTIVITY[companyData.sector] || 'services');
+    setDataSource('company');
+    
+    toast.success(`Dados de ${companyData.company_name} carregados!`);
+  };
+
+  const useManualDataForAutopilot = () => {
+    if (!autopilotData) {
+      setMonthlyRevenue('R$ 0,00');
+      setMonthlyExpenses('R$ 0,00');
+      setActivityType('residential');
+    }
+    setDataSource('manual');
+  };
 
   const fetchAutopilotData = async () => {
     try {
@@ -115,6 +181,7 @@ export const TaxAutopilot = () => {
         setActivityType(data.activity_type);
         setMonthlyExpenses(formatCurrency(data.monthly_expenses_cents / 100));
         setCurrentStructure(data.current_structure);
+        setDataSource(data.is_active ? 'manual' : null); // Se já está ativo, já escolheu
       }
     } catch (error) {
       console.error('Error fetching autopilot data:', error);
@@ -524,56 +591,145 @@ export const TaxAutopilot = () => {
             </div>
           )}
 
-          {/* Configuration Form */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="revenue">Faturamento Mensal</Label>
-              <Input
-                id="revenue"
-                value={monthlyRevenue}
-                onChange={(e) => setMonthlyRevenue(formatCurrencyInput(e.target.value))}
-                placeholder="R$ 0,00"
-                disabled={saving}
-              />
+          {/* Seleção de fonte de dados - só mostra se tem dados da empresa e não está ativo */}
+          {!isActive && companyData && dataSource === null && !autopilotData?.is_active && (
+            <div className="space-y-4">
+              <div className="text-center">
+                <h3 className="font-semibold text-foreground mb-2">Como você quer configurar?</h3>
+                <p className="text-sm text-muted-foreground">Escolha usar os dados da sua empresa ou informar manualmente</p>
+              </div>
+              
+              <div className="grid gap-3">
+                {/* Opção: Usar dados da empresa */}
+                <button
+                  onClick={useCompanyDataForAutopilot}
+                  className="p-4 rounded-xl border-2 border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10 hover:border-primary/50 transition-all text-left group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-colors">
+                      <Building2 className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold text-foreground">Usar meus dados</span>
+                        <Badge className="bg-primary/20 text-primary border-0 text-xs">Recomendado</Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Dados de <span className="font-medium text-foreground">{companyData.company_name}</span>
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        Faturamento: {formatCurrency(companyData.monthly_revenue_cents / 100)}/mês
+                      </p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                  </div>
+                </button>
+                
+                {/* Opção: Informar outros dados */}
+                <button
+                  onClick={useManualDataForAutopilot}
+                  className="p-4 rounded-xl border-2 border-border hover:border-muted-foreground/50 transition-all text-left group"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-lg bg-muted group-hover:bg-muted/80 transition-colors">
+                      <Edit className="h-6 w-6 text-muted-foreground" />
+                    </div>
+                    <div className="flex-1">
+                      <span className="font-semibold text-foreground">Usar outros dados</span>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Informar valores diferentes para o piloto automático
+                      </p>
+                    </div>
+                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                  </div>
+                </button>
+              </div>
             </div>
+          )}
 
-            <div className="space-y-2">
-              <Label htmlFor="expenses">Despesas Mensais Médias</Label>
-              <Input
-                id="expenses"
-                value={monthlyExpenses}
-                onChange={(e) => setMonthlyExpenses(formatCurrencyInput(e.target.value))}
-                placeholder="R$ 0,00"
-                disabled={saving}
-              />
-            </div>
+          {/* Configuration Form - só mostra se escolheu fonte de dados ou já está ativo */}
+          {(dataSource !== null || isActive || autopilotData?.is_active) && (
+            <>
+              {/* Indicador de fonte de dados */}
+              {dataSource && companyData && !isActive && (
+                <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
+                  <div className="flex items-center gap-2 text-sm">
+                    {dataSource === 'company' ? (
+                      <>
+                        <Building2 className="h-4 w-4 text-primary" />
+                        <span className="text-muted-foreground">Usando dados de</span>
+                        <span className="font-medium text-foreground">{companyData.company_name}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Edit className="h-4 w-4 text-muted-foreground" />
+                        <span className="text-muted-foreground">Informando dados manualmente</span>
+                      </>
+                    )}
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setDataSource(null)}
+                    className="text-xs h-7"
+                  >
+                    Alterar
+                  </Button>
+                </div>
+              )}
 
-            <div className="space-y-2">
-              <Label htmlFor="activity">Tipo de Atividade</Label>
-              <Select value={activityType} onValueChange={setActivityType} disabled={saving}>
-                <SelectTrigger id="activity">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="residential">Locação Residencial</SelectItem>
-                  <SelectItem value="commercial">Locação Comercial</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="revenue">Faturamento Mensal</Label>
+                  <Input
+                    id="revenue"
+                    value={monthlyRevenue}
+                    onChange={(e) => setMonthlyRevenue(formatCurrencyInput(e.target.value))}
+                    placeholder="R$ 0,00"
+                    disabled={saving}
+                  />
+                </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="structure">Estrutura Atual</Label>
-              <Select value={currentStructure} onValueChange={setCurrentStructure} disabled={saving}>
-                <SelectTrigger id="structure">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="pf">Pessoa Física</SelectItem>
-                  <SelectItem value="pj">Pessoa Jurídica</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+                <div className="space-y-2">
+                  <Label htmlFor="expenses">Despesas Mensais Médias</Label>
+                  <Input
+                    id="expenses"
+                    value={monthlyExpenses}
+                    onChange={(e) => setMonthlyExpenses(formatCurrencyInput(e.target.value))}
+                    placeholder="R$ 0,00"
+                    disabled={saving}
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="activity">Tipo de Atividade</Label>
+                  <Select value={activityType} onValueChange={setActivityType} disabled={saving}>
+                    <SelectTrigger id="activity">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="residential">Locação Residencial</SelectItem>
+                      <SelectItem value="commercial">Locação Comercial</SelectItem>
+                      <SelectItem value="services">Serviços</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="structure">Estrutura Atual</Label>
+                  <Select value={currentStructure} onValueChange={setCurrentStructure} disabled={saving}>
+                    <SelectTrigger id="structure">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="pf">Pessoa Física</SelectItem>
+                      <SelectItem value="pj">Pessoa Jurídica</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </>
+          )}
 
           {isActive && (
             <Button 

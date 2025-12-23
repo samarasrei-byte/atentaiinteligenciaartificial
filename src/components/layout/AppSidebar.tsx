@@ -28,6 +28,7 @@ import {
   Sparkles,
   History,
   Zap,
+  BookOpen,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -57,10 +58,10 @@ const userItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
   { icon: Zap, label: 'Piloto Automático', tabId: 'autopilot', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: '●', badgeColor: 'text-emerald-400' },
-  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
-  { icon: MessagesSquare, label: 'Contador', tabId: 'chat-contador' },
-  { icon: Home, label: 'Locação', tabId: 'locacao' },
   { icon: Target, label: 'PF ou PJ?', tabId: 'pf-pj-decision' },
+  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
+  { icon: MessagesSquare, label: 'Falar com Contador', tabId: 'chat-contador' },
+  { icon: BookOpen, label: 'Glossário', tabId: 'glossary' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
   { icon: History, label: 'Histórico', tabId: 'history' },
   { icon: User, label: 'Perfil', tabId: 'profile' },
