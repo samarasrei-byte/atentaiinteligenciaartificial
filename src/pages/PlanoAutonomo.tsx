@@ -84,9 +84,8 @@ const PlanoAutonomo: React.FC = () => {
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
         body: {
-          planType: 'autonomo',
-          couponCode: couponCode || undefined,
-          successUrl: `${window.location.origin}/autonomo/onboarding`,
+          priceId: 'price_1Shc3X3MU3lG84Gw1OR6C7yf', // Autônomo Master price
+          couponId: couponCode || undefined,
         },
       });
 
