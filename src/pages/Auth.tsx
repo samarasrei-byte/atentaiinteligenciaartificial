@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Brain, Mail, Lock, User, Loader2, Building2 } from 'lucide-react';
+import { Brain, Mail, Lock, User, Loader2, Building2, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Email inválido');
@@ -22,6 +22,8 @@ const Auth = () => {
   const { toast } = useToast();
   
   const [isLoading, setIsLoading] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState('');
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [signupEmail, setSignupEmail] = useState('');
@@ -186,6 +188,38 @@ const Auth = () => {
     }
   };
 
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      emailSchema.parse(forgotEmail);
+    } catch {
+      setErrors({ forgotEmail: 'Email inválido' });
+      return;
+    }
+    
+    setIsLoading(true);
+    const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
+      redirectTo: `${window.location.origin}/auth?reset=true`,
+    });
+    setIsLoading(false);
+    
+    if (error) {
+      toast({
+        variant: 'destructive',
+        title: 'Erro',
+        description: 'Erro ao enviar email de recuperação',
+      });
+    } else {
+      toast({
+        title: 'Email enviado!',
+        description: 'Verifique sua caixa de entrada para redefinir a senha',
+      });
+      setShowForgotPassword(false);
+      setForgotEmail('');
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
@@ -284,6 +318,15 @@ const Auth = () => {
                   ) : null}
                   Entrar
                 </Button>
+                
+                <Button
+                  type="button"
+                  variant="link"
+                  className="w-full text-teal-400 hover:text-teal-300"
+                  onClick={() => setShowForgotPassword(true)}
+                >
+                  Esqueceu sua senha?
+                </Button>
               </form>
             </TabsContent>
             
@@ -374,6 +417,58 @@ const Auth = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Forgot Password Modal */}
+      {showForgotPassword && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md bg-slate-800 border-slate-700">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setShowForgotPassword(false)}
+                  className="text-slate-400 hover:text-white"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <CardTitle className="text-white">Recuperar Senha</CardTitle>
+              </div>
+              <CardDescription className="text-slate-400">
+                Digite seu email para receber um link de recuperação
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleForgotPassword} className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-slate-300">Email</Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Input
+                      type="email"
+                      placeholder="seu@email.com"
+                      value={forgotEmail}
+                      onChange={(e) => setForgotEmail(e.target.value)}
+                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
+                    />
+                  </div>
+                  {errors.forgotEmail && (
+                    <p className="text-sm text-red-400">{errors.forgotEmail}</p>
+                  )}
+                </div>
+                <Button
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-teal-500 to-cyan-500"
+                  disabled={isLoading}
+                >
+                  {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                  Enviar Link
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 };
