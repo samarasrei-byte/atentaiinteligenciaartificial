@@ -19,10 +19,12 @@ import { ContadorStats } from '@/components/dashboard/ContadorStats';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { ContadorAgenda } from '@/components/contador/ContadorAgenda';
 import { LegalUpdates } from '@/components/contador/LegalUpdates';
+import { WithdrawalSystem } from '@/components/contador/WithdrawalSystem';
+import { ContadorReportGenerator } from '@/components/contador/ContadorReportGenerator';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
-  CheckCircle, AlertCircle, XCircle, Menu,
+  CheckCircle, AlertCircle, XCircle, Menu, Banknote, FileDown,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -458,6 +460,19 @@ const ContadorPanel = () => {
             </Card>
           )}
 
+          {activeTab === 'withdrawals' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Saques</h2>
+                <p className="text-muted-foreground">Solicite a transferência dos seus ganhos via PIX</p>
+              </div>
+              <WithdrawalSystem 
+                availableBalance={totalEarnings} 
+                onWithdrawalCreated={handleRefresh}
+              />
+            </div>
+          )}
+
           {activeTab === 'earnings' && (
             <div className="space-y-6">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -466,25 +481,40 @@ const ContadorPanel = () => {
                 <StatsCard icon={Target} label="Por Consulta" value={formatCurrency(parseInt(hourlyRate) * 100)} color="info" />
                 <StatsCard icon={TrendingUp} label="Este Mês" value={formatCurrency(totalEarnings * 0.3)} color="success" />
               </div>
-              <Card className="bg-card border-border shadow-soft">
-                <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-emerald-500" />Detalhamento</CardTitle></CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {completedConsultations.map((c) => (
-                      <div key={c.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                        <div>
-                          <p className="font-medium">Cliente #{c.user_id.slice(0, 8)}</p>
-                          <p className="text-xs text-muted-foreground">{new Date(c.completed_at || c.created_at).toLocaleDateString('pt-BR')}</p>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <Card className="lg:col-span-2 bg-card border-border shadow-soft">
+                  <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="h-5 w-5 text-emerald-500" />Detalhamento</CardTitle></CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {completedConsultations.map((c) => (
+                        <div key={c.id} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                          <div>
+                            <p className="font-medium">Cliente #{c.user_id.slice(0, 8)}</p>
+                            <p className="text-xs text-muted-foreground">{new Date(c.completed_at || c.created_at).toLocaleDateString('pt-BR')}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="font-bold text-emerald-600">{formatCurrency(c.price_cents - c.platform_fee_cents)}</p>
+                            <p className="text-xs text-muted-foreground">Taxa: {formatCurrency(c.platform_fee_cents)}</p>
+                          </div>
                         </div>
-                        <div className="text-right">
-                          <p className="font-bold text-emerald-600">{formatCurrency(c.price_cents - c.platform_fee_cents)}</p>
-                          <p className="text-xs text-muted-foreground">Taxa: {formatCurrency(c.platform_fee_cents)}</p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+                {contadorProfile && (
+                  <ContadorReportGenerator
+                    contadorName={profile?.full_name || 'Contador'}
+                    contadorEmail={user?.email || ''}
+                    profile={{
+                      crc_number: contadorProfile.crc_number,
+                      specialty: contadorProfile.specialty,
+                      rating: contadorProfile.rating,
+                      total_consultations: contadorProfile.total_consultations,
+                    }}
+                    consultations={consultations}
+                  />
+                )}
+              </div>
             </div>
           )}
 
