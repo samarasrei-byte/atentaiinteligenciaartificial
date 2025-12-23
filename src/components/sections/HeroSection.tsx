@@ -1,6 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Users, Crown } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 interface HeroSectionProps {
@@ -24,20 +23,10 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20">
         <div className="max-w-3xl mx-auto text-center">
-          {/* Featured Plan Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 backdrop-blur-sm border border-accent/30 text-accent text-sm mb-6 animate-fade-in cursor-pointer hover:bg-accent/30 transition-colors"
-            onClick={() => onNavigate('pricing')}
-          >
-            <Crown className="w-4 h-4" />
-            <span className="font-semibold">Plano Contador Premium</span>
-            <span className="text-accent/80">R$170/mês em até 10x</span>
-            <ArrowRight className="w-4 h-4" />
-          </div>
-
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/90 text-sm mb-10 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-green-400" />
-            Lei Complementar 2024
+            Lei Complementar 214/2025 • Vigência 2026
           </div>
 
           {/* Headline */}

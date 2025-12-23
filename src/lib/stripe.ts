@@ -22,7 +22,7 @@ export const STRIPE_PLANS = {
     features: [
       'Perguntas ilimitadas',
       'Respostas detalhadas',
-      'Base atualizada 2024',
+      'Base LC 214/2025',
       'Suporte prioritário',
     ],
     popular: true,
