@@ -39,8 +39,8 @@ export const STRIPE_PLANS = {
       'Agendamento de consultas',
       'Relatórios PDF detalhados',
       'Suporte prioritário 24h',
-      'Simulador completo incluído',
-      'IA Premium incluída',
+      'Agente IA Premium incluído',
+      'Calculadora de Economia incluída',
     ],
     monthlyConsultations: 3,
     installments: 10, // 10x de R$17,00
