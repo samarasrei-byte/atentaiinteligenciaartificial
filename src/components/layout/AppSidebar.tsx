@@ -25,6 +25,8 @@ import {
   PieChart,
   Wallet,
   Star,
+  Bot,
+  MessagesSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,12 +54,12 @@ interface AppSidebarProps {
 
 const userItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-  { icon: MessageSquare, label: 'Chat IA', tabId: 'ai-chat' },
+  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'Pro' },
+  { icon: MessagesSquare, label: 'Chat Contador', tabId: 'chat-contador' },
   { icon: Calculator, label: 'Simulador', tabId: 'simulator' },
   { icon: Home, label: 'Locação', tabId: 'locacao', badge: 'Novo' },
   { icon: Scale, label: 'Comparador', tabId: 'comparator', badge: 'Novo' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
-  { icon: ClipboardList, label: 'Histórico', tabId: 'history' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
 ];
 
@@ -74,6 +76,7 @@ const adminItems: SidebarItem[] = [
 
 const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+  { icon: MessagesSquare, label: 'Chat Clientes', tabId: 'chat' },
   { icon: BarChart3, label: 'Estatísticas', tabId: 'stats' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: UserCheck, label: 'Clientes', tabId: 'clients' },

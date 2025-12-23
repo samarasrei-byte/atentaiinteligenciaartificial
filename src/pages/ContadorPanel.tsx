@@ -16,7 +16,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ContadorStats } from '@/components/dashboard/ContadorStats';
-import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
+import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
@@ -365,6 +365,16 @@ const ContadorPanel = () => {
           )}
 
           {activeTab === 'stats' && <ContadorStats consultations={consultations} />}
+
+          {activeTab === 'chat' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Chat com Clientes</h2>
+                <p className="text-muted-foreground">Converse com seus clientes - envie mensagens, áudios e documentos</p>
+              </div>
+              <ProfessionalChat isContador={true} />
+            </div>
+          )}
 
           {activeTab === 'consultations' && (
             <Card className="bg-card border-border shadow-soft">

@@ -55,19 +55,32 @@ interface Company {
 }
 
 import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
-import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
+import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 
-// Enhanced AI Chat with Power Calculator
-const EmbeddedAIChat = () => {
+// Enhanced AI Agent with Power Calculator
+const EmbeddedAIAgent = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">IA Tributária Avançada</h2>
-        <p className="text-muted-foreground">Cálculos automáticos e análises com inteligência artificial</p>
+        <h2 className="text-2xl font-bold text-foreground">Agente IA Tributário</h2>
+        <p className="text-muted-foreground">Cálculos automáticos e análises com inteligência artificial avançada</p>
       </div>
       <div className="h-[650px]">
         <PowerAICalculator />
       </div>
+    </div>
+  );
+};
+
+// Professional Chat with Contador
+const EmbeddedChatContador = () => {
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Chat com Contador</h2>
+        <p className="text-muted-foreground">Converse com seu contador - envie mensagens, áudios e documentos</p>
+      </div>
+      <ProfessionalChat isContador={false} />
     </div>
   );
 };
@@ -216,15 +229,38 @@ const EmbeddedContadores = () => {
   );
 };
 
-// Embedded History with Chat
+// Embedded History (removed - now handled by chat-contador tab)
 const EmbeddedHistory = () => {
+  const navigate = useNavigate();
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground">Chat com Contador</h2>
-        <p className="text-muted-foreground">Converse com seu contador especializado</p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">Histórico de Consultas</h2>
+          <p className="text-muted-foreground">Veja suas consultas anteriores</p>
+        </div>
+        <Button onClick={() => navigate('/consultations')} variant="outline">
+          <ArrowUpRight className="h-4 w-4 mr-2" />
+          Ver Completo
+        </Button>
       </div>
-      <EmbeddedConsultationChat isContador={false} />
+      <Card className="bg-card border-border">
+        <CardContent className="p-6">
+          <div className="flex flex-col items-center justify-center py-12 text-center">
+            <div className="p-4 rounded-2xl bg-amber-500/10 mb-4">
+              <History className="h-12 w-12 text-amber-500" />
+            </div>
+            <h3 className="text-lg font-semibold mb-2">Suas Consultas</h3>
+            <p className="text-muted-foreground mb-6 max-w-md">
+              Acesse o histórico completo das suas consultas com contadores.
+            </p>
+            <Button onClick={() => navigate('/consultations')} className="gap-2 bg-amber-600 hover:bg-amber-700">
+              <History className="h-4 w-4" />
+              Ver Histórico
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -437,7 +473,9 @@ const Dashboard = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'ai-chat':
-        return <EmbeddedAIChat />;
+        return <EmbeddedAIAgent />;
+      case 'chat-contador':
+        return <EmbeddedChatContador />;
       case 'simulator':
         return <EmbeddedSimulator />;
       case 'locacao':
