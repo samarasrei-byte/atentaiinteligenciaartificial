@@ -16,6 +16,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ContadorStats } from '@/components/dashboard/ContadorStats';
+import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
