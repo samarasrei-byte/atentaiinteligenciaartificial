@@ -133,26 +133,26 @@ const AutonomoSidebar: React.FC<{
   ];
 
   return (
-    <Sidebar className="border-r border-border">
+    <Sidebar className="border-r border-border [&_[data-sidebar=content]]:overflow-hidden">
       <SidebarHeader className="p-4 border-b border-border">
-        <div className="flex flex-col items-center gap-3">
+        <div className="flex items-center gap-3">
           <img 
             src="/logo-atentai.png" 
             alt="AtentAI" 
-            className="h-10 w-auto"
+            className="h-8 w-auto"
           />
-          <div className="text-center">
-            <h2 className="font-bold text-white truncate">
+          <div className="flex flex-col">
+            <h2 className="font-bold text-foreground text-base leading-tight">
               Autônomo
             </h2>
-            <p className="text-xs text-muted-foreground truncate">
+            <p className="text-xs text-muted-foreground">
               Painel Master
             </p>
           </div>
         </div>
       </SidebarHeader>
 
-      <SidebarContent>
+      <SidebarContent className="overflow-hidden">
         <SidebarGroup data-tour="sidebar-menu">
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
