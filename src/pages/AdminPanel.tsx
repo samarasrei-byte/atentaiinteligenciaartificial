@@ -18,6 +18,7 @@ import { RevenueChart } from '@/components/dashboard/RevenueChart';
 import { QuickAction } from '@/components/dashboard/QuickAction';
 import { UsageMetrics } from '@/components/dashboard/UsageMetrics';
 import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
+import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
 import { 
   Users,
   DollarSign,
@@ -45,6 +46,7 @@ import {
   XCircle,
   RefreshCw,
   Menu,
+  Headphones,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -556,10 +558,14 @@ const AdminPanel = () => {
 
         <div className="p-4 lg:p-6 space-y-6">
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setSearchParams({ tab: v }); }}>
-            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-6 max-w-3xl">
+            <TabsList className="grid w-full grid-cols-4 lg:grid-cols-7 max-w-4xl">
               <TabsTrigger value="overview" className="text-xs lg:text-sm">Visão Geral</TabsTrigger>
               <TabsTrigger value="metrics" className="text-xs lg:text-sm">Métricas</TabsTrigger>
               <TabsTrigger value="users" className="text-xs lg:text-sm">Usuários</TabsTrigger>
+              <TabsTrigger value="support" className="text-xs lg:text-sm">
+                <Headphones className="w-3 h-3 mr-1" />
+                Suporte
+              </TabsTrigger>
               <TabsTrigger value="subscriptions" className="text-xs lg:text-sm hidden lg:flex">Assinaturas</TabsTrigger>
               <TabsTrigger value="consultations" className="text-xs lg:text-sm hidden lg:flex">Consultas</TabsTrigger>
               <TabsTrigger value="settings" className="text-xs lg:text-sm">Config</TabsTrigger>
@@ -676,6 +682,11 @@ const AdminPanel = () => {
                   description="Receita mensal dos últimos 6 meses"
                 />
               </div>
+            </TabsContent>
+
+            {/* Support Tab */}
+            <TabsContent value="support" className="space-y-6 mt-6">
+              <AdminSupportPanel />
             </TabsContent>
 
             <TabsContent value="users" className="space-y-6 mt-6">
