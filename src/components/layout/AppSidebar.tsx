@@ -1,11 +1,9 @@
 import React from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
   Users,
-  MessageSquare,
-  Settings,
   Home,
   Scale,
   FileText,
@@ -26,9 +24,10 @@ import {
   Bot,
   MessagesSquare,
   User,
+  Settings,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -41,6 +40,7 @@ interface SidebarItem {
   label: string;
   tabId: string;
   badge?: string;
+  badgeColor?: string;
 }
 
 interface AppSidebarProps {
@@ -53,13 +53,13 @@ interface AppSidebarProps {
 
 const userItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-  { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: 'Hot' },
-  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'Pro' },
-  { icon: MessagesSquare, label: 'Chat Contador', tabId: 'chat-contador' },
+  { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: '●', badgeColor: 'text-emerald-400' },
+  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
+  { icon: MessagesSquare, label: 'Contador', tabId: 'chat-contador' },
   { icon: Home, label: 'Locação', tabId: 'locacao' },
-  { icon: User, label: 'Perfil', tabId: 'profile' },
   { icon: Scale, label: 'Comparador', tabId: 'comparator' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
+  { icon: User, label: 'Perfil', tabId: 'profile' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
 ];
 
@@ -71,18 +71,18 @@ const adminItems: SidebarItem[] = [
   { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
-  { icon: Settings, label: 'Configurações', tabId: 'settings' },
+  { icon: Settings, label: 'Config', tabId: 'settings' },
 ];
 
 const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-  { icon: MessagesSquare, label: 'Chat Clientes', tabId: 'chat' },
-  { icon: BarChart3, label: 'Estatísticas', tabId: 'stats' },
+  { icon: MessagesSquare, label: 'Chat', tabId: 'chat' },
+  { icon: BarChart3, label: 'Stats', tabId: 'stats' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
   { icon: Wallet, label: 'Ganhos', tabId: 'earnings' },
   { icon: Star, label: 'Avaliações', tabId: 'reviews' },
-  { icon: FileText, label: 'Meu Perfil', tabId: 'profile' },
+  { icon: FileText, label: 'Perfil', tabId: 'profile' },
 ];
 
 const AppSidebar: React.FC<AppSidebarProps> = ({ 
@@ -93,7 +93,6 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   onTabChange
 }) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const { user, profile, signOut, hasRole } = useAuth();
 
   const items = variant === 'admin' ? adminItems : variant === 'contador' ? contadorItems : userItems;
@@ -117,30 +116,26 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-200 group relative',
+          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
           active
-            ? 'bg-gradient-to-r from-primary to-primary/80 text-white shadow-md shadow-primary/20'
-            : 'text-slate-400 hover:bg-white/5 hover:text-white'
+            ? 'bg-white/10 text-white'
+            : 'text-white/60 hover:bg-white/5 hover:text-white'
         )}
       >
-        <div className={cn(
-          'p-1 rounded-md transition-all',
-          active ? 'bg-white/20' : 'bg-transparent'
-        )}>
-          <Icon className={cn('h-4 w-4 shrink-0', collapsed && 'mx-auto')} />
-        </div>
+        <Icon className={cn(
+          'h-5 w-5 shrink-0 transition-colors',
+          active ? 'text-primary' : 'text-white/60 group-hover:text-white'
+        )} />
         {!collapsed && (
-          <>
-            <span className="font-medium text-xs tracking-wide">{item.label}</span>
-            {item.badge && (
-              <Badge className="ml-auto bg-accent/80 text-accent-foreground text-[9px] px-1.5 py-0">
-                {item.badge}
-              </Badge>
-            )}
-          </>
+          <span className="font-medium text-sm flex-1 text-left">{item.label}</span>
+        )}
+        {!collapsed && item.badge && (
+          <span className={cn('text-[10px] font-bold', item.badgeColor || 'text-primary')}>
+            {item.badge}
+          </span>
         )}
         {active && (
-          <div className="absolute right-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-white rounded-l-full" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
         )}
       </button>
     );
@@ -149,13 +144,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="flex items-center gap-2 bg-slate-900 text-white border-slate-700 shadow-xl">
+          <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs px-3 py-1.5">
             {item.label}
-            {item.badge && (
-              <Badge className="bg-accent text-accent-foreground text-xs">
-                {item.badge}
-              </Badge>
-            )}
           </TooltipContent>
         </Tooltip>
       );
@@ -169,63 +159,34 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-gradient-to-b from-slate-900 via-slate-900 to-slate-800',
-          'border-r border-slate-700/50',
-          collapsed ? 'w-20' : 'w-72'
+          'bg-slate-900',
+          collapsed ? 'w-16' : 'w-56'
         )}
       >
-        {/* Logo & Toggle */}
-        <div className="flex items-center justify-between p-4 border-b border-slate-700/50">
-          {!collapsed && (
-            <div className="flex items-center gap-3">
-              <div className="relative">
-                <div className="absolute inset-0 bg-primary/30 blur-xl rounded-full" />
-                <img 
-                  src="/logo-atentai.png" 
-                  alt="AtentAI" 
-                  className="h-10 w-10 object-contain relative z-10" 
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">
-                  AtentAI
-                </span>
-                <span className="text-[10px] text-slate-400 uppercase tracking-wider">
-                  {variant === 'admin' ? 'Administração' : variant === 'contador' ? 'Contador' : 'Plataforma'}
-                </span>
-              </div>
+        {/* Logo */}
+        <div className="flex items-center justify-between px-3 py-4 border-b border-white/5">
+          <div className={cn('flex items-center gap-2', collapsed && 'justify-center w-full')}>
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+              <Sparkles className="h-4 w-4 text-white" />
             </div>
-          )}
-          {collapsed && (
-            <div className="mx-auto relative">
-              <div className="absolute inset-0 bg-primary/30 blur-lg rounded-full" />
-              <img 
-                src="/logo-atentai.png" 
-                alt="AtentAI" 
-                className="h-10 w-10 object-contain relative z-10" 
-              />
-            </div>
-          )}
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={onToggle}
-            className={cn(
-              'text-slate-400 hover:text-white hover:bg-white/10 shrink-0 rounded-lg',
-              collapsed && 'absolute -right-3 top-6 bg-slate-800 border border-slate-700 shadow-lg h-6 w-6'
+            {!collapsed && (
+              <span className="text-lg font-bold text-white">AtentAI</span>
             )}
-          >
-            {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-          </Button>
+          </div>
         </div>
 
+        {/* Toggle Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onToggle}
+          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-slate-800 border border-white/10 text-white/60 hover:text-white hover:bg-slate-700"
+        >
+          {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+        </Button>
+
         {/* Navigation */}
-        <nav className="flex-1 p-2 space-y-0.5 overflow-hidden">
-          {!collapsed && (
-            <p className="px-3 py-1.5 text-[9px] font-semibold text-slate-500 uppercase tracking-widest">
-              Menu
-            </p>
-          )}
+        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
           {items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
@@ -233,32 +194,25 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
         {/* Role Switchers */}
         {(hasRole('admin') || hasRole('contador')) && variant === 'user' && (
-          <div className="p-3 border-t border-slate-700/50 space-y-1">
-            {!collapsed && (
-              <p className="px-3 py-2 text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
-                Outros Painéis
-              </p>
-            )}
+          <div className="px-2 py-2 border-t border-white/5 space-y-1">
             {hasRole('admin') && (
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => navigate('/admin')}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
-                      'text-slate-300 hover:bg-red-500/10 hover:text-red-400 group',
+                      'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
+                      'text-white/60 hover:bg-red-500/10 hover:text-red-400',
                       collapsed && 'justify-center'
                     )}
                   >
-                    <div className="p-1.5 rounded-lg bg-red-500/10 group-hover:bg-red-500/20">
-                      <Shield className="h-4 w-4 shrink-0" />
-                    </div>
-                    {!collapsed && <span className="font-medium text-sm">Painel Admin</span>}
+                    <Shield className="h-5 w-5" />
+                    {!collapsed && <span className="text-sm">Admin</span>}
                   </button>
                 </TooltipTrigger>
                 {collapsed && (
-                  <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
-                    Painel Admin
+                  <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                    Admin
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -269,20 +223,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   <button
                     onClick={() => navigate('/contador')}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
-                      'text-slate-300 hover:bg-blue-500/10 hover:text-blue-400 group',
+                      'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
+                      'text-white/60 hover:bg-blue-500/10 hover:text-blue-400',
                       collapsed && 'justify-center'
                     )}
                   >
-                    <div className="p-1.5 rounded-lg bg-blue-500/10 group-hover:bg-blue-500/20">
-                      <FileText className="h-4 w-4 shrink-0" />
-                    </div>
-                    {!collapsed && <span className="font-medium text-sm">Painel Contador</span>}
+                    <FileText className="h-5 w-5" />
+                    {!collapsed && <span className="text-sm">Contador</span>}
                   </button>
                 </TooltipTrigger>
                 {collapsed && (
-                  <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
-                    Painel Contador
+                  <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                    Contador
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -290,49 +242,44 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
         )}
 
-        {/* Back to User Dashboard for Admin/Contador */}
+        {/* Back to Dashboard for Admin/Contador */}
         {(variant === 'admin' || variant === 'contador') && (
-          <div className="p-3 border-t border-slate-700/50">
+          <div className="px-2 py-2 border-t border-white/5">
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <button
                   onClick={() => navigate('/dashboard')}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
-                    'text-slate-300 hover:bg-primary/10 hover:text-primary group',
+                    'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
+                    'text-white/60 hover:bg-primary/10 hover:text-primary',
                     collapsed && 'justify-center'
                   )}
                 >
-                  <div className="p-1.5 rounded-lg bg-primary/10 group-hover:bg-primary/20">
-                    <Home className="h-4 w-4 shrink-0" />
-                  </div>
-                  {!collapsed && <span className="font-medium text-sm">Painel Usuário</span>}
+                  <Home className="h-5 w-5" />
+                  {!collapsed && <span className="text-sm">Dashboard</span>}
                 </button>
               </TooltipTrigger>
               {collapsed && (
-                <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
-                  Painel Usuário
+                <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                  Dashboard
                 </TooltipContent>
               )}
             </Tooltip>
           </div>
         )}
 
-        {/* User Info & Logout */}
-        <div className="p-3 border-t border-slate-700/50">
+        {/* User & Logout */}
+        <div className="px-2 py-3 border-t border-white/5">
           {!collapsed && (
-            <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-slate-800/50">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
-                <span className="text-sm font-bold text-white">
+            <div className="flex items-center gap-3 px-3 py-2 mb-2">
+              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center">
+                <span className="text-xs font-bold text-white">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-white truncate">
-                  {profile?.full_name || 'Usuário'}
-                </p>
-                <p className="text-xs text-slate-400 truncate">
-                  {user?.email}
+                  {profile?.full_name?.split(' ')[0] || 'Usuário'}
                 </p>
               </div>
             </div>
@@ -342,19 +289,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
-                  'text-slate-400 hover:bg-red-500/10 hover:text-red-400 group',
+                  'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
+                  'text-white/40 hover:bg-red-500/10 hover:text-red-400',
                   collapsed && 'justify-center'
                 )}
               >
-                <div className="p-1.5 rounded-lg group-hover:bg-red-500/10">
-                  <LogOut className="h-4 w-4 shrink-0" />
-                </div>
-                {!collapsed && <span className="font-medium text-sm">Sair da Conta</span>}
+                <LogOut className="h-5 w-5" />
+                {!collapsed && <span className="text-sm">Sair</span>}
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-slate-900 text-white border-slate-700">
+              <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
                 Sair
               </TooltipContent>
             )}
