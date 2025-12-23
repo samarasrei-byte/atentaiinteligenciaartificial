@@ -26,6 +26,7 @@ import PlanoAtenteAi from "./pages/PlanoAtenteAi";
 import ConsultationChatPage from "./pages/ConsultationChatPage";
 import ConsultationHistory from "./pages/ConsultationHistory";
 import Profile from "./pages/Profile";
+import PaymentSuccess from "./pages/PaymentSuccess";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/plano/simulador" element={<PlanoSimulador />} />
             <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/termos" element={<TermosDeUso />} />
             <Route path="/privacidade" element={<PoliticaPrivacidade />} />
             

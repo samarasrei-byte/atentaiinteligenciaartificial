@@ -37,6 +37,7 @@ import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
 import AppSidebar from '@/components/layout/AppSidebar';
 import { CompanyEditCard } from '@/components/company/CompanyEditCard';
 import { ConsultationQuotaCard } from '@/components/dashboard/ConsultationQuotaCard';
+import { PlanUpgradeCard } from '@/components/dashboard/PlanUpgradeCard';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -587,10 +588,15 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Economy Calculator - Destaque */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <EconomyCalculator />
-              <ConsultationQuotaCard />
+            {/* Economy Calculator & Plan Upgrade */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <EconomyCalculator />
+              </div>
+              <div className="space-y-4">
+                <PlanUpgradeCard />
+                <ConsultationQuotaCard />
+              </div>
             </div>
 
             {/* Quick Actions */}
