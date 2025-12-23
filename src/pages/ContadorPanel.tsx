@@ -523,21 +523,29 @@ const ContadorPanel = () => {
                         <div className="text-right space-y-2">
                           <p className="font-bold text-foreground">{formatCurrency(c.price_cents - c.platform_fee_cents)}</p>
                           {getStatusBadge(c.status)}
-                          {c.status === 'pending' && (
-                            <div className="flex gap-2 mt-2">
-                              <Button size="sm" onClick={() => handleUpdateConsultation(c.id, 'scheduled')} className="bg-success hover:bg-success/90">
-                                <Check className="h-3 w-3" />
+                          <div className="flex gap-2 mt-2 justify-end">
+                            {(c.status === 'pending' || c.status === 'scheduled') && (
+                              <Button size="sm" variant="outline" onClick={() => navigate(`/chat/${c.id}`)}>
+                                <MessageSquare className="h-3 w-3 mr-1" />
+                                Chat
                               </Button>
-                              <Button size="sm" variant="destructive" onClick={() => handleUpdateConsultation(c.id, 'cancelled')}>
-                                <X className="h-3 w-3" />
+                            )}
+                            {c.status === 'pending' && (
+                              <>
+                                <Button size="sm" onClick={() => handleUpdateConsultation(c.id, 'scheduled')} className="bg-success hover:bg-success/90">
+                                  <Check className="h-3 w-3" />
+                                </Button>
+                                <Button size="sm" variant="destructive" onClick={() => handleUpdateConsultation(c.id, 'cancelled')}>
+                                  <X className="h-3 w-3" />
+                                </Button>
+                              </>
+                            )}
+                            {c.status === 'scheduled' && (
+                              <Button size="sm" onClick={() => handleUpdateConsultation(c.id, 'completed')} className="bg-success hover:bg-success/90">
+                                Concluir
                               </Button>
-                            </div>
-                          )}
-                          {c.status === 'scheduled' && (
-                            <Button size="sm" onClick={() => handleUpdateConsultation(c.id, 'completed')} className="bg-success hover:bg-success/90 mt-2">
-                              Concluir
-                            </Button>
-                          )}
+                            )}
+                          </div>
                         </div>
                       </div>
                     ))}

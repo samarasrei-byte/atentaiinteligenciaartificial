@@ -22,6 +22,7 @@ import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
 import NotFound from "./pages/NotFound";
 import PlanoSimulador from "./pages/PlanoSimulador";
 import PlanoAtenteAi from "./pages/PlanoAtenteAi";
+import ConsultationChatPage from "./pages/ConsultationChatPage";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,11 @@ const App = () => (
             <Route path="/admin" element={
               <ProtectedRoute>
                 <AdminPanel />
+              </ProtectedRoute>
+            } />
+            <Route path="/chat/:consultationId" element={
+              <ProtectedRoute>
+                <ConsultationChatPage />
               </ProtectedRoute>
             } />
             
