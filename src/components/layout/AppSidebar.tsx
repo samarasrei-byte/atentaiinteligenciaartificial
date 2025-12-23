@@ -54,11 +54,12 @@ interface AppSidebarProps {
 
 const userItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+  { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: 'Hot' },
   { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'Pro' },
   { icon: MessagesSquare, label: 'Chat Contador', tabId: 'chat-contador' },
   { icon: Calculator, label: 'Simulador', tabId: 'simulator' },
-  { icon: Home, label: 'Locação', tabId: 'locacao', badge: 'Novo' },
-  { icon: Scale, label: 'Comparador', tabId: 'comparator', badge: 'Novo' },
+  { icon: Home, label: 'Locação', tabId: 'locacao' },
+  { icon: Scale, label: 'Comparador', tabId: 'comparator' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
 ];
