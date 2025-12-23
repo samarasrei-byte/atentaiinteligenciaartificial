@@ -60,7 +60,7 @@ import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContador
 import { EconomyCalculator } from '@/components/calculator/EconomyCalculator';
 import { PFPJDecision } from '@/components/calculator/PFPJDecision';
 import { SimulationHistory } from '@/components/history/SimulationHistory';
-
+import { TaxAutopilot } from '@/components/autopilot/TaxAutopilot';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -493,6 +493,18 @@ const Dashboard = () => {
               <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
             </div>
             <SimulationHistory />
+          </div>
+        );
+      case 'autopilot':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Piloto Automático Tributário</h2>
+              <p className="text-muted-foreground">Otimização contínua da sua estratégia tributária</p>
+            </div>
+            <div className="max-w-3xl">
+              <TaxAutopilot />
+            </div>
           </div>
         );
       case 'support':
