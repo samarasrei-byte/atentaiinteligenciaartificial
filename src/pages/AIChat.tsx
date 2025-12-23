@@ -19,7 +19,10 @@ import {
   Bot,
   Lock,
   Crown,
-  AlertCircle
+  AlertCircle,
+  Volume2,
+  VolumeX,
+  Headphones,
 } from 'lucide-react';
 
 interface Message {
@@ -38,6 +41,9 @@ const AIChat = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [currentSpeakingId, setCurrentSpeakingId] = useState<number | null>(null);
+  const [speechSupported, setSpeechSupported] = useState(true);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -45,6 +51,20 @@ const AIChat = () => {
       navigate('/auth');
     }
   }, [user, authLoading, navigate]);
+
+  useEffect(() => {
+    // Check if speech synthesis is supported
+    if (!("speechSynthesis" in window)) {
+      setSpeechSupported(false);
+    }
+    
+    // Cleanup on unmount
+    return () => {
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -193,6 +213,60 @@ const AIChat = () => {
     navigate('/plano/atente-ai');
   };
 
+  const speakText = (text: string, id: number) => {
+    if (!speechSupported) return;
+
+    // If already speaking this item, stop it
+    if (currentSpeakingId === id && isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setCurrentSpeakingId(null);
+      return;
+    }
+
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "pt-BR";
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
+
+    // Try to find a Portuguese voice
+    const voices = window.speechSynthesis.getVoices();
+    const ptVoice = voices.find(
+      (voice) => voice.lang.includes("pt") || voice.lang.includes("BR")
+    );
+    if (ptVoice) {
+      utterance.voice = ptVoice;
+    }
+
+    utterance.onstart = () => {
+      setIsSpeaking(true);
+      setCurrentSpeakingId(id);
+    };
+
+    utterance.onend = () => {
+      setIsSpeaking(false);
+      setCurrentSpeakingId(null);
+    };
+
+    utterance.onerror = () => {
+      setIsSpeaking(false);
+      setCurrentSpeakingId(null);
+    };
+
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopSpeaking = () => {
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      setCurrentSpeakingId(null);
+    }
+  };
+
   if (authLoading || limitLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
@@ -336,14 +410,41 @@ const AIChat = () => {
                     <Bot className="h-5 w-5 text-white" />
                   </div>
                 )}
-                <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                    message.role === 'user'
-                      ? 'bg-teal-600 text-white'
-                      : 'bg-slate-700 text-slate-100'
-                  }`}
-                >
-                  <p className="whitespace-pre-wrap">{message.content}</p>
+                <div className="flex flex-col gap-2">
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-4 py-3 ${
+                      message.role === 'user'
+                        ? 'bg-teal-600 text-white'
+                        : 'bg-slate-700 text-slate-100'
+                    }`}
+                  >
+                    <p className="whitespace-pre-wrap">{message.content}</p>
+                  </div>
+                  {message.role === 'assistant' && message.content && !isLoading && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => speakText(message.content, index)}
+                      disabled={!speechSupported}
+                      className={`self-start text-xs ${
+                        currentSpeakingId === index && isSpeaking
+                          ? 'text-teal-400'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {currentSpeakingId === index && isSpeaking ? (
+                        <>
+                          <VolumeX className="h-3 w-3 mr-1" />
+                          Parar
+                        </>
+                      ) : (
+                        <>
+                          <Volume2 className="h-3 w-3 mr-1" />
+                          Ouvir
+                        </>
+                      )}
+                    </Button>
+                  )}
                 </div>
                 {message.role === 'user' && (
                   <div className="w-8 h-8 rounded-full bg-slate-600 flex items-center justify-center flex-shrink-0">
