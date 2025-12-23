@@ -40,6 +40,11 @@ import { ConsultationQuotaCard } from '@/components/dashboard/ConsultationQuotaC
 import { PlanUpgradeCard } from '@/components/dashboard/PlanUpgradeCard';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { useGuidedTour } from '@/hooks/useGuidedTour';
+import { GuidedTour } from '@/components/tour/GuidedTour';
+import { TourTriggerButton } from '@/components/tour/TourTriggerButton';
+import { HelpTooltip } from '@/components/ui/help-tooltip';
+import { dashboardTourSteps, featureHelp } from '@/components/tour/tourSteps';
 
 interface Company {
   id: string;
@@ -259,6 +264,13 @@ const Dashboard = () => {
   
   useScheduleNotifications();
   
+  // Guided Tour
+  const tour = useGuidedTour({
+    steps: dashboardTourSteps,
+    storageKey: 'dashboard_tour_completed',
+    autoStart: true,
+  });
+  
   const [subscription, setSubscription] = useState<any>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -466,10 +478,14 @@ const Dashboard = () => {
       case 'glossary':
         return (
           <div className="space-y-6">
-            <div>
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Glossário Tributário</h2>
-              <p className="text-muted-foreground">Entenda todos os impostos da Reforma Tributária de forma simples</p>
+              <HelpTooltip 
+                title={featureHelp.glossary.title}
+                content={featureHelp.glossary.content}
+              />
             </div>
+            <p className="text-muted-foreground">Entenda todos os impostos da Reforma Tributária de forma simples</p>
             <div className="max-w-3xl">
               <TaxGlossary variant="full" />
             </div>
@@ -478,10 +494,14 @@ const Dashboard = () => {
       case 'pf-pj-decision':
         return (
           <div className="space-y-6">
-            <div>
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Decisão Automática: PF ou PJ</h2>
-              <p className="text-muted-foreground">Descubra qual estrutura tributária resulta em menor carga para você</p>
+              <HelpTooltip 
+                title={featureHelp.pfPjDecision.title}
+                content={featureHelp.pfPjDecision.content}
+              />
             </div>
+            <p className="text-muted-foreground">Descubra qual estrutura tributária resulta em menor carga para você</p>
             <div className="max-w-2xl">
               <PFPJDecision />
             </div>
@@ -492,10 +512,14 @@ const Dashboard = () => {
       case 'economia':
         return (
           <div className="space-y-6">
-            <div>
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Economize com a Reforma</h2>
-              <p className="text-muted-foreground">Veja automaticamente quanto você pode economizar em um único clique</p>
+              <HelpTooltip 
+                title={featureHelp.economyCalculator.title}
+                content={featureHelp.economyCalculator.content}
+              />
             </div>
+            <p className="text-muted-foreground">Veja automaticamente quanto você pode economizar em um único clique</p>
             <div className="max-w-2xl">
               <EconomyCalculator />
             </div>
@@ -504,30 +528,42 @@ const Dashboard = () => {
       case 'history':
         return (
           <div className="space-y-6">
-            <div>
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Histórico de Simulações</h2>
-              <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
+              <HelpTooltip 
+                title={featureHelp.history.title}
+                content={featureHelp.history.content}
+              />
             </div>
+            <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
             <SimulationHistory />
           </div>
         );
       case 'metrics':
         return (
           <div className="space-y-6">
-            <div>
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Métricas de Economia</h2>
-              <p className="text-muted-foreground">Acompanhe sua economia tributária ao longo do tempo</p>
+              <HelpTooltip 
+                title={featureHelp.metrics.title}
+                content={featureHelp.metrics.content}
+              />
             </div>
+            <p className="text-muted-foreground">Acompanhe sua economia tributária ao longo do tempo</p>
             <SavingsMetricsDashboard />
           </div>
         );
       case 'autopilot':
         return (
           <div className="space-y-6">
-            <div>
+            <div className="flex items-center gap-2">
               <h2 className="text-2xl font-bold text-foreground">Piloto Automático Tributário</h2>
-              <p className="text-muted-foreground">Otimização contínua da sua estratégia tributária</p>
+              <HelpTooltip 
+                title={featureHelp.autopilot.title}
+                content={featureHelp.autopilot.content}
+              />
             </div>
+            <p className="text-muted-foreground">Otimização contínua da sua estratégia tributária</p>
             <div className="max-w-3xl">
               <TaxAutopilot />
             </div>
@@ -690,7 +726,7 @@ const Dashboard = () => {
         {/* Top Bar */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3" data-tour="welcome">
               {/* Mobile Menu Button */}
               <Button
                 variant="ghost"
@@ -710,13 +746,20 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="flex items-center gap-2 lg:gap-3">
-              <NotificationCenter
-                notifications={notifications}
-                unreadCount={unreadCount}
-                onMarkAsRead={markAsRead}
-                onMarkAllAsRead={markAllAsRead}
-                onClear={clearNotifications}
+              <TourTriggerButton 
+                onStartTour={tour.startTour}
+                onResetTour={tour.resetTour}
+                hasCompletedTour={tour.hasCompletedTour}
               />
+              <div data-tour="notifications">
+                <NotificationCenter
+                  notifications={notifications}
+                  unreadCount={unreadCount}
+                  onMarkAsRead={markAsRead}
+                  onMarkAllAsRead={markAllAsRead}
+                  onClear={clearNotifications}
+                />
+              </div>
               <div className="hidden sm:block">{getPlanBadge()}</div>
               <Button 
                 variant="outline" 
@@ -735,6 +778,21 @@ const Dashboard = () => {
           {renderContent()}
         </div>
       </main>
+      
+      {/* Guided Tour */}
+      <GuidedTour
+        isActive={tour.isActive}
+        currentStep={tour.currentStep}
+        currentStepIndex={tour.currentStepIndex}
+        totalSteps={tour.totalSteps}
+        progress={tour.progress}
+        isFirstStep={tour.isFirstStep}
+        isLastStep={tour.isLastStep}
+        onNext={tour.nextStep}
+        onPrev={tour.prevStep}
+        onSkip={() => tour.endTour(true)}
+        onClose={() => tour.endTour(false)}
+      />
     </div>
   );
 };
