@@ -20,6 +20,7 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
   simulator: [
     'simulator',
     'pdf-export',
+    'timeline-2026-2033',
   ],
   premium: [
     'simulator',
@@ -27,9 +28,9 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'ai-chat-unlimited',
     'pdf-export',
     'excel-export',
-    'locacao-simulator',
     'regime-comparator',
     'timeline-2026-2033',
+    'locacao-simulator',
   ],
   contador: [
     'simulator',
@@ -37,9 +38,9 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'ai-chat-unlimited',
     'pdf-export',
     'excel-export',
-    'locacao-simulator',
     'regime-comparator',
     'timeline-2026-2033',
+    'locacao-simulator',
     'contador-consultation',
     'custom-reports',
     'multiple-companies',

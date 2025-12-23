@@ -201,7 +201,7 @@ export function PricingSection() {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
-          <p className="mt-2 text-accent font-medium">Plano Contador parcelável em até 10x sem juros!</p>
+          <p className="mt-2 text-accent font-medium">Plano Contador Premium Plus parcelável em até 10x sem juros!</p>
         </div>
       </div>
     </section>

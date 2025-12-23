@@ -1,16 +1,16 @@
 // Stripe plan configuration
 export const STRIPE_PLANS = {
   simulator: {
-    name: 'Simulador de Impacto Tributário',
+    name: 'Simulador Tributário',
     priceId: 'price_1Sh0hO3MU3lG84Gw6TYhkT4W',
     productId: 'prod_TeJKjnfkaw0JfV',
     price: 5600, // cents (R$56,00)
     description: 'Simule o impacto da reforma tributária na sua empresa',
     features: [
-      'Simulador completo',
+      'Simulador de impacto tributário',
       'Comparativo antes/depois',
-      'Relatório detalhado',
-      'Exportação PDF',
+      'Relatório detalhado em PDF',
+      'Timeline da transição 2026-2033',
     ],
   },
   premium: {
@@ -20,30 +20,35 @@ export const STRIPE_PLANS = {
     price: 9800, // cents (R$98,00)
     description: 'Assistente de IA especializado em legislação tributária',
     features: [
-      'Perguntas ilimitadas',
-      'Respostas detalhadas',
-      'Base LC 214/2025',
-      'Suporte prioritário',
+      'Agente de IA ilimitado',
+      'Simulador tributário completo',
+      'Comparador de regimes fiscais',
+      'Calculadora PF vs PJ',
+      'Glossário tributário completo',
+      'Relatórios PDF e Excel',
+      'Piloto Automático Tributário',
     ],
     popular: true,
   },
   contador: {
-    name: 'Plano Contador Premium',
-    priceId: 'price_1ShJPw3MU3lG84GwFlxnY8Pi',
-    productId: 'prod_Tecf36TAM9IMat',
-    price: 17000, // cents (R$170,00)
-    description: 'Acesso a contador especializado com suporte completo',
+    name: 'Contador Premium Plus',
+    priceId: 'price_1ShOGL3MU3lG84Gw1iPrqUkt',
+    productId: 'prod_Tehfc8IkhNyBJ7',
+    price: 19899, // cents (R$198,99)
+    description: 'Acesso completo com contador especializado e todas as ferramentas',
     features: [
+      'Tudo do AtentAI Premium',
       'Chat ilimitado com contador',
-      '3 consultas/mês com contador especializado',
-      'Agendamento de consultas',
-      'Relatórios PDF detalhados',
+      '5 consultas/mês com contador especializado',
+      'Agendamento prioritário',
+      'Análise tributária personalizada',
+      'Piloto Automático com alertas',
       'Suporte prioritário 24h',
-      'Agente IA Premium incluído',
-      'Calculadora de Economia incluída',
+      'Acesso ao glossário completo',
+      'Edição de dados da empresa',
     ],
-    monthlyConsultations: 3,
-    installments: 10, // 10x de R$17,00
+    monthlyConsultations: 5,
+    installments: 10, // 10x de R$19,89
     highlight: true,
   },
 } as const;
