@@ -11,7 +11,9 @@ import {
   Crown,
   Loader2,
   Sparkles,
-  Calculator
+  Calculator,
+  Users,
+  Star
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
@@ -57,6 +59,25 @@ export function PricingSection() {
   };
 
   const planEntries = Object.entries(STRIPE_PLANS) as [PlanType, typeof STRIPE_PLANS[PlanType]][];
+  const orderedPlans: PlanType[] = ['simulator', 'premium', 'contador'];
+
+  const getIcon = (key: PlanType) => {
+    switch (key) {
+      case 'simulator': return Calculator;
+      case 'premium': return Brain;
+      case 'contador': return Users;
+      default: return Brain;
+    }
+  };
+
+  const getGradient = (key: PlanType) => {
+    switch (key) {
+      case 'simulator': return 'from-blue-500 to-cyan-500';
+      case 'premium': return 'from-primary to-primary/70';
+      case 'contador': return 'from-accent to-orange-500';
+      default: return 'from-primary to-primary/70';
+    }
+  };
 
   return (
     <section id="pricing" className="py-24 bg-muted/30">
@@ -80,20 +101,30 @@ export function PricingSection() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {planEntries.map(([key, plan]) => {
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {orderedPlans.map((key) => {
+            const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
-            const Icon = key === 'simulator' ? Calculator : Brain;
+            const isHighlight = 'highlight' in plan && plan.highlight;
+            const hasInstallments = 'installments' in plan && plan.installments;
+            const Icon = getIcon(key);
             
             return (
               <Card 
                 key={key}
                 className={`relative bg-card border transition-all hover:shadow-xl hover:scale-[1.02] ${
+                  isHighlight ? 'ring-2 ring-accent scale-105 z-10' : 
                   isPlanPopular ? 'ring-2 ring-primary' : 'border-border'
                 } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
               >
-                {isPlanPopular && !isCurrentPlan && (
+                {isHighlight && !isCurrentPlan && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground">
+                    <Star className="h-3 w-3 mr-1" />
+                    Mais Completo
+                  </Badge>
+                )}
+                {isPlanPopular && !isCurrentPlan && !isHighlight && (
                   <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Mais Popular
@@ -106,11 +137,7 @@ export function PricingSection() {
                   </Badge>
                 )}
                 <CardHeader className="text-center pt-8">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                    key === 'simulator' 
-                      ? 'bg-gradient-to-br from-blue-500 to-cyan-500' 
-                      : 'bg-gradient-to-br from-primary to-primary/70'
-                  }`}>
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-br ${getGradient(key)}`}>
                     <Icon className="h-8 w-8 text-white" />
                   </div>
                   <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
@@ -124,6 +151,11 @@ export function PricingSection() {
                   <div className="text-center">
                     <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
                     <span className="text-muted-foreground">/mês</span>
+                    {hasInstallments && (
+                      <p className="text-sm text-accent mt-1 font-medium">
+                        ou {plan.installments}x de {formatPrice(plan.price / plan.installments)}
+                      </p>
+                    )}
                   </div>
 
                   <ul className="space-y-3">
@@ -141,9 +173,11 @@ export function PricingSection() {
                     className={`w-full ${
                       isCurrentPlan 
                         ? 'bg-green-600 cursor-not-allowed' 
-                        : key === 'simulator' 
-                          ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600' 
-                          : 'bg-primary hover:bg-primary/90'
+                        : isHighlight
+                          ? 'bg-gradient-to-r from-accent to-orange-500 hover:from-accent/90 hover:to-orange-600'
+                          : key === 'simulator' 
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600' 
+                            : 'bg-primary hover:bg-primary/90'
                     }`}
                   >
                     {isLoading === key ? (
@@ -167,6 +201,7 @@ export function PricingSection() {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
+          <p className="mt-2 text-accent font-medium">Plano Contador parcelável em até 10x sem juros!</p>
         </div>
       </div>
     </section>

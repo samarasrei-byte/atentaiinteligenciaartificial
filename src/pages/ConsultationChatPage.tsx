@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ConsultationChat } from '@/components/chat/ConsultationChat';
 import { ConsultationRating } from '@/components/chat/ConsultationRating';
+import { ConsultationScheduler } from '@/components/scheduling/ConsultationScheduler';
 import { exportConsultationToPdf } from '@/lib/exportConsultationPdf';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -53,7 +54,7 @@ const ConsultationChatPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
-  const [currentRating, setCurrentRating] = useState<number | null>(null);
+  const [scheduledAt, setScheduledAt] = useState<string | null>(null);
 
   const handleExportPdf = async () => {
     if (!consultation || !user) return;
@@ -317,6 +318,19 @@ const ConsultationChatPage = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Scheduling Section - Show for contadors on pending/scheduled consultations */}
+            {isContador && (consultation.status === 'pending' || consultation.status === 'scheduled') && (
+              <ConsultationScheduler
+                consultationId={consultation.id}
+                currentScheduledAt={scheduledAt || consultation.scheduled_at}
+                isContador={isContador}
+                onScheduled={(date) => {
+                  setScheduledAt(date);
+                  setConsultation(prev => prev ? { ...prev, scheduled_at: date, status: 'scheduled' } : null);
+                }}
+              />
+            )}
 
             {/* Rating Section - Only show for clients on completed consultations */}
             {!isContador && consultation.status === 'completed' && (

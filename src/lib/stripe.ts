@@ -27,6 +27,23 @@ export const STRIPE_PLANS = {
     ],
     popular: true,
   },
+  contador: {
+    name: 'Plano Contador Premium',
+    priceId: 'price_1ShJPw3MU3lG84GwFlxnY8Pi',
+    productId: 'prod_Tecf36TAM9IMat',
+    price: 17000, // cents (R$170,00)
+    description: 'Acesso a contador especializado com suporte completo',
+    features: [
+      'Chat ilimitado com contador',
+      'Agendamento de consultas',
+      'Relatórios PDF detalhados',
+      'Suporte prioritário 24h',
+      'Simulador completo incluído',
+      'IA Premium incluída',
+    ],
+    installments: 10, // 10x de R$17,00
+    highlight: true,
+  },
 } as const;
 
 export type PlanType = keyof typeof STRIPE_PLANS;
