@@ -17,6 +17,7 @@ import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { ContadorStats } from '@/components/dashboard/ContadorStats';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
+import { ContadorAgenda } from '@/components/contador/ContadorAgenda';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
@@ -365,6 +366,8 @@ const ContadorPanel = () => {
           )}
 
           {activeTab === 'stats' && <ContadorStats consultations={consultations} />}
+          
+          {activeTab === 'agenda' && <ContadorAgenda />}
 
           {activeTab === 'chat' && (
             <div className="space-y-6">

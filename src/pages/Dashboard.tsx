@@ -35,6 +35,7 @@ import { NotificationCenter } from '@/components/notifications/NotificationCente
 import { SupportTicketList } from '@/components/support/SupportTicketList';
 import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
 import AppSidebar from '@/components/layout/AppSidebar';
+import { CompanyEditCard } from '@/components/company/CompanyEditCard';
 import { ConsultationQuotaCard } from '@/components/dashboard/ConsultationQuotaCard';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -47,9 +48,12 @@ interface Company {
   tax_regime: string;
   sector: string;
   monthly_revenue_cents: number;
+  annual_revenue_cents: number;
   employee_count: number;
   state: string | null;
   city: string | null;
+  cnpj: string | null;
+  main_activity: string | null;
   onboarding_completed: boolean;
 }
 
@@ -530,65 +534,9 @@ const Dashboard = () => {
       default:
         return (
           <>
-            {/* Company Card */}
+            {/* Company Card with Edit Feature */}
             {company && (
-              <Card className="bg-card border-border shadow-soft overflow-hidden relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent" />
-                <CardHeader className="relative pb-2">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="p-3 rounded-xl bg-primary/10">
-                        <Building2 className="h-7 w-7 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-xl">{company.company_name}</CardTitle>
-                        {company.trade_name && (
-                          <CardDescription>{company.trade_name}</CardDescription>
-                        )}
-                      </div>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => setShowOnboarding(true)}
-                      className="text-muted-foreground hover:text-foreground"
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </CardHeader>
-                <CardContent className="relative">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline" className="border-primary/50 text-primary">
-                        {getCompanyTypeLabel(company.company_type)}
-                      </Badge>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <FileText className="h-4 w-4 text-info" />
-                      <span className="text-sm">{getTaxRegimeLabel(company.tax_regime)}</span>
-                    </div>
-                    <div className="flex items-center gap-2 text-muted-foreground">
-                      <TrendingUp className="h-4 w-4 text-success" />
-                      <span className="text-sm">{formatCurrency(company.monthly_revenue_cents)}/mês</span>
-                    </div>
-                    {company.state && (
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <MapPin className="h-4 w-4 text-accent" />
-                        <span className="text-sm">{company.city ? `${company.city}/${company.state}` : company.state}</span>
-                      </div>
-                    )}
-                  </div>
-                  <div className="mt-4 pt-4 border-t border-border">
-                    <p className="text-sm text-muted-foreground">
-                      Setor: <span className="text-foreground">{getSectorLabel(company.sector)}</span>
-                      {company.employee_count > 0 && (
-                        <> • {company.employee_count} funcionário{company.employee_count > 1 ? 's' : ''}</>
-                      )}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+              <CompanyEditCard company={company} onUpdate={fetchUserData} />
             )}
 
             {/* Stats Grid */}
