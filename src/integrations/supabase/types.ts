@@ -40,6 +40,9 @@ export type Database = {
       }
       chat_messages: {
         Row: {
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
           consultation_id: string
           content: string
           created_at: string
@@ -49,6 +52,9 @@ export type Database = {
           sender_id: string
         }
         Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
           consultation_id: string
           content: string
           created_at?: string
@@ -58,6 +64,9 @@ export type Database = {
           sender_id: string
         }
         Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
           consultation_id?: string
           content?: string
           created_at?: string
@@ -152,6 +161,8 @@ export type Database = {
           platform_fee_cents: number
           price_cents: number
           rating: number | null
+          review_text: string | null
+          reviewed_at: string | null
           scheduled_at: string | null
           status: Database["public"]["Enums"]["consultation_status"]
           updated_at: string
@@ -166,6 +177,8 @@ export type Database = {
           platform_fee_cents?: number
           price_cents?: number
           rating?: number | null
+          review_text?: string | null
+          reviewed_at?: string | null
           scheduled_at?: string | null
           status?: Database["public"]["Enums"]["consultation_status"]
           updated_at?: string
@@ -180,6 +193,8 @@ export type Database = {
           platform_fee_cents?: number
           price_cents?: number
           rating?: number | null
+          review_text?: string | null
+          reviewed_at?: string | null
           scheduled_at?: string | null
           status?: Database["public"]["Enums"]["consultation_status"]
           updated_at?: string
