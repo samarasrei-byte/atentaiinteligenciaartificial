@@ -28,7 +28,9 @@ import {
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useScheduleNotifications } from '@/hooks/useScheduleNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { SupportTicketList } from '@/components/support/SupportTicketList';
 import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
 import AppSidebar from '@/components/layout/AppSidebar';
 import { ConsultationQuotaCard } from '@/components/dashboard/ConsultationQuotaCard';
@@ -52,6 +54,10 @@ const Dashboard = () => {
   const { user, profile, roles, signOut, loading, hasRole } = useAuth();
   const { toast } = useToast();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
+  
+  // Enable schedule notifications
+  useScheduleNotifications();
+  
   const [subscription, setSubscription] = useState<any>(null);
   const [company, setCompany] = useState<Company | null>(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -428,6 +434,9 @@ const Dashboard = () => {
 
           {/* Consultation Quota for Contador Plan */}
           <ConsultationQuotaCard />
+
+          {/* Support Tickets */}
+          <SupportTicketList />
 
           {/* Quick Actions */}
           <div>

@@ -8,14 +8,22 @@ const stats = [
     value: 2500,
     suffix: "+",
     label: "Usuários Ativos",
-    description: "Profissionais utilizando a plataforma"
+    description: "Profissionais utilizando a plataforma",
+    gradient: "from-primary to-primary/70",
+    bgGradient: "from-primary/10 to-primary/5",
+    iconColor: "text-primary-foreground",
+    accentColor: "text-primary"
   },
   {
     icon: MessageSquare,
     value: 45000,
     suffix: "+",
     label: "Consultas IA",
-    description: "Perguntas respondidas pela IA"
+    description: "Perguntas respondidas pela IA",
+    gradient: "from-accent to-accent/70",
+    bgGradient: "from-accent/10 to-accent/5",
+    iconColor: "text-accent-foreground",
+    accentColor: "text-accent"
   },
   {
     icon: TrendingUp,
@@ -23,14 +31,22 @@ const stats = [
     prefix: "R$",
     suffix: "M",
     label: "Economia Gerada",
-    description: "Valor economizado pelos clientes"
+    description: "Valor economizado pelos clientes",
+    gradient: "from-success to-success/70",
+    bgGradient: "from-success/10 to-success/5",
+    iconColor: "text-success-foreground",
+    accentColor: "text-success"
   },
   {
     icon: Building2,
     value: 850,
     suffix: "+",
     label: "Empresas",
-    description: "Empresas utilizando o simulador"
+    description: "Empresas utilizando o simulador",
+    gradient: "from-info to-info/70",
+    bgGradient: "from-info/10 to-info/5",
+    iconColor: "text-info-foreground",
+    accentColor: "text-info"
   }
 ];
 
@@ -44,22 +60,22 @@ function StatCard({ stat, isVisible, index }: {
 
   return (
     <div 
-      className={`relative p-8 rounded-2xl bg-gradient-to-br from-card to-card/50 border border-border/50 text-center transition-all duration-700 hover:shadow-xl hover:scale-105 ${
+      className={`relative p-8 rounded-2xl bg-gradient-to-br from-card to-card/50 border border-border/50 text-center transition-all duration-700 hover:shadow-xl hover:scale-105 group ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}
       style={{ transitionDelay: `${index * 150}ms` }}
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl" />
+      <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity`} />
       
       <div className="relative z-10">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg">
-          <Icon className="h-8 w-8 text-white" />
+        <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+          <Icon className={`h-8 w-8 ${stat.iconColor}`} />
         </div>
         
-        <div className="text-4xl md:text-5xl font-bold text-foreground mb-2">
-          {stat.prefix && <span className="text-primary">{stat.prefix}</span>}
-          {count.toLocaleString('pt-BR')}
-          {stat.suffix && <span className="text-primary">{stat.suffix}</span>}
+        <div className="text-4xl md:text-5xl font-bold text-foreground mb-2 tabular-nums">
+          {stat.prefix && <span className={stat.accentColor}>{stat.prefix}</span>}
+          <span className="inline-block min-w-[80px]">{count.toLocaleString('pt-BR')}</span>
+          {stat.suffix && <span className={stat.accentColor}>{stat.suffix}</span>}
         </div>
         
         <h3 className="text-lg font-semibold text-foreground mb-1">
