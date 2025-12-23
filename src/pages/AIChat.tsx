@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
 import { useToast } from '@/hooks/use-toast';
 import { useDailyQuestionLimit } from '@/hooks/useDailyQuestionLimit';
 
@@ -297,37 +298,49 @@ const AIChat = () => {
               />
             </div>
           </div>
-          {/* Usage Badge */}
+          {/* Usage Badge with Progress */}
           <div className="flex items-center gap-3">
             {isContador ? (
               <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
                 <Crown className="h-3 w-3 mr-1" />
                 Contador - Ilimitado
               </Badge>
-            ) : isPremium ? (
-              <div className="flex items-center gap-2">
-                <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-                  <Crown className="h-3 w-3 mr-1" />
-                  Premium
-                </Badge>
-                <Badge variant="outline" className="text-slate-300 border-slate-600">
-                  {questionsRemaining}/{limit} perguntas hoje
-                </Badge>
-              </div>
             ) : (
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className={`text-slate-300 border-slate-600 ${questionsRemaining === 0 ? 'border-red-500 text-red-400' : ''}`}>
-                  {questionsRemaining}/{limit} perguntas restantes
-                </Badge>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleUpgrade}
-                  className="text-teal-400 hover:text-teal-300"
-                >
-                  <Crown className="h-4 w-4 mr-1" />
-                  Upgrade
-                </Button>
+              <div className="flex items-center gap-3">
+                {isPremium && (
+                  <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
+                    <Crown className="h-3 w-3 mr-1" />
+                    Premium
+                  </Badge>
+                )}
+                <div className="flex items-center gap-2">
+                  <div className="hidden sm:flex flex-col items-end gap-1">
+                    <span className={`text-xs ${questionsRemaining === 0 ? 'text-red-400' : 'text-slate-400'}`}>
+                      {questionsUsed}/{limit} usadas
+                    </span>
+                    <Progress 
+                      value={(questionsUsed / limit) * 100} 
+                      className={`w-24 h-1.5 ${questionsRemaining === 0 ? '[&>div]:bg-red-500' : '[&>div]:bg-teal-500'}`}
+                    />
+                  </div>
+                  <Badge 
+                    variant="outline" 
+                    className={`text-slate-300 border-slate-600 sm:hidden ${questionsRemaining === 0 ? 'border-red-500 text-red-400' : ''}`}
+                  >
+                    {questionsRemaining}/{limit}
+                  </Badge>
+                </div>
+                {!isPremium && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleUpgrade}
+                    className="text-teal-400 hover:text-teal-300"
+                  >
+                    <Crown className="h-4 w-4 mr-1" />
+                    Upgrade
+                  </Button>
+                )}
               </div>
             )}
           </div>
