@@ -374,93 +374,81 @@ export const PFPJDecision = () => {
           </>
         ) : (
           <>
-            {/* Result Card */}
-            <div className="space-y-6">
-              {/* Best Option Card */}
-              <div className={`p-6 rounded-xl border-2 ${
+            {/* RESULTADO DECISIVO */}
+            <div className="space-y-5">
+              {/* Hero Result Card */}
+              <div className={`p-6 rounded-2xl border-2 ${
                 result.bestOption === 'PF' 
-                  ? 'bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border-blue-500/30' 
-                  : 'bg-gradient-to-br from-emerald-500/10 to-green-500/10 border-emerald-500/30'
+                  ? 'bg-gradient-to-br from-blue-500/15 to-cyan-500/10 border-blue-500/40' 
+                  : 'bg-gradient-to-br from-emerald-500/15 to-green-500/10 border-emerald-500/40'
               }`}>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className={`p-3 rounded-full ${
+                {/* Header with checkmark */}
+                <div className="text-center mb-4">
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/20 text-emerald-600 mb-4">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span className="font-semibold">Estrutura ideal para você</span>
+                  </div>
+                </div>
+
+                {/* Main Result - Big and Clear */}
+                <div className="text-center mb-6">
+                  <div className={`inline-flex items-center justify-center p-4 rounded-full mb-4 ${
                     result.bestOption === 'PF' ? 'bg-blue-500/20' : 'bg-emerald-500/20'
                   }`}>
                     {result.bestOption === 'PF' ? (
-                      <User className="h-6 w-6 text-blue-500" />
+                      <User className="h-10 w-10 text-blue-500" />
                     ) : (
-                      <Building2 className="h-6 w-6 text-emerald-500" />
+                      <Building2 className="h-10 w-10 text-emerald-500" />
                     )}
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-xl font-bold text-foreground">
-                        {result.bestOption === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
-                      </h3>
-                      <Badge className="bg-green-500/20 text-green-600 border-green-500/30">
-                        <CheckCircle2 className="h-3 w-3 mr-1" />
-                        Recomendado
-                      </Badge>
+                  <h2 className={`text-3xl font-bold ${
+                    result.bestOption === 'PF' ? 'text-blue-600' : 'text-emerald-600'
+                  }`}>
+                    {result.bestOption === 'PF' ? 'Pessoa Física' : 'Pessoa Jurídica'}
+                  </h2>
+                </div>
+
+                {/* Savings - Super Highlight */}
+                <div className="bg-background/80 rounded-xl p-5 border border-emerald-500/30 mb-4">
+                  <div className="grid grid-cols-2 gap-4 text-center">
+                    <div>
+                      <div className="flex items-center justify-center gap-1 text-emerald-500 mb-1">
+                        <TrendingDown className="h-4 w-4" />
+                        <span className="text-xs font-medium">Economia mensal</span>
+                      </div>
+                      <p className="text-2xl font-bold text-emerald-600">
+                        {formatCurrency(result.monthlySavings)}
+                      </p>
                     </div>
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Esta é a estrutura mais eficiente com base nos seus dados.
-                    </p>
+                    <div className="border-l border-border pl-4">
+                      <div className="flex items-center justify-center gap-1 text-primary mb-1">
+                        <Sparkles className="h-4 w-4" />
+                        <span className="text-xs font-medium">Economia anual</span>
+                      </div>
+                      <p className="text-3xl font-bold text-primary">
+                        {formatCurrency(result.annualSavings)}
+                      </p>
+                    </div>
                   </div>
                 </div>
 
-                {/* Savings Highlight */}
-                <div className="grid grid-cols-2 gap-4 mt-6">
-                  <div className="bg-background/60 rounded-lg p-4 text-center">
-                    <TrendingDown className="h-5 w-5 text-green-500 mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground">Economia mensal</p>
-                    <p className="text-lg font-bold text-green-600">
-                      {formatCurrency(result.monthlySavings)}
-                    </p>
-                  </div>
-                  <div className="bg-background/60 rounded-lg p-4 text-center border-2 border-green-500/30">
-                    <Sparkles className="h-5 w-5 text-green-500 mx-auto mb-2" />
-                    <p className="text-xs text-muted-foreground">Economia anual</p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {formatCurrency(result.annualSavings)}
-                    </p>
-                  </div>
+                {/* Comparison Text - Trust Builder */}
+                <div className="text-center p-3 rounded-lg bg-muted/50 border border-border">
+                  <p className="text-sm text-muted-foreground">
+                    <span className="font-medium text-foreground">Comparado PF × PJ</span>, esta estrutura apresenta a <span className="font-semibold text-emerald-600">menor carga tributária estimada</span>.
+                  </p>
                 </div>
               </div>
 
-              {/* Tax Comparison (simplified) */}
-              <div className="grid grid-cols-2 gap-3">
-                <div className={`p-4 rounded-lg border ${
-                  result.bestOption === 'PF' 
-                    ? 'bg-blue-500/5 border-blue-500/20' 
-                    : 'bg-muted/30 border-border'
-                }`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <User className="h-4 w-4 text-blue-500" />
-                    <span className="text-sm font-medium">Pessoa Física</span>
-                    {result.bestOption === 'PF' && (
-                      <CheckCircle2 className="h-4 w-4 text-green-500 ml-auto" />
-                    )}
-                  </div>
-                  <p className="text-lg font-bold text-foreground">
-                    {formatCurrency(result.taxPF)}<span className="text-xs text-muted-foreground">/mês</span>
-                  </p>
-                </div>
-                <div className={`p-4 rounded-lg border ${
-                  result.bestOption === 'PJ' 
-                    ? 'bg-emerald-500/5 border-emerald-500/20' 
-                    : 'bg-muted/30 border-border'
-                }`}>
-                  <div className="flex items-center gap-2 mb-2">
-                    <Building2 className="h-4 w-4 text-emerald-500" />
-                    <span className="text-sm font-medium">Pessoa Jurídica</span>
-                    {result.bestOption === 'PJ' && (
-                      <CheckCircle2 className="h-4 w-4 text-green-500 ml-auto" />
-                    )}
-                  </div>
-                  <p className="text-lg font-bold text-foreground">
-                    {formatCurrency(result.taxPJ)}<span className="text-xs text-muted-foreground">/mês</span>
-                  </p>
-                </div>
+              {/* Quick Tax Reference (collapsed/minimal) */}
+              <div className="flex gap-2 text-xs text-muted-foreground justify-center">
+                <span className={`px-3 py-1 rounded-full ${result.bestOption === 'PF' ? 'bg-blue-500/10 text-blue-600 font-medium' : 'bg-muted'}`}>
+                  PF: {formatCurrency(result.taxPF)}/mês
+                </span>
+                <span className="text-muted-foreground">vs</span>
+                <span className={`px-3 py-1 rounded-full ${result.bestOption === 'PJ' ? 'bg-emerald-500/10 text-emerald-600 font-medium' : 'bg-muted'}`}>
+                  PJ: {formatCurrency(result.taxPJ)}/mês
+                </span>
               </div>
 
               {/* Action Buttons */}
