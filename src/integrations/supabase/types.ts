@@ -38,6 +38,51 @@ export type Database = {
         }
         Relationships: []
       }
+      autonomo_financial_goals: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          current_value_cents: number
+          description: string | null
+          goal_type: string
+          id: string
+          is_completed: boolean
+          target_date: string | null
+          target_value_cents: number
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          current_value_cents?: number
+          description?: string | null
+          goal_type?: string
+          id?: string
+          is_completed?: boolean
+          target_date?: string | null
+          target_value_cents: number
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          current_value_cents?: number
+          description?: string | null
+          goal_type?: string
+          id?: string
+          is_completed?: boolean
+          target_date?: string | null
+          target_value_cents?: number
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       autonomo_profiles: {
         Row: {
           bio: string | null
