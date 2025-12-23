@@ -19,7 +19,7 @@ export function Header({ onNavigate }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border/30 shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-20 md:h-24">
+        <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <button 
             onClick={() => onNavigate("hero")}
@@ -28,7 +28,7 @@ export function Header({ onNavigate }: HeaderProps) {
             <img 
               src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="h-20 md:h-28 w-auto"
+              className="h-12 md:h-16 w-auto"
             />
           </button>
 
