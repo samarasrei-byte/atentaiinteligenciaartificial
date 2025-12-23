@@ -31,6 +31,7 @@ import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import CompanyOnboarding from '@/components/onboarding/CompanyOnboarding';
 import AppSidebar from '@/components/layout/AppSidebar';
+import { ConsultationQuotaCard } from '@/components/dashboard/ConsultationQuotaCard';
 
 interface Company {
   id: string;
@@ -424,6 +425,9 @@ const Dashboard = () => {
               </CardContent>
             </Card>
           </div>
+
+          {/* Consultation Quota for Contador Plan */}
+          <ConsultationQuotaCard />
 
           {/* Quick Actions */}
           <div>
