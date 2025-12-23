@@ -52,7 +52,32 @@ serve(async (req) => {
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     
     if (customers.data.length === 0) {
-      logStep("No customer found");
+      logStep("No Stripe customer found, checking database subscription");
+      
+      // Fallback: check database for manual subscriptions
+      const { data: dbSubscription } = await supabaseClient
+        .from('subscriptions')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('status', 'active')
+        .single();
+      
+      if (dbSubscription && new Date(dbSubscription.current_period_end) > new Date()) {
+        logStep("Found active database subscription", { 
+          plan: dbSubscription.plan_type,
+          endDate: dbSubscription.current_period_end 
+        });
+        return new Response(JSON.stringify({ 
+          subscribed: true,
+          plan: dbSubscription.plan_type,
+          subscription_end: dbSubscription.current_period_end 
+        }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 200,
+        });
+      }
+      
+      logStep("No active subscription found");
       return new Response(JSON.stringify({ 
         subscribed: false,
         plan: null,
