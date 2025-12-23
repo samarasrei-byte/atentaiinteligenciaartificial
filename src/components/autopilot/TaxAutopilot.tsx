@@ -10,18 +10,30 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
   Zap, 
   TrendingUp, 
+  TrendingDown,
   Calendar, 
   CheckCircle2, 
   AlertTriangle, 
   Loader2,
   RefreshCw,
-  Bell
+  Bell,
+  Rocket,
+  User,
+  Building2,
+  Clock
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { format, addMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import {
+  BASE_TAX_RATE,
+  CBS_CREDIT_RATE,
+  PRESUMED_BASE_SERVICES,
+  IRPJ_CSLL_PRESUMED_RATE,
+  AUTOPILOT_DISCLAIMER,
+} from '@/lib/taxConstants';
 
 interface AutopilotData {
   id: string;
@@ -133,14 +145,14 @@ export const TaxAutopilot = () => {
     expenses: number, 
     currentStruct: string
   ) => {
-    // PF calculation: 26.5% flat rate
-    const pfTax = revenue * 0.265;
+    // PF calculation using centralized constant
+    const pfTax = revenue * (BASE_TAX_RATE / 100);
 
-    // PJ calculation (Lucro Presumido)
-    const presumedBase = revenue * 0.32;
-    const irpjCsll = presumedBase * 0.1133;
-    const cbs = revenue * 0.12;
-    const cbsCredit = expenses * 0.12;
+    // PJ calculation (Lucro Presumido) using centralized constants
+    const presumedBase = revenue * (PRESUMED_BASE_SERVICES / 100);
+    const irpjCsll = presumedBase * (IRPJ_CSLL_PRESUMED_RATE / 100);
+    const cbs = revenue * (CBS_CREDIT_RATE / 100);
+    const cbsCredit = expenses * (CBS_CREDIT_RATE / 100);
     const pjTax = Math.max(0, irpjCsll + cbs - cbsCredit);
 
     const bestScenario = pfTax <= pjTax ? 'pf' : 'pj';
@@ -148,6 +160,8 @@ export const TaxAutopilot = () => {
     const currentTax = currentStruct === 'pf' ? pfTax : pjTax;
     const savings = Math.max(0, currentTax - bestTax);
     const shouldChange = bestScenario !== currentStruct && savings > 0;
+    const monthlySavings = Math.abs(pfTax - pjTax);
+    const annualSavings = monthlySavings * 12;
 
     return {
       pfTax,
@@ -156,9 +170,21 @@ export const TaxAutopilot = () => {
       bestTax,
       currentTax,
       savings,
-      shouldChange
+      shouldChange,
+      monthlySavings,
+      annualSavings
     };
   };
+
+  // Calculate live result for display
+  const getLiveCalculation = () => {
+    const revenue = parseCurrencyInput(monthlyRevenue) / 100;
+    const expenses = parseCurrencyInput(monthlyExpenses) / 100;
+    if (revenue === 0) return null;
+    return calculateOptimalScenario(revenue, expenses, currentStructure);
+  };
+
+  const liveCalculation = getLiveCalculation();
 
   const handleToggleAutopilot = async (active: boolean) => {
     if (!user) return;
@@ -368,57 +394,132 @@ export const TaxAutopilot = () => {
 
         <CardContent className="space-y-6">
           {/* Status Card when Active */}
-          {isActive && autopilotData && (
-            <div className="p-4 rounded-lg bg-background/80 border border-primary/20">
-              <div className="flex items-center gap-2 mb-4">
-                <Badge variant="default" className="bg-green-500/10 text-green-600 border-green-500/20">
-                  <CheckCircle2 className="h-3 w-3 mr-1" />
-                  Piloto Automático Ativo
-                </Badge>
+          {isActive && (
+            <div className="space-y-4">
+              {/* Active Status Banner */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-emerald-500/10 to-primary/10 border border-emerald-500/30">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-full bg-emerald-500/20">
+                    <Rocket className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-foreground flex items-center gap-2">
+                      Piloto Automático Ativo
+                      <Badge className="bg-emerald-500/20 text-emerald-600 border-emerald-500/30">
+                        <CheckCircle2 className="h-3 w-3 mr-1" />
+                        Ativo
+                      </Badge>
+                    </h3>
+                    <p className="text-sm text-muted-foreground">
+                      Sua estratégia foi otimizada automaticamente.
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-3 rounded-lg bg-primary/5">
+              {/* Result Card */}
+              {liveCalculation && (
+                <Card className="border-primary/20 bg-card">
+                  <CardContent className="pt-4 space-y-4">
+                    {/* Recommended Structure */}
+                    <div className={`p-4 rounded-lg border-2 ${
+                      liveCalculation.bestScenario === 'pf' 
+                        ? 'bg-blue-500/5 border-blue-500/30' 
+                        : 'bg-emerald-500/5 border-emerald-500/30'
+                    }`}>
+                      <div className="flex items-center gap-3">
+                        <div className={`p-2 rounded-full ${
+                          liveCalculation.bestScenario === 'pf' ? 'bg-blue-500/20' : 'bg-emerald-500/20'
+                        }`}>
+                          {liveCalculation.bestScenario === 'pf' ? (
+                            <User className="h-5 w-5 text-blue-500" />
+                          ) : (
+                            <Building2 className="h-5 w-5 text-emerald-500" />
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Estrutura recomendada</p>
+                          <p className="font-bold text-lg">
+                            {liveCalculation.bestScenario === 'pf' ? 'Pessoa Física' : 'Pessoa Jurídica'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Tax Comparison */}
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="p-3 rounded-lg bg-destructive/5 border border-destructive/20">
+                        <p className="text-xs text-muted-foreground">Imposto estimado atual</p>
+                        <p className="text-lg font-bold text-destructive">
+                          {formatCurrency(liveCalculation.currentTax)}
+                          <span className="text-xs font-normal">/mês</span>
+                        </p>
+                      </div>
+                      <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                        <p className="text-xs text-muted-foreground">Novo imposto estimado</p>
+                        <p className="text-lg font-bold text-emerald-600">
+                          {formatCurrency(liveCalculation.bestTax)}
+                          <span className="text-xs font-normal">/mês</span>
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Savings Highlight */}
+                    <div className="p-4 rounded-lg bg-gradient-to-r from-emerald-500/10 to-primary/10 border border-emerald-500/20 text-center">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <TrendingDown className="h-5 w-5 text-emerald-500" />
+                        <p className="text-sm font-medium text-muted-foreground">Economia estimada</p>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-2xl font-bold text-emerald-600">
+                            {formatCurrency(liveCalculation.monthlySavings)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">por mês</p>
+                        </div>
+                        <div className="border-l border-border pl-4">
+                          <p className="text-2xl font-bold text-primary">
+                            {formatCurrency(liveCalculation.annualSavings)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">por ano</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Mini Status */}
+                    <div className="flex items-center justify-between text-xs text-muted-foreground p-2 rounded-lg bg-muted/30">
+                      <div className="flex items-center gap-1">
+                        <Clock className="h-3 w-3" />
+                        <span>Última otimização: {autopilotData?.last_optimization_at 
+                          ? format(new Date(autopilotData.last_optimization_at), "dd/MM 'às' HH:mm", { locale: ptBR })
+                          : 'agora'
+                        }</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Calendar className="h-3 w-3" />
+                        <span>Próxima reavaliação: mensal</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Accumulated Savings */}
+              {autopilotData && autopilotData.accumulated_savings_cents > 0 && (
+                <div className="p-3 rounded-lg bg-primary/5 border border-primary/20">
                   <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <TrendingUp className="h-4 w-4" />
-                    Economia Acumulada
+                    <TrendingUp className="h-4 w-4 text-primary" />
+                    Economia Acumulada Total
                   </div>
                   <p className="text-2xl font-bold text-primary">
                     {formatCurrency(autopilotData.accumulated_savings_cents / 100)}
                   </p>
                 </div>
+              )}
 
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <CheckCircle2 className="h-4 w-4" />
-                    Última Otimização
-                  </div>
-                  <p className="text-sm font-medium">
-                    {autopilotData.last_optimization_description || 'Nenhuma ainda'}
-                  </p>
-                  {autopilotData.last_optimization_at && (
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {format(new Date(autopilotData.last_optimization_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
-                    </p>
-                  )}
-                </div>
-
-                <div className="p-3 rounded-lg bg-muted/50">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
-                    <Calendar className="h-4 w-4" />
-                    Próxima Reavaliação
-                  </div>
-                  <p className="text-sm font-medium">
-                    {autopilotData.next_reevaluation_at 
-                      ? format(new Date(autopilotData.next_reevaluation_at), "dd/MM/yyyy", { locale: ptBR })
-                      : 'Não agendada'
-                    }
-                  </p>
-                </div>
-              </div>
-
-              <p className="text-sm text-muted-foreground mt-4 text-center">
-                Sua estratégia tributária está sendo otimizada automaticamente.
+              {/* Continuous Message */}
+              <p className="text-sm text-center text-muted-foreground italic">
+                O piloto automático continuará reavaliando sua estratégia sempre que seus dados mudarem.
               </p>
             </div>
           )}
@@ -517,8 +618,7 @@ export const TaxAutopilot = () => {
 
           {/* Legal Disclaimer */}
           <p className="text-xs text-muted-foreground text-center pt-4 border-t">
-            Recomendações automáticas baseadas em simulações estimadas da EC 132/2023. 
-            Não substitui contador.
+            {AUTOPILOT_DISCLAIMER}
           </p>
         </CardContent>
       </Card>
