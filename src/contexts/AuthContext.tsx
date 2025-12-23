@@ -74,12 +74,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const checkSubscription = async () => {
+  const checkSubscription = async (retryCount = 0, maxRetries = 3): Promise<void> => {
     // Get fresh session to ensure we have valid token
     const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
     
     if (sessionError || !currentSession?.access_token) {
-      console.log('No valid session for subscription check');
+      // If session not ready yet and we have retries left, wait and retry
+      if (retryCount < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, retryCount), 5000); // Exponential backoff: 1s, 2s, 4s (max 5s)
+        console.log(`Session not ready, retrying in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return checkSubscription(retryCount + 1, maxRetries);
+      }
+      console.log('No valid session for subscription check after retries');
       setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
       return;
     }
@@ -92,6 +99,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
       
       if (error) {
+        // If auth error and we have retries left, wait and retry
+        if (error.message?.includes('Auth session missing') && retryCount < maxRetries) {
+          const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+          console.log(`Auth session missing, retrying in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          return checkSubscription(retryCount + 1, maxRetries);
+        }
+        
         // Don't log auth errors as they're expected during session transitions
         if (!error.message?.includes('Auth session missing')) {
           console.error('Error checking subscription:', error);
@@ -106,8 +121,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           subscriptionEnd: data.subscription_end || null,
         });
       }
-    } catch (error) {
-      console.error('Error checking subscription:', error);
+    } catch (error: any) {
+      // Network or other transient errors - retry with backoff
+      if (retryCount < maxRetries) {
+        const delay = Math.min(1000 * Math.pow(2, retryCount), 5000);
+        console.log(`Subscription check failed, retrying in ${delay}ms (attempt ${retryCount + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return checkSubscription(retryCount + 1, maxRetries);
+      }
+      console.error('Error checking subscription after retries:', error);
     }
   };
 
