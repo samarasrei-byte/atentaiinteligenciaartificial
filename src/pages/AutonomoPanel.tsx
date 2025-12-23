@@ -44,6 +44,7 @@ import {
   Menu,
   LogOut,
   ChevronRight,
+  Play,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { brazilianStates } from '@/lib/taxData';
@@ -60,6 +61,9 @@ import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionH
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
+import { GuidedTour } from '@/components/tour/GuidedTour';
+import { useGuidedTour } from '@/hooks/useGuidedTour';
+import { autonomoTourSteps } from '@/components/tour/autonomoTourSteps';
 
 // Sidebar component for Autonomo
 import {
@@ -137,7 +141,7 @@ const AutonomoSidebar: React.FC<{
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
+        <SidebarGroup data-tour="sidebar-menu">
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -146,6 +150,7 @@ const AutonomoSidebar: React.FC<{
                   <SidebarMenuButton
                     onClick={() => onSectionChange(item.id as PanelSection)}
                     className={activeSection === item.id ? 'bg-primary/10 text-primary' : ''}
+                    data-tour={item.id === 'profile' ? 'profile-menu' : undefined}
                   >
                     <item.icon className="h-4 w-4" />
                     <span>{item.label}</span>
@@ -174,6 +179,13 @@ const AutonomoPanel: React.FC = () => {
   const queryClient = useQueryClient();
   const notificationsHook = useNotifications();
   const [activeSection, setActiveSection] = useState<PanelSection>('dashboard');
+  
+  // Guided tour
+  const tour = useGuidedTour({
+    steps: autonomoTourSteps,
+    storageKey: 'autonomo_tour_completed',
+    autoStart: false,
+  });
 
   // Fetch autonomo profile
   const { data: profile, isLoading: isLoadingProfile } = useQuery({
@@ -237,17 +249,29 @@ const AutonomoPanel: React.FC = () => {
   // Dashboard content
   const renderDashboard = () => (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold text-foreground">
-          Olá, {profile?.profession || 'Autônomo'}! 👋
-        </h2>
-        <p className="text-muted-foreground">
-          Bem-vindo ao seu painel master de gestão tributária
-        </p>
+      <div className="flex items-center justify-between" data-tour="autonomo-header">
+        <div>
+          <h2 className="text-2xl font-bold text-foreground">
+            Olá, {profile?.profession || 'Autônomo'}! 👋
+          </h2>
+          <p className="text-muted-foreground">
+            Bem-vindo ao seu painel master de gestão tributária
+          </p>
+        </div>
+        {!tour.hasCompletedTour && (
+          <Button 
+            variant="outline" 
+            onClick={tour.startTour}
+            className="gap-2"
+          >
+            <Play className="h-4 w-4" />
+            Iniciar Tour Guiado
+          </Button>
+        )}
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="stats-cards">
         <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -314,6 +338,7 @@ const AutonomoPanel: React.FC = () => {
         <Card 
           className="cursor-pointer hover:bg-muted/50 transition-colors"
           onClick={() => setActiveSection('simulator')}
+          data-tour="quick-simulator"
         >
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -332,6 +357,7 @@ const AutonomoPanel: React.FC = () => {
         <Card 
           className="cursor-pointer hover:bg-muted/50 transition-colors"
           onClick={() => setActiveSection('ai-chat')}
+          data-tour="quick-ai-chat"
         >
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -350,6 +376,7 @@ const AutonomoPanel: React.FC = () => {
         <Card 
           className="cursor-pointer hover:bg-muted/50 transition-colors"
           onClick={() => setActiveSection('contadores')}
+          data-tour="quick-contadores"
         >
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
@@ -367,7 +394,7 @@ const AutonomoPanel: React.FC = () => {
       </div>
 
       {/* Recent Activity */}
-      <Card>
+      <Card data-tour="history-section">
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <History className="h-5 w-5 text-primary" />
@@ -507,6 +534,17 @@ const AutonomoPanel: React.FC = () => {
           <header className="flex h-14 items-center gap-4 border-b border-border px-6">
             <SidebarTrigger />
             <div className="flex-1" />
+            {tour.hasCompletedTour && (
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={tour.startTour}
+                className="gap-2 text-muted-foreground"
+              >
+                <Play className="h-4 w-4" />
+                Ver Tour
+              </Button>
+            )}
             <NotificationCenter 
               notifications={notificationsHook.notifications}
               unreadCount={notificationsHook.unreadCount}
@@ -527,6 +565,21 @@ const AutonomoPanel: React.FC = () => {
           </main>
         </SidebarInset>
       </div>
+      
+      {/* Guided Tour */}
+      <GuidedTour
+        isActive={tour.isActive}
+        currentStep={tour.currentStep}
+        currentStepIndex={tour.currentStepIndex}
+        totalSteps={tour.totalSteps}
+        progress={tour.progress}
+        isFirstStep={tour.isFirstStep}
+        isLastStep={tour.isLastStep}
+        onNext={tour.nextStep}
+        onPrev={tour.prevStep}
+        onSkip={() => tour.endTour(false)}
+        onClose={() => tour.endTour(true)}
+      />
     </SidebarProvider>
   );
 };
