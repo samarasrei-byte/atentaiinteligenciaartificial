@@ -8,6 +8,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { useToast } from '@/hooks/use-toast';
+import { filterChatMessage } from '@/lib/chatMessageFilter';
 import { 
   Send, 
   Loader2,
@@ -33,7 +34,8 @@ import {
   Download,
   Play,
   Pause,
-  Volume2
+  Volume2,
+  AlertTriangle
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -265,6 +267,19 @@ export function ProfessionalChat({ isContador = false }: ProfessionalChatProps) 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if ((!newMessage.trim() && !selectedFile) || !user || !selectedConsultation || isSending) return;
+
+    // Filter message for blocked content
+    if (newMessage.trim()) {
+      const filterResult = filterChatMessage(newMessage);
+      if (filterResult.isBlocked) {
+        toast({ 
+          title: 'Mensagem bloqueada', 
+          description: filterResult.reason || 'Conteúdo não permitido',
+          variant: 'destructive' 
+        });
+        return;
+      }
+    }
 
     setIsSending(true);
     let attachment = null;

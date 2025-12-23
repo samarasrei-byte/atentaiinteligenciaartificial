@@ -89,7 +89,8 @@ const contadorItems: SidebarItem[] = [
   { icon: BarChart3, label: 'Stats', tabId: 'stats' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
-  { icon: Wallet, label: 'Ganhos', tabId: 'earnings' },
+  { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
+  { icon: DollarSign, label: 'Ganhos', tabId: 'earnings' },
   { icon: Star, label: 'Avaliações', tabId: 'reviews' },
   { icon: FileText, label: 'Perfil', tabId: 'profile' },
 ];
