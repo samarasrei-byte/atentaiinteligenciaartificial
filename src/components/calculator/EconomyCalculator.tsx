@@ -7,64 +7,76 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Badge } from '@/components/ui/badge';
 import { 
   Sparkles,
-  TrendingDown,
   Calculator,
   Loader2,
   CheckCircle,
-  AlertTriangle,
   Lightbulb,
-  Building2,
-  User,
-  Briefcase,
-  Home,
-  Building,
-  ChevronDown,
-  ChevronUp,
-  Zap
+  AlertCircle,
+  Zap,
+  TrendingDown,
+  TrendingUp,
+  RefreshCw
 } from 'lucide-react';
-import { formatCurrency, formatCurrencyInput, parseCurrencyInput } from '@/lib/taxData';
 
-// Alíquotas estimadas (EC 132/2023)
-const TAX_RATES = {
-  cbs: 8.8,
-  ibs: 17.7,
-  fullRate: 26.5, // 8.8 + 17.7
-  residentialReduction: 0.6, // 60% redução
-};
+// Alíquota base da reforma (EC 132/2023)
+const BASE_TAX_RATE = 26.5; // 26,5%
 
-// Categorias de despesas com crédito
+// Categorias de despesas que geram crédito
 const EXPENSE_CATEGORIES = [
-  { id: 'aluguel_sede', label: 'Aluguel da sede/escritório', creditRate: 0.8 },
-  { id: 'energia', label: 'Energia elétrica', creditRate: 0.9 },
-  { id: 'telefone_internet', label: 'Telefone e internet', creditRate: 0.9 },
-  { id: 'materiais', label: 'Materiais e insumos', creditRate: 1.0 },
-  { id: 'servicos_terceiros', label: 'Serviços de terceiros', creditRate: 0.7 },
-  { id: 'manutencao', label: 'Manutenção e reparos', creditRate: 0.8 },
+  { id: 'aluguel', label: 'Aluguel de imóvel comercial' },
+  { id: 'energia', label: 'Energia elétrica' },
+  { id: 'agua', label: 'Água e saneamento' },
+  { id: 'telefone_internet', label: 'Telefone e internet' },
+  { id: 'materiais', label: 'Materiais e insumos' },
+  { id: 'servicos_terceiros', label: 'Serviços de terceiros (PJ)' },
+  { id: 'manutencao', label: 'Manutenção e reparos' },
+  { id: 'transporte', label: 'Transporte e frete' },
 ];
 
 interface CalculationResult {
-  potentialSavings: number;
-  currentTax: number;
-  newTax: number;
-  bestScenario: string;
-  recommendations: string[];
-  riskLevel: 'baixo' | 'medio' | 'alto';
-  creditAmount: number;
-  scenarios: {
-    name: string;
-    savings: number;
-    description: string;
-  }[];
+  monthlyIncome: number;
+  taxWithoutCredits: number;
+  totalExpenses: number;
+  totalCredits: number;
+  taxWithCredits: number;
+  monthlySavings: number;
+  annualSavings: number;
+  creditPercentage: number;
+  recommendation: {
+    type: 'good' | 'improvement';
+    message: string;
+  };
 }
 
+// Formata número para moeda brasileira
+const formatCurrency = (value: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+};
+
+// Formata input de moeda
+const formatCurrencyInput = (value: string): string => {
+  const numbers = value.replace(/\D/g, '');
+  const cents = parseInt(numbers || '0', 10);
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(cents / 100);
+};
+
+// Converte string formatada para número
+const parseCurrencyInput = (value: string): number => {
+  const numbers = value.replace(/\D/g, '');
+  return parseInt(numbers || '0', 10) / 100;
+};
+
 export function EconomyCalculator() {
-  const [personType, setPersonType] = useState<'pf' | 'pj'>('pj');
-  const [propertyType, setPropertyType] = useState<'residential' | 'commercial'>('commercial');
-  const [monthlyRevenue, setMonthlyRevenue] = useState('');
+  const [monthlyIncome, setMonthlyIncome] = useState('');
   const [selectedExpenses, setSelectedExpenses] = useState<Record<string, { checked: boolean; value: string }>>({});
   const [isCalculating, setIsCalculating] = useState(false);
   const [result, setResult] = useState<CalculationResult | null>(null);
-  const [showDetails, setShowDetails] = useState(false);
 
   const handleExpenseToggle = (id: string, checked: boolean) => {
     setSelectedExpenses(prev => ({
@@ -82,110 +94,66 @@ export function EconomyCalculator() {
 
   const calculateEconomy = async () => {
     setIsCalculating(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    // Simular processamento
+    await new Promise(resolve => setTimeout(resolve, 800));
 
-    const revenue = parseCurrencyInput(monthlyRevenue);
+    const income = parseCurrencyInput(monthlyIncome);
     
-    // Camada 1 - Diagnóstico rápido
-    const isResidential = propertyType === 'residential';
-    const isPJ = personType === 'pj';
+    // 1. Calcular imposto estimado SEM economia (alíquota base de 26,5%)
+    const taxWithoutCredits = income * (BASE_TAX_RATE / 100);
     
-    // Imposto atual estimado
-    let currentTaxRate = 0;
-    if (isPJ) {
-      currentTaxRate = isResidential ? 5 : 8.65; // ISS + PIS/COFINS
-    }
-    const currentTax = revenue * (currentTaxRate / 100);
-    
-    // Camada 2 - Motor de créditos
+    // 2. Calcular créditos tributários
+    // Para cada despesa marcada, 100% do valor gera crédito
+    // Crédito = soma das despesas × 26,5%
     let totalExpenses = 0;
-    let totalCredits = 0;
     
     Object.entries(selectedExpenses).forEach(([id, expense]) => {
       if (expense.checked && expense.value) {
         const value = parseCurrencyInput(expense.value);
-        const category = EXPENSE_CATEGORIES.find(c => c.id === id);
-        if (category) {
-          totalExpenses += value;
-          // Crédito = despesa * alíquota * taxa de aproveitamento
-          totalCredits += value * (TAX_RATES.fullRate / 100) * category.creditRate;
-        }
+        totalExpenses += value;
       }
     });
     
-    // Novo imposto com reforma
-    const effectiveRate = isResidential 
-      ? TAX_RATES.fullRate * (1 - TAX_RATES.residentialReduction)
-      : TAX_RATES.fullRate;
+    const totalCredits = totalExpenses * (BASE_TAX_RATE / 100);
     
-    const grossNewTax = revenue * (effectiveRate / 100);
-    const netNewTax = Math.max(0, grossNewTax - totalCredits);
+    // 3. Calcular imposto líquido
+    // Imposto líquido = imposto estimado – créditos (nunca negativo)
+    const taxWithCredits = Math.max(0, taxWithoutCredits - totalCredits);
     
-    // Camada 3 - Estratégia automática (testa cenários)
-    const scenarios = [
-      {
-        name: 'Sem otimização',
-        savings: currentTax - grossNewTax,
-        description: 'Sem aproveitamento de créditos',
-      },
-      {
-        name: 'Com créditos fiscais',
-        savings: currentTax - netNewTax,
-        description: 'Aproveitando créditos de despesas',
-      },
-      {
-        name: 'Repasse parcial ao locatário',
-        savings: currentTax - (netNewTax * 0.5),
-        description: 'Dividindo imposto com inquilino',
-      },
-    ];
-
-    // Se PF, adicionar cenário de migração para PJ
-    if (!isPJ && revenue > 5000) {
-      const pjScenario = {
-        name: 'Migrar para PJ',
-        savings: (revenue * 0.15) - (revenue * (effectiveRate / 100) * 0.6),
-        description: 'Operar como holding patrimonial',
+    // 4. Calcular economia
+    const monthlySavings = taxWithoutCredits - taxWithCredits;
+    const annualSavings = monthlySavings * 12;
+    
+    // 5. Calcular percentual de créditos
+    const creditPercentage = taxWithoutCredits > 0 
+      ? (totalCredits / taxWithoutCredits) * 100 
+      : 0;
+    
+    // 6. Determinar recomendação
+    let recommendation: CalculationResult['recommendation'];
+    if (creditPercentage > 20) {
+      recommendation = {
+        type: 'good',
+        message: 'Você está aproveitando bem seus créditos tributários!'
       };
-      scenarios.push(pjScenario);
-    }
-
-    // Camada 4 - Melhor decisão
-    const sortedScenarios = [...scenarios].sort((a, b) => b.savings - a.savings);
-    const bestScenario = sortedScenarios[0];
-    
-    const potentialSavings = Math.max(0, bestScenario.savings) * 12; // Anual
-    
-    // Recomendações baseadas no cenário
-    const recommendations: string[] = [];
-    if (totalCredits > 0) {
-      recommendations.push('Organize comprovantes de despesas para créditos');
-    }
-    if (!isPJ && revenue > 10000) {
-      recommendations.push('Avalie estruturar como holding patrimonial');
-    }
-    if (isResidential) {
-      recommendations.push('Aproveite a redução de 60% para residencial');
-    }
-    if (recommendations.length < 3) {
-      recommendations.push('Consulte um contador para planejamento detalhado');
-    }
-    
-    // Nível de risco
-    let riskLevel: 'baixo' | 'medio' | 'alto' = 'baixo';
-    if (bestScenario.name.includes('Migrar') || bestScenario.name.includes('Repasse')) {
-      riskLevel = 'medio';
+    } else {
+      recommendation = {
+        type: 'improvement',
+        message: 'Você pode aumentar sua economia organizando melhor suas despesas dedutíveis.'
+      };
     }
     
     setResult({
-      potentialSavings,
-      currentTax: currentTax * 12,
-      newTax: netNewTax * 12,
-      bestScenario: bestScenario.name,
-      recommendations: recommendations.slice(0, 3),
-      riskLevel,
-      creditAmount: totalCredits * 12,
-      scenarios: sortedScenarios,
+      monthlyIncome: income,
+      taxWithoutCredits,
+      totalExpenses,
+      totalCredits,
+      taxWithCredits,
+      monthlySavings,
+      annualSavings,
+      creditPercentage,
+      recommendation,
     });
     
     setIsCalculating(false);
@@ -193,251 +161,221 @@ export function EconomyCalculator() {
 
   const resetCalculator = () => {
     setResult(null);
-    setMonthlyRevenue('');
+    setMonthlyIncome('');
     setSelectedExpenses({});
-    setShowDetails(false);
   };
 
+  // Verifica se pelo menos uma despesa está marcada com valor
+  const hasAnyExpense = Object.values(selectedExpenses).some(e => e.checked && e.value && parseCurrencyInput(e.value) > 0);
+
+  // Tela de Resultado
   if (result) {
     return (
-      <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-primary/20 overflow-hidden">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl -translate-y-32 translate-x-32" />
+      <Card className="bg-gradient-to-br from-emerald-500/5 via-background to-primary/5 border-emerald-500/20 overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-3xl -translate-y-32 translate-x-32" />
         
-        <CardContent className="pt-6 relative">
-          <div className="text-center mb-6">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-success/10 text-success text-sm mb-4">
-              <Sparkles className="h-4 w-4" />
+        <CardContent className="pt-6 relative space-y-6">
+          {/* Header de Sucesso */}
+          <div className="text-center">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 text-sm mb-4">
+              <CheckCircle className="h-4 w-4" />
               Cálculo Concluído
             </div>
-            
-            <h3 className="text-lg text-muted-foreground mb-2">Você pode economizar até</h3>
-            <p className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-success to-primary bg-clip-text text-transparent">
-              {formatCurrency(result.potentialSavings)}
-              <span className="text-lg text-muted-foreground font-normal">/ano</span>
+          </div>
+
+          {/* Card Principal - Economia Anual em Destaque */}
+          <div className="p-6 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 border border-emerald-500/30 text-center">
+            <p className="text-sm text-muted-foreground mb-2">Economia anual estimada</p>
+            <p className="text-4xl md:text-5xl font-bold text-emerald-600">
+              {formatCurrency(result.annualSavings)}
+            </p>
+            <p className="text-sm text-emerald-600/80 mt-2">
+              {formatCurrency(result.monthlySavings)}/mês
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-6">
-            <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20">
-              <p className="text-xs text-muted-foreground mb-1">Hoje você paga</p>
-              <p className="text-lg font-bold text-destructive">{formatCurrency(result.currentTax)}/ano</p>
-            </div>
-            <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
-              <p className="text-xs text-muted-foreground mb-1">Com a reforma</p>
-              <p className="text-lg font-bold text-primary">{formatCurrency(result.newTax)}/ano</p>
-            </div>
-          </div>
-
-          <div className="p-4 rounded-xl bg-success/10 border border-success/20 mb-6">
-            <div className="flex items-center gap-2 mb-2">
-              <CheckCircle className="h-5 w-5 text-success" />
-              <p className="font-semibold text-foreground">Melhor cenário aplicado</p>
-            </div>
-            <p className="text-sm text-muted-foreground">{result.bestScenario}</p>
-            <div className="flex items-center gap-2 mt-2">
-              <Badge variant={result.riskLevel === 'baixo' ? 'default' : 'secondary'} className={
-                result.riskLevel === 'baixo' 
-                  ? 'bg-success/20 text-success border-success/30' 
-                  : 'bg-amber-500/20 text-amber-600 border-amber-500/30'
-              }>
-                Risco {result.riskLevel}
-              </Badge>
-              {result.creditAmount > 0 && (
-                <Badge className="bg-primary/20 text-primary border-primary/30">
-                  Créditos: {formatCurrency(result.creditAmount)}
-                </Badge>
-              )}
-            </div>
-          </div>
-
-          <div className="space-y-2 mb-6">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Ações recomendadas</p>
-            {result.recommendations.map((rec, i) => (
-              <div key={i} className="flex items-start gap-2">
-                <Lightbulb className="h-4 w-4 text-amber-500 mt-0.5 shrink-0" />
-                <span className="text-sm text-foreground">{rec}</span>
+          {/* Grid de Comparação */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/20">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingDown className="h-4 w-4 text-red-500" />
+                <p className="text-xs text-muted-foreground">Imposto sem planejamento</p>
               </div>
-            ))}
+              <p className="text-xl font-bold text-red-500">
+                {formatCurrency(result.taxWithoutCredits)}<span className="text-sm font-normal">/mês</span>
+              </p>
+            </div>
+            <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+              <div className="flex items-center gap-2 mb-1">
+                <TrendingUp className="h-4 w-4 text-emerald-500" />
+                <p className="text-xs text-muted-foreground">Novo imposto estimado</p>
+              </div>
+              <p className="text-xl font-bold text-emerald-600">
+                {formatCurrency(result.taxWithCredits)}<span className="text-sm font-normal">/mês</span>
+              </p>
+            </div>
           </div>
 
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => setShowDetails(!showDetails)}
-            className="w-full mb-4"
-          >
-            {showDetails ? <ChevronUp className="h-4 w-4 mr-2" /> : <ChevronDown className="h-4 w-4 mr-2" />}
-            {showDetails ? 'Ocultar' : 'Ver'} detalhes
-          </Button>
-
-          {showDetails && (
-            <div className="space-y-2 mb-4 p-4 rounded-lg bg-muted/50">
-              <p className="text-xs font-semibold text-muted-foreground uppercase mb-3">Todos os cenários analisados</p>
-              {result.scenarios.map((scenario, i) => (
-                <div key={i} className={`p-3 rounded-lg border ${i === 0 ? 'bg-success/5 border-success/20' : 'bg-background border-border'}`}>
-                  <div className="flex justify-between items-center">
-                    <span className="font-medium text-sm">{scenario.name}</span>
-                    <span className={`font-bold text-sm ${scenario.savings > 0 ? 'text-success' : 'text-destructive'}`}>
-                      {scenario.savings > 0 ? '+' : ''}{formatCurrency(scenario.savings * 12)}/ano
-                    </span>
-                  </div>
-                  <p className="text-xs text-muted-foreground mt-1">{scenario.description}</p>
+          {/* Detalhes dos Créditos */}
+          {result.totalCredits > 0 && (
+            <div className="p-4 rounded-xl bg-primary/10 border border-primary/20">
+              <div className="flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-muted-foreground">Total de créditos aplicados</p>
+                  <p className="text-lg font-bold text-primary">{formatCurrency(result.totalCredits)}/mês</p>
                 </div>
-              ))}
+                <Badge className="bg-primary/20 text-primary border-primary/30">
+                  {result.creditPercentage.toFixed(1)}% do imposto
+                </Badge>
+              </div>
             </div>
           )}
 
-          <Button onClick={resetCalculator} className="w-full">
+          {/* Melhor Cenário */}
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <div className="flex items-center gap-2 mb-2">
+              <CheckCircle className="h-5 w-5 text-emerald-500" />
+              <p className="font-semibold text-foreground">Melhor cenário aplicado automaticamente</p>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Aproveitamento de créditos tributários sobre suas despesas dedutíveis.
+            </p>
+          </div>
+
+          {/* Recomendação */}
+          <div className={`p-4 rounded-xl border ${
+            result.recommendation.type === 'good' 
+              ? 'bg-emerald-500/5 border-emerald-500/20' 
+              : 'bg-amber-500/5 border-amber-500/20'
+          }`}>
+            <div className="flex items-start gap-3">
+              {result.recommendation.type === 'good' ? (
+                <Sparkles className="h-5 w-5 text-emerald-500 mt-0.5 shrink-0" />
+              ) : (
+                <Lightbulb className="h-5 w-5 text-amber-500 mt-0.5 shrink-0" />
+              )}
+              <div>
+                <p className="font-medium text-foreground text-sm">Recomendação</p>
+                <p className="text-sm text-muted-foreground">{result.recommendation.message}</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Botão de Novo Cálculo */}
+          <Button onClick={resetCalculator} variant="outline" className="w-full">
+            <RefreshCw className="h-4 w-4 mr-2" />
             Fazer novo cálculo
           </Button>
 
-          <p className="text-[10px] text-muted-foreground text-center mt-4">
-            Cálculos estimados com base na EC 132/2023. Valores sujeitos à regulamentação.
-          </p>
+          {/* Aviso Legal Fixo */}
+          <div className="p-3 rounded-lg bg-muted/50 border border-border">
+            <div className="flex items-start gap-2">
+              <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
+              <p className="text-[11px] text-muted-foreground">
+                Valores estimados com base na EC 132/2023. Resultados sujeitos à regulamentação final.
+              </p>
+            </div>
+          </div>
         </CardContent>
       </Card>
     );
   }
 
+  // Tela de Entrada
   return (
     <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-primary/20 overflow-hidden">
       <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/10 to-transparent rounded-full blur-3xl -translate-y-32 translate-x-32" />
       
       <CardHeader className="relative pb-2">
         <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-primary to-accent shadow-lg">
+          <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-primary shadow-lg">
             <Zap className="h-6 w-6 text-white" />
           </div>
           <div>
             <CardTitle className="text-lg flex items-center gap-2">
               Economize com a Reforma
-              <Badge className="bg-accent/20 text-accent border-accent/30">1-Clique</Badge>
+              <Badge className="bg-emerald-500/20 text-emerald-600 border-emerald-500/30">Automático</Badge>
             </CardTitle>
             <p className="text-xs text-muted-foreground">
-              Veja quanto você pode economizar automaticamente
+              Calcule sua economia em um único clique
             </p>
           </div>
         </div>
       </CardHeader>
 
-      <CardContent className="relative space-y-4">
-        {/* Tipo de pessoa */}
+      <CardContent className="relative space-y-5">
+        {/* Renda Mensal */}
         <div className="space-y-2">
-          <Label className="text-xs">Quem recebe a renda?</Label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setPersonType('pf')}
-              className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                personType === 'pf'
-                  ? 'border-primary bg-primary/10'
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <User className={`h-4 w-4 ${personType === 'pf' ? 'text-primary' : 'text-muted-foreground'}`} />
-              <span className={`text-sm ${personType === 'pf' ? 'text-foreground' : 'text-muted-foreground'}`}>Pessoa Física</span>
-            </button>
-            <button
-              onClick={() => setPersonType('pj')}
-              className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                personType === 'pj'
-                  ? 'border-primary bg-primary/10'
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <Briefcase className={`h-4 w-4 ${personType === 'pj' ? 'text-primary' : 'text-muted-foreground'}`} />
-              <span className={`text-sm ${personType === 'pj' ? 'text-foreground' : 'text-muted-foreground'}`}>Pessoa Jurídica</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Tipo de imóvel */}
-        <div className="space-y-2">
-          <Label className="text-xs">Tipo de atividade/imóvel</Label>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => setPropertyType('residential')}
-              className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                propertyType === 'residential'
-                  ? 'border-primary bg-primary/10'
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <Home className={`h-4 w-4 ${propertyType === 'residential' ? 'text-primary' : 'text-muted-foreground'}`} />
-              <span className={`text-sm ${propertyType === 'residential' ? 'text-foreground' : 'text-muted-foreground'}`}>Residencial</span>
-            </button>
-            <button
-              onClick={() => setPropertyType('commercial')}
-              className={`p-3 rounded-lg border-2 transition-all flex items-center gap-2 ${
-                propertyType === 'commercial'
-                  ? 'border-primary bg-primary/10'
-                  : 'border-border hover:border-primary/50'
-              }`}
-            >
-              <Building className={`h-4 w-4 ${propertyType === 'commercial' ? 'text-primary' : 'text-muted-foreground'}`} />
-              <span className={`text-sm ${propertyType === 'commercial' ? 'text-foreground' : 'text-muted-foreground'}`}>Comercial</span>
-            </button>
-          </div>
-        </div>
-
-        {/* Faturamento */}
-        <div className="space-y-2">
-          <Label className="text-xs">Faturamento/Renda mensal</Label>
+          <Label className="text-sm font-medium">Renda/Faturamento mensal</Label>
           <Input
             placeholder="R$ 0,00"
-            value={monthlyRevenue}
-            onChange={(e) => setMonthlyRevenue(formatCurrencyInput(e.target.value))}
+            value={monthlyIncome}
+            onChange={(e) => setMonthlyIncome(formatCurrencyInput(e.target.value))}
+            className="text-lg h-12"
           />
+          <p className="text-xs text-muted-foreground">
+            Informe sua renda bruta mensal para calcular o imposto base
+          </p>
         </div>
 
-        {/* Despesas para crédito (apenas PJ) */}
-        {personType === 'pj' && (
-          <div className="space-y-2">
-            <Label className="text-xs">Despesas com direito a crédito (opcional)</Label>
-            <div className="space-y-2 max-h-40 overflow-y-auto p-2 rounded-lg bg-muted/30">
-              {EXPENSE_CATEGORIES.map((cat) => (
-                <div key={cat.id} className="flex items-center gap-2">
-                  <Checkbox
-                    id={cat.id}
-                    checked={selectedExpenses[cat.id]?.checked || false}
-                    onCheckedChange={(checked) => handleExpenseToggle(cat.id, !!checked)}
-                  />
-                  <label htmlFor={cat.id} className="text-xs flex-1 cursor-pointer">
-                    {cat.label}
-                  </label>
-                  {selectedExpenses[cat.id]?.checked && (
-                    <Input
-                      placeholder="R$ 0"
-                      value={selectedExpenses[cat.id]?.value || ''}
-                      onChange={(e) => handleExpenseValue(cat.id, e.target.value)}
-                      className="w-24 h-7 text-xs"
-                    />
-                  )}
-                </div>
-              ))}
-            </div>
+        {/* Despesas Dedutíveis */}
+        <div className="space-y-3">
+          <div>
+            <Label className="text-sm font-medium">Despesas dedutíveis (opcional)</Label>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Marque as despesas que geram crédito tributário
+            </p>
           </div>
-        )}
+          
+          <div className="space-y-2 max-h-48 overflow-y-auto p-3 rounded-xl bg-muted/30 border border-border">
+            {EXPENSE_CATEGORIES.map((cat) => (
+              <div key={cat.id} className="flex items-center gap-3">
+                <Checkbox
+                  id={cat.id}
+                  checked={selectedExpenses[cat.id]?.checked || false}
+                  onCheckedChange={(checked) => handleExpenseToggle(cat.id, !!checked)}
+                />
+                <label 
+                  htmlFor={cat.id} 
+                  className="text-sm flex-1 cursor-pointer text-foreground"
+                >
+                  {cat.label}
+                </label>
+                {selectedExpenses[cat.id]?.checked && (
+                  <Input
+                    placeholder="R$ 0,00"
+                    value={selectedExpenses[cat.id]?.value || ''}
+                    onChange={(e) => handleExpenseValue(cat.id, e.target.value)}
+                    className="w-28 h-8 text-sm"
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
+        {/* Botão de Calcular */}
         <Button 
           onClick={calculateEconomy} 
-          disabled={!monthlyRevenue || isCalculating}
-          className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+          disabled={!monthlyIncome || parseCurrencyInput(monthlyIncome) === 0 || isCalculating}
+          className="w-full h-12 text-base bg-gradient-to-r from-emerald-500 to-primary hover:from-emerald-600 hover:to-primary/90"
         >
           {isCalculating ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin mr-2" />
-              Calculando...
+              <Loader2 className="h-5 w-5 animate-spin mr-2" />
+              Calculando economia...
             </>
           ) : (
             <>
-              <Calculator className="h-4 w-4 mr-2" />
+              <Calculator className="h-5 w-5 mr-2" />
               Calcular Economia
             </>
           )}
         </Button>
 
-        <p className="text-[10px] text-muted-foreground text-center">
-          ⚖️ Cálculos estimados com base na EC 132/2023
+        {/* Info */}
+        <p className="text-[11px] text-muted-foreground text-center">
+          ⚖️ Alíquota base: {BASE_TAX_RATE}% (CBS + IBS conforme EC 132/2023)
         </p>
       </CardContent>
     </Card>
