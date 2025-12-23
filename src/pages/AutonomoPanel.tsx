@@ -67,6 +67,7 @@ import { autonomoTourSteps } from '@/components/tour/autonomoTourSteps';
 import { MEILimitAlert } from '@/components/autonomos/MEILimitAlert';
 import { AutonomoFinancialDashboard } from '@/components/autonomos/AutonomoFinancialDashboard';
 import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
+import { AutonomoGoals } from '@/components/autonomos/AutonomoGoals';
 
 // Sidebar component for Autonomo
 import {
@@ -104,6 +105,7 @@ type PanelSection =
   | 'contadores'
   | 'chat-contador'
   | 'financeiro'
+  | 'metas'
   | 'glossary' 
   | 'subscription' 
   | 'support' 
@@ -118,6 +120,7 @@ const AutonomoSidebar: React.FC<{
   const menuItems = [
     { id: 'dashboard', label: 'Início', icon: Home },
     { id: 'financeiro', label: 'Dashboard Financeiro', icon: BarChart3 },
+    { id: 'metas', label: 'Metas Financeiras', icon: Target },
     { id: 'simulator', label: 'Simulador IA', icon: Bot },
     { id: 'history', label: 'Histórico', icon: History },
     { id: 'ai-chat', label: 'Chat IA Tributário', icon: MessageSquare },
@@ -505,6 +508,18 @@ const AutonomoPanel: React.FC = () => {
               </p>
             </div>
             <AutonomoFinancialDashboard />
+          </div>
+        );
+      case 'metas':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Metas Financeiras</h2>
+              <p className="text-muted-foreground">
+                Defina e acompanhe suas metas de faturamento, economia e redução de impostos
+              </p>
+            </div>
+            <AutonomoGoals />
           </div>
         );
       case 'glossary':
