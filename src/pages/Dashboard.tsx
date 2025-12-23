@@ -73,6 +73,7 @@ import { TaxAutopilot } from '@/components/autopilot/TaxAutopilot';
 import { TaxGlossary } from '@/components/glossary/TaxGlossary';
 import { SavingsMetricsDashboard } from '@/components/dashboard/SavingsMetricsDashboard';
 import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionHistoryCard';
+import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -508,8 +509,20 @@ const Dashboard = () => {
             </div>
           </div>
         );
-      case 'contadores':
-        return <EmbeddedContadoresList />;
+      case 'autonomos':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                🤖 IA para Profissionais Autônomos
+              </h2>
+              <p className="text-muted-foreground">
+                Descubra o melhor regime tributário para sua profissão em poucos cliques
+              </p>
+            </div>
+            <AutonomoSimulator />
+          </div>
+        );
       case 'subscription':
         return (
           <div className="space-y-6">
