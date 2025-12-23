@@ -31,12 +31,26 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'regime-comparator',
     'timeline-2026-2033',
   ],
+  contador: [
+    'simulator',
+    'ai-chat',
+    'ai-chat-unlimited',
+    'pdf-export',
+    'excel-export',
+    'locacao-simulator',
+    'regime-comparator',
+    'timeline-2026-2033',
+    'contador-consultation',
+    'custom-reports',
+    'multiple-companies',
+  ],
 };
 
 // Plan hierarchy for comparison
 const planHierarchy: Record<PlanType, number> = {
   simulator: 1,
   premium: 2,
+  contador: 3,
 };
 
 export function useFeatureAccess() {
@@ -57,7 +71,7 @@ export function useFeatureAccess() {
   };
 
   const getRequiredPlan = (feature: Feature): PlanType | null => {
-    for (const plan of ['simulator', 'premium'] as PlanType[]) {
+    for (const plan of ['simulator', 'premium', 'contador'] as PlanType[]) {
       if (featuresByPlan[plan].includes(feature)) {
         return plan;
       }

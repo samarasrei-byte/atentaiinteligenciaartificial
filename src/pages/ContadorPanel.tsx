@@ -16,6 +16,8 @@ import { NotificationCenter } from '@/components/notifications/NotificationCente
 import AppSidebar from '@/components/layout/AppSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
+import { ContadorStats } from '@/components/dashboard/ContadorStats';
+import { ConsultationScheduler } from '@/components/scheduling/ConsultationScheduler';
 import { 
   FileText,
   Calendar,
@@ -405,8 +407,9 @@ const ContadorPanel = () => {
 
         <div className="p-4 lg:p-6 space-y-6">
           <Tabs value={activeTab} onValueChange={(v) => { setActiveTab(v); setSearchParams({ tab: v }); }}>
-            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-5 max-w-2xl">
+            <TabsList className="grid w-full grid-cols-3 lg:grid-cols-6 max-w-3xl">
               <TabsTrigger value="overview" className="text-xs lg:text-sm">Visão Geral</TabsTrigger>
+              <TabsTrigger value="stats" className="text-xs lg:text-sm">Estatísticas</TabsTrigger>
               <TabsTrigger value="consultations" className="text-xs lg:text-sm">Consultas</TabsTrigger>
               <TabsTrigger value="clients" className="text-xs lg:text-sm hidden lg:flex">Clientes</TabsTrigger>
               <TabsTrigger value="earnings" className="text-xs lg:text-sm hidden lg:flex">Ganhos</TabsTrigger>
@@ -493,6 +496,11 @@ const ContadorPanel = () => {
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+
+            {/* Statistics Tab */}
+            <TabsContent value="stats" className="mt-6">
+              <ContadorStats consultations={consultations} />
             </TabsContent>
 
             <TabsContent value="consultations" className="space-y-6 mt-6">
