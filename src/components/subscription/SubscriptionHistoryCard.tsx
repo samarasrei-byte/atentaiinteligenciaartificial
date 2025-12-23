@@ -39,12 +39,28 @@ interface Subscription {
   created_at: string;
 }
 
-const planLabels: Record<string, { name: string; color: string; icon: any }> = {
+const planLabels: Record<string, { name: string; color: string; icon: any; price?: string; features?: string[] }> = {
   basic: { name: 'Básico', color: 'bg-muted text-muted-foreground', icon: CreditCard },
   simulator: { name: 'Simulador', color: 'bg-blue-500/20 text-blue-400 border-blue-500/30', icon: CreditCard },
   ai: { name: 'IA', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30', icon: Crown },
   contador: { name: 'Contador Pro', color: 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30', icon: Crown },
   premium: { name: 'Premium', color: 'bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-400 border-amber-500/30', icon: Crown },
+  autonomo: { 
+    name: 'Autônomo Master', 
+    color: 'bg-gradient-to-r from-primary/20 to-primary/5 text-primary border-primary/30', 
+    icon: Crown,
+    price: 'R$ 65,00/mês',
+    features: [
+      'Simulador PF vs PJ completo',
+      'Agente de IA especializado',
+      'Comparador MEI/ME/LP',
+      'Calculadora de INSS/IR',
+      'Histórico de simulações',
+      'Conexão com contadores',
+      'Relatórios PDF profissionais',
+      'Suporte dedicado'
+    ]
+  },
 };
 
 export const SubscriptionHistoryCard: React.FC = () => {
@@ -184,6 +200,26 @@ export const SubscriptionHistoryCard: React.FC = () => {
         <CardContent className="space-y-4">
           {authSubscription.subscribed ? (
             <>
+              {/* Plan Price and Features */}
+              {planConfig?.price && (
+                <div className="bg-gradient-to-r from-primary/10 to-transparent rounded-lg p-4 border border-primary/20">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-lg font-bold text-primary">{planConfig.price}</span>
+                    <Badge className="bg-primary/20 text-primary border-0">Plano Atual</Badge>
+                  </div>
+                  {planConfig.features && (
+                    <ul className="space-y-2">
+                      {planConfig.features.map((feature, index) => (
+                        <li key={index} className="flex items-center gap-2 text-sm text-foreground">
+                          <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
+                          {feature}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-muted/30 rounded-lg p-4 border border-border">
                   <div className="flex items-center gap-2 mb-1">
