@@ -30,19 +30,40 @@ interface Message {
 }
 
 const CALCULATION_TYPES = [
-  { id: 'full_simulation', label: 'Simulação Completa', icon: Calculator, description: 'Cálculo detalhado com comparativo' },
-  { id: 'regime_comparison', label: 'Comparar Regimes', icon: TrendingUp, description: 'Simples vs Presumido vs Real' },
-  { id: 'rental_simulation', label: 'Locação de Imóveis', icon: Home, description: 'PF vs PJ para aluguel' },
-  { id: 'sector_impact', label: 'Impacto Setorial', icon: Building2, description: 'Análise por segmento' },
+  { 
+    id: 'full_simulation', 
+    label: 'Simulação Completa', 
+    icon: Calculator, 
+    description: 'Cálculo detalhado com comparativo',
+    autoPrompt: 'Faça uma simulação completa de impostos comparando o sistema atual com a reforma tributária. Inclua PIS, COFINS, ICMS/ISS atuais e IBS + CBS futuros.'
+  },
+  { 
+    id: 'regime_comparison', 
+    label: 'Comparar Regimes', 
+    icon: TrendingUp, 
+    description: 'Simples vs Presumido vs Real',
+    autoPrompt: 'Compare os três regimes tributários: Simples Nacional, Lucro Presumido e Lucro Real. Mostre qual tem menor carga tributária, vantagens e desvantagens de cada um.'
+  },
+  { 
+    id: 'rental_simulation', 
+    label: 'Locação de Imóveis', 
+    icon: Home, 
+    description: 'PF vs PJ para aluguel',
+    autoPrompt: 'Simule a tributação de locação de imóveis comparando Pessoa Física vs Pessoa Jurídica. Calcule IR, IBS, CBS e qual estrutura é mais vantajosa.'
+  },
+  { 
+    id: 'sector_impact', 
+    label: 'Impacto Setorial', 
+    icon: Building2, 
+    description: 'Análise por segmento',
+    autoPrompt: 'Analise o impacto da reforma tributária para este setor. Mostre alíquotas específicas, reduções aplicáveis, cronograma de transição e estratégias de adaptação.'
+  },
 ];
 
 const QUICK_PROMPTS = [
   "Calcule os impostos para um comércio com faturamento de R$ 50.000/mês em São Paulo",
   "Compare Simples Nacional vs Lucro Presumido para uma empresa de tecnologia",
   "Quanto pagarei de IBS e CBS na reforma com faturamento de R$ 100.000?",
-  "Analise o impacto da reforma tributária para o setor de serviços",
-  "Simule a locação de um imóvel de R$ 5.000 como PF vs PJ",
-  "Qual a economia se migrar de Lucro Presumido para Simples?",
 ];
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-tax-calculator`;
@@ -161,9 +182,6 @@ export function PowerAICalculator() {
     }
   };
 
-  const handleQuickPrompt = (prompt: string) => {
-    setInput(prompt);
-  };
 
   const clearChat = () => {
     setMessages([]);
@@ -215,7 +233,9 @@ export function PowerAICalculator() {
               return (
                 <button
                   key={type.id}
-                  onClick={() => setSelectedType(type.id)}
+                  onClick={() => {
+                    setSelectedType(type.id);
+                  }}
                   className={`p-3 rounded-xl border text-left transition-all ${
                     selectedType === type.id
                       ? 'border-primary bg-primary/10 ring-2 ring-primary/20'
@@ -231,45 +251,80 @@ export function PowerAICalculator() {
           </div>
 
           {selectedType && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-card rounded-lg border">
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Faturamento Mensal</label>
-                <Input
-                  value={revenue}
-                  onChange={(e) => setRevenue(formatRevenue(e.target.value))}
-                  placeholder="R$ 0,00"
-                  className="bg-background"
-                />
+            <div className="space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 p-3 bg-card rounded-lg border">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Faturamento Mensal</label>
+                  <Input
+                    value={revenue}
+                    onChange={(e) => setRevenue(formatRevenue(e.target.value))}
+                    placeholder="R$ 0,00"
+                    className="bg-background"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Setor</label>
+                  <Select value={sector} onValueChange={setSector}>
+                    <SelectTrigger className="bg-background">
+                      <SelectValue placeholder="Selecione" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="comercio">Comércio</SelectItem>
+                      <SelectItem value="servicos">Serviços</SelectItem>
+                      <SelectItem value="industria">Indústria</SelectItem>
+                      <SelectItem value="tecnologia">Tecnologia</SelectItem>
+                      <SelectItem value="saude">Saúde</SelectItem>
+                      <SelectItem value="educacao">Educação</SelectItem>
+                      <SelectItem value="construcao">Construção</SelectItem>
+                      <SelectItem value="transporte">Transporte</SelectItem>
+                      <SelectItem value="alimentacao">Alimentação</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </div>
-              <div>
-                <label className="text-xs font-medium text-muted-foreground mb-1 block">Setor</label>
-                <Select value={sector} onValueChange={setSector}>
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Selecione" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="comercio">Comércio</SelectItem>
-                    <SelectItem value="servicos">Serviços</SelectItem>
-                    <SelectItem value="industria">Indústria</SelectItem>
-                    <SelectItem value="tecnologia">Tecnologia</SelectItem>
-                    <SelectItem value="saude">Saúde</SelectItem>
-                    <SelectItem value="educacao">Educação</SelectItem>
-                    <SelectItem value="construcao">Construção</SelectItem>
-                    <SelectItem value="transporte">Transporte</SelectItem>
-                    <SelectItem value="alimentacao">Alimentação</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+              
+              {/* Start Calculation Button */}
+              <Button
+                onClick={() => {
+                  const selectedCalc = CALCULATION_TYPES.find(t => t.id === selectedType);
+                  if (selectedCalc) {
+                    const revenueValue = revenue ? parseFloat(revenue.replace(/\D/g, '')) / 100 : 0;
+                    const sectorLabel = sector || 'não especificado';
+                    let prompt = selectedCalc.autoPrompt;
+                    if (revenueValue > 0) {
+                      prompt += ` Considere faturamento mensal de R$ ${revenueValue.toLocaleString('pt-BR')}.`;
+                    }
+                    if (sector) {
+                      prompt += ` Setor: ${sectorLabel}.`;
+                    }
+                    sendMessage(prompt);
+                  }
+                }}
+                disabled={isLoading}
+                className="w-full bg-gradient-to-r from-primary to-cyan-500 hover:from-primary/90 hover:to-cyan-500/90"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Calculando...
+                  </>
+                ) : (
+                  <>
+                    <Calculator className="h-4 w-4 mr-2" />
+                    Iniciar {CALCULATION_TYPES.find(t => t.id === selectedType)?.label}
+                  </>
+                )}
+              </Button>
             </div>
           )}
 
           <div>
             <p className="text-xs font-medium text-muted-foreground mb-2">Perguntas rápidas:</p>
             <div className="flex flex-wrap gap-2">
-              {QUICK_PROMPTS.slice(0, 3).map((prompt, i) => (
+              {QUICK_PROMPTS.map((prompt, i) => (
                 <button
                   key={i}
-                  onClick={() => handleQuickPrompt(prompt)}
+                  onClick={() => sendMessage(prompt)}
                   className="text-xs px-3 py-1.5 rounded-full bg-muted hover:bg-primary/10 hover:text-primary transition-colors border border-border"
                 >
                   {prompt.length > 50 ? prompt.slice(0, 50) + '...' : prompt}
