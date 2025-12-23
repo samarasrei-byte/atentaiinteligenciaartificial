@@ -18,7 +18,7 @@ export const STRIPE_PLANS = {
     priceId: 'price_1ShK943MU3lG84Gwd4u3Z0Za',
     productId: 'prod_TedPv32txqdcXM',
     price: 9800, // cents (R$98,00)
-    description: 'Assistente de IA especializado em legislação tributária',
+    description: 'Todas as respostas que você precisa sobre a Reforma Tributária',
     features: [
       'Agente de IA ilimitado',
       'Simulador tributário completo',
@@ -39,7 +39,7 @@ export const STRIPE_PLANS = {
     features: [
       'Tudo do AtentAI Premium',
       'Chat ilimitado com contador',
-      '5 consultas/mês com contador especializado',
+      '2 consultas/mês com contador especializado',
       'Agendamento prioritário',
       'Análise tributária personalizada',
       'Piloto Automático com alertas',
@@ -47,7 +47,7 @@ export const STRIPE_PLANS = {
       'Acesso ao glossário completo',
       'Edição de dados da empresa',
     ],
-    monthlyConsultations: 5,
+    monthlyConsultations: 2,
     highlight: true,
   },
 } as const;
