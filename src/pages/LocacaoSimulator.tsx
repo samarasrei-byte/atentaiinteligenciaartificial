@@ -96,10 +96,9 @@ const LocacaoSimulator = () => {
     const currentTax = rent * (currentTaxRate / 100);
     
     // Novo imposto (CBS + IBS com redução de 60% para imóveis)
-    const fullRate = RENTAL_TAX_RATES.reform.cbs + RENTAL_TAX_RATES.reform.ibs;
-    const reducedRate = fullRate * (1 - RENTAL_TAX_RATES.reform.reducedRate);
-    // PF continua com isenção para residencial
-    let newTaxRate = personType === 'pf' && propertyType === 'residential' ? 0 : reducedRate;
+    // Com a reforma, todos pagam - inclusive PF residencial
+    const fullRate = RENTAL_TAX_RATES.reform.cbs + RENTAL_TAX_RATES.reform.ibs; // 26.5%
+    const newTaxRate = fullRate * (1 - RENTAL_TAX_RATES.reform.reducedRate); // 10.6% (com 60% redução)
     const newTax = rent * (newTaxRate / 100);
     
     const difference = newTax - currentTax;
