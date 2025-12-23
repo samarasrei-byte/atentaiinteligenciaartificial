@@ -23,6 +23,7 @@ import NotFound from "./pages/NotFound";
 import PlanoSimulador from "./pages/PlanoSimulador";
 import PlanoAtenteAi from "./pages/PlanoAtenteAi";
 import ConsultationChatPage from "./pages/ConsultationChatPage";
+import ConsultationHistory from "./pages/ConsultationHistory";
 
 const queryClient = new QueryClient();
 
@@ -93,6 +94,11 @@ const App = () => (
             <Route path="/chat/:consultationId" element={
               <ProtectedRoute>
                 <ConsultationChatPage />
+              </ProtectedRoute>
+            } />
+            <Route path="/consultations" element={
+              <ProtectedRoute>
+                <ConsultationHistory />
               </ProtectedRoute>
             } />
             

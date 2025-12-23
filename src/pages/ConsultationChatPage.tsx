@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ConsultationChat } from '@/components/chat/ConsultationChat';
+import { ConsultationRating } from '@/components/chat/ConsultationRating';
 import { exportConsultationToPdf } from '@/lib/exportConsultationPdf';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -31,6 +32,7 @@ interface ConsultationDetails {
   price_cents: number;
   notes: string | null;
   created_at: string;
+  rating: number | null;
   user_profile?: {
     full_name: string | null;
     email: string | null;
@@ -51,6 +53,7 @@ const ConsultationChatPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isExporting, setIsExporting] = useState(false);
+  const [currentRating, setCurrentRating] = useState<number | null>(null);
 
   const handleExportPdf = async () => {
     if (!consultation || !user) return;
@@ -314,6 +317,17 @@ const ConsultationChatPage = () => {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Rating Section - Only show for clients on completed consultations */}
+            {!isContador && consultation.status === 'completed' && (
+              <ConsultationRating
+                consultationId={consultation.id}
+                currentRating={consultation.rating}
+                onRatingSubmitted={(rating) => {
+                  setConsultation(prev => prev ? { ...prev, rating } : null);
+                }}
+              />
+            )}
           </div>
         </div>
       </main>

@@ -18,6 +18,7 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
+  ClipboardList,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -48,6 +49,7 @@ const userItems: SidebarItem[] = [
   { icon: Home, label: 'Locação', href: '/locacao', badge: 'Novo' },
   { icon: Scale, label: 'Comparador', href: '/regime-comparator', badge: 'Novo' },
   { icon: Users, label: 'Contadores', href: '/contadores' },
+  { icon: ClipboardList, label: 'Histórico', href: '/consultations' },
 ];
 
 const adminItems: SidebarItem[] = [
@@ -61,6 +63,7 @@ const adminItems: SidebarItem[] = [
 const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', href: '/contador' },
   { icon: Calendar, label: 'Consultas', href: '/contador?tab=consultations' },
+  { icon: ClipboardList, label: 'Histórico', href: '/consultations' },
   { icon: Users, label: 'Clientes', href: '/contador?tab=clients' },
   { icon: DollarSign, label: 'Ganhos', href: '/contador?tab=earnings' },
   { icon: FileText, label: 'Perfil', href: '/contador?tab=profile' },
