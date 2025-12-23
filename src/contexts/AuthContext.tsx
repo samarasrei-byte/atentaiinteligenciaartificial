@@ -76,18 +76,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const checkSubscription = async () => {
     // Get fresh session to ensure we have valid token
-    const { data: { session: currentSession } } = await supabase.auth.getSession();
+    const { data: { session: currentSession }, error: sessionError } = await supabase.auth.getSession();
     
-    if (!currentSession?.access_token) {
+    if (sessionError || !currentSession?.access_token) {
+      console.log('No valid session for subscription check');
       setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
       return;
     }
 
     try {
-      const { data, error } = await supabase.functions.invoke('check-subscription');
+      const { data, error } = await supabase.functions.invoke('check-subscription', {
+        headers: {
+          Authorization: `Bearer ${currentSession.access_token}`,
+        },
+      });
       
       if (error) {
-        console.error('Error checking subscription:', error);
+        // Don't log auth errors as they're expected during session transitions
+        if (!error.message?.includes('Auth session missing')) {
+          console.error('Error checking subscription:', error);
+        }
         return;
       }
 
