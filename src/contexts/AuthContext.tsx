@@ -140,7 +140,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Check subscription when session changes
   useEffect(() => {
-    if (session) {
+    if (session?.access_token) {
       checkSubscription();
     }
   }, [session]);
