@@ -54,38 +54,20 @@ interface Company {
   onboarding_completed: boolean;
 }
 
-// Simple embedded AI Chat component
+import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
+import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
+
+// Enhanced AI Chat with Power Calculator
 const EmbeddedAIChat = () => {
-  const navigate = useNavigate();
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Chat IA</h2>
-          <p className="text-muted-foreground">Tire suas dúvidas sobre a Reforma Tributária</p>
-        </div>
-        <Button onClick={() => navigate('/ai-chat')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Abrir em tela cheia
-        </Button>
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">IA Tributária Avançada</h2>
+        <p className="text-muted-foreground">Cálculos automáticos e análises com inteligência artificial</p>
       </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-primary/10 mb-4">
-              <MessageSquare className="h-12 w-12 text-primary" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Assistente IA Tributário</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Faça perguntas sobre IBS, CBS, a Reforma Tributária e como ela afeta sua empresa.
-            </p>
-            <Button onClick={() => navigate('/ai-chat')} className="gap-2">
-              <Send className="h-4 w-4" />
-              Iniciar Conversa
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="h-[650px]">
+        <PowerAICalculator />
+      </div>
     </div>
   );
 };
@@ -234,38 +216,15 @@ const EmbeddedContadores = () => {
   );
 };
 
-// Embedded History
+// Embedded History with Chat
 const EmbeddedHistory = () => {
-  const navigate = useNavigate();
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Histórico de Consultas</h2>
-          <p className="text-muted-foreground">Veja suas consultas anteriores</p>
-        </div>
-        <Button onClick={() => navigate('/consultations')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Ver Completo
-        </Button>
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Chat com Contador</h2>
+        <p className="text-muted-foreground">Converse com seu contador especializado</p>
       </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-amber-500/10 mb-4">
-              <History className="h-12 w-12 text-amber-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Suas Consultas</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Acesse o histórico completo das suas consultas com contadores.
-            </p>
-            <Button onClick={() => navigate('/consultations')} className="gap-2 bg-amber-600 hover:bg-amber-700">
-              <History className="h-4 w-4" />
-              Ver Histórico
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+      <EmbeddedConsultationChat isContador={false} />
     </div>
   );
 };
