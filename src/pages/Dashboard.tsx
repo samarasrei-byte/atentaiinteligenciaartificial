@@ -59,6 +59,7 @@ import { EmbeddedLocacaoSimulator } from '@/components/simulator/EmbeddedLocacao
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 import { EconomyCalculator } from '@/components/calculator/EconomyCalculator';
 import { PFPJDecision } from '@/components/calculator/PFPJDecision';
+import { SimulationHistory } from '@/components/history/SimulationHistory';
 
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
@@ -482,6 +483,16 @@ const Dashboard = () => {
             <div className="max-w-2xl">
               <EconomyCalculator />
             </div>
+          </div>
+        );
+      case 'history':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Histórico de Simulações</h2>
+              <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
+            </div>
+            <SimulationHistory />
           </div>
         );
       case 'support':

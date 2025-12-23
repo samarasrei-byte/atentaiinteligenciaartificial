@@ -26,6 +26,7 @@ import {
   User,
   Settings,
   Sparkles,
+  History,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -59,6 +60,7 @@ const userItems: SidebarItem[] = [
   { icon: Home, label: 'Locação', tabId: 'locacao' },
   { icon: Target, label: 'PF ou PJ?', tabId: 'pf-pj-decision' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
+  { icon: History, label: 'Histórico', tabId: 'history' },
   { icon: User, label: 'Perfil', tabId: 'profile' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
 ];
