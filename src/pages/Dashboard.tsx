@@ -56,6 +56,9 @@ interface Company {
 
 import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
+import { EmbeddedLocacaoSimulator } from '@/components/simulator/EmbeddedLocacaoSimulator';
+import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
+import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
@@ -85,182 +88,17 @@ const EmbeddedChatContador = () => {
   );
 };
 
-// Embedded Simulator
+// Embedded Simulator - uses PowerAICalculator which has all calculation types
 const EmbeddedSimulator = () => {
-  const navigate = useNavigate();
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Simulador de Impostos</h2>
-          <p className="text-muted-foreground">Compare impostos atuais com a Reforma Tributária</p>
-        </div>
-        <Button onClick={() => navigate('/simulator')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Simulador Completo
-        </Button>
+      <div>
+        <h2 className="text-2xl font-bold text-foreground">Simulador de Impostos</h2>
+        <p className="text-muted-foreground">Compare impostos atuais com a Reforma Tributária usando IA</p>
       </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-cyan-500/10 mb-4">
-              <Calculator className="h-12 w-12 text-cyan-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Simule seus Impostos</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Calcule e compare os impostos atuais (PIS, COFINS, ICMS, ISS) com os novos (IBS e CBS).
-            </p>
-            <Button onClick={() => navigate('/simulator')} className="gap-2 bg-cyan-600 hover:bg-cyan-700">
-              <Calculator className="h-4 w-4" />
-              Acessar Simulador
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-// Embedded Locacao
-const EmbeddedLocacao = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Simulador de Locação</h2>
-          <p className="text-muted-foreground">Compare tributação PF vs PJ para locação de imóveis</p>
-        </div>
-        <Button onClick={() => navigate('/locacao')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Simulador Completo
-        </Button>
+      <div className="h-[650px]">
+        <PowerAICalculator />
       </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-rose-500/10 mb-4">
-              <Home className="h-12 w-12 text-rose-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Locação de Imóveis</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Simule a tributação de locação residencial e comercial com a Reforma Tributária.
-            </p>
-            <Button onClick={() => navigate('/locacao')} className="gap-2 bg-rose-600 hover:bg-rose-700">
-              <Home className="h-4 w-4" />
-              Acessar Simulador
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-// Embedded Comparator
-const EmbeddedComparator = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Comparador de Regimes</h2>
-          <p className="text-muted-foreground">Compare regimes tributários para sua empresa</p>
-        </div>
-        <Button onClick={() => navigate('/regime-comparator')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Comparador Completo
-        </Button>
-      </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-violet-500/10 mb-4">
-              <Scale className="h-12 w-12 text-violet-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Compare Regimes</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Analise Simples Nacional, Lucro Presumido e Lucro Real para encontrar o melhor regime.
-            </p>
-            <Button onClick={() => navigate('/regime-comparator')} className="gap-2 bg-violet-600 hover:bg-violet-700">
-              <Scale className="h-4 w-4" />
-              Acessar Comparador
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-// Embedded Contadores
-const EmbeddedContadores = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Contadores Disponíveis</h2>
-          <p className="text-muted-foreground">Encontre um contador especializado na Reforma</p>
-        </div>
-        <Button onClick={() => navigate('/contadores')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Ver Todos
-        </Button>
-      </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-green-500/10 mb-4">
-              <Users className="h-12 w-12 text-green-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Consultoria Especializada</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Conecte-se com contadores especializados na Reforma Tributária para tirar dúvidas.
-            </p>
-            <Button onClick={() => navigate('/contadores')} className="gap-2 bg-green-600 hover:bg-green-700">
-              <Users className="h-4 w-4" />
-              Ver Contadores
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-// Embedded History (removed - now handled by chat-contador tab)
-const EmbeddedHistory = () => {
-  const navigate = useNavigate();
-  return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold text-foreground">Histórico de Consultas</h2>
-          <p className="text-muted-foreground">Veja suas consultas anteriores</p>
-        </div>
-        <Button onClick={() => navigate('/consultations')} variant="outline">
-          <ArrowUpRight className="h-4 w-4 mr-2" />
-          Ver Completo
-        </Button>
-      </div>
-      <Card className="bg-card border-border">
-        <CardContent className="p-6">
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <div className="p-4 rounded-2xl bg-amber-500/10 mb-4">
-              <History className="h-12 w-12 text-amber-500" />
-            </div>
-            <h3 className="text-lg font-semibold mb-2">Suas Consultas</h3>
-            <p className="text-muted-foreground mb-6 max-w-md">
-              Acesse o histórico completo das suas consultas com contadores.
-            </p>
-            <Button onClick={() => navigate('/consultations')} className="gap-2 bg-amber-600 hover:bg-amber-700">
-              <History className="h-4 w-4" />
-              Ver Histórico
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
@@ -479,13 +317,11 @@ const Dashboard = () => {
       case 'simulator':
         return <EmbeddedSimulator />;
       case 'locacao':
-        return <EmbeddedLocacao />;
+        return <EmbeddedLocacaoSimulator />;
       case 'comparator':
-        return <EmbeddedComparator />;
+        return <EmbeddedRegimeComparator />;
       case 'contadores':
-        return <EmbeddedContadores />;
-      case 'history':
-        return <EmbeddedHistory />;
+        return <EmbeddedContadoresList />;
       case 'support':
         return (
           <div className="space-y-6">
