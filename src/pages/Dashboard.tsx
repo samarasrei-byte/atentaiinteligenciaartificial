@@ -74,6 +74,7 @@ import { TaxGlossary } from '@/components/glossary/TaxGlossary';
 import { SavingsMetricsDashboard } from '@/components/dashboard/SavingsMetricsDashboard';
 import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionHistoryCard';
 import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
+import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -521,6 +522,7 @@ const Dashboard = () => {
               </p>
             </div>
             <AutonomoSimulator />
+            <AutonomoSimulationHistory />
           </div>
         );
       case 'subscription':

@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -16,27 +16,23 @@ import {
   Bot,
   Calculator,
   TrendingUp,
-  TrendingDown,
   CheckCircle,
   AlertCircle,
-  Lightbulb,
   RefreshCw,
   Loader2,
   Sparkles,
   Crown,
-  ArrowRight,
   Users,
   Building2,
   User,
-  Zap,
-  ChevronRight,
   ChevronLeft,
-  FileText,
   Download,
+  Save,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   PROFESSIONAL_CATEGORIES,
   compareRegimes,
@@ -47,6 +43,7 @@ import {
 } from '@/lib/autonomosData';
 import { brazilianStates } from '@/lib/taxData';
 import { LEGAL_DISCLAIMER } from '@/lib/taxConstants';
+import { exportAutonomoAnalysisPdf } from '@/lib/exportAutonomoPdf';
 
 // Estados para o fluxo do wizard
 type WizardStep = 'category' | 'profession' | 'revenue' | 'result';
@@ -54,6 +51,7 @@ type WizardStep = 'category' | 'profession' | 'revenue' | 'result';
 export const AutonomoSimulator: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   
   // Wizard state
   const [step, setStep] = useState<WizardStep>('category');
@@ -68,6 +66,8 @@ export const AutonomoSimulator: React.FC = () => {
   const [aiAnalysis, setAiAnalysis] = useState<string>('');
   const [isLoadingAI, setIsLoadingAI] = useState(false);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [hasSaved, setHasSaved] = useState(false);
   
   const formatCurrencyInput = (value: string): string => {
     const numbers = value.replace(/\D/g, '');
@@ -163,6 +163,68 @@ export const AutonomoSimulator: React.FC = () => {
     setMonthlyExpenses('');
     setResult(null);
     setAiAnalysis('');
+    setHasSaved(false);
+  };
+
+  const handleSaveSimulation = async () => {
+    if (!user || !result) return;
+
+    setIsSaving(true);
+    try {
+      const revenue = parseCurrencyInput(monthlyRevenue);
+      const expenses = parseCurrencyInput(monthlyExpenses);
+      const category = getCategoryByID(selectedCategory);
+
+      const { error } = await supabase.from('autonomos_simulations').insert({
+        user_id: user.id,
+        profession: selectedProfession,
+        profession_category: category?.name || selectedCategory,
+        monthly_revenue_cents: Math.round(revenue * 100),
+        monthly_expenses_cents: Math.round(expenses * 100),
+        state,
+        recommendation: result.recommendation,
+        pf_tax_cents: Math.round(result.pf.monthlyTax * 100),
+        mei_tax_cents: result.mei.isEligible ? Math.round(result.mei.monthlyTax * 100) : null,
+        me_simples_tax_cents: result.meSimples.isEligible ? Math.round(result.meSimples.monthlyTax * 100) : null,
+        lucro_presumido_tax_cents: result.mePresumido.isEligible ? Math.round(result.mePresumido.monthlyTax * 100) : null,
+        annual_savings_cents: Math.round(result.annualSavings * 100),
+        notes: aiAnalysis || null,
+      });
+
+      if (error) throw error;
+
+      setHasSaved(true);
+      queryClient.invalidateQueries({ queryKey: ['autonomos-simulations'] });
+      toast({ title: 'Simulação salva com sucesso!' });
+    } catch (error) {
+      console.error('Error saving simulation:', error);
+      toast({ variant: 'destructive', title: 'Erro ao salvar simulação' });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleExportPdf = () => {
+    if (!result) return;
+
+    const category = getCategoryByID(selectedCategory);
+    
+    exportAutonomoAnalysisPdf({
+      profession: selectedProfession,
+      category: category?.name || selectedCategory,
+      monthlyRevenue: parseCurrencyInput(monthlyRevenue),
+      monthlyExpenses: parseCurrencyInput(monthlyExpenses),
+      state,
+      pfTax: result.pf.monthlyTax,
+      meiTax: result.mei.isEligible ? result.mei.monthlyTax : null,
+      meSimplesTax: result.meSimples.isEligible ? result.meSimples.monthlyTax : null,
+      lucroPresumidoTax: result.mePresumido.isEligible ? result.mePresumido.monthlyTax : null,
+      annualSavings: result.annualSavings,
+      recommendation: result.recommendation,
+      aiAnalysis: aiAnalysis || undefined,
+    });
+
+    toast({ title: 'PDF gerado com sucesso!' });
   };
   
   const getCategoryByID = (id: string) => {
@@ -497,13 +559,34 @@ export const AutonomoSimulator: React.FC = () => {
             <RefreshCw className="h-4 w-4 mr-2" />
             Nova simulação
           </Button>
+          {user && !hasSaved && (
+            <Button
+              onClick={handleSaveSimulation}
+              variant="outline"
+              className="flex-1"
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Save className="h-4 w-4 mr-2" />
+              )}
+              Salvar simulação
+            </Button>
+          )}
+          {hasSaved && (
+            <Button variant="outline" className="flex-1" disabled>
+              <CheckCircle className="h-4 w-4 mr-2 text-emerald-500" />
+              Salvo!
+            </Button>
+          )}
           <Button
-            onClick={() => toast({ title: 'Em breve!', description: 'Relatório PDF será implementado.' })}
+            onClick={handleExportPdf}
             variant="outline"
             className="flex-1"
           >
             <Download className="h-4 w-4 mr-2" />
-            Baixar relatório
+            Baixar PDF
           </Button>
           <Button
             onClick={() => window.location.href = '/contadores'}

@@ -38,6 +38,63 @@ export type Database = {
         }
         Relationships: []
       }
+      autonomos_simulations: {
+        Row: {
+          annual_savings_cents: number
+          city: string | null
+          created_at: string
+          id: string
+          lucro_presumido_tax_cents: number | null
+          me_simples_tax_cents: number | null
+          mei_tax_cents: number | null
+          monthly_expenses_cents: number
+          monthly_revenue_cents: number
+          notes: string | null
+          pf_tax_cents: number
+          profession: string
+          profession_category: string
+          recommendation: string
+          state: string
+          user_id: string
+        }
+        Insert: {
+          annual_savings_cents: number
+          city?: string | null
+          created_at?: string
+          id?: string
+          lucro_presumido_tax_cents?: number | null
+          me_simples_tax_cents?: number | null
+          mei_tax_cents?: number | null
+          monthly_expenses_cents?: number
+          monthly_revenue_cents: number
+          notes?: string | null
+          pf_tax_cents: number
+          profession: string
+          profession_category: string
+          recommendation: string
+          state: string
+          user_id: string
+        }
+        Update: {
+          annual_savings_cents?: number
+          city?: string | null
+          created_at?: string
+          id?: string
+          lucro_presumido_tax_cents?: number | null
+          me_simples_tax_cents?: number | null
+          mei_tax_cents?: number | null
+          monthly_expenses_cents?: number
+          monthly_revenue_cents?: number
+          notes?: string | null
+          pf_tax_cents?: number
+          profession?: string
+          profession_category?: string
+          recommendation?: string
+          state?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           attachment_name: string | null
