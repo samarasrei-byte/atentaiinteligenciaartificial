@@ -7,7 +7,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { 
   Brain, 
-  Calculator, 
   Users, 
   MessageSquare, 
   FileText,
@@ -21,12 +20,12 @@ import {
   Scale,
   ArrowUpRight,
   Sparkles,
-  Zap,
   BarChart3,
-  Clock,
   Menu,
-  Send,
-  History,
+  User,
+  Mail,
+  Phone,
+  Save,
   Headphones,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -89,17 +88,158 @@ const EmbeddedChatContador = () => {
   );
 };
 
-// Embedded Simulator - uses PowerAICalculator which has all calculation types
-const EmbeddedSimulator = () => {
+// Profile Edit Component
+const EmbeddedProfile = ({ profile, user, onUpdate }: { profile: any; user: any; onUpdate: () => void }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [formData, setFormData] = useState({
+    full_name: profile?.full_name || '',
+    phone: profile?.phone || '',
+  });
+  const { toast } = useToast();
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: formData.full_name,
+          phone: formData.phone,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+
+      if (error) throw error;
+
+      toast({
+        title: 'Perfil atualizado!',
+        description: 'Suas informações foram salvas com sucesso.',
+      });
+      setIsEditing(false);
+      onUpdate();
+    } catch (error: any) {
+      toast({
+        title: 'Erro ao salvar',
+        description: error.message,
+        variant: 'destructive',
+      });
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-foreground">Simulador de Impostos</h2>
-        <p className="text-muted-foreground">Compare impostos atuais com a Reforma Tributária usando IA</p>
+        <h2 className="text-2xl font-bold text-foreground">Meu Perfil</h2>
+        <p className="text-muted-foreground">Visualize e edite suas informações pessoais</p>
       </div>
-      <div className="h-[650px]">
-        <PowerAICalculator />
-      </div>
+      
+      <Card className="bg-card border-border shadow-soft">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-lg">
+                <span className="text-2xl font-bold text-white">
+                  {formData.full_name?.[0]?.toUpperCase() || user?.email?.[0]?.toUpperCase() || 'U'}
+                </span>
+              </div>
+              <div>
+                <CardTitle>{formData.full_name || 'Usuário'}</CardTitle>
+                <CardDescription>{user?.email}</CardDescription>
+              </div>
+            </div>
+            <Button
+              variant={isEditing ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => isEditing ? handleSave() : setIsEditing(true)}
+              disabled={isSaving}
+            >
+              {isSaving ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : isEditing ? (
+                <>
+                  <Save className="h-4 w-4 mr-2" />
+                  Salvar
+                </>
+              ) : (
+                <>
+                  <Edit className="h-4 w-4 mr-2" />
+                  Editar
+                </>
+              )}
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div className="grid gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <User className="h-4 w-4 text-muted-foreground" />
+                Nome Completo
+              </label>
+              {isEditing ? (
+                <Input
+                  value={formData.full_name}
+                  onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                  placeholder="Seu nome completo"
+                />
+              ) : (
+                <p className="text-foreground bg-muted/50 px-3 py-2 rounded-md">
+                  {formData.full_name || 'Não informado'}
+                </p>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Mail className="h-4 w-4 text-muted-foreground" />
+                E-mail
+              </label>
+              <p className="text-foreground bg-muted/50 px-3 py-2 rounded-md">
+                {user?.email}
+              </p>
+              <p className="text-xs text-muted-foreground">O e-mail não pode ser alterado</p>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-foreground flex items-center gap-2">
+                <Phone className="h-4 w-4 text-muted-foreground" />
+                Telefone
+              </label>
+              {isEditing ? (
+                <Input
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  placeholder="(11) 99999-9999"
+                />
+              ) : (
+                <p className="text-foreground bg-muted/50 px-3 py-2 rounded-md">
+                  {formData.phone || 'Não informado'}
+                </p>
+              )}
+            </div>
+          </div>
+          
+          {isEditing && (
+            <div className="flex gap-2 pt-4 border-t border-border">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setIsEditing(false);
+                  setFormData({
+                    full_name: profile?.full_name || '',
+                    phone: profile?.phone || '',
+                  });
+                }}
+              >
+                Cancelar
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
@@ -281,12 +421,13 @@ const Dashboard = () => {
       iconBg: 'bg-primary/10',
     },
     {
-      icon: Calculator,
-      title: 'Simulador',
-      description: 'Compare impostos',
-      tabId: 'simulator',
-      gradient: 'from-cyan-500 to-blue-500',
-      iconBg: 'bg-cyan-500/10',
+      icon: TrendingUp,
+      title: 'Economize',
+      description: 'Calcule sua economia',
+      tabId: 'economia',
+      gradient: 'from-emerald-500 to-green-500',
+      iconBg: 'bg-emerald-500/10',
+      badge: 'Hot',
     },
     {
       icon: Home,
@@ -295,7 +436,6 @@ const Dashboard = () => {
       tabId: 'locacao',
       gradient: 'from-rose-500 to-pink-500',
       iconBg: 'bg-rose-500/10',
-      badge: 'Novo',
     },
     {
       icon: Scale,
@@ -304,7 +444,6 @@ const Dashboard = () => {
       tabId: 'comparator',
       gradient: 'from-violet-500 to-purple-500',
       iconBg: 'bg-violet-500/10',
-      badge: 'Novo',
     },
   ];
 
@@ -315,8 +454,8 @@ const Dashboard = () => {
         return <EmbeddedAIAgent />;
       case 'chat-contador':
         return <EmbeddedChatContador />;
-      case 'simulator':
-        return <EmbeddedSimulator />;
+      case 'profile':
+        return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
       case 'locacao':
         return <EmbeddedLocacaoSimulator />;
       case 'comparator':
