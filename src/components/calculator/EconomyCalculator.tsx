@@ -18,8 +18,13 @@ import {
   RefreshCw
 } from 'lucide-react';
 
-// Alíquota base da reforma (EC 132/2023)
-const BASE_TAX_RATE = 26.5; // 26,5%
+import {
+  BASE_TAX_RATE,
+  formatCurrency,
+  formatCurrencyInput,
+  parseCurrencyInput,
+  LEGAL_DISCLAIMER,
+} from '@/lib/taxConstants';
 
 // Categorias de despesas que geram crédito
 const EXPENSE_CATEGORIES = [
@@ -47,30 +52,6 @@ interface CalculationResult {
     message: string;
   };
 }
-
-// Formata número para moeda brasileira
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value);
-};
-
-// Formata input de moeda
-const formatCurrencyInput = (value: string): string => {
-  const numbers = value.replace(/\D/g, '');
-  const cents = parseInt(numbers || '0', 10);
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(cents / 100);
-};
-
-// Converte string formatada para número
-const parseCurrencyInput = (value: string): number => {
-  const numbers = value.replace(/\D/g, '');
-  return parseInt(numbers || '0', 10) / 100;
-};
 
 export function EconomyCalculator() {
   const [monthlyIncome, setMonthlyIncome] = useState('');
@@ -272,7 +253,7 @@ export function EconomyCalculator() {
             <div className="flex items-start gap-2">
               <AlertCircle className="h-4 w-4 text-muted-foreground mt-0.5 shrink-0" />
               <p className="text-[11px] text-muted-foreground">
-                Valores estimados com base na EC 132/2023. Resultados sujeitos à regulamentação final.
+                {LEGAL_DISCLAIMER}
               </p>
             </div>
           </div>
