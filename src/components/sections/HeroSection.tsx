@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { STRIPE_PLANS, formatPrice } from "@/lib/stripe";
 
 interface HeroSectionProps {
   onNavigate: (section: string) => void;
@@ -64,9 +65,11 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* Price hint */}
           <p className="mt-4 sm:mt-6 text-white/50 text-xs sm:text-sm animate-fade-in px-4" style={{ animationDelay: "0.3s" }}>
-            <span className="hidden sm:inline">Simulador R$56/mês • AtentAI Premium R$98/mês • </span>
-            <span className="sm:hidden">A partir de R$56/mês • </span>
-            <span className="text-accent font-semibold">Contador Premium R$198,99/mês</span>
+            <span className="hidden sm:inline">
+              {STRIPE_PLANS.simulator.name} {formatPrice(STRIPE_PLANS.simulator.price)}/mês • {STRIPE_PLANS.premium.name} {formatPrice(STRIPE_PLANS.premium.price)}/mês •{' '}
+            </span>
+            <span className="sm:hidden">A partir de {formatPrice(STRIPE_PLANS.simulator.price)}/mês • </span>
+            <span className="text-accent font-semibold">{STRIPE_PLANS.contador.name} {formatPrice(STRIPE_PLANS.contador.price)}/mês</span>
           </p>
         </div>
       </div>

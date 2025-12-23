@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
+import { STRIPE_PLANS } from '@/lib/stripe';
 
 export interface AdminReportData {
   stats: {
@@ -103,14 +104,14 @@ export function exportAdminReportToExcel(data: AdminReportData): void {
     ['DISTRIBUIÇÃO DE PLANOS'],
     [''],
     ['Plano', 'Quantidade', 'Receita Mensal'],
-    ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * 5600)],
-    ['AtentAI Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * 9800)],
-    ['Contador Premium Plus', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * 19899)],
+    ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price)],
+    ['AtentAI Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * STRIPE_PLANS.premium.price)],
+    ['Contador Premium Plus', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)],
     [''],
     ['Total Assinaturas', data.stats.totalSubscriptions, formatCurrency(
-      (data.stats.simulatorPlanCount * 5600) + 
-      (data.stats.premiumPlanCount * 9800) + 
-      (data.stats.contadorPlanCount * 19899)
+      (data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price) + 
+      (data.stats.premiumPlanCount * STRIPE_PLANS.premium.price) + 
+      (data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)
     )],
   ];
 
