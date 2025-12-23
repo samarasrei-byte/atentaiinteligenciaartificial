@@ -59,6 +59,7 @@ import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { EmbeddedLocacaoSimulator } from '@/components/simulator/EmbeddedLocacaoSimulator';
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
+import { EconomyCalculator } from '@/components/calculator/EconomyCalculator';
 
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
@@ -322,6 +323,18 @@ const Dashboard = () => {
         return <EmbeddedRegimeComparator />;
       case 'contadores':
         return <EmbeddedContadoresList />;
+      case 'economia':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Economize com a Reforma</h2>
+              <p className="text-muted-foreground">Veja automaticamente quanto você pode economizar em um único clique</p>
+            </div>
+            <div className="max-w-2xl">
+              <EconomyCalculator />
+            </div>
+          </div>
+        );
       case 'support':
         return (
           <div className="space-y-6">
@@ -444,8 +457,11 @@ const Dashboard = () => {
               </Card>
             </div>
 
-            {/* Consultation Quota */}
-            <ConsultationQuotaCard />
+            {/* Economy Calculator - Destaque */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <EconomyCalculator />
+              <ConsultationQuotaCard />
+            </div>
 
             {/* Quick Actions */}
             <div>
