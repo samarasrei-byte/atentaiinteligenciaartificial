@@ -691,7 +691,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex w-full">
+    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div 
