@@ -35,12 +35,14 @@ export const STRIPE_PLANS = {
     description: 'Acesso a contador especializado com suporte completo',
     features: [
       'Chat ilimitado com contador',
+      '3 consultas/mês com contador especializado',
       'Agendamento de consultas',
       'Relatórios PDF detalhados',
       'Suporte prioritário 24h',
       'Simulador completo incluído',
       'IA Premium incluída',
     ],
+    monthlyConsultations: 3,
     installments: 10, // 10x de R$17,00
     highlight: true,
   },
