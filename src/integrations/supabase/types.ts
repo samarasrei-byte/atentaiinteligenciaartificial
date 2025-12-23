@@ -38,6 +38,57 @@ export type Database = {
         }
         Relationships: []
       }
+      autonomo_profiles: {
+        Row: {
+          bio: string | null
+          city: string | null
+          cpf: string | null
+          crc_number: string | null
+          created_at: string
+          current_regime: string | null
+          id: string
+          monthly_revenue_average_cents: number | null
+          phone: string | null
+          profession: string | null
+          profession_category: string | null
+          state: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bio?: string | null
+          city?: string | null
+          cpf?: string | null
+          crc_number?: string | null
+          created_at?: string
+          current_regime?: string | null
+          id?: string
+          monthly_revenue_average_cents?: number | null
+          phone?: string | null
+          profession?: string | null
+          profession_category?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bio?: string | null
+          city?: string | null
+          cpf?: string | null
+          crc_number?: string | null
+          created_at?: string
+          current_regime?: string | null
+          id?: string
+          monthly_revenue_average_cents?: number | null
+          phone?: string | null
+          profession?: string | null
+          profession_category?: string | null
+          state?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       autonomos_simulations: {
         Row: {
           annual_savings_cents: number
@@ -726,7 +777,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "contador" | "user"
+      app_role: "admin" | "contador" | "user" | "autonomo"
       company_sector:
         | "comercio"
         | "servicos"
@@ -882,7 +933,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "contador", "user"],
+      app_role: ["admin", "contador", "user", "autonomo"],
       company_sector: [
         "comercio",
         "servicos",

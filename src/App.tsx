@@ -31,6 +31,8 @@ import Profile from "./pages/Profile";
 import PlanComparison from "./pages/PlanComparison";
 import PaymentSuccess from "./pages/PaymentSuccess";
 import FAQ from "./pages/FAQ";
+import AutonomoPanel from "./pages/AutonomoPanel";
+import PlanoAutonomo from "./pages/PlanoAutonomo";
 
 const queryClient = new QueryClient();
 
@@ -48,6 +50,7 @@ const App = () => (
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/plano/simulador" element={<PlanoSimulador />} />
             <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
+            <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
             <Route path="/plano/comparar" element={<PlanComparison />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
             <Route path="/termos" element={<TermosDeUso />} />
@@ -96,6 +99,11 @@ const App = () => (
             } />
             
             {/* Role-based routes */}
+            <Route path="/autonomo" element={
+              <ProtectedRoute>
+                <AutonomoPanel />
+              </ProtectedRoute>
+            } />
             <Route path="/contador" element={
               <ProtectedRoute>
                 <ContadorPanel />
