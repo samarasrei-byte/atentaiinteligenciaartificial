@@ -54,21 +54,28 @@ serve(async (req) => {
     if (userError) {
       logStep("Auth getUser failed, trying JWT decode fallback", { error: userError.message });
       
-      // Try to decode JWT payload manually as fallback
+      // Try to decode JWT payload manually as fallback (base64url)
       try {
         const parts = token.split('.');
         if (parts.length !== 3) throw new Error("Invalid token format");
-        
-        const payload = JSON.parse(atob(parts[1]));
+
+        const base64Url = parts[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
+
+        const payload = JSON.parse(atob(padded));
         userId = payload.sub;
         userEmail = payload.email;
-        
+
         if (!userId || !userEmail) {
           throw new Error("Could not extract user info from token");
         }
-        
+
         logStep("Extracted user from JWT payload", { userId, email: userEmail });
       } catch (decodeError) {
+        logStep("JWT decode fallback failed", {
+          message: decodeError instanceof Error ? decodeError.message : String(decodeError),
+        });
         throw new Error(`Authentication error: ${userError.message}`);
       }
     } else {
