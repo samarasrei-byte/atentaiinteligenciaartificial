@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ConsultationChat } from '@/components/chat/ConsultationChat';
+import { exportConsultationToPdf } from '@/lib/exportConsultationPdf';
+import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, 
   Loader2, 
@@ -14,7 +16,8 @@ import {
   FileText,
   Clock,
   CheckCircle,
-  AlertCircle
+  AlertCircle,
+  Download
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -42,10 +45,33 @@ const ConsultationChatPage = () => {
   const { consultationId } = useParams<{ consultationId: string }>();
   const navigate = useNavigate();
   const { user, hasRole, loading: authLoading } = useAuth();
+  const { toast } = useToast();
   
   const [consultation, setConsultation] = useState<ConsultationDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportPdf = async () => {
+    if (!consultation || !user) return;
+    
+    setIsExporting(true);
+    try {
+      await exportConsultationToPdf(consultation.id, user.id);
+      toast({
+        title: 'PDF Gerado!',
+        description: 'O relatório foi baixado com sucesso.',
+      });
+    } catch (err) {
+      toast({
+        title: 'Erro ao gerar PDF',
+        description: 'Não foi possível gerar o relatório.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -181,7 +207,24 @@ const ConsultationChatPage = () => {
               />
             </div>
           </div>
-          {getStatusBadge(consultation.status)}
+          <div className="flex items-center gap-2">
+            {consultation.status === 'completed' && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleExportPdf}
+                disabled={isExporting}
+              >
+                {isExporting ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : (
+                  <Download className="h-4 w-4 mr-2" />
+                )}
+                Exportar PDF
+              </Button>
+            )}
+            {getStatusBadge(consultation.status)}
+          </div>
         </div>
       </header>
 

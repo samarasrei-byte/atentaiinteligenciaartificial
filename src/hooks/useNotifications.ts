@@ -5,7 +5,7 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export interface Notification {
   id: string;
-  type: 'consultation' | 'system' | 'payment' | 'update';
+  type: 'consultation' | 'system' | 'payment' | 'update' | 'chat';
   title: string;
   message: string;
   read: boolean;
@@ -137,6 +137,42 @@ export function useNotifications() {
       )
       .subscribe();
 
+    // Subscribe to chat messages for notifications
+    const chatChannel = supabase
+      .channel('notifications-chat')
+      .on(
+        'postgres_changes',
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'chat_messages',
+          filter: `receiver_id=eq.${user.id}`
+        },
+        async (payload) => {
+          const newMessage = payload.new as any;
+          
+          // Fetch sender name
+          const { data: senderProfile } = await supabase
+            .from('profiles')
+            .select('full_name')
+            .eq('user_id', newMessage.sender_id)
+            .single();
+
+          const senderName = senderProfile?.full_name || 'Alguém';
+          
+          addNotification({
+            type: 'chat',
+            title: '💬 Nova Mensagem!',
+            message: `${senderName}: ${newMessage.content.slice(0, 50)}${newMessage.content.length > 50 ? '...' : ''}`,
+            data: { 
+              consultation_id: newMessage.consultation_id,
+              message_id: newMessage.id 
+            },
+          });
+        }
+      )
+      .subscribe();
+
     // Admin notifications for new users
     let profilesChannel: ReturnType<typeof supabase.channel> | null = null;
     if (isAdmin) {
@@ -161,6 +197,7 @@ export function useNotifications() {
     return () => {
       supabase.removeChannel(consultationsChannel);
       supabase.removeChannel(subscriptionsChannel);
+      supabase.removeChannel(chatChannel);
       if (profilesChannel) {
         supabase.removeChannel(profilesChannel);
       }
