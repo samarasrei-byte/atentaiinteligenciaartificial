@@ -19,16 +19,16 @@ export function Header({ onNavigate }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-border/30 shadow-sm">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 md:h-20">
+        <div className="flex items-center justify-between h-14 sm:h-16 md:h-18">
           {/* Logo */}
           <button 
             onClick={() => onNavigate("hero")}
-            className="flex items-center gap-2 group"
+            className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105"
           >
             <img 
               src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="h-12 md:h-16 w-auto"
+              className="h-10 sm:h-12 md:h-14 w-auto transition-all duration-300 group-hover:brightness-110 group-hover:drop-shadow-lg"
             />
           </button>
 
