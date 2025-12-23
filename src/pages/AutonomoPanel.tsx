@@ -65,6 +65,8 @@ import { GuidedTour } from '@/components/tour/GuidedTour';
 import { useGuidedTour } from '@/hooks/useGuidedTour';
 import { autonomoTourSteps } from '@/components/tour/autonomoTourSteps';
 import { MEILimitAlert } from '@/components/autonomos/MEILimitAlert';
+import { AutonomoFinancialDashboard } from '@/components/autonomos/AutonomoFinancialDashboard';
+import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
 
 // Sidebar component for Autonomo
 import {
@@ -99,7 +101,9 @@ type PanelSection =
   | 'simulator' 
   | 'history' 
   | 'ai-chat' 
-  | 'contadores' 
+  | 'contadores'
+  | 'chat-contador'
+  | 'financeiro'
   | 'glossary' 
   | 'subscription' 
   | 'support' 
@@ -113,9 +117,11 @@ const AutonomoSidebar: React.FC<{
 }> = ({ activeSection, onSectionChange, profile, onLogout }) => {
   const menuItems = [
     { id: 'dashboard', label: 'Início', icon: Home },
+    { id: 'financeiro', label: 'Dashboard Financeiro', icon: BarChart3 },
     { id: 'simulator', label: 'Simulador IA', icon: Bot },
     { id: 'history', label: 'Histórico', icon: History },
     { id: 'ai-chat', label: 'Chat IA Tributário', icon: MessageSquare },
+    { id: 'chat-contador', label: 'Chat com Contador', icon: Headphones },
     { id: 'contadores', label: 'Contadores', icon: Users },
     { id: 'glossary', label: 'Glossário', icon: HelpCircle },
     { id: 'subscription', label: 'Assinatura', icon: Crown },
@@ -475,6 +481,30 @@ const AutonomoPanel: React.FC = () => {
               </p>
             </div>
             <EmbeddedContadoresList />
+          </div>
+        );
+      case 'chat-contador':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Chat com Contador</h2>
+              <p className="text-muted-foreground">
+                Converse diretamente com seu contador sobre suas consultas
+              </p>
+            </div>
+            <EmbeddedConsultationChat isContador={false} />
+          </div>
+        );
+      case 'financeiro':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Dashboard Financeiro</h2>
+              <p className="text-muted-foreground">
+                Acompanhe sua evolução de receita, impostos e economia
+              </p>
+            </div>
+            <AutonomoFinancialDashboard />
           </div>
         );
       case 'glossary':
