@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 import { 
   Brain, 
   ArrowLeft, 
@@ -13,10 +14,13 @@ import {
   Loader2,
   Sparkles,
   Settings,
-  Calculator
+  Calculator,
+  Users,
+  Star
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { CouponInput } from '@/components/pricing/CouponInput';
 
 const Pricing = () => {
   const navigate = useNavigate();
@@ -25,6 +29,12 @@ const Pricing = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [isManaging, setIsManaging] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    id: string;
+    name: string;
+    discount: number;
+    type: 'percent' | 'amount';
+  } | null>(null);
 
   useEffect(() => {
     const checkoutResult = searchParams.get('checkout');
@@ -57,7 +67,10 @@ const Pricing = () => {
     
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId: STRIPE_PLANS[planKey].priceId },
+        body: { 
+          priceId: STRIPE_PLANS[planKey].priceId,
+          couponId: appliedCoupon?.id || null,
+        },
       });
 
       if (error) throw error;
@@ -102,6 +115,27 @@ const Pricing = () => {
     }
   };
 
+  const handleCouponApplied = (couponId: string, discount: { type: 'percent' | 'amount'; value: number; name: string }) => {
+    setAppliedCoupon({
+      id: couponId,
+      name: discount.name,
+      discount: discount.value,
+      type: discount.type,
+    });
+  };
+
+  const handleCouponRemoved = () => {
+    setAppliedCoupon(null);
+  };
+
+  const calculateDiscountedPrice = (originalPrice: number): number => {
+    if (!appliedCoupon) return originalPrice;
+    if (appliedCoupon.type === 'percent') {
+      return Math.round(originalPrice * (1 - appliedCoupon.discount / 100));
+    }
+    return Math.max(0, originalPrice - appliedCoupon.discount);
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -110,7 +144,25 @@ const Pricing = () => {
     );
   }
 
-  const planEntries = Object.entries(STRIPE_PLANS) as [PlanType, typeof STRIPE_PLANS[PlanType]][];
+  const orderedPlans: PlanType[] = ['simulator', 'premium', 'contador'];
+
+  const getIcon = (key: PlanType) => {
+    switch (key) {
+      case 'simulator': return Calculator;
+      case 'premium': return Brain;
+      case 'contador': return Users;
+      default: return Brain;
+    }
+  };
+
+  const getGradient = (key: PlanType) => {
+    switch (key) {
+      case 'simulator': return 'from-blue-500 to-cyan-500';
+      case 'premium': return 'from-primary to-primary/70';
+      case 'contador': return 'from-accent to-orange-500';
+      default: return 'from-primary to-primary/70';
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -152,7 +204,7 @@ const Pricing = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Escolha seu plano
           </h1>
@@ -168,20 +220,44 @@ const Pricing = () => {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {planEntries.map(([key, plan]) => {
+        {/* Coupon Input */}
+        {!subscription.subscribed && (
+          <div className="max-w-md mx-auto mb-12">
+            <CouponInput 
+              onCouponApplied={handleCouponApplied}
+              onCouponRemoved={handleCouponRemoved}
+              appliedCoupon={appliedCoupon}
+            />
+          </div>
+        )}
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          {orderedPlans.map((key) => {
+            const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
-            const Icon = key === 'simulator' ? Calculator : Brain;
+            const isHighlight = 'highlight' in plan && plan.highlight;
+            const hasInstallments = 'installments' in plan && plan.installments;
+            const Icon = getIcon(key);
+            const originalPrice = plan.price;
+            const discountedPrice = calculateDiscountedPrice(originalPrice);
+            const hasDiscount = appliedCoupon && discountedPrice < originalPrice;
             
             return (
               <Card 
                 key={key}
-                className={`relative bg-card border transition-all hover:shadow-lg ${
-                  isPlanPopular ? 'ring-2 ring-primary scale-105' : 'border-border'
+                className={`relative bg-card border transition-all hover:shadow-xl hover:scale-[1.02] ${
+                  isHighlight ? 'ring-2 ring-accent scale-105 z-10' : 
+                  isPlanPopular ? 'ring-2 ring-primary' : 'border-border'
                 } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
               >
-                {isPlanPopular && !isCurrentPlan && (
+                {isHighlight && !isCurrentPlan && (
+                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground">
+                    <Star className="h-3 w-3 mr-1" />
+                    Mais Completo
+                  </Badge>
+                )}
+                {isPlanPopular && !isCurrentPlan && !isHighlight && (
                   <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Mais Popular
@@ -194,11 +270,7 @@ const Pricing = () => {
                   </Badge>
                 )}
                 <CardHeader className="text-center pt-8">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 ${
-                    key === 'simulator' 
-                      ? 'bg-gradient-to-br from-blue-500 to-cyan-500' 
-                      : 'bg-gradient-to-br from-primary to-primary/70'
-                  }`}>
+                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-br ${getGradient(key)}`}>
                     <Icon className="h-8 w-8 text-white" />
                   </div>
                   <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
@@ -210,8 +282,30 @@ const Pricing = () => {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div className="text-center">
-                    <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
-                    <span className="text-muted-foreground">/mês</span>
+                    {hasDiscount ? (
+                      <>
+                        <span className="text-lg text-muted-foreground line-through">
+                          {formatPrice(originalPrice)}
+                        </span>
+                        <span className="text-4xl font-bold text-success ml-2">
+                          {formatPrice(discountedPrice)}
+                        </span>
+                        <span className="text-muted-foreground">/mês</span>
+                        <Badge className="ml-2 bg-success/10 text-success border-success/20">
+                          -{appliedCoupon?.discount}%
+                        </Badge>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
+                        <span className="text-muted-foreground">/mês</span>
+                      </>
+                    )}
+                    {hasInstallments && (
+                      <p className="text-sm text-accent mt-1 font-medium">
+                        ou {plan.installments}x de {formatPrice(discountedPrice / plan.installments)}
+                      </p>
+                    )}
                   </div>
 
                   <ul className="space-y-3">
@@ -229,9 +323,11 @@ const Pricing = () => {
                     className={`w-full ${
                       isCurrentPlan 
                         ? 'bg-green-600 cursor-not-allowed' 
-                        : key === 'simulator' 
-                          ? 'bg-gradient-to-r from-blue-500 to-cyan-500' 
-                          : 'bg-primary hover:bg-primary/90'
+                        : isHighlight
+                          ? 'bg-gradient-to-r from-accent to-orange-500 hover:from-accent/90 hover:to-orange-600'
+                          : key === 'simulator' 
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600' 
+                            : 'bg-primary hover:bg-primary/90'
                     }`}
                   >
                     {isLoading === key ? (
@@ -255,6 +351,7 @@ const Pricing = () => {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
+          <p className="mt-2 text-accent font-medium">Plano Contador Premium Plus parcelável em até 10x sem juros!</p>
         </div>
       </main>
     </div>

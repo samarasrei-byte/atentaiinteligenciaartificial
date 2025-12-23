@@ -66,6 +66,7 @@ import { PFPJDecision } from '@/components/calculator/PFPJDecision';
 import { SimulationHistory } from '@/components/history/SimulationHistory';
 import { TaxAutopilot } from '@/components/autopilot/TaxAutopilot';
 import { TaxGlossary } from '@/components/glossary/TaxGlossary';
+import { SavingsMetricsDashboard } from '@/components/dashboard/SavingsMetricsDashboard';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -508,6 +509,16 @@ const Dashboard = () => {
               <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
             </div>
             <SimulationHistory />
+          </div>
+        );
+      case 'metrics':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Métricas de Economia</h2>
+              <p className="text-muted-foreground">Acompanhe sua economia tributária ao longo do tempo</p>
+            </div>
+            <SavingsMetricsDashboard />
           </div>
         );
       case 'autopilot':
