@@ -55,12 +55,12 @@ interface Company {
 
 import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
-import { EmbeddedLocacaoSimulator } from '@/components/simulator/EmbeddedLocacaoSimulator';
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 import { EconomyCalculator } from '@/components/calculator/EconomyCalculator';
 import { PFPJDecision } from '@/components/calculator/PFPJDecision';
 import { SimulationHistory } from '@/components/history/SimulationHistory';
 import { TaxAutopilot } from '@/components/autopilot/TaxAutopilot';
+import { TaxGlossary } from '@/components/glossary/TaxGlossary';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -457,8 +457,18 @@ const Dashboard = () => {
         return <EmbeddedChatContador />;
       case 'profile':
         return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
-      case 'locacao':
-        return <EmbeddedLocacaoSimulator />;
+      case 'glossary':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Glossário Tributário</h2>
+              <p className="text-muted-foreground">Entenda todos os impostos da Reforma Tributária de forma simples</p>
+            </div>
+            <div className="max-w-3xl">
+              <TaxGlossary variant="full" />
+            </div>
+          </div>
+        );
       case 'pf-pj-decision':
         return (
           <div className="space-y-6">
