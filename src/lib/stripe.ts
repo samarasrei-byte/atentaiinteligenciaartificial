@@ -71,8 +71,10 @@ export const STRIPE_PLANS = {
 
 export type PlanType = keyof typeof STRIPE_PLANS;
 
-// Daily question limit for non-premium users
-export const DAILY_QUESTION_LIMIT = 5;
+// Daily question limits by tier
+export const DAILY_QUESTION_LIMIT = 10; // Free/basic users
+export const PREMIUM_DAILY_LIMIT = 50; // Premium users
+export const CONTADOR_DAILY_LIMIT = Infinity; // Contador users (unlimited)
 
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat('pt-BR', {
