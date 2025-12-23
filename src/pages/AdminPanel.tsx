@@ -204,12 +204,12 @@ const AdminPanel = () => {
 
   const filteredUsers = users.filter((u) => u.email.toLowerCase().includes(searchTerm.toLowerCase()) || u.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()));
   const revenueChartData = [
-    { month: 'Jul', receita: stats.monthlyRevenue * 0.6 },
-    { month: 'Ago', receita: stats.monthlyRevenue * 0.7 },
-    { month: 'Set', receita: stats.monthlyRevenue * 0.8 },
-    { month: 'Out', receita: stats.monthlyRevenue * 0.85 },
-    { month: 'Nov', receita: stats.monthlyRevenue * 0.9 },
-    { month: 'Dez', receita: stats.monthlyRevenue },
+    { month: 'Jul', receita: stats.monthlyRevenue * 0.6, assinaturas: stats.totalSubscriptions * 50 },
+    { month: 'Ago', receita: stats.monthlyRevenue * 0.7, assinaturas: stats.totalSubscriptions * 60 },
+    { month: 'Set', receita: stats.monthlyRevenue * 0.8, assinaturas: stats.totalSubscriptions * 70 },
+    { month: 'Out', receita: stats.monthlyRevenue * 0.85, assinaturas: stats.totalSubscriptions * 80 },
+    { month: 'Nov', receita: stats.monthlyRevenue * 0.9, assinaturas: stats.totalSubscriptions * 90 },
+    { month: 'Dez', receita: stats.monthlyRevenue, assinaturas: stats.totalSubscriptions * 100 },
   ];
 
   if (authLoading || isLoading) {
