@@ -38,7 +38,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
 
           {/* Subtitle */}
           <p className="text-base sm:text-xl text-white/70 mb-8 sm:mb-12 max-w-xl mx-auto animate-slide-up leading-relaxed px-2" style={{ animationDelay: "0.1s" }}>
-            Simule impactos e tire dúvidas com IA sobre o novo sistema tributário brasileiro.
+            Simule impactos, tire dúvidas com IA e tenha acesso ao contador especializado sobre o novo sistema tributário brasileiro.
           </p>
 
           {/* CTA */}

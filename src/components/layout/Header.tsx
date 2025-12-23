@@ -55,9 +55,6 @@ export function Header({ onNavigate }: HeaderProps) {
                 Login
               </Link>
             </Button>
-            <Button variant="hero" size="sm" onClick={() => onNavigate("ai")}>
-              Começar Grátis
-            </Button>
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -98,16 +95,6 @@ export function Header({ onNavigate }: HeaderProps) {
                   <LogIn className="w-5 h-5" />
                   Login
                 </Link>
-              </Button>
-              <Button 
-                variant="hero" 
-                className="mt-2"
-                onClick={() => {
-                  onNavigate("ai");
-                  setIsMenuOpen(false);
-                }}
-              >
-                Começar Grátis
               </Button>
             </nav>
           </div>

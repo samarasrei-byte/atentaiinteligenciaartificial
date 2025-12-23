@@ -87,10 +87,10 @@ export function PricingSection() {
             Planos
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Escolha seu plano
+            Desbloqueie agora o potencial do AtentAI
           </h2>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Acesse ferramentas exclusivas para dominar a Reforma Tributária
+            Lei Complementar 214/2025 • Vigência 2026 — Todas as ferramentas para dominar a Reforma Tributária
           </p>
           
           {subscription.subscribed && subscription.plan && (
