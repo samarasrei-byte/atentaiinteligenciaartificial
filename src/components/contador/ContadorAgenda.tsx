@@ -146,10 +146,10 @@ export const ContadorAgenda: React.FC = () => {
 
   const getStatusConfig = (status: Appointment['status']) => {
     const configs = {
-      pending: { bg: 'bg-amber-500/20', text: 'text-amber-500', border: 'border-amber-500/50', label: 'Pendente', icon: Clock },
-      confirmed: { bg: 'bg-emerald-500/20', text: 'text-emerald-500', border: 'border-emerald-500/50', label: 'Confirmado', icon: CheckCircle },
-      completed: { bg: 'bg-blue-500/20', text: 'text-blue-500', border: 'border-blue-500/50', label: 'Concluído', icon: CheckCircle },
-      cancelled: { bg: 'bg-red-500/20', text: 'text-red-500', border: 'border-red-500/50', label: 'Cancelado', icon: X },
+      pending: { bg: 'bg-accent/20', text: 'text-accent', border: 'border-accent/50', label: 'Pendente', icon: Clock },
+      confirmed: { bg: 'bg-success/20', text: 'text-success', border: 'border-success/50', label: 'Confirmado', icon: CheckCircle },
+      completed: { bg: 'bg-info/20', text: 'text-info', border: 'border-info/50', label: 'Concluído', icon: CheckCircle },
+      cancelled: { bg: 'bg-destructive/20', text: 'text-destructive', border: 'border-destructive/50', label: 'Cancelado', icon: X },
     };
     return configs[status];
   };
@@ -290,7 +290,11 @@ export const ContadorAgenda: React.FC = () => {
           <div className="flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
             {appointment.status === 'pending' && (
               <>
-                <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => handleConfirm(appointment.id)}>
+                <Button
+                  size="sm"
+                  className="bg-success text-success-foreground hover:bg-success/90"
+                  onClick={() => handleConfirm(appointment.id)}
+                >
                   <CheckCircle className="h-4 w-4" />
                 </Button>
                 <Button size="sm" variant="destructive" onClick={() => handleCancel(appointment.id)}>
@@ -341,10 +345,10 @@ export const ContadorAgenda: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20">
+        <Card className="bg-gradient-to-br from-accent/10 to-accent/5 border-accent/20">
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-amber-500/20">
-              <Clock className="h-6 w-6 text-amber-500" />
+            <div className="p-3 rounded-xl bg-accent/20">
+              <Clock className="h-6 w-6 text-accent" />
             </div>
             <div>
               <p className="text-3xl font-bold text-foreground">{stats.pending}</p>
@@ -352,10 +356,10 @@ export const ContadorAgenda: React.FC = () => {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20">
+        <Card className="bg-gradient-to-br from-success/10 to-success/5 border-success/20">
           <CardContent className="p-4 flex items-center gap-4">
-            <div className="p-3 rounded-xl bg-emerald-500/20">
-              <CheckCircle className="h-6 w-6 text-emerald-500" />
+            <div className="p-3 rounded-xl bg-success/20">
+              <CheckCircle className="h-6 w-6 text-success" />
             </div>
             <div>
               <p className="text-3xl font-bold text-foreground">{stats.confirmed}</p>
@@ -478,6 +482,13 @@ export const ContadorAgenda: React.FC = () => {
                   <LayoutGrid className="h-4 w-4" />
                 </Button>
                 <Button
+                  variant={viewMode === 'week' ? 'default' : 'ghost'}
+                  size="sm"
+                  onClick={() => setViewMode('week')}
+                >
+                  <CalendarIcon className="h-4 w-4" />
+                </Button>
+                <Button
                   variant={viewMode === 'list' ? 'default' : 'ghost'}
                   size="sm"
                   onClick={() => setViewMode('list')}
@@ -503,25 +514,30 @@ export const ContadorAgenda: React.FC = () => {
                     </div>
                   ) : (
                     <>
-                      {/* Timeline View */}
                       <div className="relative">
                         {selectedDateAppointments.map((appointment, index) => (
                           <div key={appointment.id} className="relative pl-8 pb-4">
-                            {/* Timeline Line */}
                             {index < selectedDateAppointments.length - 1 && (
                               <div className="absolute left-[11px] top-8 bottom-0 w-0.5 bg-border" />
                             )}
-                            {/* Timeline Dot */}
-                            <div className={cn(
-                              "absolute left-0 top-2 w-6 h-6 rounded-full flex items-center justify-center",
-                              getStatusConfig(appointment.status).bg
-                            )}>
-                              <div className={cn(
-                                "w-3 h-3 rounded-full",
-                                appointment.status === 'confirmed' ? 'bg-emerald-500' :
-                                appointment.status === 'pending' ? 'bg-amber-500' :
-                                appointment.status === 'completed' ? 'bg-blue-500' : 'bg-red-500'
-                              )} />
+                            <div
+                              className={cn(
+                                "absolute left-0 top-2 w-6 h-6 rounded-full flex items-center justify-center",
+                                getStatusConfig(appointment.status).bg
+                              )}
+                            >
+                              <div
+                                className={cn(
+                                  "w-3 h-3 rounded-full",
+                                  appointment.status === 'confirmed'
+                                    ? 'bg-success'
+                                    : appointment.status === 'pending'
+                                      ? 'bg-accent'
+                                      : appointment.status === 'completed'
+                                        ? 'bg-info'
+                                        : 'bg-destructive'
+                                )}
+                              />
                             </div>
                             <AppointmentCard appointment={appointment} />
                           </div>
@@ -529,6 +545,59 @@ export const ContadorAgenda: React.FC = () => {
                       </div>
                     </>
                   )}
+                </div>
+              ) : viewMode === 'week' ? (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 gap-3">
+                    {weekDays.map((day) => {
+                      const dayAppts = getAppointmentsForDay(day).sort((a, b) => a.time.localeCompare(b.time));
+                      return (
+                        <div
+                          key={day.toISOString()}
+                          className={cn(
+                            'rounded-xl border border-border p-3 bg-muted/10 hover:bg-muted/20 transition-colors',
+                            isToday(day) && 'ring-2 ring-primary/40',
+                            isSameDay(day, selectedDate) && 'border-primary/40'
+                          )}
+                        >
+                          <button
+                            className="w-full text-left"
+                            onClick={() => {
+                              setSelectedDate(day);
+                              setViewMode('day');
+                            }}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div>
+                                <p className="text-xs text-muted-foreground uppercase">
+                                  {format(day, 'EEE', { locale: ptBR })}
+                                </p>
+                                <p className="text-lg font-bold text-foreground">{format(day, 'dd')}</p>
+                              </div>
+                              {dayAppts.length > 0 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  {dayAppts.length}
+                                </Badge>
+                              )}
+                            </div>
+                          </button>
+
+                          <div className="mt-3 space-y-2">
+                            {dayAppts.length === 0 ? (
+                              <p className="text-xs text-muted-foreground">Sem consultas</p>
+                            ) : (
+                              dayAppts.slice(0, 4).map((appointment) => (
+                                <AppointmentCard key={appointment.id} appointment={appointment} compact />
+                              ))
+                            )}
+                            {dayAppts.length > 4 && (
+                              <p className="text-xs text-muted-foreground">+{dayAppts.length - 4} mais</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -563,11 +632,13 @@ export const ContadorAgenda: React.FC = () => {
                           </div>
                           <p className="text-sm text-muted-foreground">{appointment.time} • {appointment.duration}min</p>
                         </div>
-                        <Badge className={cn(
-                          getStatusConfig(appointment.status).bg,
-                          getStatusConfig(appointment.status).text,
-                          "border-0"
-                        )}>
+                        <Badge
+                          className={cn(
+                            getStatusConfig(appointment.status).bg,
+                            getStatusConfig(appointment.status).text,
+                            "border-0"
+                          )}
+                        >
                           {getStatusConfig(appointment.status).label}
                         </Badge>
                       </div>

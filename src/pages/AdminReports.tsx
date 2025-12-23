@@ -13,7 +13,8 @@ import {
   exportAdminReportToPdf, 
   AdminReportData 
 } from '@/lib/exportAdminReports';
-import { 
+import { STRIPE_PLANS } from '@/lib/stripe';
+import {
   FileDown, 
   FileSpreadsheet, 
   FileText, 
@@ -458,7 +459,7 @@ const AdminReports = () => {
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.simulatorPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.simulatorPlanCount * 5600)}/mês
+                      {formatCurrency(reportData.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price)}/mês
                     </p>
                   </CardContent>
                 </Card>
@@ -468,7 +469,7 @@ const AdminReports = () => {
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.premiumPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.premiumPlanCount * 9800)}/mês
+                      {formatCurrency(reportData.stats.premiumPlanCount * STRIPE_PLANS.premium.price)}/mês
                     </p>
                   </CardContent>
                 </Card>
@@ -478,7 +479,7 @@ const AdminReports = () => {
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.contadorPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.contadorPlanCount * 19899)}/mês
+                      {formatCurrency(reportData.stats.contadorPlanCount * STRIPE_PLANS.contador.price)}/mês
                     </p>
                   </CardContent>
                 </Card>
