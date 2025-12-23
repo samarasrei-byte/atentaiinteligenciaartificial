@@ -38,6 +38,44 @@ export type Database = {
         }
         Relationships: []
       }
+      chat_messages: {
+        Row: {
+          consultation_id: string
+          content: string
+          created_at: string
+          id: string
+          read_at: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Insert: {
+          consultation_id: string
+          content: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          receiver_id: string
+          sender_id: string
+        }
+        Update: {
+          consultation_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          receiver_id?: string
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chat_messages_consultation_id_fkey"
+            columns: ["consultation_id"]
+            isOneToOne: false
+            referencedRelation: "consultations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       companies: {
         Row: {
           annual_revenue_cents: number

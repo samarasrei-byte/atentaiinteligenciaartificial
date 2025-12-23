@@ -126,6 +126,11 @@ const Pricing = () => {
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
+            <img 
+              src="/logo-atentai.png" 
+              alt="AtentAI" 
+              className="h-10 w-auto"
+            />
           </div>
           
           {subscription.subscribed && (

@@ -216,11 +216,13 @@ const AIChat = () => {
               Voltar
             </Button>
             <div className="flex items-center gap-2">
-              <Brain className="h-6 w-6 text-teal-400" />
-              <span className="text-xl font-bold text-white">AtentAI</span>
+              <img 
+                src="/logo-atentai.png" 
+                alt="AtentAI" 
+                className="h-10 w-auto"
+              />
             </div>
           </div>
-
           {/* Usage Badge */}
           <div className="flex items-center gap-3">
             {isPremium ? (

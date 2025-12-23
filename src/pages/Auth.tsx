@@ -198,11 +198,12 @@ const Auth = () => {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 p-4">
       <Card className="w-full max-w-md bg-slate-800/50 border-slate-700 backdrop-blur-sm">
         <CardHeader className="text-center">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Brain className="h-10 w-10 text-teal-400" />
-            <span className="text-3xl font-bold bg-gradient-to-r from-teal-400 to-cyan-300 bg-clip-text text-transparent">
-              AtentAI
-            </span>
+          <div className="flex items-center justify-center mb-4">
+            <img 
+              src="/logo-atentai.png" 
+              alt="AtentAI" 
+              className="h-16 w-auto"
+            />
           </div>
           {fromOnboarding && pendingOnboardingData ? (
             <>
