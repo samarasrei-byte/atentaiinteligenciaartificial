@@ -3,7 +3,6 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  Calculator,
   Users,
   MessageSquare,
   Settings,
@@ -18,7 +17,6 @@ import {
   TrendingUp,
   Calendar,
   DollarSign,
-  ClipboardList,
   BarChart3,
   Headphones,
   UserCheck,
@@ -27,6 +25,7 @@ import {
   Star,
   Bot,
   MessagesSquare,
+  User,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -58,7 +57,7 @@ const userItems: SidebarItem[] = [
   { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'Pro' },
   { icon: MessagesSquare, label: 'Chat Contador', tabId: 'chat-contador' },
   { icon: Home, label: 'Locação', tabId: 'locacao' },
-  { icon: Settings, label: 'Perfil', tabId: 'profile' },
+  { icon: User, label: 'Perfil', tabId: 'profile' },
   { icon: Scale, label: 'Comparador', tabId: 'comparator' },
   { icon: Users, label: 'Contadores', tabId: 'contadores' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
