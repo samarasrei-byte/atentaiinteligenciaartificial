@@ -144,13 +144,14 @@ const Pricing = () => {
     );
   }
 
-  const orderedPlans: PlanType[] = ['simulator', 'premium', 'contador'];
+  const orderedPlans: PlanType[] = ['simulator', 'autonomo', 'premium', 'contador'];
 
   const getIcon = (key: PlanType) => {
     switch (key) {
       case 'simulator': return Calculator;
+      case 'autonomo': return Users;
       case 'premium': return Brain;
-      case 'contador': return Users;
+      case 'contador': return Star;
       default: return Brain;
     }
   };
@@ -158,6 +159,7 @@ const Pricing = () => {
   const getGradient = (key: PlanType) => {
     switch (key) {
       case 'simulator': return 'from-blue-500 to-cyan-500';
+      case 'autonomo': return 'from-teal-500 to-emerald-500';
       case 'premium': return 'from-primary to-primary/70';
       case 'contador': return 'from-accent to-orange-500';
       default: return 'from-primary to-primary/70';
@@ -241,7 +243,7 @@ const Pricing = () => {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {orderedPlans.map((key) => {
             const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
