@@ -135,13 +135,15 @@ const AutonomoSidebar: React.FC<{
   return (
     <Sidebar className="border-r border-border">
       <SidebarHeader className="p-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5">
-            <User className="h-6 w-6 text-primary" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-foreground truncate">
-              {profile?.profession || 'Autônomo'}
+        <div className="flex flex-col items-center gap-3">
+          <img 
+            src="/logo-atentai.png" 
+            alt="AtentAI" 
+            className="h-10 w-auto"
+          />
+          <div className="text-center">
+            <h2 className="font-bold text-white truncate">
+              Autônomo
             </h2>
             <p className="text-xs text-muted-foreground truncate">
               Painel Master
