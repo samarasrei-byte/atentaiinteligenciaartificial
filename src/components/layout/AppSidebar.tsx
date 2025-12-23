@@ -29,6 +29,7 @@ import {
   History,
   Zap,
   BookOpen,
+  Scale,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -83,6 +84,7 @@ const adminItems: SidebarItem[] = [
 const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: MessagesSquare, label: 'Chat', tabId: 'chat' },
+  { icon: Scale, label: 'Atualizações', tabId: 'updates', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: BarChart3, label: 'Stats', tabId: 'stats' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
