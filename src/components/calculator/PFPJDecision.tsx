@@ -35,6 +35,7 @@ import {
   Utensils,
   Car,
   Home,
+  Edit,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -122,6 +123,27 @@ interface DecisionResult {
   activityType: string;
 }
 
+interface CompanyData {
+  company_name: string;
+  sector: string;
+  monthly_revenue_cents: number;
+}
+
+// Mapeia setores do onboarding para tipos de atividade do componente
+const SECTOR_TO_ACTIVITY: Record<string, string> = {
+  comercio: 'comercio',
+  servicos: 'servicos',
+  industria: 'comercio',
+  agronegocio: 'comercio',
+  tecnologia: 'tecnologia',
+  saude: 'saude',
+  educacao: 'educacao',
+  construcao: 'construcao',
+  transporte: 'transporte',
+  alimentacao: 'alimentacao',
+  outro: 'servicos',
+};
+
 export const PFPJDecision = () => {
   const { user } = useAuth();
   const [monthlyRevenue, setMonthlyRevenue] = useState('');
@@ -130,7 +152,61 @@ export const PFPJDecision = () => {
   const [isCalculating, setIsCalculating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [result, setResult] = useState<DecisionResult | null>(null);
+  const [companyData, setCompanyData] = useState<CompanyData | null>(null);
+  const [dataSource, setDataSource] = useState<'company' | 'manual' | null>(null);
+  const [isLoadingCompany, setIsLoadingCompany] = useState(true);
   const { toast } = useToast();
+
+  // Carrega dados da empresa do onboarding
+  React.useEffect(() => {
+    const fetchCompanyData = async () => {
+      if (!user) {
+        setIsLoadingCompany(false);
+        return;
+      }
+      
+      try {
+        const { data, error } = await supabase
+          .from('companies')
+          .select('company_name, sector, monthly_revenue_cents')
+          .eq('user_id', user.id)
+          .single();
+        
+        if (data && !error) {
+          setCompanyData(data);
+        }
+      } catch (error) {
+        console.error('Error fetching company:', error);
+      } finally {
+        setIsLoadingCompany(false);
+      }
+    };
+    
+    fetchCompanyData();
+  }, [user]);
+
+  // Aplica dados da empresa quando selecionado
+  const useCompanyData = () => {
+    if (!companyData) return;
+    
+    const revenueValue = companyData.monthly_revenue_cents / 100;
+    setMonthlyRevenue(revenueValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }));
+    setActivityType(SECTOR_TO_ACTIVITY[companyData.sector] || 'servicos');
+    setDataSource('company');
+    
+    toast({
+      title: 'Dados carregados!',
+      description: `Usando dados de ${companyData.company_name}`,
+    });
+  };
+
+  // Limpa para usar dados manuais
+  const useManualData = () => {
+    setMonthlyRevenue('');
+    setMonthlyExpenses('');
+    setActivityType('');
+    setDataSource('manual');
+  };
 
   const parseCurrency = (value: string): number => {
     const cleaned = value.replace(/[^\d,]/g, '').replace(',', '.');
@@ -394,81 +470,171 @@ export const PFPJDecision = () => {
       <CardContent className="p-6 space-y-6">
         {!result ? (
           <>
-            {/* Form Inputs */}
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="revenue" className="text-sm font-medium">
-                  Faturamento Mensal
-                </Label>
-                <Input
-                  id="revenue"
-                  value={monthlyRevenue}
-                  onChange={handleRevenueChange}
-                  placeholder="R$ 0,00"
-                  className="bg-background"
-                />
+            {/* Seleção de fonte de dados - só mostra se tem dados da empresa */}
+            {isLoadingCompany ? (
+              <div className="flex items-center justify-center p-4">
+                <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="activity" className="text-sm font-medium">
-                  Tipo de Atividade
-                </Label>
-                <Select value={activityType} onValueChange={setActivityType}>
-                  <SelectTrigger className="bg-background">
-                    <SelectValue placeholder="Selecione sua atividade" />
-                  </SelectTrigger>
-                  <SelectContent className="max-h-[300px]">
-                    {ACTIVITY_TYPES.map((activity) => {
-                      const IconComponent = activity.icon;
-                      return (
-                        <SelectItem key={activity.value} value={activity.value}>
-                          <div className="flex items-center gap-2">
-                            <IconComponent className="h-4 w-4 text-muted-foreground" />
-                            <span>{activity.label}</span>
-                          </div>
-                        </SelectItem>
-                      );
-                    })}
-                  </SelectContent>
-                </Select>
+            ) : companyData && dataSource === null ? (
+              <div className="space-y-4">
+                <div className="text-center">
+                  <h3 className="font-semibold text-foreground mb-2">Como você quer simular?</h3>
+                  <p className="text-sm text-muted-foreground">Escolha usar os dados da sua empresa ou informar novos valores</p>
+                </div>
+                
+                <div className="grid gap-3">
+                  {/* Opção: Usar dados da empresa */}
+                  <button
+                    onClick={useCompanyData}
+                    className="p-4 rounded-xl border-2 border-primary/30 bg-gradient-to-r from-primary/5 to-primary/10 hover:border-primary/50 transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-lg bg-primary/20 group-hover:bg-primary/30 transition-colors">
+                        <Building2 className="h-6 w-6 text-primary" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-foreground">Usar meus dados</span>
+                          <Badge className="bg-primary/20 text-primary border-0 text-xs">Recomendado</Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Dados de <span className="font-medium text-foreground">{companyData.company_name}</span>
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          Faturamento: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(companyData.monthly_revenue_cents / 100)}/mês
+                        </p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                    </div>
+                  </button>
+                  
+                  {/* Opção: Informar outros dados */}
+                  <button
+                    onClick={useManualData}
+                    className="p-4 rounded-xl border-2 border-border hover:border-muted-foreground/50 transition-all text-left group"
+                  >
+                    <div className="flex items-center gap-4">
+                      <div className="p-3 rounded-lg bg-muted group-hover:bg-muted/80 transition-colors">
+                        <Edit className="h-6 w-6 text-muted-foreground" />
+                      </div>
+                      <div className="flex-1">
+                        <span className="font-semibold text-foreground">Usar outros dados</span>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          Informar valores diferentes para esta simulação
+                        </p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+                    </div>
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                {/* Mostrar fonte de dados selecionada */}
+                {dataSource && companyData && (
+                  <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50 border border-border">
+                    <div className="flex items-center gap-2 text-sm">
+                      {dataSource === 'company' ? (
+                        <>
+                          <Building2 className="h-4 w-4 text-primary" />
+                          <span className="text-muted-foreground">Usando dados de</span>
+                          <span className="font-medium text-foreground">{companyData.company_name}</span>
+                        </>
+                      ) : (
+                        <>
+                          <Edit className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-muted-foreground">Informando dados manualmente</span>
+                        </>
+                      )}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setDataSource(null)}
+                      className="text-xs h-7"
+                    >
+                      Alterar
+                    </Button>
+                  </div>
+                )}
 
-              <div className="space-y-2">
-                <Label htmlFor="expenses" className="text-sm font-medium">
-                  Despesas Mensais Médias
-                </Label>
-                <Input
-                  id="expenses"
-                  value={monthlyExpenses}
-                  onChange={handleExpensesChange}
-                  placeholder="R$ 0,00"
-                  className="bg-background"
-                />
-                <p className="text-xs text-muted-foreground">
-                  Inclua manutenção, condomínio, IPTU e outras despesas dedutíveis
-                </p>
-              </div>
-            </div>
+                {/* Form Inputs */}
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="revenue" className="text-sm font-medium">
+                      Faturamento Mensal
+                    </Label>
+                    <Input
+                      id="revenue"
+                      value={monthlyRevenue}
+                      onChange={handleRevenueChange}
+                      placeholder="R$ 0,00"
+                      className="bg-background"
+                    />
+                  </div>
 
-            {/* Calculate Button */}
-            <Button
-              onClick={calculateDecision}
-              disabled={isCalculating}
-              className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white shadow-lg"
-              size="lg"
-            >
-              {isCalculating ? (
-                <>
-                  <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                  Analisando cenários...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-5 w-5 mr-2" />
-                  Descobrir estrutura ideal
-                </>
-              )}
-            </Button>
+                  <div className="space-y-2">
+                    <Label htmlFor="activity" className="text-sm font-medium">
+                      Tipo de Atividade
+                    </Label>
+                    <Select value={activityType} onValueChange={setActivityType}>
+                      <SelectTrigger className="bg-background">
+                        <SelectValue placeholder="Selecione sua atividade" />
+                      </SelectTrigger>
+                      <SelectContent className="max-h-[300px]">
+                        {ACTIVITY_TYPES.map((activity) => {
+                          const IconComponent = activity.icon;
+                          return (
+                            <SelectItem key={activity.value} value={activity.value}>
+                              <div className="flex items-center gap-2">
+                                <IconComponent className="h-4 w-4 text-muted-foreground" />
+                                <span>{activity.label}</span>
+                              </div>
+                            </SelectItem>
+                          );
+                        })}
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label htmlFor="expenses" className="text-sm font-medium">
+                      Despesas Mensais Médias
+                    </Label>
+                    <Input
+                      id="expenses"
+                      value={monthlyExpenses}
+                      onChange={handleExpensesChange}
+                      placeholder="R$ 0,00"
+                      className="bg-background"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Inclua manutenção, condomínio, IPTU e outras despesas dedutíveis
+                    </p>
+                  </div>
+                </div>
+
+                {/* Calculate Button */}
+                <Button
+                  onClick={calculateDecision}
+                  disabled={isCalculating}
+                  className="w-full bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 text-white shadow-lg"
+                  size="lg"
+                >
+                  {isCalculating ? (
+                    <>
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                      Analisando cenários...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-5 w-5 mr-2" />
+                      Descobrir estrutura ideal
+                    </>
+                  )}
+                </Button>
+              </>
+            )}
           </>
         ) : (
           <>
