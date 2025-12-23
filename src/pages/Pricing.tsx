@@ -206,10 +206,10 @@ const Pricing = () => {
       <main className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
           <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Escolha seu plano
+            Desbloqueie agora o potencial do AtentAI
           </h1>
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Acesse ferramentas exclusivas para dominar a Reforma Tributária
+            Lei Complementar 214/2025 • Vigência 2026 — Todas as ferramentas para dominar a Reforma Tributária
           </p>
           
           {subscription.subscribed && subscription.plan && (
@@ -218,6 +218,16 @@ const Pricing = () => {
               <span>Você está no plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
             </div>
           )}
+          
+          <div className="mt-6">
+            <Button
+              variant="link"
+              onClick={() => navigate('/plano/comparar')}
+              className="text-primary hover:text-primary/80"
+            >
+              Comparar todos os planos em detalhes →
+            </Button>
+          </div>
         </div>
 
         {/* Coupon Input */}
