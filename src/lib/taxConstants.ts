@@ -1,0 +1,193 @@
+/**
+ * Constantes Tributárias Centralizadas
+ * EC 132/2023 e LC 214/2025 - Reforma Tributária Brasileira
+ * 
+ * Este arquivo centraliza todas as alíquotas e parâmetros tributários
+ * para evitar hardcoding e manter consistência em todo o sistema.
+ */
+
+// =============================================================================
+// ALÍQUOTAS DO NOVO SISTEMA TRIBUTÁRIO (Reforma EC 132/2023)
+// =============================================================================
+
+/** Alíquota do IBS - Imposto sobre Bens e Serviços (estadual/municipal) */
+export const IBS_RATE = 17.7;
+
+/** Alíquota da CBS - Contribuição sobre Bens e Serviços (federal) */
+export const CBS_RATE = 8.8;
+
+/** Alíquota base combinada (IBS + CBS) */
+export const BASE_TAX_RATE = 26.5;
+
+/** Alíquota CBS para cálculo de créditos tributários */
+export const CBS_CREDIT_RATE = 12;
+
+// =============================================================================
+// PARÂMETROS DO LUCRO PRESUMIDO
+// =============================================================================
+
+/** Base de presunção para serviços */
+export const PRESUMED_BASE_SERVICES = 32;
+
+/** Base de presunção para comércio e indústria */
+export const PRESUMED_BASE_COMMERCE = 8;
+
+/** Alíquota combinada IRPJ + CSLL sobre base presumida */
+export const IRPJ_CSLL_PRESUMED_RATE = 11.33;
+
+// =============================================================================
+// ALÍQUOTAS DO SISTEMA ATUAL (PRÉ-REFORMA)
+// =============================================================================
+
+/** Alíquota do PIS não cumulativo */
+export const PIS_NON_CUMULATIVE_RATE = 1.65;
+
+/** Alíquota do PIS cumulativo */
+export const PIS_CUMULATIVE_RATE = 0.65;
+
+/** Alíquota do COFINS não cumulativo */
+export const COFINS_NON_CUMULATIVE_RATE = 7.6;
+
+/** Alíquota do COFINS cumulativo */
+export const COFINS_CUMULATIVE_RATE = 3;
+
+/** Alíquota do IRPJ */
+export const IRPJ_RATE = 15;
+
+/** Adicional do IRPJ (lucro acima de R$ 20.000/mês) */
+export const IRPJ_ADDITIONAL_RATE = 10;
+
+/** Limite mensal para adicional do IRPJ */
+export const IRPJ_ADDITIONAL_LIMIT = 20000;
+
+/** Alíquota da CSLL */
+export const CSLL_RATE = 9;
+
+// =============================================================================
+// LIMITES DE ENQUADRAMENTO
+// =============================================================================
+
+/** Limite anual do Simples Nacional */
+export const SIMPLES_ANNUAL_LIMIT = 4800000;
+
+/** Limite anual do Lucro Presumido */
+export const LUCRO_PRESUMIDO_ANNUAL_LIMIT = 78000000;
+
+/** Limite anual do MEI */
+export const MEI_ANNUAL_LIMIT = 81000;
+
+// =============================================================================
+// FAIXAS DO SIMPLES NACIONAL (Anexo III - Serviços)
+// =============================================================================
+
+export const SIMPLES_BRACKETS = [
+  { limit: 180000, rate: 6.0, deduction: 0 },
+  { limit: 360000, rate: 11.2, deduction: 9360 },
+  { limit: 720000, rate: 13.5, deduction: 17640 },
+  { limit: 1800000, rate: 16.0, deduction: 35640 },
+  { limit: 3600000, rate: 21.0, deduction: 125640 },
+  { limit: 4800000, rate: 33.0, deduction: 648000 },
+];
+
+// =============================================================================
+// FATORES DE CRÉDITO POR REGIME TRIBUTÁRIO
+// =============================================================================
+
+export const CREDIT_FACTORS = {
+  mei: 0.1,
+  simples: 0.2,
+  lucro_presumido: 0.4,
+  lucro_real: 0.5,
+  lucro_arbitrado: 0.3,
+} as const;
+
+// =============================================================================
+// MULTIPLICADORES POR TIPO DE EMPRESA
+// =============================================================================
+
+export const COMPANY_TYPE_MULTIPLIERS = {
+  mei: 0.3,
+  simples: 0.6,
+  lucro_presumido: 1.0,
+  lucro_real: 1.2,
+  lucro_arbitrado: 1.5,
+} as const;
+
+// =============================================================================
+// FUNÇÕES UTILITÁRIAS DE CÁLCULO
+// =============================================================================
+
+/**
+ * Calcula imposto para Pessoa Física (alíquota flat)
+ */
+export function calculatePFTax(revenue: number): number {
+  return revenue * (BASE_TAX_RATE / 100);
+}
+
+/**
+ * Calcula imposto para Pessoa Jurídica (Lucro Presumido com créditos)
+ */
+export function calculatePJTax(revenue: number, expenses: number): number {
+  const presumedBase = revenue * (PRESUMED_BASE_SERVICES / 100);
+  const irpjCsll = presumedBase * (IRPJ_CSLL_PRESUMED_RATE / 100);
+  const cbs = revenue * (CBS_CREDIT_RATE / 100);
+  const cbsCredit = expenses * (CBS_CREDIT_RATE / 100);
+  return Math.max(0, irpjCsll + cbs - cbsCredit);
+}
+
+/**
+ * Calcula a alíquota efetiva do Simples Nacional
+ */
+export function calculateSimplesRate(annualRevenue: number): number {
+  for (const bracket of SIMPLES_BRACKETS) {
+    if (annualRevenue <= bracket.limit) {
+      const effectiveRate = ((annualRevenue * bracket.rate / 100) - bracket.deduction) / annualRevenue * 100;
+      return Math.max(effectiveRate, 0);
+    }
+  }
+  return 19; // Máximo
+}
+
+/**
+ * Calcula alíquota do novo sistema com créditos
+ */
+export function calculateNewSystemRate(creditFactor: number): number {
+  return (IBS_RATE + CBS_RATE) * (1 - creditFactor);
+}
+
+/**
+ * Formata valor para moeda brasileira
+ */
+export function formatCurrency(value: number): string {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  }).format(value);
+}
+
+/**
+ * Formata input de moeda
+ */
+export function formatCurrencyInput(value: string): string {
+  const numbers = value.replace(/\D/g, '');
+  const cents = parseInt(numbers || '0', 10);
+  return formatCurrency(cents / 100);
+}
+
+/**
+ * Converte string formatada para número
+ */
+export function parseCurrencyInput(value: string): number {
+  const numbers = value.replace(/\D/g, '');
+  return parseInt(numbers || '0', 10) / 100;
+}
+
+// =============================================================================
+// MENSAGENS LEGAIS
+// =============================================================================
+
+export const LEGAL_DISCLAIMER = 
+  'Valores estimados com base na EC 132/2023 e LC 214/2025. Resultados sujeitos à regulamentação final. Não substitui consultoria contábil profissional.';
+
+export const AUTOPILOT_DISCLAIMER = 
+  'Recomendações automáticas baseadas em simulações estimadas da EC 132/2023. Não substitui contador.';
