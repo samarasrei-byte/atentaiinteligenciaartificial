@@ -5,6 +5,10 @@ import { Badge } from '@/components/ui/badge';
 import { Calendar } from '@/components/ui/calendar';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { 
   Calendar as CalendarIcon, 
   Clock, 
@@ -22,9 +26,10 @@ import {
   LayoutGrid,
   List,
   Zap,
-  RefreshCw
+  RefreshCw,
+  Loader2
 } from 'lucide-react';
-import { format, addDays, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, isToday } from 'date-fns';
+import { format, addDays, isSameDay, startOfWeek, endOfWeek, eachDayOfInterval, isToday, setHours, setMinutes } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
@@ -46,6 +51,12 @@ interface Appointment {
   userId: string;
 }
 
+interface Client {
+  user_id: string;
+  full_name: string;
+  email: string;
+}
+
 export const ContadorAgenda: React.FC = () => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -55,6 +66,91 @@ export const ContadorAgenda: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [isLoading, setIsLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  
+  // Modal state
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [isLoadingClients, setIsLoadingClients] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
+  const [newConsultation, setNewConsultation] = useState({
+    clientId: '',
+    date: new Date(),
+    time: '09:00',
+    meetingType: 'video' as 'video' | 'presencial' | 'phone',
+    notes: '',
+  });
+
+  const timeSlots = useMemo(() => {
+    const slots = [];
+    for (let hour = 8; hour <= 20; hour++) {
+      slots.push(`${hour.toString().padStart(2, '0')}:00`);
+      if (hour < 20) {
+        slots.push(`${hour.toString().padStart(2, '0')}:30`);
+      }
+    }
+    return slots;
+  }, []);
+
+  const fetchClients = async () => {
+    setIsLoadingClients(true);
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, email')
+        .not('user_id', 'eq', user?.id);
+
+      if (error) throw error;
+      setClients(data || []);
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+    } finally {
+      setIsLoadingClients(false);
+    }
+  };
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    fetchClients();
+    setNewConsultation({
+      clientId: '',
+      date: selectedDate,
+      time: '09:00',
+      meetingType: 'video',
+      notes: '',
+    });
+  };
+
+  const handleCreateConsultation = async () => {
+    if (!newConsultation.clientId || !user) {
+      toast({ variant: 'destructive', title: 'Selecione um cliente' });
+      return;
+    }
+
+    setIsCreating(true);
+    try {
+      const [hours, minutes] = newConsultation.time.split(':').map(Number);
+      const scheduledAt = setMinutes(setHours(newConsultation.date, hours), minutes);
+
+      const { error } = await supabase.from('consultations').insert({
+        user_id: newConsultation.clientId,
+        contador_id: user.id,
+        scheduled_at: scheduledAt.toISOString(),
+        status: 'scheduled',
+        notes: newConsultation.notes || null,
+      });
+
+      if (error) throw error;
+
+      toast({ title: 'Consulta agendada com sucesso!' });
+      setIsModalOpen(false);
+      fetchConsultations();
+    } catch (error) {
+      console.error('Error creating consultation:', error);
+      toast({ variant: 'destructive', title: 'Erro ao agendar consulta' });
+    } finally {
+      setIsCreating(false);
+    }
+  };
 
   const fetchConsultations = async () => {
     if (!user) return;
@@ -385,12 +481,160 @@ export const ContadorAgenda: React.FC = () => {
           >
             <RefreshCw className={cn("h-4 w-4", isRefreshing && "animate-spin")} />
           </Button>
-          <Button className="bg-primary hover:bg-primary/90 gap-2">
+          <Button className="bg-primary hover:bg-primary/90 gap-2" onClick={handleOpenModal}>
             <Plus className="h-4 w-4" />
             Nova Consulta
           </Button>
         </div>
       </div>
+
+      {/* Modal Nova Consulta */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="h-5 w-5 text-primary" />
+              Nova Consulta
+            </DialogTitle>
+            <DialogDescription>
+              Agende uma nova consulta selecionando o cliente, data e horário.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            {/* Cliente */}
+            <div className="space-y-2">
+              <Label htmlFor="client">Cliente</Label>
+              <Select
+                value={newConsultation.clientId}
+                onValueChange={(value) => setNewConsultation(prev => ({ ...prev, clientId: value }))}
+              >
+                <SelectTrigger id="client" className="w-full">
+                  <SelectValue placeholder={isLoadingClients ? "Carregando..." : "Selecione um cliente"} />
+                </SelectTrigger>
+                <SelectContent>
+                  {clients.map((client) => (
+                    <SelectItem key={client.user_id} value={client.user_id}>
+                      <div className="flex items-center gap-2">
+                        <User className="h-4 w-4 text-muted-foreground" />
+                        <span>{client.full_name || client.email}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Data */}
+            <div className="space-y-2">
+              <Label>Data</Label>
+              <div className="border rounded-lg p-3">
+                <Calendar
+                  mode="single"
+                  selected={newConsultation.date}
+                  onSelect={(date) => date && setNewConsultation(prev => ({ ...prev, date }))}
+                  locale={ptBR}
+                  className="rounded-lg pointer-events-auto mx-auto"
+                  disabled={(date) => date < new Date(new Date().setHours(0, 0, 0, 0))}
+                />
+              </div>
+            </div>
+
+            {/* Horário */}
+            <div className="space-y-2">
+              <Label htmlFor="time">Horário</Label>
+              <Select
+                value={newConsultation.time}
+                onValueChange={(value) => setNewConsultation(prev => ({ ...prev, time: value }))}
+              >
+                <SelectTrigger id="time" className="w-full">
+                  <SelectValue placeholder="Selecione um horário" />
+                </SelectTrigger>
+                <SelectContent>
+                  {timeSlots.map((slot) => (
+                    <SelectItem key={slot} value={slot}>
+                      <div className="flex items-center gap-2">
+                        <Clock className="h-4 w-4 text-muted-foreground" />
+                        <span>{slot}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Tipo de Reunião */}
+            <div className="space-y-2">
+              <Label htmlFor="meetingType">Tipo de Reunião</Label>
+              <Select
+                value={newConsultation.meetingType}
+                onValueChange={(value: 'video' | 'presencial' | 'phone') => 
+                  setNewConsultation(prev => ({ ...prev, meetingType: value }))
+                }
+              >
+                <SelectTrigger id="meetingType" className="w-full">
+                  <SelectValue placeholder="Selecione o tipo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="video">
+                    <div className="flex items-center gap-2">
+                      <Video className="h-4 w-4 text-info" />
+                      <span>Videochamada</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="presencial">
+                    <div className="flex items-center gap-2">
+                      <MapPin className="h-4 w-4 text-success" />
+                      <span>Presencial</span>
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="phone">
+                    <div className="flex items-center gap-2">
+                      <Phone className="h-4 w-4 text-accent" />
+                      <span>Telefone</span>
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Notas */}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notas (opcional)</Label>
+              <Textarea
+                id="notes"
+                placeholder="Adicione observações sobre a consulta..."
+                value={newConsultation.notes}
+                onChange={(e) => setNewConsultation(prev => ({ ...prev, notes: e.target.value }))}
+                className="min-h-[80px]"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsModalOpen(false)}>
+              Cancelar
+            </Button>
+            <Button 
+              onClick={handleCreateConsultation} 
+              disabled={isCreating || !newConsultation.clientId}
+              className="bg-primary"
+            >
+              {isCreating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Agendando...
+                </>
+              ) : (
+                <>
+                  <CheckCircle className="h-4 w-4 mr-2" />
+                  Agendar Consulta
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
