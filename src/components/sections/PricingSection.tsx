@@ -107,7 +107,6 @@ export function PricingSection() {
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
             const isHighlight = 'highlight' in plan && plan.highlight;
-            const hasInstallments = 'installments' in plan && plan.installments;
             const Icon = getIcon(key);
             
             return (
@@ -151,11 +150,6 @@ export function PricingSection() {
                   <div className="text-center">
                     <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
                     <span className="text-muted-foreground">/mês</span>
-                    {hasInstallments && (
-                      <p className="text-sm text-accent mt-1 font-medium">
-                        ou {plan.installments}x de {formatPrice(plan.price / plan.installments)}
-                      </p>
-                    )}
                   </div>
 
                   <ul className="space-y-3">
@@ -201,7 +195,6 @@ export function PricingSection() {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
-          <p className="mt-2 text-accent font-medium">Plano Contador Premium Plus parcelável em até 10x sem juros!</p>
         </div>
       </div>
     </section>

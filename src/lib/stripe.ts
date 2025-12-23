@@ -48,7 +48,6 @@ export const STRIPE_PLANS = {
       'Edição de dados da empresa',
     ],
     monthlyConsultations: 5,
-    installments: 10, // 10x de R$19,89
     highlight: true,
   },
 } as const;
