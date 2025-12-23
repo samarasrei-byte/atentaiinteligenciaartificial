@@ -14,7 +14,8 @@ import {
   Calendar,
   MessageSquare,
   Loader2,
-  Clock
+  Clock,
+  CreditCard
 } from 'lucide-react';
 
 interface ContadorProfile {
@@ -40,6 +41,7 @@ const Contadores = () => {
   
   const [contadores, setContadores] = useState<ContadorProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [processingPayment, setProcessingPayment] = useState<string | null>(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -65,7 +67,6 @@ const Contadores = () => {
 
       if (error) throw error;
       
-      // Transform the data to handle the profile join
       const transformedData = (data || []).map(item => ({
         ...item,
         profile: Array.isArray(item.profile) ? item.profile[0] : item.profile
@@ -74,35 +75,44 @@ const Contadores = () => {
       setContadores(transformedData);
     } catch (error) {
       console.error('Error fetching contadores:', error);
-      // Show empty state if no contadores found
       setContadores([]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleSchedule = async (contador: ContadorProfile) => {
+  const handleScheduleWithPayment = async (contador: ContadorProfile) => {
+    setProcessingPayment(contador.id);
+    
     try {
-      const { error } = await supabase.from('consultations').insert({
-        user_id: user!.id,
-        contador_id: contador.user_id,
-        price_cents: contador.hourly_rate_cents,
-        platform_fee_cents: Math.round(contador.hourly_rate_cents * 0.1),
-        status: 'pending',
+      const { data, error } = await supabase.functions.invoke('create-consultation-payment', {
+        body: {
+          contadorId: contador.user_id,
+          priceCents: contador.hourly_rate_cents,
+          contadorName: contador.profile?.full_name || 'Contador',
+        },
       });
 
       if (error) throw error;
 
-      toast({
-        title: 'Consulta solicitada!',
-        description: 'O contador entrará em contato para agendar.',
-      });
+      if (data?.url) {
+        toast({
+          title: 'Redirecionando para pagamento',
+          description: `Taxa de serviço: 10% (${formatCurrency(data.platformFee)})`,
+        });
+        window.open(data.url, '_blank');
+      } else {
+        throw new Error('URL de pagamento não recebida');
+      }
     } catch (error: any) {
+      console.error('Payment error:', error);
       toast({
         variant: 'destructive',
-        title: 'Erro',
-        description: error.message || 'Erro ao solicitar consulta',
+        title: 'Erro no pagamento',
+        description: error.message || 'Erro ao processar pagamento',
       });
+    } finally {
+      setProcessingPayment(null);
     }
   };
 
@@ -224,16 +234,23 @@ const Contadores = () => {
                       <span className="text-slate-400 text-sm">/sessão</span>
                     </div>
                     <Button
-                      onClick={() => handleSchedule(contador)}
+                      onClick={() => handleScheduleWithPayment(contador)}
+                      disabled={processingPayment === contador.id}
                       className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
                     >
-                      <Calendar className="h-4 w-4 mr-2" />
-                      Agendar
+                      {processingPayment === contador.id ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <>
+                          <CreditCard className="h-4 w-4 mr-2" />
+                          Contratar
+                        </>
+                      )}
                     </Button>
                   </div>
 
                   <p className="text-xs text-slate-500 text-center">
-                    10% do valor vai para a plataforma
+                    Taxa de serviço: 10% • Pagamento seguro via Stripe
                   </p>
                 </CardContent>
               </Card>

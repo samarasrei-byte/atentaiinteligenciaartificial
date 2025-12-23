@@ -226,7 +226,7 @@ const AdminPanel = () => {
         <AppSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} variant="admin" activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-20' : 'lg:ml-72'}`}>
+      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-56'}`}>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
