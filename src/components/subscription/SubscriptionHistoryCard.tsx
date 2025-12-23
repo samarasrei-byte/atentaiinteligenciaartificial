@@ -256,19 +256,28 @@ export const SubscriptionHistoryCard: React.FC = () => {
                 </div>
               )}
 
-              <Button
-                variant="outline"
-                className="w-full"
-                onClick={handleManageSubscription}
-                disabled={isManaging}
-              >
-                {isManaging ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : (
+              <div className="flex gap-3">
+                <Button
+                  variant="outline"
+                  className="flex-1"
+                  onClick={handleManageSubscription}
+                  disabled={isManaging}
+                >
+                  {isManaging ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : (
+                    <Settings className="h-4 w-4 mr-2" />
+                  )}
+                  Gerenciar Assinatura
+                </Button>
+                <Button
+                  className="flex-1"
+                  onClick={() => (window.location.href = '/pricing')}
+                >
                   <ExternalLink className="h-4 w-4 mr-2" />
-                )}
-                Gerenciar Cartão e Assinatura
-              </Button>
+                  Trocar Plano
+                </Button>
+              </div>
             </>
           ) : (
             <div className="text-center py-4">
