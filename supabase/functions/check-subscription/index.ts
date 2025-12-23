@@ -17,7 +17,8 @@ const PRODUCT_PLANS: Record<string, string> = {
   "prod_TeJKjnfkaw0JfV": "simulator",
   "prod_TedPv32txqdcXM": "premium",
   "prod_Tecf36TAM9IMat": "contador",
-  "prod_Tehfc8IkhNyBJ7": "contador", // New Contador Premium Plus product
+  "prod_Tehfc8IkhNyBJ7": "contador", // Contador Premium Plus product
+  "prod_Tevvj1l2m0hSOP": "autonomo", // Autônomo Master product
 };
 
 serve(async (req) => {

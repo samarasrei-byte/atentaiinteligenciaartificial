@@ -52,8 +52,8 @@ export const STRIPE_PLANS = {
   },
   autonomo: {
     name: 'Autônomo Master',
-    priceId: 'price_autonomo_master',
-    productId: 'prod_autonomo_master',
+    priceId: 'price_1Shc3X3MU3lG84Gw1OR6C7yf',
+    productId: 'prod_Tevvj1l2m0hSOP',
     price: 6500, // cents (R$65,00)
     description: 'Painel completo para profissionais autônomos',
     features: [
