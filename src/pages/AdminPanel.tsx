@@ -179,7 +179,15 @@ const AdminPanel = () => {
   };
 
   const handleRefresh = async () => { setIsRefreshing(true); await fetchAdminData(); toast({ title: 'Dados atualizados!' }); };
-  const handleTabChange = (tab: string) => { setActiveTab(tab); setSearchParams({ tab }); setMobileMenuOpen(false); };
+  const handleTabChange = (tab: string) => { 
+    if (tab === 'roles') {
+      navigate('/admin/roles');
+      return;
+    }
+    setActiveTab(tab); 
+    setSearchParams({ tab }); 
+    setMobileMenuOpen(false); 
+  };
   const formatCurrency = (cents: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
   const getRoleBadge = (role: string) => {
     const c: Record<string, string> = { admin: 'bg-destructive', contador: 'bg-info', user: 'bg-muted' };

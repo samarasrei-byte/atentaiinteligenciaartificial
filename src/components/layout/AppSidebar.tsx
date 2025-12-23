@@ -73,6 +73,7 @@ const userItems: SidebarItem[] = [
 const adminItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: Users, label: 'Usuários', tabId: 'users' },
+  { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
   { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
   { icon: DollarSign, label: 'Receitas', tabId: 'revenue' },
   { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
