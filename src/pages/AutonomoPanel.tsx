@@ -53,7 +53,7 @@ import { PROFESSIONAL_CATEGORIES } from '@/lib/autonomosData';
 // Components
 import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
-import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
+import { AutonomoAICalculator } from '@/components/ai/AutonomoAICalculator';
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 import { SupportTicketList } from '@/components/support/SupportTicketList';
 import { TaxGlossary } from '@/components/glossary/TaxGlossary';
@@ -64,6 +64,7 @@ import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { GuidedTour } from '@/components/tour/GuidedTour';
 import { useGuidedTour } from '@/hooks/useGuidedTour';
 import { autonomoTourSteps } from '@/components/tour/autonomoTourSteps';
+import { MEILimitAlert } from '@/components/autonomos/MEILimitAlert';
 
 // Sidebar component for Autonomo
 import {
@@ -270,6 +271,12 @@ const AutonomoPanel: React.FC = () => {
         )}
       </div>
 
+      {/* MEI Limit Alert */}
+      <MEILimitAlert 
+        monthlyRevenue={profile?.monthly_revenue_average_cents || 0}
+        onSimulate={() => setActiveSection('simulator')}
+      />
+
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4" data-tour="stats-cards">
         <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
@@ -448,13 +455,13 @@ const AutonomoPanel: React.FC = () => {
         return (
           <div className="space-y-6">
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Chat IA Tributário</h2>
+              <h2 className="text-2xl font-bold text-foreground">Chat IA para Autônomos</h2>
               <p className="text-muted-foreground">
-                Tire suas dúvidas com nossa inteligência artificial especializada
+                Calcule INSS, compare PF vs MEI vs ME e tire dúvidas tributárias
               </p>
             </div>
             <div className="h-[600px]">
-              <PowerAICalculator />
+              <AutonomoAICalculator />
             </div>
           </div>
         );
