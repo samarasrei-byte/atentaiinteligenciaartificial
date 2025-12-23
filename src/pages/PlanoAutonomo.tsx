@@ -86,6 +86,7 @@ const PlanoAutonomo: React.FC = () => {
         body: {
           planType: 'autonomo',
           couponCode: couponCode || undefined,
+          successUrl: `${window.location.origin}/autonomo/onboarding`,
         },
       });
 

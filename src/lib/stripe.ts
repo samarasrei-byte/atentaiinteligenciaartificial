@@ -50,6 +50,23 @@ export const STRIPE_PLANS = {
     monthlyConsultations: 2,
     highlight: true,
   },
+  autonomo: {
+    name: 'Autônomo Master',
+    priceId: 'price_autonomo_master',
+    productId: 'prod_autonomo_master',
+    price: 6500, // cents (R$65,00)
+    description: 'Painel completo para profissionais autônomos',
+    features: [
+      'Simulador PF vs PJ completo',
+      'Agente de IA especializado',
+      'Comparador MEI/ME/LP',
+      'Calculadora de INSS/IR',
+      'Histórico de simulações',
+      'Conexão com contadores',
+      'Relatórios PDF profissionais',
+      'Suporte dedicado',
+    ],
+  },
 } as const;
 
 export type PlanType = keyof typeof STRIPE_PLANS;
