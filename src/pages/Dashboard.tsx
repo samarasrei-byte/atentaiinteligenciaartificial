@@ -72,6 +72,7 @@ import { SimulationHistory } from '@/components/history/SimulationHistory';
 import { TaxAutopilot } from '@/components/autopilot/TaxAutopilot';
 import { TaxGlossary } from '@/components/glossary/TaxGlossary';
 import { SavingsMetricsDashboard } from '@/components/dashboard/SavingsMetricsDashboard';
+import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionHistoryCard';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -509,6 +510,16 @@ const Dashboard = () => {
         );
       case 'contadores':
         return <EmbeddedContadoresList />;
+      case 'subscription':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Minha Assinatura</h2>
+              <p className="text-muted-foreground">Gerencie seu plano, pagamentos e cartão de crédito</p>
+            </div>
+            <SubscriptionHistoryCard />
+          </div>
+        );
       case 'economia':
         return (
           <div className="space-y-6">

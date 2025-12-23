@@ -18,6 +18,7 @@ import { QuickAction } from '@/components/dashboard/QuickAction';
 import { UsageMetrics } from '@/components/dashboard/UsageMetrics';
 import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
 import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
+import { AdminWithdrawalPanel } from '@/components/support/AdminWithdrawalPanel';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -379,6 +380,7 @@ const AdminPanel = () => {
             </Card>
           )}
 
+          {activeTab === 'withdrawals' && <AdminWithdrawalPanel />}
           {activeTab === 'support' && <AdminSupportPanel />}
           {activeTab === 'settings' && (
             <Card className="bg-card border-border shadow-soft">
