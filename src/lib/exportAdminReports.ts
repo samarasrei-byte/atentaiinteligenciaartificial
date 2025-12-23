@@ -105,12 +105,12 @@ export function exportAdminReportToExcel(data: AdminReportData): void {
     ['Plano', 'Quantidade', 'Receita Mensal'],
     ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * 5600)],
     ['AtentAI Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * 9800)],
-    ['Contador Premium', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * 17000)],
+    ['Contador Premium Plus', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * 19899)],
     [''],
     ['Total Assinaturas', data.stats.totalSubscriptions, formatCurrency(
       (data.stats.simulatorPlanCount * 5600) + 
       (data.stats.premiumPlanCount * 9800) + 
-      (data.stats.contadorPlanCount * 17000)
+      (data.stats.contadorPlanCount * 19899)
     )],
   ];
 

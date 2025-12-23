@@ -478,7 +478,7 @@ const AdminReports = () => {
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.contadorPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.contadorPlanCount * 17000)}/mês
+                      {formatCurrency(reportData.stats.contadorPlanCount * 19899)}/mês
                     </p>
                   </CardContent>
                 </Card>
