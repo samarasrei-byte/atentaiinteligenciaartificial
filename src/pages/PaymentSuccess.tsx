@@ -12,6 +12,7 @@ import {
   Brain, 
   Calculator, 
   Users,
+  User,
   Sparkles,
   Calendar,
   Mail,
@@ -22,12 +23,14 @@ import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 
 const planIcons: Record<PlanType, React.ElementType> = {
   simulator: Calculator,
+  autonomo: User,
   premium: Brain,
   contador: Users,
 };
 
 const planColors: Record<PlanType, string> = {
   simulator: 'from-blue-500 to-cyan-500',
+  autonomo: 'from-emerald-500 to-teal-500',
   premium: 'from-primary to-primary/70',
   contador: 'from-accent to-orange-500',
 };
@@ -36,6 +39,11 @@ const nextSteps: Record<PlanType, { icon: React.ElementType; title: string; desc
   simulator: [
     { icon: Calculator, title: 'Acesse o Simulador', description: 'Simule o impacto tributário da sua empresa' },
     { icon: Calendar, title: 'Veja a Timeline', description: 'Acompanhe a transição 2026-2033' },
+  ],
+  autonomo: [
+    { icon: Calculator, title: 'Simulador PF vs PJ', description: 'Compare regimes tributários' },
+    { icon: Brain, title: 'Converse com a IA', description: 'Tire dúvidas sobre sua situação fiscal' },
+    { icon: User, title: 'Complete seu Perfil', description: 'Configure suas informações profissionais' },
   ],
   premium: [
     { icon: Brain, title: 'Converse com a IA', description: 'Tire suas dúvidas sobre tributação' },

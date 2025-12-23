@@ -13,7 +13,8 @@ import {
   Sparkles,
   Calculator,
   Users,
-  Star
+  Star,
+  User
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
@@ -59,11 +60,12 @@ export function PricingSection() {
   };
 
   const planEntries = Object.entries(STRIPE_PLANS) as [PlanType, typeof STRIPE_PLANS[PlanType]][];
-  const orderedPlans: PlanType[] = ['simulator', 'premium', 'contador'];
+  const orderedPlans: PlanType[] = ['simulator', 'autonomo', 'premium', 'contador'];
 
   const getIcon = (key: PlanType) => {
     switch (key) {
       case 'simulator': return Calculator;
+      case 'autonomo': return User;
       case 'premium': return Brain;
       case 'contador': return Users;
       default: return Brain;
@@ -73,6 +75,7 @@ export function PricingSection() {
   const getGradient = (key: PlanType) => {
     switch (key) {
       case 'simulator': return 'from-blue-500 to-cyan-500';
+      case 'autonomo': return 'from-emerald-500 to-teal-500';
       case 'premium': return 'from-primary to-primary/70';
       case 'contador': return 'from-accent to-orange-500';
       default: return 'from-primary to-primary/70';
@@ -101,7 +104,7 @@ export function PricingSection() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {orderedPlans.map((key) => {
             const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
@@ -170,8 +173,10 @@ export function PricingSection() {
                         : isHighlight
                           ? 'bg-gradient-to-r from-accent to-orange-500 hover:from-accent/90 hover:to-orange-600'
                           : key === 'simulator' 
-                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600' 
-                            : 'bg-primary hover:bg-primary/90'
+                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
+                            : key === 'autonomo'
+                              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
+                              : 'bg-primary hover:bg-primary/90'
                     }`}
                   >
                     {isLoading === key ? (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, MessageCircle, Users, BookOpen, LogIn } from "lucide-react";
+import { Menu, X, Calculator, MessageCircle, Users, User, LogIn } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface HeaderProps {
@@ -13,6 +13,7 @@ export function Header({ onNavigate }: HeaderProps) {
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
+    { label: "Autônomos", icon: User, href: "/plano/autonomo" },
     { label: "Planos", icon: Users, section: "pricing" },
   ];
 
@@ -35,15 +36,29 @@ export function Header({ onNavigate }: HeaderProps) {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-1">
             {navItems.map((item) => (
-              <Button
-                key={item.section}
-                variant="ghost"
-                onClick={() => onNavigate(item.section)}
-                className="flex items-center gap-2"
-              >
-                <item.icon className="w-4 h-4" />
-                {item.label}
-              </Button>
+              'href' in item ? (
+                <Button
+                  key={item.label}
+                  variant="ghost"
+                  asChild
+                  className="flex items-center gap-2"
+                >
+                  <Link to={item.href}>
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  key={item.section}
+                  variant="ghost"
+                  onClick={() => onNavigate(item.section)}
+                  className="flex items-center gap-2"
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </Button>
+              )
             ))}
           </nav>
 
@@ -73,18 +88,32 @@ export function Header({ onNavigate }: HeaderProps) {
           <div className="md:hidden py-4 border-t border-border/50 animate-slide-up">
             <nav className="flex flex-col gap-2">
               {navItems.map((item) => (
-                <Button
-                  key={item.section}
-                  variant="ghost"
-                  onClick={() => {
-                    onNavigate(item.section);
-                    setIsMenuOpen(false);
-                  }}
-                  className="justify-start gap-3"
-                >
-                  <item.icon className="w-5 h-5" />
-                  {item.label}
-                </Button>
+                'href' in item ? (
+                  <Button
+                    key={item.label}
+                    variant="ghost"
+                    asChild
+                    className="justify-start gap-3"
+                  >
+                    <Link to={item.href} onClick={() => setIsMenuOpen(false)}>
+                      <item.icon className="w-5 h-5" />
+                      {item.label}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    key={item.section}
+                    variant="ghost"
+                    onClick={() => {
+                      onNavigate(item.section);
+                      setIsMenuOpen(false);
+                    }}
+                    className="justify-start gap-3"
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </Button>
+                )
               ))}
               <Button 
                 variant="ghost" 

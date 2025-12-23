@@ -13,26 +13,34 @@ import {
   Brain,
   Calculator,
   Users,
+  User,
   Zap
 } from 'lucide-react';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 
-const planOrder: PlanType[] = ['simulator', 'premium', 'contador'];
+const planOrder: PlanType[] = ['simulator', 'autonomo', 'premium', 'contador'];
 
 const planIcons: Record<PlanType, React.ElementType> = {
   simulator: Calculator,
+  autonomo: User,
   premium: Brain,
   contador: Users,
 };
 
 const planColors: Record<PlanType, string> = {
   simulator: 'from-blue-500 to-cyan-500',
+  autonomo: 'from-emerald-500 to-teal-500',
   premium: 'from-primary to-primary/70',
   contador: 'from-accent to-orange-500',
 };
 
 const upgradeReasons: Record<PlanType, string[]> = {
   simulator: [],
+  autonomo: [
+    'Simulador PF vs PJ completo',
+    'Agente de IA especializado',
+    'Calculadora de INSS/IR',
+  ],
   premium: [
     'Agente de IA ilimitado para tirar dúvidas',
     'Piloto Automático Tributário',

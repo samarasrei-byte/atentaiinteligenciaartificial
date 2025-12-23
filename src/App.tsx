@@ -33,6 +33,7 @@ import PaymentSuccess from "./pages/PaymentSuccess";
 import FAQ from "./pages/FAQ";
 import AutonomoPanel from "./pages/AutonomoPanel";
 import PlanoAutonomo from "./pages/PlanoAutonomo";
+import AutonomoOnboardingPage from "./pages/AutonomoOnboarding";
 
 const queryClient = new QueryClient();
 
@@ -102,6 +103,11 @@ const App = () => (
             <Route path="/autonomo" element={
               <ProtectedRoute>
                 <AutonomoPanel />
+              </ProtectedRoute>
+            } />
+            <Route path="/autonomo/onboarding" element={
+              <ProtectedRoute>
+                <AutonomoOnboardingPage />
               </ProtectedRoute>
             } />
             <Route path="/contador" element={
