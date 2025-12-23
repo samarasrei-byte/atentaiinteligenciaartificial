@@ -25,9 +25,9 @@ serve(async (req) => {
   try {
     logStep("Function started");
     
-    const { priceId } = await req.json();
+    const { priceId, couponId } = await req.json();
     if (!priceId) throw new Error("Price ID is required");
-    logStep("Price ID received", { priceId });
+    logStep("Price ID received", { priceId, couponId });
 
     const authHeader = req.headers.get("Authorization")!;
     const token = authHeader.replace("Bearer ", "");
@@ -52,7 +52,8 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
     
-    const session = await stripe.checkout.sessions.create({
+    // Build session options
+    const sessionOptions: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
@@ -67,7 +68,16 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
       },
-    });
+      allow_promotion_codes: !couponId, // Allow manual entry if no coupon provided
+    };
+
+    // Apply coupon if provided
+    if (couponId) {
+      sessionOptions.discounts = [{ coupon: couponId }];
+      logStep("Applying coupon", { couponId });
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionOptions);
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
 
