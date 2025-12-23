@@ -50,7 +50,7 @@ interface SidebarItem {
 interface AppSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
-  variant?: 'user' | 'admin' | 'contador';
+  variant?: 'user' | 'admin' | 'contador' | 'autonomo';
   activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
@@ -96,6 +96,21 @@ const contadorItems: SidebarItem[] = [
   { icon: FileText, label: 'Perfil', tabId: 'profile' },
 ];
 
+const autonomoItems: SidebarItem[] = [
+  { icon: LayoutDashboard, label: 'Início', tabId: 'dashboard' },
+  { icon: BarChart3, label: 'Dashboard Financeiro', tabId: 'financeiro' },
+  { icon: Target, label: 'Metas Financeiras', tabId: 'metas' },
+  { icon: Bot, label: 'Simulador IA', tabId: 'simulator', badge: 'PRO', badgeColor: 'text-amber-400' },
+  { icon: History, label: 'Histórico', tabId: 'history' },
+  { icon: MessagesSquare, label: 'Chat IA', tabId: 'ai-chat', badge: 'IA', badgeColor: 'text-primary' },
+  { icon: Headphones, label: 'Chat Contador', tabId: 'chat-contador' },
+  { icon: Users, label: 'Contadores', tabId: 'contadores' },
+  { icon: BookOpen, label: 'Glossário', tabId: 'glossary' },
+  { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
+  { icon: Headphones, label: 'Suporte', tabId: 'support' },
+  { icon: User, label: 'Meu Perfil', tabId: 'profile' },
+];
+
 const AppSidebar: React.FC<AppSidebarProps> = ({ 
   collapsed, 
   onToggle, 
@@ -106,7 +121,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const navigate = useNavigate();
   const { user, profile, signOut, hasRole } = useAuth();
 
-  const items = variant === 'admin' ? adminItems : variant === 'contador' ? contadorItems : userItems;
+  const items = variant === 'admin' 
+    ? adminItems 
+    : variant === 'contador' 
+      ? contadorItems 
+      : variant === 'autonomo' 
+        ? autonomoItems 
+        : userItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -253,8 +274,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
         )}
 
-        {/* Back to Dashboard for Admin/Contador */}
-        {(variant === 'admin' || variant === 'contador') && (
+        {/* Back to Dashboard for Admin/Contador/Autonomo */}
+        {(variant === 'admin' || variant === 'contador' || variant === 'autonomo') && (
           <div className="px-2 py-2 border-t border-white/5">
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>

@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { SidebarProvider, SidebarTrigger, SidebarInset } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -45,6 +44,7 @@ import {
   LogOut,
   ChevronRight,
   Play,
+  RefreshCw,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { brazilianStates } from '@/lib/taxData';
@@ -68,20 +68,7 @@ import { MEILimitAlert } from '@/components/autonomos/MEILimitAlert';
 import { AutonomoFinancialDashboard } from '@/components/autonomos/AutonomoFinancialDashboard';
 import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
 import { AutonomoGoals } from '@/components/autonomos/AutonomoGoals';
-
-// Sidebar component for Autonomo
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarGroup,
-  SidebarGroupContent,
-  SidebarGroupLabel,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  SidebarHeader,
-  SidebarFooter,
-} from '@/components/ui/sidebar';
+import AppSidebar from '@/components/layout/AppSidebar';
 
 interface AutonomoProfile {
   id: string;
@@ -110,87 +97,17 @@ type PanelSection =
   | 'subscription' 
   | 'support' 
   | 'profile';
-
-const AutonomoSidebar: React.FC<{
-  activeSection: PanelSection;
-  onSectionChange: (section: PanelSection) => void;
-  profile: AutonomoProfile | null;
-  onLogout: () => void;
-}> = ({ activeSection, onSectionChange, profile, onLogout }) => {
-  const menuItems = [
-    { id: 'dashboard', label: 'Início', icon: Home },
-    { id: 'financeiro', label: 'Dashboard Financeiro', icon: BarChart3 },
-    { id: 'metas', label: 'Metas Financeiras', icon: Target },
-    { id: 'simulator', label: 'Simulador IA', icon: Bot },
-    { id: 'history', label: 'Histórico', icon: History },
-    { id: 'ai-chat', label: 'Chat IA Tributário', icon: MessageSquare },
-    { id: 'chat-contador', label: 'Chat com Contador', icon: Headphones },
-    { id: 'contadores', label: 'Contadores', icon: Users },
-    { id: 'glossary', label: 'Glossário', icon: HelpCircle },
-    { id: 'subscription', label: 'Assinatura', icon: Crown },
-    { id: 'support', label: 'Suporte', icon: Headphones },
-    { id: 'profile', label: 'Meu Perfil', icon: Settings },
-  ];
-
-  return (
-    <Sidebar className="border-r border-border [&_[data-sidebar=content]]:overflow-hidden">
-      <SidebarHeader className="p-4 border-b border-border">
-        <div className="flex items-center gap-3">
-          <img 
-            src="/logo-atentai.png" 
-            alt="AtentAI" 
-            className="h-8 w-auto"
-          />
-          <div className="flex flex-col">
-            <h2 className="font-bold text-foreground text-base leading-tight">
-              Autônomo
-            </h2>
-            <p className="text-xs text-muted-foreground">
-              Painel Master
-            </p>
-          </div>
-        </div>
-      </SidebarHeader>
-
-      <SidebarContent className="overflow-hidden">
-        <SidebarGroup data-tour="sidebar-menu">
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {menuItems.map((item) => (
-                <SidebarMenuItem key={item.id}>
-                  <SidebarMenuButton
-                    onClick={() => onSectionChange(item.id as PanelSection)}
-                    className={activeSection === item.id ? 'bg-primary/10 text-primary' : ''}
-                    data-tour={item.id === 'profile' ? 'profile-menu' : undefined}
-                  >
-                    <item.icon className="h-4 w-4" />
-                    <span>{item.label}</span>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-      </SidebarContent>
-
-      <SidebarFooter className="p-4 border-t border-border">
-        <Button variant="ghost" className="w-full justify-start text-destructive" onClick={onLogout}>
-          <LogOut className="h-4 w-4 mr-2" />
-          Sair
-        </Button>
-      </SidebarFooter>
-    </Sidebar>
-  );
-};
-
 const AutonomoPanel: React.FC = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, profile: authProfile } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const notificationsHook = useNotifications();
-  const [activeSection, setActiveSection] = useState<PanelSection>('dashboard');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   // Guided tour
   const tour = useGuidedTour({
@@ -251,6 +168,20 @@ const AutonomoPanel: React.FC = () => {
     navigate('/');
   };
 
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setSearchParams({ tab });
+    setMobileMenuOpen(false);
+  };
+
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    queryClient.invalidateQueries({ queryKey: ['autonomo-profile'] });
+    queryClient.invalidateQueries({ queryKey: ['autonomos-simulations-count'] });
+    queryClient.invalidateQueries({ queryKey: ['autonomos-savings'] });
+    setIsRefreshing(false);
+  };
+
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -285,7 +216,7 @@ const AutonomoPanel: React.FC = () => {
       {/* MEI Limit Alert */}
       <MEILimitAlert 
         monthlyRevenue={profile?.monthly_revenue_average_cents || 0}
-        onSimulate={() => setActiveSection('simulator')}
+        onSimulate={() => handleTabChange('simulator')}
       />
 
       {/* Stats Cards */}
@@ -355,7 +286,7 @@ const AutonomoPanel: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         <Card 
           className="cursor-pointer hover:bg-muted/50 transition-colors"
-          onClick={() => setActiveSection('simulator')}
+          onClick={() => handleTabChange('simulator')}
           data-tour="quick-simulator"
         >
           <CardContent className="pt-6">
@@ -374,7 +305,7 @@ const AutonomoPanel: React.FC = () => {
 
         <Card 
           className="cursor-pointer hover:bg-muted/50 transition-colors"
-          onClick={() => setActiveSection('ai-chat')}
+          onClick={() => handleTabChange('ai-chat')}
           data-tour="quick-ai-chat"
         >
           <CardContent className="pt-6">
@@ -393,7 +324,7 @@ const AutonomoPanel: React.FC = () => {
 
         <Card 
           className="cursor-pointer hover:bg-muted/50 transition-colors"
-          onClick={() => setActiveSection('contadores')}
+          onClick={() => handleTabChange('contadores')}
           data-tour="quick-contadores"
         >
           <CardContent className="pt-6">
@@ -431,9 +362,9 @@ const AutonomoPanel: React.FC = () => {
     <AutonomoProfileEditor profile={profile} userId={user?.id || ''} />
   );
 
-  // Render content based on active section
+  // Render content based on active tab
   const renderContent = () => {
-    switch (activeSection) {
+    switch (activeTab) {
       case 'dashboard':
         return renderDashboard();
       case 'simulator':
@@ -576,49 +507,63 @@ const AutonomoPanel: React.FC = () => {
   }
 
   return (
-    <SidebarProvider>
-      <div className="min-h-screen flex w-full bg-background">
-        <AutonomoSidebar
-          activeSection={activeSection}
-          onSectionChange={setActiveSection}
-          profile={profile}
-          onLogout={handleLogout}
-        />
-        <SidebarInset className="flex-1">
-          <header className="flex h-14 items-center gap-4 border-b border-border px-6">
-            <SidebarTrigger />
-            <div className="flex-1" />
-            {tour.hasCompletedTour && (
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={tour.startTour}
-                className="gap-2 text-muted-foreground"
-              >
-                <Play className="h-4 w-4" />
-                Ver Tour
-              </Button>
-            )}
-            <NotificationCenter 
-              notifications={notificationsHook.notifications}
-              unreadCount={notificationsHook.unreadCount}
-              onMarkAsRead={notificationsHook.markAsRead}
-              onMarkAllAsRead={notificationsHook.markAllAsRead}
-              onClear={notificationsHook.clearNotifications}
-            />
-          </header>
-          <main className="flex-1 p-6 overflow-auto">
-            {isLoadingProfile ? (
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-64" />
-                <Skeleton className="h-32 w-full" />
-              </div>
-            ) : (
-              renderContent()
-            )}
-          </main>
-        </SidebarInset>
+    <div className="min-h-screen bg-background flex w-full">
+      {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
+      <div className="hidden lg:block">
+        <AppSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} variant="autonomo" activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
+      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <AppSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} variant="autonomo" activeTab={activeTab} onTabChange={handleTabChange} />
+      </div>
+      
+      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-56'}`}>
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileMenuOpen(true)}><Menu className="h-5 w-5" /></Button>
+              <div className="p-2 rounded-xl bg-teal-500/10 hidden sm:flex"><Target className="h-6 w-6 text-teal-500" /></div>
+              <div>
+                <h1 className="text-lg lg:text-2xl font-bold">Painel Autônomo</h1>
+                <p className="text-sm text-muted-foreground hidden sm:block">{profile?.profession || 'Autônomo Master'}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <NotificationCenter 
+                notifications={notificationsHook.notifications}
+                unreadCount={notificationsHook.unreadCount}
+                onMarkAsRead={notificationsHook.markAsRead}
+                onMarkAllAsRead={notificationsHook.markAllAsRead}
+                onClear={notificationsHook.clearNotifications}
+              />
+              {tour.hasCompletedTour && (
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={tour.startTour}
+                  className="gap-2 hidden sm:flex"
+                >
+                  <Play className="h-4 w-4" />
+                  Ver Tour
+                </Button>
+              )}
+              <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing} className="hidden sm:flex">
+                <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+              </Button>
+            </div>
+          </div>
+        </header>
+
+        <div className="p-4 lg:p-6 space-y-6">
+          {isLoadingProfile ? (
+            <div className="space-y-4">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-32 w-full" />
+            </div>
+          ) : (
+            renderContent()
+          )}
+        </div>
+      </main>
       
       {/* Guided Tour */}
       <GuidedTour
@@ -634,7 +579,7 @@ const AutonomoPanel: React.FC = () => {
         onSkip={() => tour.endTour(false)}
         onClose={() => tour.endTour(true)}
       />
-    </SidebarProvider>
+    </div>
   );
 };
 
