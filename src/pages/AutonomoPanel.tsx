@@ -71,7 +71,7 @@ import { AutonomoGoals } from '@/components/autonomos/AutonomoGoals';
 import AppSidebar from '@/components/layout/AppSidebar';
 import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
 import CompanyOpeningStatus from '@/components/abertura/CompanyOpeningStatus';
-
+import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 interface AutonomoProfile {
   id: string;
   user_id: string;
@@ -640,6 +640,9 @@ const AutonomoPanel: React.FC = () => {
         onSkip={() => tour.endTour(false)}
         onClose={() => tour.endTour(true)}
       />
+      
+      {/* Floating AI Agent */}
+      <FloatingAIAgent context="autonomo" />
     </div>
   );
 };

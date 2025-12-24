@@ -75,6 +75,7 @@ import { SavingsMetricsDashboard } from '@/components/dashboard/SavingsMetricsDa
 import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionHistoryCard';
 import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
+import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 // Enhanced AI Agent with Power Calculator
 const EmbeddedAIAgent = () => {
   return (
@@ -819,6 +820,9 @@ const Dashboard = () => {
         onSkip={() => tour.endTour(true)}
         onClose={() => tour.endTour(false)}
       />
+      
+      {/* Floating AI Agent */}
+      <FloatingAIAgent context="empresa" />
     </div>
   );
 };

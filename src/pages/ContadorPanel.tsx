@@ -22,6 +22,7 @@ import { LegalUpdates } from '@/components/contador/LegalUpdates';
 import { WithdrawalSystem } from '@/components/contador/WithdrawalSystem';
 import { ContadorReportGenerator } from '@/components/contador/ContadorReportGenerator';
 import CompanyOpeningManagement from '@/components/contador/CompanyOpeningManagement';
+import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
@@ -594,6 +595,9 @@ const ContadorPanel = () => {
           )}
         </div>
       </main>
+      
+      {/* Floating AI Agent */}
+      <FloatingAIAgent context="contador" />
     </div>
   );
 };

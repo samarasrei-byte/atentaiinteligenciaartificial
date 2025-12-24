@@ -19,6 +19,7 @@ import { UsageMetrics } from '@/components/dashboard/UsageMetrics';
 import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
 import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
 import { AdminWithdrawalPanel } from '@/components/support/AdminWithdrawalPanel';
+import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -390,6 +391,9 @@ const AdminPanel = () => {
           )}
         </div>
       </main>
+      
+      {/* Floating AI Agent - Analytics for Admin */}
+      <FloatingAIAgent context="admin" />
     </div>
   );
 };
