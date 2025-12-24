@@ -4,10 +4,10 @@ import { HeroSection } from "@/components/sections/HeroSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { SimulatorSection } from "@/components/sections/SimulatorSection";
 import { AISection } from "@/components/sections/AISection";
+import { ProfilesSection } from "@/components/sections/ProfilesSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
-
 const Index = () => {
   const scrollToSection = (section: string) => {
     if (section === "hero") {
@@ -38,6 +38,7 @@ const Index = () => {
         <StatsSection />
         <SimulatorSection />
         <AISection />
+        <ProfilesSection />
         <PricingSection />
         <TestimonialsSection />
       </main>

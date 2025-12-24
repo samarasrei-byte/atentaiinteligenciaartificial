@@ -95,13 +95,20 @@ const UserTypeSelection = () => {
           ))}
         </div>
 
-        <div className="text-center mt-8">
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-8">
           <Button
             variant="ghost"
             className="text-slate-400 hover:text-white"
-            onClick={() => navigate('/auth')}
+            onClick={() => navigate('/')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
+            Voltar ao Início
+          </Button>
+          <Button
+            variant="outline"
+            className="border-slate-600 text-slate-300 hover:bg-slate-700"
+            onClick={() => navigate('/auth')}
+          >
             Já tenho uma conta
           </Button>
         </div>
