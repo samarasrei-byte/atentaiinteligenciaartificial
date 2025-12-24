@@ -37,7 +37,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { formatCurrency, parseCurrencyInput, formatCurrencyInput } from '@/lib/taxConstants';
 
 interface AutonomoMEFlowProps {
-  onBack: () => void;
+  onBack?: () => void;
 }
 
 interface ProfileData {

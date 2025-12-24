@@ -69,6 +69,7 @@ import { AutonomoFinancialDashboard } from '@/components/autonomos/AutonomoFinan
 import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultationChat';
 import { AutonomoGoals } from '@/components/autonomos/AutonomoGoals';
 import AppSidebar from '@/components/layout/AppSidebar';
+import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
 
 interface AutonomoProfile {
   id: string;
@@ -93,6 +94,7 @@ type PanelSection =
   | 'chat-contador'
   | 'financeiro'
   | 'metas'
+  | 'abertura-empresa'
   | 'glossary' 
   | 'subscription' 
   | 'support' 
@@ -453,6 +455,21 @@ const AutonomoPanel: React.FC = () => {
               </p>
             </div>
             <AutonomoGoals />
+          </div>
+        );
+      case 'abertura-empresa':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                <Building2 className="h-6 w-6 text-primary" />
+                Abrir Empresa
+              </h2>
+              <p className="text-muted-foreground">
+                Formalize seu negócio com orientação sobre a Reforma Tributária
+              </p>
+            </div>
+            <AutonomoMEFlow />
           </div>
         );
       case 'glossary':
