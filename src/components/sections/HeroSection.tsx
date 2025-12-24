@@ -46,7 +46,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             <Button 
               variant="accent" 
               size="xl" 
-              onClick={() => navigate('/onboarding')}
+              onClick={() => navigate('/comecar')}
               className="w-full sm:w-auto group text-base sm:text-lg px-6 sm:px-8"
             >
               Começar Agora
