@@ -21,9 +21,13 @@ import {
   FileText,
   Star,
   Crown,
+  Loader2,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import { STRIPE_PLANS } from "@/lib/stripe";
+import { useNavigate } from "react-router-dom";
 
 interface LegalUpdate {
   id: string;
@@ -141,6 +145,8 @@ interface Props {
 
 export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: Props) {
   const { toast } = useToast();
+  const { user, subscription } = useAuth();
+  const navigate = useNavigate();
   const [updates, setUpdates] = useState<LegalUpdate[]>(mockUpdates);
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Todos");
@@ -148,6 +154,7 @@ export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: 
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [currentSpeakingId, setCurrentSpeakingId] = useState<string | null>(null);
   const [speechSupported, setSpeechSupported] = useState(true);
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(false);
 
   useEffect(() => {
     if (!("speechSynthesis" in window)) {
@@ -159,6 +166,45 @@ export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: 
       }
     };
   }, []);
+
+  const handleSubscribePremium = async () => {
+    if (!user) {
+      toast({
+        title: "Login necessário",
+        description: "Faça login para assinar o plano premium",
+        variant: "destructive",
+      });
+      navigate("/auth");
+      return;
+    }
+
+    setIsLoadingSubscription(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("create-checkout", {
+        body: { priceId: STRIPE_PLANS.contador.priceId },
+      });
+
+      if (error) throw error;
+
+      if (data?.url) {
+        window.open(data.url, "_blank");
+      } else {
+        throw new Error("URL de checkout não retornada");
+      }
+    } catch (error: any) {
+      console.error("Erro ao criar checkout:", error);
+      toast({
+        title: "Erro ao processar",
+        description: error.message || "Não foi possível iniciar o pagamento. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingSubscription(false);
+    }
+  };
+
+  // Check if user already has contador subscription
+  const hasContadorPlan = subscription.subscribed && subscription.plan === "contador";
 
   const filteredUpdates = updates.filter((update) => {
     const matchesSearch =
@@ -232,9 +278,9 @@ export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: 
   return (
     <div className="space-y-6">
       {/* Trial Banner */}
-      {isTrialActive && (
+      {isTrialActive && !hasContadorPlan && (
         <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30">
-          <CardContent className="flex items-center justify-between p-4">
+          <CardContent className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-amber-500/20 rounded-full">
                 <Star className="h-5 w-5 text-amber-500" />
@@ -248,10 +294,37 @@ export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: 
                 </p>
               </div>
             </div>
-            <Button className="bg-gradient-to-r from-amber-500 to-orange-500 text-white">
-              <Crown className="h-4 w-4 mr-2" />
+            <Button 
+              onClick={handleSubscribePremium}
+              disabled={isLoadingSubscription}
+              className="bg-gradient-to-r from-amber-500 to-orange-500 text-white w-full sm:w-auto"
+            >
+              {isLoadingSubscription ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Crown className="h-4 w-4 mr-2" />
+              )}
               Assinar Premium
             </Button>
+          </CardContent>
+        </Card>
+      )}
+      
+      {/* Premium Active Banner */}
+      {hasContadorPlan && (
+        <Card className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border-green-500/30">
+          <CardContent className="flex items-center gap-3 p-4">
+            <div className="p-2 bg-green-500/20 rounded-full">
+              <CheckCircle className="h-5 w-5 text-green-500" />
+            </div>
+            <div>
+              <p className="font-medium text-foreground">
+                Plano Contador Premium Ativo
+              </p>
+              <p className="text-sm text-muted-foreground">
+                Você tem acesso completo a todas as atualizações legais
+              </p>
+            </div>
           </CardContent>
         </Card>
       )}
