@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
-import { Brain, Mail, Lock, User, Loader2, Building2, ArrowLeft } from 'lucide-react';
+import { Brain, Mail, Lock, User, Loader2, Building2, ArrowLeft, Briefcase, Calculator, Users } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Email inválido');
@@ -29,6 +30,7 @@ const Auth = () => {
   const [signupEmail, setSignupEmail] = useState('');
   const [signupPassword, setSignupPassword] = useState('');
   const [signupName, setSignupName] = useState('');
+  const [userType, setUserType] = useState<'empresa' | 'autonomo' | 'contador'>('empresa');
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const fromOnboarding = searchParams.get('from') === 'onboarding';
@@ -40,7 +42,23 @@ const Auth = () => {
       if (pendingOnboardingData) {
         saveOnboardingData(user.id);
       } else {
-        navigate('/dashboard');
+        // Check if user just signed up and selected a type
+        const selectedType = sessionStorage.getItem('selectedUserType');
+        if (selectedType) {
+          sessionStorage.removeItem('selectedUserType');
+          switch (selectedType) {
+            case 'autonomo':
+              navigate('/autonomo-onboarding');
+              break;
+            case 'contador':
+              navigate('/contador-onboarding');
+              break;
+            default:
+              navigate('/onboarding');
+          }
+        } else {
+          navigate('/dashboard');
+        }
       }
     }
   }, [user, authLoading, navigate, pendingOnboardingData]);
@@ -185,6 +203,8 @@ const Auth = () => {
         title: 'Conta criada!',
         description: 'Bem-vindo ao AtentAI',
       });
+      // Redirect based on user type after successful signup
+      sessionStorage.setItem('selectedUserType', userType);
     }
   };
 
@@ -332,6 +352,53 @@ const Auth = () => {
             
             <TabsContent value="signup">
               <form onSubmit={handleSignup} className="space-y-4 mt-4">
+                {/* User Type Selection */}
+                <div className="space-y-3">
+                  <Label className="text-slate-300">Eu sou</Label>
+                  <RadioGroup 
+                    value={userType} 
+                    onValueChange={(v) => setUserType(v as 'empresa' | 'autonomo' | 'contador')}
+                    className="grid grid-cols-3 gap-2"
+                  >
+                    <Label
+                      htmlFor="empresa"
+                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border cursor-pointer transition-all ${
+                        userType === 'empresa' 
+                          ? 'border-teal-500 bg-teal-500/10' 
+                          : 'border-slate-600 hover:border-slate-500'
+                      }`}
+                    >
+                      <RadioGroupItem value="empresa" id="empresa" className="sr-only" />
+                      <Building2 className={`h-5 w-5 ${userType === 'empresa' ? 'text-teal-400' : 'text-slate-400'}`} />
+                      <span className={`text-xs ${userType === 'empresa' ? 'text-teal-400' : 'text-slate-400'}`}>Empresa</span>
+                    </Label>
+                    <Label
+                      htmlFor="autonomo"
+                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border cursor-pointer transition-all ${
+                        userType === 'autonomo' 
+                          ? 'border-cyan-500 bg-cyan-500/10' 
+                          : 'border-slate-600 hover:border-slate-500'
+                      }`}
+                    >
+                      <RadioGroupItem value="autonomo" id="autonomo" className="sr-only" />
+                      <Briefcase className={`h-5 w-5 ${userType === 'autonomo' ? 'text-cyan-400' : 'text-slate-400'}`} />
+                      <span className={`text-xs ${userType === 'autonomo' ? 'text-cyan-400' : 'text-slate-400'}`}>Autônomo</span>
+                    </Label>
+                    <Label
+                      htmlFor="contador"
+                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border cursor-pointer transition-all ${
+                        userType === 'contador' 
+                          ? 'border-purple-500 bg-purple-500/10' 
+                          : 'border-slate-600 hover:border-slate-500'
+                      }`}
+                    >
+                      <RadioGroupItem value="contador" id="contador" className="sr-only" />
+                      <Calculator className={`h-5 w-5 ${userType === 'contador' ? 'text-purple-400' : 'text-slate-400'}`} />
+                      <span className={`text-xs ${userType === 'contador' ? 'text-purple-400' : 'text-slate-400'}`}>Contador</span>
+                    </Label>
+                  </RadioGroup>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="signup-name" className="text-slate-300">Nome Completo</Label>
                   <div className="relative">
