@@ -304,6 +304,65 @@ export type Database = {
         }
         Relationships: []
       }
+      company_opening_documents: {
+        Row: {
+          created_at: string
+          document_name: string
+          document_type: string
+          file_path: string
+          file_size_bytes: number | null
+          id: string
+          mime_type: string | null
+          rejection_reason: string | null
+          request_id: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          document_name: string
+          document_type: string
+          file_path: string
+          file_size_bytes?: number | null
+          id?: string
+          mime_type?: string | null
+          rejection_reason?: string | null
+          request_id: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          document_name?: string
+          document_type?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          id?: string
+          mime_type?: string | null
+          rejection_reason?: string | null
+          request_id?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_opening_documents_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "company_opening_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       company_opening_notifications: {
         Row: {
           created_at: string
@@ -365,10 +424,13 @@ export type Database = {
           has_employees: boolean | null
           id: string
           monthly_expenses_cents: number | null
+          payment_status: string | null
           phone: string | null
           profession: string | null
           recommendation_reasons: string[] | null
           recommended_regime: string | null
+          service_description: string | null
+          service_price_cents: number | null
           state: string | null
           status: string
           status_updated_at: string | null
@@ -389,10 +451,13 @@ export type Database = {
           has_employees?: boolean | null
           id?: string
           monthly_expenses_cents?: number | null
+          payment_status?: string | null
           phone?: string | null
           profession?: string | null
           recommendation_reasons?: string[] | null
           recommended_regime?: string | null
+          service_description?: string | null
+          service_price_cents?: number | null
           state?: string | null
           status?: string
           status_updated_at?: string | null
@@ -413,10 +478,13 @@ export type Database = {
           has_employees?: boolean | null
           id?: string
           monthly_expenses_cents?: number | null
+          payment_status?: string | null
           phone?: string | null
           profession?: string | null
           recommendation_reasons?: string[] | null
           recommended_regime?: string | null
+          service_description?: string | null
+          service_price_cents?: number | null
           state?: string | null
           status?: string
           status_updated_at?: string | null
