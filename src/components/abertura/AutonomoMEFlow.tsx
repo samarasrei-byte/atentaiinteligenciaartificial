@@ -108,8 +108,8 @@ const AutonomoMEFlow: React.FC<AutonomoMEFlowProps> = ({ onBack }) => {
     state: '',
   });
 
-  const totalSteps = 5;
-  const progress = (step / totalSteps) * 100;
+  const totalSteps = 6;
+  const progress = step >= 6 ? 100 : (step / 5) * 100;
 
   const formatCPF = (value: string) => {
     const numbers = value.replace(/\D/g, '');
@@ -228,9 +228,32 @@ const AutonomoMEFlow: React.FC<AutonomoMEFlowProps> = ({ onBack }) => {
     setIsSubmitting(true);
     try {
       const annualRevenue = parseCurrencyInput(profileData.annualRevenue);
+      const monthlyExpenses = parseCurrencyInput(profileData.monthlyExpenses);
       
-      // Save profile data
-      const { error } = await supabase.from('autonomo_profiles').upsert({
+      // Save to company_opening_requests table
+      const { error: requestError } = await supabase.from('company_opening_requests').insert({
+        user_id: user?.id,
+        full_name: profileData.fullName,
+        cpf: profileData.cpf,
+        phone: profileData.phone,
+        email: profileData.email,
+        profession: PROFESSIONS.find(p => p.value === profileData.profession)?.label || profileData.profession,
+        annual_revenue_cents: Math.round(annualRevenue * 100),
+        monthly_expenses_cents: Math.round(monthlyExpenses * 100),
+        has_employees: profileData.hasEmployees === 'yes',
+        wants_partner: profileData.wantsPartner === 'yes',
+        current_situation: profileData.currentSituation,
+        city: profileData.city,
+        state: profileData.state,
+        recommended_regime: recommendation?.regime,
+        recommendation_reasons: recommendation?.reasons || [],
+        status: 'pending',
+      });
+
+      if (requestError) throw requestError;
+
+      // Also update autonomo profile
+      const { error: profileError } = await supabase.from('autonomo_profiles').upsert({
         user_id: user?.id,
         cpf: profileData.cpf,
         profession: PROFESSIONS.find(p => p.value === profileData.profession)?.label || profileData.profession,
@@ -242,9 +265,10 @@ const AutonomoMEFlow: React.FC<AutonomoMEFlowProps> = ({ onBack }) => {
         phone: profileData.phone,
       });
 
-      if (error) throw error;
+      if (profileError) console.error('Profile update error:', profileError);
 
       toast.success('Solicitação enviada! Um contador entrará em contato em breve.');
+      setStep(6); // Go to success/tracking step
     } catch (error) {
       console.error('Error saving data:', error);
       toast.error('Erro ao enviar solicitação. Tente novamente.');
@@ -643,59 +667,105 @@ const AutonomoMEFlow: React.FC<AutonomoMEFlowProps> = ({ onBack }) => {
             </>
           )}
 
+          {step === 6 && (
+            <>
+              <CardHeader>
+                <div className="h-16 w-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center mb-4 mx-auto">
+                  <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                </div>
+                <CardTitle className="text-white text-center">Solicitação Enviada!</CardTitle>
+                <CardDescription className="text-white/60 text-center">
+                  Sua solicitação foi registrada com sucesso
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="bg-slate-900/50 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center gap-3 text-emerald-400">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span className="font-medium">Dados salvos no sistema</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-emerald-400">
+                    <CheckCircle2 className="h-5 w-5" />
+                    <span className="font-medium">Notificação enviada aos contadores</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-white/70">
+                    <Clock className="h-5 w-5" />
+                    <span>Aguardando análise</span>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-primary/10 rounded-xl border border-primary/30">
+                  <p className="text-sm text-white/80 text-center">
+                    Você receberá notificações automáticas a cada atualização do seu processo. 
+                    Acompanhe o status no seu painel.
+                  </p>
+                </div>
+
+                <Button
+                  onClick={() => onBack?.()}
+                  className="w-full bg-primary hover:bg-primary/90 text-white"
+                >
+                  Voltar ao Painel
+                </Button>
+              </CardContent>
+            </>
+          )}
+
           {/* Footer Actions */}
-          <div className="p-6 pt-0">
-            <div className="flex gap-3">
-              {step > 1 && (
-                <Button
-                  variant="outline"
-                  onClick={handleBack}
-                  className="flex-1 border-slate-600 text-white hover:bg-slate-700"
-                >
-                  Voltar
-                </Button>
-              )}
-              {step < 3 && (
-                <Button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
-                >
-                  Continuar
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              )}
-              {step === 3 && (
-                <Button
-                  onClick={handleNext}
-                  disabled={!canProceed()}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
-                >
-                  Analisar Perfil
-                  <Sparkles className="h-4 w-4" />
-                </Button>
-              )}
-              {step === 4 && recommendation?.regime !== 'mei' && (
-                <Button
-                  onClick={() => setStep(5)}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
-                >
-                  Falar com Contador
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              )}
-              {step === 5 && (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!canProceed() || isSubmitting}
-                  className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
-                >
-                  {isSubmitting ? 'Enviando...' : 'Enviar Solicitação'}
-                  <CheckCircle2 className="h-4 w-4" />
-                </Button>
-              )}
+          {step < 6 && (
+            <div className="p-6 pt-0">
+              <div className="flex gap-3">
+                {step > 1 && (
+                  <Button
+                    variant="outline"
+                    onClick={handleBack}
+                    className="flex-1 border-slate-600 text-white hover:bg-slate-700"
+                  >
+                    Voltar
+                  </Button>
+                )}
+                {step < 3 && (
+                  <Button
+                    onClick={handleNext}
+                    disabled={!canProceed()}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
+                  >
+                    Continuar
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+                {step === 3 && (
+                  <Button
+                    onClick={handleNext}
+                    disabled={!canProceed()}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
+                  >
+                    Analisar Perfil
+                    <Sparkles className="h-4 w-4" />
+                  </Button>
+                )}
+                {step === 4 && recommendation?.regime !== 'mei' && (
+                  <Button
+                    onClick={() => setStep(5)}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
+                  >
+                    Falar com Contador
+                    <ArrowRight className="h-4 w-4" />
+                  </Button>
+                )}
+                {step === 5 && (
+                  <Button
+                    onClick={handleSubmit}
+                    disabled={!canProceed() || isSubmitting}
+                    className="flex-1 bg-primary hover:bg-primary/90 text-white gap-2"
+                  >
+                    {isSubmitting ? 'Enviando...' : 'Enviar Solicitação'}
+                    <CheckCircle2 className="h-4 w-4" />
+                  </Button>
+                )}
+              </div>
             </div>
-          </div>
+          )}
         </Card>
       </div>
     </div>
