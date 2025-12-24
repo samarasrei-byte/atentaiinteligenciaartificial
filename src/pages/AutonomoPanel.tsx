@@ -70,6 +70,7 @@ import { EmbeddedConsultationChat } from '@/components/chat/EmbeddedConsultation
 import { AutonomoGoals } from '@/components/autonomos/AutonomoGoals';
 import AppSidebar from '@/components/layout/AppSidebar';
 import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
+import CompanyOpeningStatus from '@/components/abertura/CompanyOpeningStatus';
 
 interface AutonomoProfile {
   id: string;
@@ -384,6 +385,9 @@ const AutonomoPanel: React.FC = () => {
         </CardContent>
       </Card>
 
+      {/* Company Opening Status */}
+      <CompanyOpeningStatus onStartNew={() => handleTabChange('abertura-empresa')} />
+
       {/* Recent Activity */}
       <Card data-tour="history-section">
         <CardHeader>
@@ -509,7 +513,7 @@ const AutonomoPanel: React.FC = () => {
                 Formalize seu negócio com orientação sobre a Reforma Tributária
               </p>
             </div>
-            <AutonomoMEFlow />
+            <AutonomoMEFlow onBack={() => handleTabChange('dashboard')} />
           </div>
         );
       case 'glossary':

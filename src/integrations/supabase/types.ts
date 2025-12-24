@@ -304,6 +304,128 @@ export type Database = {
         }
         Relationships: []
       }
+      company_opening_notifications: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          metadata: Json | null
+          notification_type: string
+          read_at: string | null
+          request_id: string
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          metadata?: Json | null
+          notification_type: string
+          read_at?: string | null
+          request_id: string
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          metadata?: Json | null
+          notification_type?: string
+          read_at?: string | null
+          request_id?: string
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_opening_notifications_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "company_opening_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      company_opening_requests: {
+        Row: {
+          annual_revenue_cents: number | null
+          city: string | null
+          contador_id: string | null
+          contador_notes: string | null
+          cpf: string | null
+          created_at: string
+          current_situation: string | null
+          email: string | null
+          full_name: string
+          has_employees: boolean | null
+          id: string
+          monthly_expenses_cents: number | null
+          phone: string | null
+          profession: string | null
+          recommendation_reasons: string[] | null
+          recommended_regime: string | null
+          state: string | null
+          status: string
+          status_updated_at: string | null
+          updated_at: string
+          user_id: string
+          wants_partner: boolean | null
+        }
+        Insert: {
+          annual_revenue_cents?: number | null
+          city?: string | null
+          contador_id?: string | null
+          contador_notes?: string | null
+          cpf?: string | null
+          created_at?: string
+          current_situation?: string | null
+          email?: string | null
+          full_name: string
+          has_employees?: boolean | null
+          id?: string
+          monthly_expenses_cents?: number | null
+          phone?: string | null
+          profession?: string | null
+          recommendation_reasons?: string[] | null
+          recommended_regime?: string | null
+          state?: string | null
+          status?: string
+          status_updated_at?: string | null
+          updated_at?: string
+          user_id: string
+          wants_partner?: boolean | null
+        }
+        Update: {
+          annual_revenue_cents?: number | null
+          city?: string | null
+          contador_id?: string | null
+          contador_notes?: string | null
+          cpf?: string | null
+          created_at?: string
+          current_situation?: string | null
+          email?: string | null
+          full_name?: string
+          has_employees?: boolean | null
+          id?: string
+          monthly_expenses_cents?: number | null
+          phone?: string | null
+          profession?: string | null
+          recommendation_reasons?: string[] | null
+          recommended_regime?: string | null
+          state?: string | null
+          status?: string
+          status_updated_at?: string | null
+          updated_at?: string
+          user_id?: string
+          wants_partner?: boolean | null
+        }
+        Relationships: []
+      }
       consultations: {
         Row: {
           completed_at: string | null
