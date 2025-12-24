@@ -100,6 +100,7 @@ const contadorItems: SidebarItem[] = [
 
 const autonomoItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Início', tabId: 'dashboard' },
+  { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'NEW', badgeColor: 'text-emerald-400' },
   { icon: BarChart3, label: 'Dashboard Financeiro', tabId: 'financeiro' },
   { icon: Target, label: 'Metas Financeiras', tabId: 'metas' },
   { icon: Bot, label: 'Simulador IA', tabId: 'simulator', badge: 'PRO', badgeColor: 'text-amber-400' },
