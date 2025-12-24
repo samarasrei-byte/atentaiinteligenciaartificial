@@ -344,6 +344,46 @@ const AutonomoPanel: React.FC = () => {
         </Card>
       </div>
 
+      {/* Company Opening Status Card */}
+      <Card className="border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-transparent">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Building2 className="h-5 w-5 text-emerald-600" />
+            Abertura de Empresa
+            <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-600 text-xs">
+              Reforma Tributária
+            </Badge>
+          </CardTitle>
+          <CardDescription>
+            Formalize seu negócio com orientação especializada
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-full bg-emerald-500/20">
+                  <Sparkles className="h-4 w-4 text-emerald-600" />
+                </div>
+                <div>
+                  <p className="font-medium text-foreground">Descubra o melhor caminho</p>
+                  <p className="text-sm text-muted-foreground">MEI, ME ou continuar autônomo?</p>
+                </div>
+              </div>
+              <Button 
+                onClick={() => handleTabChange('abertura-empresa')}
+                className="bg-emerald-600 hover:bg-emerald-700"
+              >
+                Iniciar
+              </Button>
+            </div>
+            <p className="text-xs text-muted-foreground text-center">
+              ✨ O sistema analisa seu perfil e indica a melhor opção com base na Reforma Tributária
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Recent Activity */}
       <Card data-tour="history-section">
         <CardHeader>

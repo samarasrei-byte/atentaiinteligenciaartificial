@@ -58,7 +58,6 @@ interface AppSidebarProps {
 
 const userItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-  { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'NEW', badgeColor: 'text-emerald-400' },
   { icon: Zap, label: 'Piloto Automático', tabId: 'autopilot', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: '●', badgeColor: 'text-emerald-400' },
   { icon: BarChart3, label: 'Métricas', tabId: 'metrics', badge: 'PRO', badgeColor: 'text-primary' },
