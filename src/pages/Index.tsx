@@ -7,7 +7,6 @@ import { AISection } from "@/components/sections/AISection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
-import { FloatingAIAgent } from "@/components/ai/FloatingAIAgent";
 
 const Index = () => {
   const scrollToSection = (section: string) => {
@@ -44,9 +43,6 @@ const Index = () => {
       </main>
 
       <Footer onNavigate={scrollToSection} />
-      
-      {/* Floating AI Agent */}
-      <FloatingAIAgent context="landing" />
     </div>
   );
 };
