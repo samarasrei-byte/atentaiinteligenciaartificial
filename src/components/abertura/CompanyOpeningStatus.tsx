@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,14 +12,20 @@ import {
   User,
   Bell,
   RefreshCw,
-  XCircle
+  XCircle,
+  CreditCard,
+  MessageCircle,
+  Loader2
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
+import { formatCurrency } from '@/lib/taxConstants';
 import DocumentUpload from './DocumentUpload';
+import { CompanyOpeningChat } from './CompanyOpeningChat';
 
 interface CompanyOpeningStatusProps {
   onStartNew?: () => void;
@@ -66,6 +72,8 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
 
 const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew }) => {
   const { user } = useAuth();
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const [showChat, setShowChat] = useState(false);
 
   // Fetch active requests
   const { data: requests, isLoading: requestsLoading, refetch: refetchRequests } = useQuery({
@@ -136,6 +144,48 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
     refetchNotifications();
   };
 
+  // Get latest request
+  const latestRequest = requests && requests.length > 0 
+    ? (requests.find(r => !['completed', 'cancelled'].includes(r.status)) || requests[0])
+    : null;
+
+  // Fetch contador profile for chat
+  const { data: contadorProfile } = useQuery({
+    queryKey: ['contador-profile', latestRequest?.contador_id],
+    queryFn: async () => {
+      if (!latestRequest?.contador_id) return null;
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('user_id', latestRequest.contador_id)
+        .single();
+
+      if (error) return null;
+      return data;
+    },
+    enabled: !!latestRequest?.contador_id,
+  });
+
+  // Handle payment
+  const handlePayment = async (requestId: string) => {
+    setIsProcessingPayment(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-company-opening-payment', {
+        body: { requestId }
+      });
+
+      if (error) throw error;
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      }
+    } catch (error) {
+      console.error('Payment error:', error);
+      toast.error('Erro ao processar pagamento. Tente novamente.');
+    } finally {
+      setIsProcessingPayment(false);
+    }
+  };
+
   if (requestsLoading) {
     return (
       <Card className="bg-card/50 border-border/50">
@@ -174,8 +224,8 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
   }
 
   const activeRequest = requests.find(r => !['completed', 'cancelled'].includes(r.status));
-  const latestRequest = activeRequest || requests[0];
-  const statusConfig = STATUS_CONFIG[latestRequest.status] || STATUS_CONFIG.pending;
+  const displayRequest = activeRequest || requests[0];
+  const statusConfig = STATUS_CONFIG[displayRequest.status] || STATUS_CONFIG.pending;
 
   return (
     <div className="space-y-4">
@@ -243,15 +293,76 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
               <div>
                 <p className="font-medium text-foreground">{statusConfig.description}</p>
                 <p className="text-xs text-muted-foreground">
-                  Atualizado em {format(new Date(latestRequest.status_updated_at || latestRequest.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                  Atualizado em {format(new Date(displayRequest.status_updated_at || displayRequest.updated_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
                 </p>
               </div>
             </div>
           </div>
 
+          {/* Payment Card - show when price is set and not paid */}
+          {displayRequest.service_price_cents > 0 && displayRequest.payment_status !== 'paid' && (
+            <Card className="bg-emerald-500/10 border-emerald-500/30">
+              <CardContent className="pt-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="h-5 w-5 text-emerald-400" />
+                    <div>
+                      <p className="font-medium text-foreground">Valor do Serviço</p>
+                      <p className="text-lg font-bold text-emerald-400">
+                        {formatCurrency(displayRequest.service_price_cents / 100)}
+                      </p>
+                      {displayRequest.service_description && (
+                        <p className="text-xs text-muted-foreground">{displayRequest.service_description}</p>
+                      )}
+                    </div>
+                  </div>
+                  <Button 
+                    onClick={() => handlePayment(displayRequest.id)}
+                    disabled={isProcessingPayment}
+                    className="bg-emerald-500 hover:bg-emerald-600 text-white"
+                  >
+                    {isProcessingPayment ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <CreditCard className="h-4 w-4 mr-2" />
+                    )}
+                    Pagar Agora
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Document Upload for documents_pending status */}
-          {latestRequest.status === 'documents_pending' && (
-            <DocumentUpload requestId={latestRequest.id} />
+          {displayRequest.status === 'documents_pending' && (
+            <DocumentUpload requestId={displayRequest.id} />
+          )}
+
+          {/* Chat with Contador */}
+          {displayRequest.contador_id && (
+            <div className="border-t border-border pt-4">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-sm font-medium text-foreground flex items-center gap-2">
+                  <MessageCircle className="h-4 w-4" />
+                  Chat com o Contador
+                </p>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => setShowChat(!showChat)}
+                >
+                  {showChat ? 'Ocultar' : 'Abrir Chat'}
+                </Button>
+              </div>
+              {showChat && (
+                <CompanyOpeningChat
+                  requestId={displayRequest.id}
+                  otherUserId={displayRequest.contador_id}
+                  otherUserName={contadorProfile?.full_name || 'Contador'}
+                  isContador={false}
+                />
+              )}
+            </div>
           )}
 
           {/* Request Details */}
@@ -259,25 +370,25 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
             <div>
               <p className="text-muted-foreground">Regime Recomendado</p>
               <p className="font-medium text-foreground capitalize">
-                {latestRequest.recommended_regime?.replace('-', ' ') || 'Pendente'}
+                {displayRequest.recommended_regime?.replace('-', ' ') || 'Pendente'}
               </p>
             </div>
             <div>
               <p className="text-muted-foreground">Data da Solicitação</p>
               <p className="font-medium text-foreground">
-                {format(new Date(latestRequest.created_at), "dd/MM/yyyy", { locale: ptBR })}
+                {format(new Date(displayRequest.created_at), "dd/MM/yyyy", { locale: ptBR })}
               </p>
             </div>
-            {latestRequest.city && (
+            {displayRequest.city && (
               <div>
                 <p className="text-muted-foreground">Localização</p>
-                <p className="font-medium text-foreground">{latestRequest.city}/{latestRequest.state}</p>
+                <p className="font-medium text-foreground">{displayRequest.city}/{displayRequest.state}</p>
               </div>
             )}
-            {latestRequest.profession && (
+            {displayRequest.profession && (
               <div>
                 <p className="text-muted-foreground">Profissão</p>
-                <p className="font-medium text-foreground">{latestRequest.profession}</p>
+                <p className="font-medium text-foreground">{displayRequest.profession}</p>
               </div>
             )}
           </div>
@@ -286,7 +397,7 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
           <div className="border-t border-border pt-4">
             <p className="text-sm font-medium text-foreground mb-3">Próximos Passos</p>
             <div className="space-y-3">
-              {latestRequest.status === 'pending' && (
+              {displayRequest.status === 'pending' && (
                 <>
                   <TimelineStep completed icon={<CheckCircle2 />} text="Solicitação enviada" />
                   <TimelineStep current icon={<Clock />} text="Aguardando análise do contador" />
@@ -294,7 +405,7 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
                   <TimelineStep icon={<Building2 />} text="Abertura da empresa" />
                 </>
               )}
-              {latestRequest.status === 'analyzing' && (
+              {displayRequest.status === 'analyzing' && (
                 <>
                   <TimelineStep completed icon={<CheckCircle2 />} text="Solicitação enviada" />
                   <TimelineStep completed icon={<CheckCircle2 />} text="Contador designado" />
@@ -302,21 +413,21 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
                   <TimelineStep icon={<Building2 />} text="Abertura da empresa" />
                 </>
               )}
-              {latestRequest.status === 'documents_pending' && (
+              {displayRequest.status === 'documents_pending' && (
                 <>
                   <TimelineStep completed icon={<CheckCircle2 />} text="Análise concluída" />
                   <TimelineStep current icon={<AlertCircle />} text="Envie os documentos pendentes" />
                   <TimelineStep icon={<Building2 />} text="Abertura da empresa" />
                 </>
               )}
-              {latestRequest.status === 'in_progress' && (
+              {displayRequest.status === 'in_progress' && (
                 <>
                   <TimelineStep completed icon={<CheckCircle2 />} text="Documentos recebidos" />
                   <TimelineStep current icon={<RefreshCw />} text="Processo de abertura em andamento" />
                   <TimelineStep icon={<Building2 />} text="Empresa aberta" />
                 </>
               )}
-              {latestRequest.status === 'completed' && (
+              {displayRequest.status === 'completed' && (
                 <>
                   <TimelineStep completed icon={<CheckCircle2 />} text="Processo concluído" />
                   <TimelineStep completed icon={<Building2 />} text="Empresa aberta com sucesso!" />

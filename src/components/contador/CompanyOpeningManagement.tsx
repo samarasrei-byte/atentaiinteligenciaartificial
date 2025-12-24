@@ -19,7 +19,6 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { 
@@ -31,11 +30,11 @@ import {
   XCircle,
   DollarSign,
   Eye,
-  Download,
   Send,
-  AlertCircle,
   TrendingUp,
-  Loader2
+  Loader2,
+  MessageCircle,
+  Download
 } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
@@ -44,6 +43,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency, formatCurrencyInput, parseCurrencyInput } from '@/lib/taxConstants';
+import { CompanyOpeningChat } from '@/components/abertura/CompanyOpeningChat';
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   pending: {
@@ -92,6 +92,7 @@ const CompanyOpeningManagement: React.FC = () => {
   const [serviceDescription, setServiceDescription] = useState('');
   const [contadorNotes, setContadorNotes] = useState('');
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [chatRequestId, setChatRequestId] = useState<string | null>(null);
 
   // Fetch all pending requests (not assigned)
   const { data: pendingRequests, isLoading: loadingPending } = useQuery({
