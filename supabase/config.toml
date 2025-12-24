@@ -1,5 +1,8 @@
 project_id = "wtiexyrawenxckctbwzn"
 
+[functions.ai-agent]
+verify_jwt = false
+
 [functions.ai-chat]
 verify_jwt = false
 
@@ -13,6 +16,9 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.create-company-opening-payment]
+verify_jwt = false
+
+[functions.create-consultation-payment]
 verify_jwt = false
 
 [functions.customer-portal]
