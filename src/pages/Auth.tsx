@@ -408,10 +408,10 @@ const Auth = () => {
               <Button
                 variant="outline"
                 className="w-full border-teal-500 text-teal-400 hover:bg-teal-500/10"
-                onClick={() => navigate('/onboarding')}
+                onClick={() => navigate('/comecar')}
               >
                 <Building2 className="h-4 w-4 mr-2" />
-                Começar configurando minha empresa
+                Criar minha conta
               </Button>
             </div>
           )}

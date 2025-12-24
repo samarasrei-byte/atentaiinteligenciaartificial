@@ -34,7 +34,7 @@ import FAQ from "./pages/FAQ";
 import AutonomoPanel from "./pages/AutonomoPanel";
 import PlanoAutonomo from "./pages/PlanoAutonomo";
 import AutonomoOnboardingPage from "./pages/AutonomoOnboarding";
-
+import UserTypeSelection from "./pages/UserTypeSelection";
 
 const queryClient = new QueryClient();
 
@@ -48,7 +48,10 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/comecar" element={<UserTypeSelection />} />
             <Route path="/onboarding" element={<PublicOnboarding />} />
+            <Route path="/autonomo-onboarding" element={<AutonomoOnboardingPage />} />
+            <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
             <Route path="/pricing" element={<Pricing />} />
             <Route path="/plano/simulador" element={<PlanoSimulador />} />
             <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
