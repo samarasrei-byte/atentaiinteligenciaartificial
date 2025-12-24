@@ -21,10 +21,11 @@ import { ContadorAgenda } from '@/components/contador/ContadorAgenda';
 import { LegalUpdates } from '@/components/contador/LegalUpdates';
 import { WithdrawalSystem } from '@/components/contador/WithdrawalSystem';
 import { ContadorReportGenerator } from '@/components/contador/ContadorReportGenerator';
+import CompanyOpeningManagement from '@/components/contador/CompanyOpeningManagement';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
-  CheckCircle, AlertCircle, XCircle, Menu, Banknote, FileDown,
+  CheckCircle, AlertCircle, XCircle, Menu, Banknote, FileDown, Building2,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -380,6 +381,19 @@ const ContadorPanel = () => {
           {activeTab === 'stats' && <ContadorStats consultations={consultations} />}
           
           {activeTab === 'agenda' && <ContadorAgenda />}
+
+          {activeTab === 'company-opening' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Building2 className="h-6 w-6 text-emerald-500" />
+                  Abertura de Empresas
+                </h2>
+                <p className="text-muted-foreground">Gerencie solicitações de abertura de empresa com precificação</p>
+              </div>
+              <CompanyOpeningManagement />
+            </div>
+          )}
 
           {activeTab === 'updates' && (
             <div className="space-y-6">

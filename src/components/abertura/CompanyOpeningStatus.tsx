@@ -19,6 +19,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import DocumentUpload from './DocumentUpload';
 
 interface CompanyOpeningStatusProps {
   onStartNew?: () => void;
@@ -247,6 +248,11 @@ const CompanyOpeningStatus: React.FC<CompanyOpeningStatusProps> = ({ onStartNew 
               </div>
             </div>
           </div>
+
+          {/* Document Upload for documents_pending status */}
+          {latestRequest.status === 'documents_pending' && (
+            <DocumentUpload requestId={latestRequest.id} />
+          )}
 
           {/* Request Details */}
           <div className="grid grid-cols-2 gap-4 text-sm">
