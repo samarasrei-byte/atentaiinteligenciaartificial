@@ -1,4 +1,3 @@
-import React from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Star, Quote } from "lucide-react";
@@ -72,7 +71,7 @@ const testimonials = [
   }
 ];
 
-export const TestimonialsSection = React.forwardRef<HTMLElement, object>((_, forwardedRef) => {
+export function TestimonialsSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
 
   return (
@@ -133,6 +132,4 @@ export const TestimonialsSection = React.forwardRef<HTMLElement, object>((_, for
       </div>
     </section>
   );
-});
-
-TestimonialsSection.displayName = "TestimonialsSection";
+}
