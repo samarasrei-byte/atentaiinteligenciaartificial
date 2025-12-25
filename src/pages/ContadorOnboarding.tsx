@@ -65,19 +65,13 @@ const ContadorOnboarding = () => {
     if (!authLoading) {
       if (!user) {
         navigate('/auth');
-      } else if (!hasRole('contador') && !hasRole('admin')) {
-        toast({
-          variant: 'destructive',
-          title: 'Acesso negado',
-          description: 'Você precisa da role de contador para acessar esta página',
-        });
-        navigate('/dashboard');
       } else {
-        // Check if already has a profile
+        // Allow any authenticated user to complete contador onboarding
+        // The role will be assigned after completing the onboarding
         checkExistingProfile();
       }
     }
-  }, [user, authLoading, hasRole, navigate]);
+  }, [user, authLoading, navigate]);
 
   const checkExistingProfile = async () => {
     if (!user) return;
@@ -170,6 +164,19 @@ const ContadorOnboarding = () => {
         .upsert(profileData, { onConflict: 'user_id' });
 
       if (error) throw error;
+
+      // Add contador role to user_roles if not exists
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert(
+          { user_id: user.id, role: 'contador' },
+          { onConflict: 'user_id,role', ignoreDuplicates: true }
+        );
+
+      if (roleError) {
+        console.error('Error adding contador role:', roleError);
+        // Continue anyway - the profile was created successfully
+      }
 
       toast({
         title: 'Perfil criado com sucesso!',
