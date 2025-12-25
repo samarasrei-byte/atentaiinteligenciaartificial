@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { MessageCircle, Send, Bot, User, Loader2, Lock, Sparkles, CheckCircle, Building2, UserCheck, Calculator, Shield, Zap, Brain, Target } from "lucide-react";
+import { MessageCircle, Send, Bot, User, Loader2, Lock, Sparkles, CheckCircle, Shield, Zap, Brain, Target } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -177,27 +177,6 @@ Para uma análise específica do seu caso, recomendo:
 Posso ajudar com mais alguma dúvida específica?`;
 };
 
-const userTypeBenefits = [
-  {
-    icon: UserCheck,
-    title: "Para Autônomos",
-    description: "Descubra se vale mais a pena continuar como PF, virar MEI ou abrir uma ME. A IA calcula seus impostos e mostra a melhor opção.",
-    color: "from-cyan-500 to-teal-500"
-  },
-  {
-    icon: Building2,
-    title: "Para Empresas",
-    description: "Compare Simples Nacional, Lucro Presumido e Lucro Real. Saiba quanto você pode economizar com o regime certo.",
-    color: "from-emerald-500 to-green-500"
-  },
-  {
-    icon: Calculator,
-    title: "Para Contadores",
-    description: "Acesso técnico à LC 214/2025, cronograma de transição, split payment e todas as novidades da reforma.",
-    color: "from-purple-500 to-violet-500"
-  }
-];
-
 const howItWorks = [
   {
     icon: Brain,
@@ -345,27 +324,6 @@ export function AISection() {
                 </CardContent>
               </Card>
             ))}
-          </div>
-
-          {/* User Type Benefits */}
-          <div className="mb-12 md:mb-16">
-            <h3 className="text-xl md:text-2xl font-bold text-center mb-6 md:mb-8">
-              Benefícios por Tipo de Usuário
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
-              {userTypeBenefits.map((benefit, index) => (
-                <Card key={index} className="relative overflow-hidden border-2 hover:border-primary/50 transition-all duration-300 group">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${benefit.color} opacity-5 group-hover:opacity-10 transition-opacity`} />
-                  <CardContent className="pt-6 pb-4 px-4 md:px-6 relative z-10">
-                    <div className={`w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-gradient-to-br ${benefit.color} flex items-center justify-center mb-4 shadow-lg`}>
-                      <benefit.icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
-                    </div>
-                    <h4 className="font-bold text-base md:text-lg mb-2">{benefit.title}</h4>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{benefit.description}</p>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
           </div>
 
           {/* Important Alert */}
