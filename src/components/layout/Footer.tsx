@@ -1,3 +1,4 @@
+import React from "react";
 import { Calculator, MessageCircle, Users, BookOpen, Mail, Phone, MapPin } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -5,7 +6,7 @@ interface FooterProps {
   onNavigate: (section: string) => void;
 }
 
-export function Footer({ onNavigate }: FooterProps) {
+export const Footer = React.forwardRef<HTMLElement, FooterProps>(({ onNavigate }, ref) => {
   const currentYear = new Date().getFullYear();
 
   const navigation = [
@@ -151,4 +152,6 @@ export function Footer({ onNavigate }: FooterProps) {
       </div>
     </footer>
   );
-}
+});
+
+Footer.displayName = "Footer";
