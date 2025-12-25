@@ -2,19 +2,19 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
-  Calculator, FileText, DollarSign, User, CheckCircle, ArrowRight, 
-  ArrowLeft, Loader2, Award, Briefcase, Star, Clock,
+  Calculator, FileText, DollarSign, User, CheckCircle, 
+  Loader2, Award, Star, Clock,
 } from 'lucide-react';
+import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import OnboardingStepHeader from '@/components/onboarding/OnboardingStepHeader';
 
 interface OnboardingData {
   crc_number: string;
@@ -25,10 +25,10 @@ interface OnboardingData {
 }
 
 const steps = [
-  { id: 1, title: 'Dados Profissionais', icon: FileText, description: 'Seu CRC e especialidades' },
-  { id: 2, title: 'Sobre Você', icon: User, description: 'Biografia e apresentação' },
-  { id: 3, title: 'Valores e Disponibilidade', icon: DollarSign, description: 'Preços e horários' },
-  { id: 4, title: 'Confirmação', icon: CheckCircle, description: 'Revise seus dados' },
+  { id: 1, title: 'Profissional', icon: FileText },
+  { id: 2, title: 'Biografia', icon: User },
+  { id: 3, title: 'Valores', icon: DollarSign },
+  { id: 4, title: 'Confirmar', icon: CheckCircle },
 ];
 
 const specialties = [
@@ -46,7 +46,7 @@ const specialties = [
 
 const ContadorOnboarding = () => {
   const navigate = useNavigate();
-  const { user, hasRole, loading: authLoading } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const { toast } = useToast();
 
   const [currentStep, setCurrentStep] = useState(1);
@@ -66,8 +66,6 @@ const ContadorOnboarding = () => {
       if (!user) {
         navigate('/auth');
       } else {
-        // Allow any authenticated user to complete contador onboarding
-        // The role will be assigned after completing the onboarding
         checkExistingProfile();
       }
     }
@@ -83,7 +81,6 @@ const ContadorOnboarding = () => {
       .single();
 
     if (profile && profile.crc_number) {
-      // Already has a complete profile, redirect to contador panel
       navigate('/contador');
     }
   };
@@ -121,10 +118,27 @@ const ContadorOnboarding = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+  const canProceed = () => {
+    switch (currentStep) {
+      case 1:
+        return data.crc_number.trim() && selectedSpecialties.length > 0;
+      case 2:
+        return data.bio.trim().length >= 50;
+      case 3:
+        return parseFloat(data.hourly_rate) >= 50;
+      case 4:
+        return true;
+      default:
+        return true;
+    }
+  };
+
   const handleNext = () => {
     if (validateStep(currentStep)) {
       if (currentStep < steps.length) {
         setCurrentStep(currentStep + 1);
+      } else {
+        handleSubmit();
       }
     }
   };
@@ -165,7 +179,6 @@ const ContadorOnboarding = () => {
 
       if (error) throw error;
 
-      // Add contador role to user_roles if not exists
       const { error: roleError } = await supabase
         .from('user_roles')
         .upsert(
@@ -175,7 +188,6 @@ const ContadorOnboarding = () => {
 
       if (roleError) {
         console.error('Error adding contador role:', roleError);
-        // Continue anyway - the profile was created successfully
       }
 
       toast({
@@ -198,316 +210,250 @@ const ContadorOnboarding = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  const progress = (currentStep / steps.length) * 100;
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-blue-900 py-8 px-4">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg shadow-blue-500/30">
-              <Calculator className="h-8 w-8 text-white" />
+    <OnboardingLayout
+      title="Bem-vindo ao AtentAI"
+      subtitle="Configure seu perfil profissional para começar a atender"
+      icon={Calculator}
+      iconColor="from-teal-500 to-emerald-500"
+      steps={steps}
+      currentStep={currentStep}
+      totalSteps={steps.length}
+      onNext={handleNext}
+      onBack={handleBack}
+      canProceed={canProceed()}
+      isSubmitting={isLoading}
+      submitLabel="Criar Perfil"
+    >
+      {/* Step 1: Professional Data */}
+      {currentStep === 1 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={FileText}
+            title="Dados Profissionais"
+            description="Seu CRC e especialidades"
+          />
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Número do CRC *</Label>
+              <Input
+                value={data.crc_number}
+                onChange={(e) => setData({ ...data, crc_number: e.target.value })}
+                placeholder="12345/O-SP"
+              />
+              {errors.crc_number && (
+                <p className="text-sm text-destructive">{errors.crc_number}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Formato: número/O-UF (ex: 12345/O-SP)
+              </p>
+            </div>
+
+            <div className="space-y-3">
+              <Label>Especialidades *</Label>
+              <div className="flex flex-wrap gap-2">
+                {specialties.map((specialty) => {
+                  const isSelected = selectedSpecialties.includes(specialty);
+                  return (
+                    <Badge
+                      key={specialty}
+                      variant="outline"
+                      className={`cursor-pointer transition-all ${
+                        isSelected
+                          ? 'bg-primary/10 text-primary border-primary/50'
+                          : 'bg-muted text-muted-foreground border-border hover:border-muted-foreground/50'
+                      }`}
+                      onClick={() => toggleSpecialty(specialty)}
+                    >
+                      {isSelected && <CheckCircle className="h-3 w-3 mr-1" />}
+                      {specialty}
+                    </Badge>
+                  );
+                })}
+              </div>
+              {errors.specialty && (
+                <p className="text-sm text-destructive">{errors.specialty}</p>
+              )}
             </div>
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Bem-vindo ao AtentAI</h1>
-          <p className="text-slate-400">Configure seu perfil profissional para começar a atender</p>
         </div>
+      )}
 
-        {/* Progress */}
-        <div className="mb-8">
-          <div className="flex justify-between mb-2">
-            {steps.map((step) => {
-              const Icon = step.icon;
-              const isActive = currentStep === step.id;
-              const isCompleted = currentStep > step.id;
-              return (
-                <div
-                  key={step.id}
-                  className={`flex flex-col items-center flex-1 ${
-                    step.id < steps.length ? 'relative' : ''
-                  }`}
-                >
-                  <div
-                    className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${
-                      isCompleted
-                        ? 'bg-gradient-to-br from-teal-500 to-cyan-500'
-                        : isActive
-                        ? 'bg-gradient-to-br from-blue-500 to-cyan-500 ring-4 ring-blue-500/30'
-                        : 'bg-slate-700'
-                    }`}
-                  >
-                    {isCompleted ? (
-                      <CheckCircle className="h-5 w-5 text-white" />
-                    ) : (
-                      <Icon className={`h-5 w-5 ${isActive ? 'text-white' : 'text-slate-400'}`} />
-                    )}
-                  </div>
-                  <span
-                    className={`text-xs mt-2 hidden sm:block ${
-                      isActive ? 'text-white font-medium' : 'text-slate-500'
-                    }`}
-                  >
-                    {step.title}
-                  </span>
-                </div>
-              );
-            })}
+      {/* Step 2: About You */}
+      {currentStep === 2 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={User}
+            title="Biografia Profissional"
+            description="Conte sobre sua experiência"
+          />
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Textarea
+                value={data.bio}
+                onChange={(e) => setData({ ...data, bio: e.target.value })}
+                placeholder="Descreva sua experiência profissional, formação e como você pode ajudar seus clientes..."
+                className="min-h-[150px]"
+              />
+              <div className="flex justify-between">
+                {errors.bio ? (
+                  <p className="text-sm text-destructive">{errors.bio}</p>
+                ) : (
+                  <span />
+                )}
+                <p className="text-xs text-muted-foreground">{data.bio.length} caracteres</p>
+              </div>
+            </div>
+
+            <Card className="bg-muted/50 border-border">
+              <CardContent className="pt-4">
+                <h4 className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                  <Star className="h-4 w-4 text-amber-500" />
+                  Dicas para uma boa biografia
+                </h4>
+                <ul className="text-sm text-muted-foreground space-y-1">
+                  <li>• Mencione sua formação e experiência</li>
+                  <li>• Destaque suas áreas de especialização</li>
+                  <li>• Seja claro sobre como você pode ajudar</li>
+                  <li>• Mantenha um tom profissional mas acessível</li>
+                </ul>
+              </CardContent>
+            </Card>
           </div>
-          <Progress value={progress} className="h-2 bg-slate-700" />
         </div>
+      )}
 
-        {/* Content Card */}
-        <Card className="bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              {React.createElement(steps[currentStep - 1].icon, {
-                className: 'h-5 w-5 text-blue-400',
-              })}
-              {steps[currentStep - 1].title}
-            </CardTitle>
-            <CardDescription className="text-slate-400">
-              {steps[currentStep - 1].description}
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            {/* Step 1: Professional Data */}
-            {currentStep === 1 && (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Número do CRC *</Label>
-                  <Input
-                    value={data.crc_number}
-                    onChange={(e) => setData({ ...data, crc_number: e.target.value })}
-                    placeholder="12345/O-SP"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                  />
-                  {errors.crc_number && (
-                    <p className="text-sm text-red-400">{errors.crc_number}</p>
-                  )}
-                  <p className="text-xs text-slate-500">
-                    Formato: número/O-UF (ex: 12345/O-SP)
-                  </p>
-                </div>
+      {/* Step 3: Pricing */}
+      {currentStep === 3 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={DollarSign}
+            title="Valores e Disponibilidade"
+            description="Configure seus preços"
+          />
 
-                <div className="space-y-3">
-                  <Label className="text-slate-300">Especialidades *</Label>
-                  <div className="flex flex-wrap gap-2">
-                    {specialties.map((specialty) => {
-                      const isSelected = selectedSpecialties.includes(specialty);
-                      return (
-                        <Badge
-                          key={specialty}
-                          variant="outline"
-                          className={`cursor-pointer transition-all ${
-                            isSelected
-                              ? 'bg-blue-500/20 text-blue-400 border-blue-500/50'
-                              : 'bg-slate-700/50 text-slate-400 border-slate-600 hover:border-slate-500'
-                          }`}
-                          onClick={() => toggleSpecialty(specialty)}
-                        >
-                          {isSelected && <CheckCircle className="h-3 w-3 mr-1" />}
-                          {specialty}
-                        </Badge>
-                      );
-                    })}
-                  </div>
-                  {errors.specialty && (
-                    <p className="text-sm text-red-400">{errors.specialty}</p>
-                  )}
-                </div>
-              </>
-            )}
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label>Valor por Consulta (R$) *</Label>
+              <div className="relative">
+                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  type="number"
+                  value={data.hourly_rate}
+                  onChange={(e) => setData({ ...data, hourly_rate: e.target.value })}
+                  min="50"
+                  step="10"
+                  className="pl-10"
+                />
+              </div>
+              {errors.hourly_rate && (
+                <p className="text-sm text-destructive">{errors.hourly_rate}</p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Taxa da plataforma: 10% sobre cada consulta
+              </p>
+            </div>
 
-            {/* Step 2: About You */}
-            {currentStep === 2 && (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Biografia Profissional *</Label>
-                  <Textarea
-                    value={data.bio}
-                    onChange={(e) => setData({ ...data, bio: e.target.value })}
-                    placeholder="Descreva sua experiência profissional, formação e como você pode ajudar seus clientes..."
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 min-h-[150px]"
-                  />
-                  <div className="flex justify-between">
-                    {errors.bio ? (
-                      <p className="text-sm text-red-400">{errors.bio}</p>
-                    ) : (
-                      <span />
-                    )}
-                    <p className="text-xs text-slate-500">{data.bio.length} caracteres</p>
-                  </div>
-                </div>
-
-                <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
-                  <h4 className="text-sm font-medium text-white mb-2 flex items-center gap-2">
-                    <Star className="h-4 w-4 text-amber-400" />
-                    Dicas para uma boa biografia
-                  </h4>
-                  <ul className="text-sm text-slate-400 space-y-1">
-                    <li>• Mencione sua formação e experiência</li>
-                    <li>• Destaque suas áreas de especialização</li>
-                    <li>• Seja claro sobre como você pode ajudar</li>
-                    <li>• Mantenha um tom profissional mas acessível</li>
-                  </ul>
-                </div>
-              </>
-            )}
-
-            {/* Step 3: Pricing */}
-            {currentStep === 3 && (
-              <>
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Valor por Consulta (R$) *</Label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-                    <Input
-                      type="number"
-                      value={data.hourly_rate}
-                      onChange={(e) => setData({ ...data, hourly_rate: e.target.value })}
-                      min="50"
-                      step="10"
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
-                    />
-                  </div>
-                  {errors.hourly_rate && (
-                    <p className="text-sm text-red-400">{errors.hourly_rate}</p>
-                  )}
-                  <p className="text-xs text-slate-500">
-                    Taxa da plataforma: 10% sobre cada consulta
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between p-4 bg-slate-700/30 rounded-lg border border-slate-600/50">
-                  <div className="flex items-center gap-3">
-                    <Clock className="h-5 w-5 text-teal-400" />
-                    <div>
-                      <p className="font-medium text-white">Disponível para consultas</p>
-                      <p className="text-sm text-slate-400">
-                        Seu perfil aparecerá na lista de contadores
-                      </p>
-                    </div>
-                  </div>
-                  <Switch
-                    checked={data.available}
-                    onCheckedChange={(checked) => setData({ ...data, available: checked })}
-                  />
-                </div>
-
-                <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">
-                  <h4 className="text-sm font-medium text-emerald-400 mb-2 flex items-center gap-2">
-                    <Award className="h-4 w-4" />
-                    Seus ganhos estimados
-                  </h4>
-                  <p className="text-slate-300">
-                    Com o valor de{' '}
-                    <span className="font-bold text-white">
-                      R$ {parseFloat(data.hourly_rate || '0').toFixed(2)}
-                    </span>{' '}
-                    por consulta, você receberá{' '}
-                    <span className="font-bold text-emerald-400">
-                      R$ {(parseFloat(data.hourly_rate || '0') * 0.9).toFixed(2)}
-                    </span>{' '}
-                    líquido.
-                  </p>
-                </div>
-              </>
-            )}
-
-            {/* Step 4: Confirmation */}
-            {currentStep === 4 && (
-              <div className="space-y-4">
-                <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50 space-y-3">
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">CRC</span>
-                    <span className="text-white font-medium">{data.crc_number}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Especialidades</span>
-                    <span className="text-white font-medium text-right max-w-[60%]">
-                      {selectedSpecialties.join(', ')}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Valor por consulta</span>
-                    <span className="text-white font-medium">
-                      R$ {parseFloat(data.hourly_rate).toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-slate-400">Disponível</span>
-                    <Badge
-                      className={
-                        data.available
-                          ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-slate-500/20 text-slate-400'
-                      }
-                    >
-                      {data.available ? 'Sim' : 'Não'}
-                    </Badge>
-                  </div>
-                </div>
-
-                <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
-                  <h4 className="text-sm font-medium text-white mb-2">Biografia</h4>
-                  <p className="text-slate-400 text-sm">{data.bio}</p>
-                </div>
-
-                <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4">
-                  <p className="text-blue-400 text-sm">
-                    Ao confirmar, seu perfil será publicado e você poderá começar a receber
-                    solicitações de consultoria.
+            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-border">
+              <div className="flex items-center gap-3">
+                <Clock className="h-5 w-5 text-primary" />
+                <div>
+                  <p className="font-medium text-foreground">Disponível para consultas</p>
+                  <p className="text-sm text-muted-foreground">
+                    Seu perfil aparecerá na lista de contadores
                   </p>
                 </div>
               </div>
-            )}
-
-            {/* Navigation */}
-            <div className="flex justify-between pt-4 border-t border-slate-700">
-              <Button
-                variant="outline"
-                onClick={handleBack}
-                disabled={currentStep === 1}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
-
-              {currentStep < steps.length ? (
-                <Button
-                  onClick={handleNext}
-                  className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600"
-                >
-                  Próximo
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </Button>
-              ) : (
-                <Button
-                  onClick={handleSubmit}
-                  disabled={isLoading}
-                  className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : (
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                  )}
-                  Confirmar e Publicar
-                </Button>
-              )}
+              <Switch
+                checked={data.available}
+                onCheckedChange={(checked) => setData({ ...data, available: checked })}
+              />
             </div>
-          </CardContent>
-        </Card>
-      </div>
-    </div>
+
+            <Card className="bg-primary/5 border-primary/20">
+              <CardContent className="pt-4">
+                <h4 className="text-sm font-medium text-primary mb-2 flex items-center gap-2">
+                  <Award className="h-4 w-4" />
+                  Seus ganhos estimados
+                </h4>
+                <p className="text-muted-foreground">
+                  Com o valor de{' '}
+                  <span className="font-bold text-foreground">
+                    R$ {parseFloat(data.hourly_rate || '0').toFixed(2)}
+                  </span>{' '}
+                  por consulta, você receberá{' '}
+                  <span className="font-bold text-primary">
+                    R$ {(parseFloat(data.hourly_rate || '0') * 0.9).toFixed(2)}
+                  </span>{' '}
+                  líquido.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      )}
+
+      {/* Step 4: Confirmation */}
+      {currentStep === 4 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={CheckCircle}
+            title="Confirmação"
+            description="Revise seus dados antes de finalizar"
+          />
+
+          <Card className="border-border">
+            <CardContent className="pt-4 space-y-4">
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">CRC</span>
+                <span className="font-medium text-foreground">{data.crc_number}</span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">Especialidades</span>
+                <span className="font-medium text-foreground text-right max-w-[60%]">
+                  {selectedSpecialties.join(', ')}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">Valor por consulta</span>
+                <span className="font-medium text-foreground">
+                  R$ {parseFloat(data.hourly_rate).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between py-2">
+                <span className="text-muted-foreground">Disponível</span>
+                <Badge
+                  className={
+                    data.available
+                      ? 'bg-primary/10 text-primary'
+                      : 'bg-muted text-muted-foreground'
+                  }
+                >
+                  {data.available ? 'Sim' : 'Não'}
+                </Badge>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="bg-muted/50 border-border">
+            <CardContent className="pt-4">
+              <p className="text-sm text-muted-foreground">
+                <strong className="text-foreground">Biografia:</strong> {data.bio.substring(0, 150)}
+                {data.bio.length > 150 && '...'}
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+    </OnboardingLayout>
   );
 };
 
