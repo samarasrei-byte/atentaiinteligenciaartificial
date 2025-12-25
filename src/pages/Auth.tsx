@@ -5,16 +5,31 @@ import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Brain, Mail, Lock, User, Loader2, Building2, ArrowLeft, Briefcase, Calculator, Users } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Mail, Lock, User, Loader2, Building2, ArrowLeft, Briefcase, Calculator, Eye, EyeOff, Sparkles, ArrowRight, Check } from 'lucide-react';
 import { z } from 'zod';
+import { cn } from '@/lib/utils';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
 const nameSchema = z.string().min(2, 'Nome deve ter pelo menos 2 caracteres');
+
+type UserType = 'empresa' | 'autonomo' | 'contador';
+type AuthMode = 'login' | 'signup';
+
+interface UserTypeOption {
+  type: UserType;
+  label: string;
+  icon: React.ElementType;
+  color: string;
+}
+
+const userTypes: UserTypeOption[] = [
+  { type: 'empresa', label: 'Empresa', icon: Building2, color: 'text-blue-500 bg-blue-500/10 border-blue-500' },
+  { type: 'autonomo', label: 'Autônomo', icon: Briefcase, color: 'text-purple-500 bg-purple-500/10 border-purple-500' },
+  { type: 'contador', label: 'Contador', icon: Calculator, color: 'text-teal-500 bg-teal-500/10 border-teal-500' },
+];
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -22,27 +37,31 @@ const Auth = () => {
   const { user, signIn, signUp, loading: authLoading } = useAuth();
   const { toast } = useToast();
   
+  const [mode, setMode] = useState<AuthMode>('login');
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
-  const [loginEmail, setLoginEmail] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  const [signupEmail, setSignupEmail] = useState('');
-  const [signupPassword, setSignupPassword] = useState('');
-  const [signupName, setSignupName] = useState('');
-  const [userType, setUserType] = useState<'empresa' | 'autonomo' | 'contador'>('empresa');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
+  const [userType, setUserType] = useState<UserType>('empresa');
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const fromOnboarding = searchParams.get('from') === 'onboarding';
   const pendingOnboardingData = sessionStorage.getItem('pendingOnboardingData');
 
   useEffect(() => {
+    if (fromOnboarding) {
+      setMode('signup');
+    }
+  }, [fromOnboarding]);
+
+  useEffect(() => {
     if (user && !authLoading) {
-      // If there's pending onboarding data, save it
       if (pendingOnboardingData) {
         saveOnboardingData(user.id);
       } else {
-        // Check if user just signed up and selected a type
         const selectedType = sessionStorage.getItem('selectedUserType');
         if (selectedType) {
           sessionStorage.removeItem('selectedUserType');
@@ -88,7 +107,6 @@ const Auth = () => {
 
       if (error) throw error;
 
-      // Clear the pending data
       sessionStorage.removeItem('pendingOnboardingData');
       
       toast({
@@ -108,103 +126,82 @@ const Auth = () => {
     }
   };
 
-  const validateLogin = () => {
+  const validateForm = () => {
     const newErrors: Record<string, string> = {};
     
     try {
-      emailSchema.parse(loginEmail);
+      emailSchema.parse(email);
     } catch (e: any) {
-      newErrors.loginEmail = e.errors[0].message;
+      newErrors.email = e.errors[0].message;
     }
     
     try {
-      passwordSchema.parse(loginPassword);
+      passwordSchema.parse(password);
     } catch (e: any) {
-      newErrors.loginPassword = e.errors[0].message;
+      newErrors.password = e.errors[0].message;
+    }
+    
+    if (mode === 'signup') {
+      try {
+        nameSchema.parse(name);
+      } catch (e: any) {
+        newErrors.name = e.errors[0].message;
+      }
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const validateSignup = () => {
-    const newErrors: Record<string, string> = {};
-    
-    try {
-      nameSchema.parse(signupName);
-    } catch (e: any) {
-      newErrors.signupName = e.errors[0].message;
-    }
-    
-    try {
-      emailSchema.parse(signupEmail);
-    } catch (e: any) {
-      newErrors.signupEmail = e.errors[0].message;
-    }
-    
-    try {
-      passwordSchema.parse(signupPassword);
-    } catch (e: any) {
-      newErrors.signupPassword = e.errors[0].message;
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!validateLogin()) return;
+    if (!validateForm()) return;
     
     setIsLoading(true);
-    const { error } = await signIn(loginEmail, loginPassword);
-    setIsLoading(false);
     
-    if (error) {
-      let message = 'Erro ao fazer login';
-      if (error.message.includes('Invalid login credentials')) {
-        message = 'Email ou senha incorretos';
-      } else if (error.message.includes('Email not confirmed')) {
-        message = 'Por favor, confirme seu email antes de fazer login';
+    if (mode === 'login') {
+      const { error } = await signIn(email, password);
+      setIsLoading(false);
+      
+      if (error) {
+        let message = 'Erro ao fazer login';
+        if (error.message.includes('Invalid login credentials')) {
+          message = 'Email ou senha incorretos';
+        } else if (error.message.includes('Email not confirmed')) {
+          message = 'Por favor, confirme seu email antes de fazer login';
+        }
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: message,
+        });
+      } else {
+        toast({
+          title: 'Bem-vindo!',
+          description: 'Login realizado com sucesso',
+        });
       }
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: message,
-      });
     } else {
-      toast({
-        title: 'Bem-vindo!',
-        description: 'Login realizado com sucesso',
-      });
-    }
-  };
-
-  const handleSignup = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateSignup()) return;
-    
-    setIsLoading(true);
-    const { error } = await signUp(signupEmail, signupPassword, signupName);
-    setIsLoading(false);
-    
-    if (error) {
-      let message = 'Erro ao criar conta';
-      if (error.message.includes('User already registered')) {
-        message = 'Este email já está cadastrado';
+      const { error } = await signUp(email, password, name);
+      setIsLoading(false);
+      
+      if (error) {
+        let message = 'Erro ao criar conta';
+        if (error.message.includes('User already registered')) {
+          message = 'Este email já está cadastrado';
+        }
+        toast({
+          variant: 'destructive',
+          title: 'Erro',
+          description: message,
+        });
+      } else {
+        toast({
+          title: 'Conta criada!',
+          description: 'Bem-vindo ao AtentAI',
+        });
+        sessionStorage.setItem('selectedUserType', userType);
       }
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: message,
-      });
-    } else {
-      toast({
-        title: 'Conta criada!',
-        description: 'Bem-vindo ao AtentAI',
-      });
-      // Redirect based on user type after successful signup
-      sessionStorage.setItem('selectedUserType', userType);
     }
   };
 
@@ -240,292 +237,304 @@ const Auth = () => {
     }
   };
 
+  const switchMode = () => {
+    setMode(mode === 'login' ? 'signup' : 'login');
+    setErrors({});
+  };
+
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 p-4">
-      <Card className="w-full max-w-md bg-slate-800/50 border-slate-700 backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <div className="flex items-center justify-center mb-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30">
+      {/* Header */}
+      <div className="p-4 md:p-6">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="text-muted-foreground hover:text-foreground"
+          onClick={() => navigate('/')}
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
+        <div className="w-full max-w-md">
+          {/* Logo & Title */}
+          <div className="text-center mb-8">
             <img 
               src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="h-16 w-auto"
+              className="h-14 w-auto mx-auto mb-6"
             />
+            {fromOnboarding && pendingOnboardingData ? (
+              <>
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+                  <Check className="h-4 w-4" />
+                  Dados salvos
+                </div>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  Finalize seu cadastro
+                </h1>
+                <p className="text-muted-foreground">
+                  Crie sua conta para acessar a plataforma
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-2">
+                  {mode === 'login' ? 'Bem-vindo de volta' : 'Crie sua conta'}
+                </h1>
+                <p className="text-muted-foreground">
+                  {mode === 'login' 
+                    ? 'Entre para acessar sua conta' 
+                    : 'Comece sua jornada com o AtentAI'}
+                </p>
+              </>
+            )}
           </div>
-          {fromOnboarding && pendingOnboardingData ? (
-            <>
-              <div className="flex items-center justify-center gap-2 text-green-400 mb-2">
-                <Building2 className="h-5 w-5" />
-                <span className="text-sm font-medium">Dados da empresa salvos!</span>
+
+          {/* Auth Card */}
+          <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-xl">
+            <CardContent className="p-6 md:p-8">
+              {/* Mode Toggle */}
+              <div className="flex rounded-xl bg-muted/50 p-1 mb-6">
+                <button
+                  type="button"
+                  onClick={() => setMode('login')}
+                  className={cn(
+                    "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
+                    mode === 'login' 
+                      ? "bg-background text-foreground shadow-sm" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Entrar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setMode('signup')}
+                  className={cn(
+                    "flex-1 py-2.5 text-sm font-medium rounded-lg transition-all",
+                    mode === 'signup' 
+                      ? "bg-background text-foreground shadow-sm" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  Cadastrar
+                </button>
               </div>
-              <CardTitle className="text-2xl text-white">Crie sua conta</CardTitle>
-              <CardDescription className="text-slate-400">
-                Finalize seu cadastro para acessar a plataforma
-              </CardDescription>
-            </>
-          ) : (
-            <>
-              <CardTitle className="text-2xl text-white">Acesse sua conta</CardTitle>
-              <CardDescription className="text-slate-400">
-                Sua plataforma completa para a Reforma Tributária
-              </CardDescription>
-            </>
-          )}
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue={fromOnboarding ? "signup" : "login"} className="w-full">
-            <TabsList className="grid w-full grid-cols-2 bg-slate-700/50">
-              <TabsTrigger value="login" className="data-[state=active]:bg-teal-600">
-                Entrar
-              </TabsTrigger>
-              <TabsTrigger value="signup" className="data-[state=active]:bg-teal-600">
-                Cadastrar
-              </TabsTrigger>
-            </TabsList>
-            
-            <TabsContent value="login">
-              <form onSubmit={handleLogin} className="space-y-4 mt-4">
+
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* User Type Selection (only for signup) */}
+                {mode === 'signup' && (
+                  <div className="space-y-3">
+                    <Label className="text-sm font-medium">Eu sou</Label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {userTypes.map((type) => {
+                        const Icon = type.icon;
+                        const isSelected = userType === type.type;
+                        return (
+                          <button
+                            key={type.type}
+                            type="button"
+                            onClick={() => setUserType(type.type)}
+                            className={cn(
+                              "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all",
+                              isSelected
+                                ? type.color
+                                : "border-border bg-muted/30 text-muted-foreground hover:border-muted-foreground/50"
+                            )}
+                          >
+                            <Icon className="h-5 w-5" />
+                            <span className="text-xs font-medium">{type.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Name field (only for signup) */}
+                {mode === 'signup' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="name" className="text-sm font-medium">Nome completo</Label>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="Seu nome"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="pl-10 h-12"
+                      />
+                    </div>
+                    {errors.name && (
+                      <p className="text-sm text-destructive">{errors.name}</p>
+                    )}
+                  </div>
+                )}
+
+                {/* Email field */}
                 <div className="space-y-2">
-                  <Label htmlFor="login-email" className="text-slate-300">Email</Label>
+                  <Label htmlFor="email" className="text-sm font-medium">Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      id="login-email"
+                      id="email"
                       type="email"
                       placeholder="seu@email.com"
-                      value={loginEmail}
-                      onChange={(e) => setLoginEmail(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="pl-10 h-12"
                     />
                   </div>
-                  {errors.loginEmail && (
-                    <p className="text-sm text-red-400">{errors.loginEmail}</p>
+                  {errors.email && (
+                    <p className="text-sm text-destructive">{errors.email}</p>
                   )}
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="login-password" className="text-slate-300">Senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={loginPassword}
-                      onChange={(e) => setLoginPassword(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    />
-                  </div>
-                  {errors.loginPassword && (
-                    <p className="text-sm text-red-400">{errors.loginPassword}</p>
-                  )}
-                </div>
-                
-                <Button
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                  ) : null}
-                  Entrar
-                </Button>
-                
-                <Button
-                  type="button"
-                  variant="link"
-                  className="w-full text-teal-400 hover:text-teal-300"
-                  onClick={() => setShowForgotPassword(true)}
-                >
-                  Esqueceu sua senha?
-                </Button>
-              </form>
-            </TabsContent>
-            
-            <TabsContent value="signup">
-              <form onSubmit={handleSignup} className="space-y-4 mt-4">
-                {/* User Type Selection */}
-                <div className="space-y-3">
-                  <Label className="text-slate-300">Eu sou</Label>
-                  <RadioGroup 
-                    value={userType} 
-                    onValueChange={(v) => setUserType(v as 'empresa' | 'autonomo' | 'contador')}
-                    className="grid grid-cols-3 gap-2"
-                  >
-                    <Label
-                      htmlFor="empresa"
-                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border cursor-pointer transition-all ${
-                        userType === 'empresa' 
-                          ? 'border-teal-500 bg-teal-500/10' 
-                          : 'border-slate-600 hover:border-slate-500'
-                      }`}
-                    >
-                      <RadioGroupItem value="empresa" id="empresa" className="sr-only" />
-                      <Building2 className={`h-5 w-5 ${userType === 'empresa' ? 'text-teal-400' : 'text-slate-400'}`} />
-                      <span className={`text-xs ${userType === 'empresa' ? 'text-teal-400' : 'text-slate-400'}`}>Empresa</span>
-                    </Label>
-                    <Label
-                      htmlFor="autonomo"
-                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border cursor-pointer transition-all ${
-                        userType === 'autonomo' 
-                          ? 'border-cyan-500 bg-cyan-500/10' 
-                          : 'border-slate-600 hover:border-slate-500'
-                      }`}
-                    >
-                      <RadioGroupItem value="autonomo" id="autonomo" className="sr-only" />
-                      <Briefcase className={`h-5 w-5 ${userType === 'autonomo' ? 'text-cyan-400' : 'text-slate-400'}`} />
-                      <span className={`text-xs ${userType === 'autonomo' ? 'text-cyan-400' : 'text-slate-400'}`}>Autônomo</span>
-                    </Label>
-                    <Label
-                      htmlFor="contador"
-                      className={`flex flex-col items-center gap-1 p-3 rounded-lg border cursor-pointer transition-all ${
-                        userType === 'contador' 
-                          ? 'border-purple-500 bg-purple-500/10' 
-                          : 'border-slate-600 hover:border-slate-500'
-                      }`}
-                    >
-                      <RadioGroupItem value="contador" id="contador" className="sr-only" />
-                      <Calculator className={`h-5 w-5 ${userType === 'contador' ? 'text-purple-400' : 'text-slate-400'}`} />
-                      <span className={`text-xs ${userType === 'contador' ? 'text-purple-400' : 'text-slate-400'}`}>Contador</span>
-                    </Label>
-                  </RadioGroup>
                 </div>
 
+                {/* Password field */}
                 <div className="space-y-2">
-                  <Label htmlFor="signup-name" className="text-slate-300">Nome Completo</Label>
+                  <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
-                      id="signup-name"
-                      type="text"
-                      placeholder="Seu nome"
-                      value={signupName}
-                      onChange={(e) => setSignupName(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    />
-                  </div>
-                  {errors.signupName && (
-                    <p className="text-sm text-red-400">{errors.signupName}</p>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-email" className="text-slate-300">Email</Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="signup-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={signupEmail}
-                      onChange={(e) => setSignupEmail(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    />
-                  </div>
-                  {errors.signupEmail && (
-                    <p className="text-sm text-red-400">{errors.signupEmail}</p>
-                  )}
-                </div>
-                
-                <div className="space-y-2">
-                  <Label htmlFor="signup-password" className="text-slate-300">Senha</Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="signup-password"
-                      type="password"
+                      id="password"
+                      type={showPassword ? 'text' : 'password'}
                       placeholder="••••••••"
-                      value={signupPassword}
-                      onChange={(e) => setSignupPassword(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="pl-10 pr-10 h-12"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
                   </div>
-                  {errors.signupPassword && (
-                    <p className="text-sm text-red-400">{errors.signupPassword}</p>
+                  {errors.password && (
+                    <p className="text-sm text-destructive">{errors.password}</p>
                   )}
                 </div>
-                
+
+                {/* Forgot password link (only for login) */}
+                {mode === 'login' && (
+                  <div className="text-right">
+                    <button
+                      type="button"
+                      onClick={() => setShowForgotPassword(true)}
+                      className="text-sm text-primary hover:text-primary/80 transition-colors"
+                    >
+                      Esqueceu sua senha?
+                    </button>
+                  </div>
+                )}
+
+                {/* Submit button */}
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
+                  className="w-full h-12 text-base font-medium"
                   disabled={isLoading}
                 >
                   {isLoading ? (
                     <Loader2 className="h-4 w-4 animate-spin mr-2" />
                   ) : null}
-                  Criar Conta
+                  {mode === 'login' ? 'Entrar' : 'Criar conta'}
+                  {!isLoading && <ArrowRight className="h-4 w-4 ml-2" />}
                 </Button>
               </form>
-            </TabsContent>
-          </Tabs>
-          
-          {!fromOnboarding && (
-            <div className="mt-6 pt-4 border-t border-slate-700">
-              <p className="text-sm text-slate-400 text-center mb-3">
+
+              {/* Switch mode link */}
+              {!fromOnboarding && (
+                <div className="mt-6 pt-6 border-t border-border/50 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    {mode === 'login' ? 'Não tem uma conta?' : 'Já tem uma conta?'}
+                    <button
+                      type="button"
+                      onClick={switchMode}
+                      className="ml-1 text-primary hover:text-primary/80 font-medium transition-colors"
+                    >
+                      {mode === 'login' ? 'Cadastre-se' : 'Entre'}
+                    </button>
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* First time CTA */}
+          {!fromOnboarding && mode === 'login' && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-muted-foreground mb-3">
                 Primeira vez aqui?
               </p>
               <Button
                 variant="outline"
-                className="w-full border-teal-500 text-teal-400 hover:bg-teal-500/10"
+                className="border-primary/50 text-primary hover:bg-primary/5"
                 onClick={() => navigate('/comecar')}
               >
-                <Building2 className="h-4 w-4 mr-2" />
-                Criar minha conta
+                <Sparkles className="h-4 w-4 mr-2" />
+                Descobrir o AtentAI
               </Button>
             </div>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Forgot Password Modal */}
       {showForgotPassword && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-          <Card className="w-full max-w-md bg-slate-800 border-slate-700">
-            <CardHeader>
-              <div className="flex items-center gap-2">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <Card className="w-full max-w-md border-border shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-6">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={() => setShowForgotPassword(false)}
-                  className="text-slate-400 hover:text-white"
+                  className="h-8 w-8"
                 >
                   <ArrowLeft className="h-4 w-4" />
                 </Button>
-                <CardTitle className="text-white">Recuperar Senha</CardTitle>
+                <div>
+                  <h2 className="font-semibold text-foreground">Recuperar Senha</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Enviaremos um link de recuperação
+                  </p>
+                </div>
               </div>
-              <CardDescription className="text-slate-400">
-                Digite seu email para receber um link de recuperação
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
+              
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div className="space-y-2">
-                  <Label className="text-slate-300">Email</Label>
+                  <Label className="text-sm font-medium">Email</Label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       type="email"
                       placeholder="seu@email.com"
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
-                      className="pl-10 bg-slate-700/50 border-slate-600 text-white"
+                      className="pl-10 h-12"
                     />
                   </div>
                   {errors.forgotEmail && (
-                    <p className="text-sm text-red-400">{errors.forgotEmail}</p>
+                    <p className="text-sm text-destructive">{errors.forgotEmail}</p>
                   )}
                 </div>
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-teal-500 to-cyan-500"
+                  className="w-full h-12"
                   disabled={isLoading}
                 >
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
