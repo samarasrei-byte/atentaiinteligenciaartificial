@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent } from '@/components/ui/card';
 import { 
   User, 
   MapPin, 
   DollarSign, 
   Briefcase,
-  ArrowRight,
-  ArrowLeft,
   Check,
-  Loader2
+  Info
 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import OnboardingLayout from './OnboardingLayout';
+import OnboardingStepHeader from './OnboardingStepHeader';
+import OnboardingOptionCard from './OnboardingOptionCard';
 
 interface AutonomoData {
   profession: string;
@@ -34,16 +32,16 @@ interface AutonomoData {
 }
 
 const PROFESSION_CATEGORIES = [
-  { value: 'saude', label: 'Saúde', examples: 'Médico, Dentista, Fisioterapeuta, Nutricionista' },
-  { value: 'tecnologia', label: 'Tecnologia', examples: 'Desenvolvedor, Designer, Analista de Sistemas' },
+  { value: 'saude', label: 'Saúde', examples: 'Médico, Dentista, Fisioterapeuta' },
+  { value: 'tecnologia', label: 'Tecnologia', examples: 'Desenvolvedor, Designer, Analista' },
   { value: 'juridico', label: 'Jurídico', examples: 'Advogado, Consultor Jurídico' },
   { value: 'contabilidade', label: 'Contabilidade', examples: 'Contador, Auditor' },
-  { value: 'engenharia', label: 'Engenharia', examples: 'Engenheiro Civil, Engenheiro Elétrico' },
+  { value: 'engenharia', label: 'Engenharia', examples: 'Engenheiro Civil, Elétrico' },
   { value: 'educacao', label: 'Educação', examples: 'Professor, Instrutor, Tutor' },
-  { value: 'consultoria', label: 'Consultoria', examples: 'Consultor de Negócios, Marketing' },
-  { value: 'arte_criativo', label: 'Arte e Criativo', examples: 'Fotógrafo, Designer, Músico' },
-  { value: 'comercio', label: 'Comércio e Vendas', examples: 'Representante Comercial, Corretor' },
-  { value: 'outros', label: 'Outros', examples: 'Outras profissões autônomas' },
+  { value: 'consultoria', label: 'Consultoria', examples: 'Consultor de Negócios' },
+  { value: 'arte_criativo', label: 'Arte e Criativo', examples: 'Fotógrafo, Músico' },
+  { value: 'comercio', label: 'Comércio e Vendas', examples: 'Representante, Corretor' },
+  { value: 'outros', label: 'Outros', examples: 'Outras profissões' },
 ];
 
 const TAX_REGIMES = [
@@ -58,6 +56,13 @@ const STATES = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
   'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
   'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];
+
+const steps = [
+  { id: 1, title: 'Profissão', icon: Briefcase },
+  { id: 2, title: 'Regime', icon: DollarSign },
+  { id: 3, title: 'Financeiro', icon: DollarSign },
+  { id: 4, title: 'Contato', icon: MapPin },
 ];
 
 interface AutonomoOnboardingProps {
@@ -82,7 +87,6 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
   });
 
   const totalSteps = 4;
-  const progress = (step / totalSteps) * 100;
 
   const updateFormData = (field: keyof AutonomoData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -190,285 +194,216 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-emerald-900/30 to-teal-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-slate-800/80 border-slate-700 backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 rounded-full bg-emerald-500/20 w-fit">
-            <User className="h-8 w-8 text-emerald-400" />
-          </div>
-          <CardTitle className="text-2xl text-white">Configure seu Perfil Autônomo</CardTitle>
-          <CardDescription className="text-slate-400">
-            Precisamos de algumas informações para personalizar sua experiência e otimizar suas simulações
-          </CardDescription>
-          <div className="mt-4">
-            <Progress value={progress} className="h-2" />
-            <p className="text-sm text-slate-400 mt-2">Etapa {step} de {totalSteps}</p>
-          </div>
-        </CardHeader>
+    <OnboardingLayout
+      title="Configure seu Perfil"
+      subtitle="Personalize sua experiência como autônomo"
+      icon={User}
+      iconColor="from-purple-500 to-pink-500"
+      steps={steps}
+      currentStep={step}
+      totalSteps={totalSteps}
+      onNext={nextStep}
+      onBack={prevStep}
+      canProceed={!!canProceed()}
+      isSubmitting={isSubmitting}
+    >
+      {/* Step 1: Profissão */}
+      {step === 1 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={Briefcase}
+            title="Sua Profissão"
+            description="Informe sua área de atuação"
+          />
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="profession">Profissão *</Label>
+              <Input
+                id="profession"
+                value={formData.profession}
+                onChange={(e) => updateFormData('profession', e.target.value)}
+                placeholder="Ex: Desenvolvedor de Software, Médico, Designer..."
+              />
+            </div>
 
-        <CardContent className="space-y-6">
-          {/* Step 1: Profissão */}
-          {step === 1 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-emerald-400 mb-4">
-                <Briefcase className="h-5 w-5" />
-                <span className="font-semibold">Sua Profissão</span>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="profession" className="text-slate-300">Profissão *</Label>
-                  <Input
-                    id="profession"
-                    value={formData.profession}
-                    onChange={(e) => updateFormData('profession', e.target.value)}
-                    placeholder="Ex: Desenvolvedor de Software, Médico, Designer..."
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+            <div className="space-y-3">
+              <Label>Categoria Profissional *</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {PROFESSION_CATEGORIES.map((cat) => (
+                  <OnboardingOptionCard
+                    key={cat.value}
+                    label={cat.label}
+                    description={cat.examples}
+                    selected={formData.profession_category === cat.value}
+                    onClick={() => updateFormData('profession_category', cat.value)}
+                    compact
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Categoria Profissional *</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {PROFESSION_CATEGORIES.map((cat) => (
-                      <button
-                        key={cat.value}
-                        type="button"
-                        onClick={() => updateFormData('profession_category', cat.value)}
-                        className={`p-3 rounded-lg border text-left transition-all ${
-                          formData.profession_category === cat.value
-                            ? 'border-emerald-500 bg-emerald-500/20 text-white'
-                            : 'border-slate-600 bg-slate-700/30 text-slate-300 hover:border-slate-500'
-                        }`}
-                      >
-                        <p className="font-medium text-sm">{cat.label}</p>
-                        <p className="text-xs text-slate-400 mt-1">{cat.examples}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
-          {/* Step 2: Regime Tributário */}
-          {step === 2 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-cyan-400 mb-4">
-                <DollarSign className="h-5 w-5" />
-                <span className="font-semibold">Regime Tributário Atual</span>
-              </div>
+      {/* Step 2: Regime Tributário */}
+      {step === 2 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={DollarSign}
+            title="Regime Tributário"
+            description="Como você atua hoje?"
+          />
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Como você atua hoje? *</Label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {TAX_REGIMES.map((regime) => (
-                      <button
-                        key={regime.value}
-                        type="button"
-                        onClick={() => updateFormData('current_regime', regime.value)}
-                        className={`p-4 rounded-lg border text-left transition-all ${
-                          formData.current_regime === regime.value
-                            ? 'border-cyan-500 bg-cyan-500/20 text-white'
-                            : 'border-slate-600 bg-slate-700/30 text-slate-300 hover:border-slate-500'
-                        }`}
-                      >
-                        <p className="font-medium">{regime.label}</p>
-                        <p className="text-sm text-slate-400">{regime.description}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+          <div className="space-y-3">
+            {TAX_REGIMES.map((regime) => (
+              <OnboardingOptionCard
+                key={regime.value}
+                label={regime.label}
+                description={regime.description}
+                selected={formData.current_regime === regime.value}
+                onClick={() => updateFormData('current_regime', regime.value)}
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Dados Financeiros */}
+      {step === 3 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={DollarSign}
+            title="Dados Financeiros"
+            description="Informe seu faturamento médio mensal"
+          />
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="revenue">Faturamento Mensal Médio *</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">R$</span>
+                <Input
+                  id="revenue"
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.monthly_revenue_average_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_average_cents / 100) : ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    updateFormData('monthly_revenue_average_cents', parseInt(value) * 100 || 0);
+                  }}
+                  placeholder="0"
+                  className="pl-10"
+                />
               </div>
+              <p className="text-sm text-muted-foreground">
+                Faturamento anual estimado: {formatCurrency(formData.monthly_revenue_average_cents * 12)}
+              </p>
             </div>
-          )}
 
-          {/* Step 3: Dados Financeiros */}
-          {step === 3 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-green-400 mb-4">
-                <DollarSign className="h-5 w-5" />
-                <span className="font-semibold">Dados Financeiros</span>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="revenue" className="text-slate-300">Faturamento Mensal Médio *</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 font-medium">R$</span>
-                    <Input
-                      id="revenue"
-                      type="text"
-                      inputMode="numeric"
-                      value={formData.monthly_revenue_average_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_average_cents / 100) : ''}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        updateFormData('monthly_revenue_average_cents', parseInt(value) * 100 || 0);
-                      }}
-                      placeholder="0"
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 pl-10"
-                    />
+            {formData.monthly_revenue_average_cents > 0 && (
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="pt-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-full bg-primary/10">
+                      <Check className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Análise Prévia</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        {formData.monthly_revenue_average_cents * 12 <= 8100000 
+                          ? 'Seu faturamento é compatível com o MEI! Vamos simular se é a melhor opção para você.'
+                          : formData.monthly_revenue_average_cents * 12 <= 36000000
+                            ? 'Seu faturamento é compatível com ME (Simples Nacional). Vamos comparar as opções.'
+                            : 'Seu faturamento indica que uma estrutura empresarial pode ser mais vantajosa.'
+                        }
+                      </p>
+                    </div>
                   </div>
-                  <p className="text-sm text-slate-400">
-                    Faturamento anual estimado: {formatCurrency(formData.monthly_revenue_average_cents * 12)}
-                  </p>
-                </div>
-
-                {formData.monthly_revenue_average_cents > 0 && (
-                  <Card className="bg-slate-700/30 border-slate-600">
-                    <CardContent className="pt-4">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-emerald-500/20">
-                          <Check className="h-4 w-4 text-emerald-400" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-white">Análise Prévia</p>
-                          <p className="text-sm text-slate-400 mt-1">
-                            {formData.monthly_revenue_average_cents * 12 <= 8100000 
-                              ? 'Seu faturamento é compatível com o MEI! Vamos simular se é a melhor opção para você.'
-                              : formData.monthly_revenue_average_cents * 12 <= 36000000
-                                ? 'Seu faturamento é compatível com ME (Simples Nacional). Vamos comparar as opções.'
-                                : 'Seu faturamento indica que uma estrutura empresarial pode ser mais vantajosa.'
-                            }
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Localização e Contato */}
-          {step === 4 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-amber-400 mb-4">
-                <MapPin className="h-5 w-5" />
-                <span className="font-semibold">Localização e Contato</span>
-              </div>
-
-              <div className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label className="text-slate-300">Estado *</Label>
-                    <Select
-                      value={formData.state}
-                      onValueChange={(value) => updateFormData('state', value)}
-                    >
-                      <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
-                        <SelectValue placeholder="Selecione" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-slate-800 border-slate-700">
-                        {STATES.map((state) => (
-                          <SelectItem 
-                            key={state} 
-                            value={state}
-                            className="text-white hover:bg-slate-700 focus:bg-slate-700"
-                          >
-                            {state}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="city" className="text-slate-300">Cidade</Label>
-                    <Input
-                      id="city"
-                      value={formData.city}
-                      onChange={(e) => updateFormData('city', e.target.value)}
-                      placeholder="Sua cidade"
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cpf" className="text-slate-300">CPF</Label>
-                    <Input
-                      id="cpf"
-                      value={formData.cpf}
-                      onChange={handleCPFChange}
-                      placeholder="000.000.000-00"
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    />
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="phone" className="text-slate-300">Telefone</Label>
-                    <Input
-                      id="phone"
-                      value={formData.phone}
-                      onChange={handlePhoneChange}
-                      placeholder="(00) 00000-0000"
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="bio" className="text-slate-300">Sobre você (opcional)</Label>
-                  <Textarea
-                    id="bio"
-                    value={formData.bio}
-                    onChange={(e) => updateFormData('bio', e.target.value)}
-                    placeholder="Conte um pouco sobre sua atuação profissional..."
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 min-h-[100px]"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Navigation Buttons */}
-          <div className="flex gap-3 pt-4">
-            {step > 1 && (
-              <Button
-                variant="outline"
-                onClick={prevStep}
-                className="flex-1 border-slate-600 text-slate-300 hover:bg-slate-700"
-              >
-                <ArrowLeft className="h-4 w-4 mr-2" />
-                Voltar
-              </Button>
+                </CardContent>
+              </Card>
             )}
-            <Button
-              onClick={nextStep}
-              disabled={!canProceed() || isSubmitting}
-              className={`flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 ${step === 1 ? 'w-full' : ''}`}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Salvando...
-                </>
-              ) : step === totalSteps ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Concluir Configuração
-                </>
-              ) : (
-                <>
-                  Continuar
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </>
-              )}
-            </Button>
           </div>
+        </div>
+      )}
 
-          {/* Skip option */}
-          {step === 1 && (
-            <p className="text-center text-sm text-slate-500">
-              Você pode pular e configurar depois no seu perfil
-            </p>
-          )}
-        </CardContent>
-      </Card>
-    </div>
+      {/* Step 4: Localização e Contato */}
+      {step === 4 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={MapPin}
+            title="Localização e Contato"
+            description="Informe seus dados de contato"
+          />
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Estado *</Label>
+                <Select
+                  value={formData.state}
+                  onValueChange={(value) => updateFormData('state', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="UF" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATES.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="city">Cidade</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => updateFormData('city', e.target.value)}
+                  placeholder="Sua cidade"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="cpf">CPF</Label>
+                <Input
+                  id="cpf"
+                  value={formData.cpf}
+                  onChange={handleCPFChange}
+                  placeholder="000.000.000-00"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="phone">Telefone</Label>
+                <Input
+                  id="phone"
+                  value={formData.phone}
+                  onChange={handlePhoneChange}
+                  placeholder="(00) 00000-0000"
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="bio">Sobre você (opcional)</Label>
+              <Textarea
+                id="bio"
+                value={formData.bio}
+                onChange={(e) => updateFormData('bio', e.target.value)}
+                placeholder="Conte um pouco sobre sua atuação profissional..."
+                className="min-h-[100px]"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    </OnboardingLayout>
   );
 };
 

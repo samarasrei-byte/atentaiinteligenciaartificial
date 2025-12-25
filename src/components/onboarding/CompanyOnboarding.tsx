@@ -1,25 +1,23 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Building2, 
   MapPin, 
   DollarSign, 
-  Users, 
   FileText,
-  ArrowRight,
-  ArrowLeft,
   Check,
-  Loader2
+  Users,
+  Info
 } from 'lucide-react';
-import { Progress } from '@/components/ui/progress';
+import OnboardingLayout from './OnboardingLayout';
+import OnboardingStepHeader from './OnboardingStepHeader';
+import OnboardingOptionCard from './OnboardingOptionCard';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface CompanyData {
   company_name: string;
@@ -36,20 +34,20 @@ interface CompanyData {
 }
 
 const COMPANY_TYPES = [
-  { value: 'mei', label: 'MEI - Microempreendedor Individual', description: 'Faturamento até R$ 81.000/ano' },
-  { value: 'me', label: 'ME - Microempresa', description: 'Faturamento até R$ 360.000/ano' },
-  { value: 'epp', label: 'EPP - Empresa de Pequeno Porte', description: 'Faturamento até R$ 4.800.000/ano' },
-  { value: 'ltda', label: 'LTDA - Sociedade Limitada', description: 'Empresa com sócios de responsabilidade limitada' },
-  { value: 'eireli', label: 'EIRELI - Empresa Individual', description: 'Empresa individual de responsabilidade limitada' },
-  { value: 'sa_fechada', label: 'S.A. Fechada', description: 'Sociedade anônima de capital fechado' },
-  { value: 'sa_aberta', label: 'S.A. Aberta', description: 'Sociedade anônima de capital aberto (bolsa)' },
+  { value: 'mei', label: 'MEI', description: 'Faturamento até R$ 81.000/ano' },
+  { value: 'me', label: 'Microempresa (ME)', description: 'Faturamento até R$ 360.000/ano' },
+  { value: 'epp', label: 'EPP', description: 'Faturamento até R$ 4.800.000/ano' },
+  { value: 'ltda', label: 'LTDA', description: 'Sociedade Limitada' },
+  { value: 'eireli', label: 'EIRELI', description: 'Empresa Individual' },
+  { value: 'sa_fechada', label: 'S.A. Fechada', description: 'Capital fechado' },
+  { value: 'sa_aberta', label: 'S.A. Aberta', description: 'Capital aberto' },
   { value: 'cooperativa', label: 'Cooperativa', description: 'Sociedade cooperativa' },
 ];
 
 const TAX_REGIMES = [
   { value: 'simples_nacional', label: 'Simples Nacional', description: 'Regime simplificado para ME e EPP' },
-  { value: 'lucro_presumido', label: 'Lucro Presumido', description: 'Base de cálculo presumida pelo fisco' },
-  { value: 'lucro_real', label: 'Lucro Real', description: 'Tributos sobre o lucro efetivo' },
+  { value: 'lucro_presumido', label: 'Lucro Presumido', description: 'Base de cálculo presumida' },
+  { value: 'lucro_real', label: 'Lucro Real', description: 'Tributos sobre lucro efetivo' },
   { value: 'lucro_arbitrado', label: 'Lucro Arbitrado', description: 'Quando não há escrituração' },
 ];
 
@@ -71,6 +69,13 @@ const STATES = [
   'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
   'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
   'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+];
+
+const steps = [
+  { id: 1, title: 'Empresa', icon: Building2 },
+  { id: 2, title: 'Tributação', icon: FileText },
+  { id: 3, title: 'Financeiro', icon: DollarSign },
+  { id: 4, title: 'Local', icon: MapPin },
 ];
 
 interface CompanyOnboardingProps {
@@ -97,7 +102,6 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   });
 
   const totalSteps = 4;
-  const progress = (step / totalSteps) * 100;
 
   const updateFormData = (field: keyof CompanyData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -121,11 +125,6 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
       style: 'currency',
       currency: 'BRL',
     }).format(cents / 100);
-  };
-
-  const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '');
-    updateFormData('monthly_revenue_cents', parseInt(value) || 0);
   };
 
   const canProceed = () => {
@@ -201,340 +200,259 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-slate-800/80 border-slate-700 backdrop-blur-sm">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 p-3 rounded-full bg-teal-500/20 w-fit">
-            <Building2 className="h-8 w-8 text-teal-400" />
-          </div>
-          <CardTitle className="text-2xl text-white">Configure sua Empresa</CardTitle>
-          <CardDescription className="text-slate-400">
-            Precisamos de algumas informações para personalizar sua experiência
-          </CardDescription>
-          <div className="mt-4">
-            <Progress value={progress} className="h-2" />
-            <p className="text-sm text-slate-400 mt-2">Etapa {step} de {totalSteps}</p>
-          </div>
-        </CardHeader>
+    <OnboardingLayout
+      title="Configure sua Empresa"
+      subtitle="Personalize sua experiência em poucos passos"
+      icon={Building2}
+      iconColor="from-blue-500 to-cyan-500"
+      steps={steps}
+      currentStep={step}
+      totalSteps={totalSteps}
+      onNext={nextStep}
+      onBack={prevStep}
+      canProceed={!!canProceed()}
+      isSubmitting={isSubmitting}
+    >
+      {/* Step 1: Identificação */}
+      {step === 1 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={Building2}
+            title="Identificação da Empresa"
+            description="Informe os dados básicos da sua empresa"
+          />
+          
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="company_name">Razão Social *</Label>
+              <Input
+                id="company_name"
+                value={formData.company_name}
+                onChange={(e) => updateFormData('company_name', e.target.value)}
+                placeholder="Nome oficial da empresa"
+              />
+            </div>
 
-        <CardContent className="space-y-6">
-          {/* Step 1: Identificação */}
-          {step === 1 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-teal-400 mb-4">
-                <Building2 className="h-5 w-5" />
-                <span className="font-semibold">Identificação da Empresa</span>
-              </div>
-              
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="company_name" className="text-slate-300">Razão Social *</Label>
-                  <Input
-                    id="company_name"
-                    value={formData.company_name}
-                    onChange={(e) => updateFormData('company_name', e.target.value)}
-                    placeholder="Nome oficial da empresa"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+            <div className="space-y-2">
+              <Label htmlFor="trade_name">Nome Fantasia</Label>
+              <Input
+                id="trade_name"
+                value={formData.trade_name}
+                onChange={(e) => updateFormData('trade_name', e.target.value)}
+                placeholder="Nome comercial (opcional)"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cnpj">CNPJ</Label>
+              <Input
+                id="cnpj"
+                value={formData.cnpj}
+                onChange={handleCNPJChange}
+                placeholder="00.000.000/0000-00"
+              />
+            </div>
+
+            <div className="space-y-3">
+              <Label>Tipo de Empresa *</Label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {COMPANY_TYPES.map((type) => (
+                  <OnboardingOptionCard
+                    key={type.value}
+                    label={type.label}
+                    description={type.description}
+                    selected={formData.company_type === type.value}
+                    onClick={() => updateFormData('company_type', type.value)}
+                    compact
                   />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="trade_name" className="text-slate-300">Nome Fantasia</Label>
-                  <Input
-                    id="trade_name"
-                    value={formData.trade_name}
-                    onChange={(e) => updateFormData('trade_name', e.target.value)}
-                    placeholder="Nome comercial (opcional)"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="cnpj" className="text-slate-300">CNPJ</Label>
-                  <Input
-                    id="cnpj"
-                    value={formData.cnpj}
-                    onChange={handleCNPJChange}
-                    placeholder="00.000.000/0000-00"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Tipo de Empresa *</Label>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                    {COMPANY_TYPES.map((type) => (
-                      <button
-                        key={type.value}
-                        type="button"
-                        onClick={() => updateFormData('company_type', type.value)}
-                        className={`p-3 rounded-lg border text-left transition-all ${
-                          formData.company_type === type.value
-                            ? 'border-teal-500 bg-teal-500/20 text-white'
-                            : 'border-slate-600 bg-slate-700/30 text-slate-300 hover:border-slate-500'
-                        }`}
-                      >
-                        <p className="font-medium text-sm">{type.label}</p>
-                        <p className="text-xs text-slate-400 mt-1">{type.description}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
-          )}
+          </div>
+        </div>
+      )}
 
-          {/* Step 2: Regime Tributário */}
-          {step === 2 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-cyan-400 mb-4">
-                <FileText className="h-5 w-5" />
-                <span className="font-semibold">Regime Tributário e Setor</span>
-              </div>
+      {/* Step 2: Regime Tributário */}
+      {step === 2 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={FileText}
+            title="Regime Tributário"
+            description="Selecione o regime atual da sua empresa"
+          />
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Regime Tributário *</Label>
-                  <div className="grid grid-cols-1 gap-2">
-                    {TAX_REGIMES.map((regime) => (
-                      <button
-                        key={regime.value}
-                        type="button"
-                        onClick={() => updateFormData('tax_regime', regime.value)}
-                        className={`p-3 rounded-lg border text-left transition-all ${
-                          formData.tax_regime === regime.value
-                            ? 'border-cyan-500 bg-cyan-500/20 text-white'
-                            : 'border-slate-600 bg-slate-700/30 text-slate-300 hover:border-slate-500'
-                        }`}
-                      >
-                        <p className="font-medium">{regime.label}</p>
-                        <p className="text-sm text-slate-400">{regime.description}</p>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Setor de Atuação *</Label>
-                  <Select
-                    value={formData.sector}
-                    onValueChange={(value) => updateFormData('sector', value)}
-                  >
-                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white [&>span]:text-slate-400 [&>span[data-placeholder]]:text-slate-400">
-                      <SelectValue placeholder="Selecione o setor" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 z-50">
-                      {SECTORS.map((sector) => (
-                        <SelectItem 
-                          key={sector.value} 
-                          value={sector.value}
-                          className="text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white"
-                        >
-                          {sector.label}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="main_activity" className="text-slate-300">Atividade Principal</Label>
-                  <Input
-                    id="main_activity"
-                    value={formData.main_activity}
-                    onChange={(e) => updateFormData('main_activity', e.target.value)}
-                    placeholder="Ex: Desenvolvimento de software, Comércio varejista..."
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <Label>Regime Tributário *</Label>
+              <div className="space-y-2">
+                {TAX_REGIMES.map((regime) => (
+                  <OnboardingOptionCard
+                    key={regime.value}
+                    label={regime.label}
+                    description={regime.description}
+                    selected={formData.tax_regime === regime.value}
+                    onClick={() => updateFormData('tax_regime', regime.value)}
                   />
-                </div>
+                ))}
               </div>
             </div>
-          )}
 
-          {/* Step 3: Dados Financeiros */}
-          {step === 3 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-green-400 mb-4">
-                <DollarSign className="h-5 w-5" />
-                <span className="font-semibold">Dados Financeiros</span>
+            <div className="space-y-2">
+              <Label>Setor de Atuação *</Label>
+              <Select
+                value={formData.sector}
+                onValueChange={(value) => updateFormData('sector', value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione o setor" />
+                </SelectTrigger>
+                <SelectContent>
+                  {SECTORS.map((sector) => (
+                    <SelectItem key={sector.value} value={sector.value}>
+                      {sector.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="main_activity">Atividade Principal</Label>
+              <Input
+                id="main_activity"
+                value={formData.main_activity}
+                onChange={(e) => updateFormData('main_activity', e.target.value)}
+                placeholder="Ex: Desenvolvimento de software, Comércio varejista..."
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Dados Financeiros */}
+      {step === 3 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={DollarSign}
+            title="Dados Financeiros"
+            description="Informe o faturamento médio mensal"
+          />
+
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="revenue">Faturamento Mensal Médio *</Label>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">R$</span>
+                <Input
+                  id="revenue"
+                  type="text"
+                  inputMode="numeric"
+                  value={formData.monthly_revenue_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_cents / 100) : ''}
+                  onChange={(e) => {
+                    const value = e.target.value.replace(/\D/g, '');
+                    updateFormData('monthly_revenue_cents', parseInt(value) * 100 || 0);
+                  }}
+                  placeholder="0"
+                  className="pl-10"
+                />
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Faturamento anual estimado: {formatCurrency(formData.monthly_revenue_cents * 12)}
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="employees">Número de Funcionários</Label>
+              <div className="relative">
+                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="employees"
+                  type="number"
+                  min="0"
+                  value={formData.employee_count || ''}
+                  onChange={(e) => updateFormData('employee_count', parseInt(e.target.value) || 0)}
+                  placeholder="0"
+                  className="pl-10"
+                />
+              </div>
+            </div>
+
+            {formData.company_type && formData.monthly_revenue_cents > 0 && (
+              <Card className="bg-primary/5 border-primary/20">
+                <CardContent className="pt-4">
+                  <div className="flex items-start gap-3">
+                    <div className="p-2 rounded-full bg-primary/10">
+                      <Check className="h-4 w-4 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-medium text-foreground">Análise Prévia</p>
+                      <p className="text-sm text-muted-foreground mt-1">
+                        Com base nos dados informados, vamos calcular os impactos da reforma tributária no seu negócio.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Step 4: Localização */}
+      {step === 4 && (
+        <div className="space-y-6">
+          <OnboardingStepHeader
+            icon={MapPin}
+            title="Localização"
+            description="Informe onde sua empresa está localizada"
+          />
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Estado *</Label>
+                <Select
+                  value={formData.state}
+                  onValueChange={(value) => updateFormData('state', value)}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="UF" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {STATES.map((state) => (
+                      <SelectItem key={state} value={state}>
+                        {state}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="revenue" className="text-slate-300">Faturamento Mensal Médio *</Label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 font-medium">R$</span>
-                    <Input
-                      id="revenue"
-                      type="text"
-                      inputMode="numeric"
-                      value={formData.monthly_revenue_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_cents / 100) : ''}
-                      onChange={(e) => {
-                        const value = e.target.value.replace(/\D/g, '');
-                        updateFormData('monthly_revenue_cents', parseInt(value) * 100 || 0);
-                      }}
-                      placeholder="0"
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 pl-10"
-                    />
-                  </div>
-                  <p className="text-sm text-slate-400">
-                    Faturamento anual estimado: {formatCurrency(formData.monthly_revenue_cents * 12)}
+              <div className="space-y-2">
+                <Label htmlFor="city">Cidade</Label>
+                <Input
+                  id="city"
+                  value={formData.city}
+                  onChange={(e) => updateFormData('city', e.target.value)}
+                  placeholder="Sua cidade"
+                />
+              </div>
+            </div>
+
+            <Card className="bg-muted/50 border-border">
+              <CardContent className="pt-4">
+                <div className="flex items-start gap-3">
+                  <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-muted-foreground">
+                    A localização é importante para calcularmos os impostos estaduais e municipais corretamente.
                   </p>
                 </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="employees" className="text-slate-300">Número de Funcionários</Label>
-                  <Input
-                    id="employees"
-                    type="number"
-                    min="0"
-                    value={formData.employee_count || ''}
-                    onChange={(e) => updateFormData('employee_count', parseInt(e.target.value) || 0)}
-                    placeholder="0"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                  />
-                </div>
-
-                {/* Quick info based on company type and revenue */}
-                {formData.company_type && formData.monthly_revenue_cents > 0 && (
-                  <Card className="bg-slate-700/30 border-slate-600">
-                    <CardContent className="pt-4">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 rounded-full bg-teal-500/20">
-                          <Check className="h-4 w-4 text-teal-400" />
-                        </div>
-                        <div>
-                          <p className="font-medium text-white">Análise Prévia</p>
-                          <p className="text-sm text-slate-400 mt-1">
-                            Com base nos dados informados, sua empresa pode se beneficiar significativamente 
-                            do simulador de reforma tributária. Vamos calcular os impactos do IBS e CBS no seu negócio.
-                          </p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* Step 4: Localização */}
-          {step === 4 && (
-            <div className="space-y-6 animate-in fade-in duration-300">
-              <div className="flex items-center gap-2 text-amber-400 mb-4">
-                <MapPin className="h-5 w-5" />
-                <span className="font-semibold">Localização</span>
-              </div>
-
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label className="text-slate-300">Estado *</Label>
-                  <Select
-                    value={formData.state}
-                    onValueChange={(value) => updateFormData('state', value)}
-                  >
-                    <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white [&>span]:text-slate-400 [&>span[data-placeholder]]:text-slate-400">
-                      <SelectValue placeholder="Selecione o estado" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 max-h-[200px] z-50">
-                      {STATES.map((state) => (
-                        <SelectItem 
-                          key={state} 
-                          value={state}
-                          className="text-white hover:bg-slate-700 focus:bg-slate-700 focus:text-white"
-                        >
-                          {state}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="city" className="text-slate-300">Cidade</Label>
-                  <Input
-                    id="city"
-                    value={formData.city}
-                    onChange={(e) => updateFormData('city', e.target.value)}
-                    placeholder="Nome da cidade"
-                    className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
-                  />
-                </div>
-
-                {/* Summary */}
-                <Card className="bg-slate-700/30 border-slate-600 mt-6">
-                  <CardContent className="pt-4">
-                    <p className="font-medium text-white mb-3">Resumo da Empresa</p>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Razão Social:</span>
-                        <span className="text-white">{formData.company_name}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Tipo:</span>
-                        <span className="text-white">
-                          {COMPANY_TYPES.find(t => t.value === formData.company_type)?.label.split(' - ')[0]}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Regime:</span>
-                        <span className="text-white">
-                          {TAX_REGIMES.find(r => r.value === formData.tax_regime)?.label}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Faturamento Mensal:</span>
-                        <span className="text-teal-400">{formatCurrency(formData.monthly_revenue_cents)}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-slate-400">Localização:</span>
-                        <span className="text-white">{formData.city ? `${formData.city}/${formData.state}` : formData.state}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </div>
-          )}
-
-          {/* Navigation */}
-          <div className="flex justify-between pt-4">
-            <Button
-              variant="ghost"
-              onClick={prevStep}
-              disabled={step === 1}
-              className="text-slate-300 hover:text-white"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
-            </Button>
-
-            <Button
-              onClick={nextStep}
-              disabled={!canProceed() || isSubmitting}
-              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Salvando...
-                </>
-              ) : step === totalSteps ? (
-                <>
-                  <Check className="h-4 w-4 mr-2" />
-                  Concluir
-                </>
-              ) : (
-                <>
-                  Próximo
-                  <ArrowRight className="h-4 w-4 ml-2" />
-                </>
-              )}
-            </Button>
+              </CardContent>
+            </Card>
           </div>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      )}
+    </OnboardingLayout>
   );
 };
 
