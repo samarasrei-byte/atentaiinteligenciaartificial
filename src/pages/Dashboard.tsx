@@ -45,6 +45,7 @@ import { GuidedTour } from '@/components/tour/GuidedTour';
 import { TourTriggerButton } from '@/components/tour/TourTriggerButton';
 import { HelpTooltip } from '@/components/ui/help-tooltip';
 import { dashboardTourSteps, featureHelp } from '@/components/tour/tourSteps';
+import { DashboardSkeleton } from '@/components/ui/skeleton-loaders';
 
 interface Company {
   id: string;
@@ -377,8 +378,8 @@ const Dashboard = () => {
 
   if (loading || isLoadingData) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="min-h-screen bg-background">
+        <DashboardSkeleton />
       </div>
     );
   }
