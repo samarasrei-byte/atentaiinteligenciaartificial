@@ -5,6 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { BottomNavigation } from "@/components/pwa/BottomNavigation";
+import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
+import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PublicOnboarding from "./pages/PublicOnboarding";
@@ -35,6 +38,7 @@ import AutonomoPanel from "./pages/AutonomoPanel";
 import PlanoAutonomo from "./pages/PlanoAutonomo";
 import AutonomoOnboardingPage from "./pages/AutonomoOnboarding";
 import UserTypeSelection from "./pages/UserTypeSelection";
+import InstallApp from "./pages/InstallApp";
 
 const queryClient = new QueryClient();
 
@@ -45,113 +49,125 @@ const App = () => (
         <AuthProvider>
           <Toaster />
           <Sonner />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/auth" element={<Auth />} />
-            <Route path="/comecar" element={<UserTypeSelection />} />
-            <Route path="/onboarding" element={<PublicOnboarding />} />
-            <Route path="/autonomo-onboarding" element={<AutonomoOnboardingPage />} />
-            <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/plano/simulador" element={<PlanoSimulador />} />
-            <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
-            <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
-            <Route path="/plano/comparar" element={<PlanComparison />} />
-            <Route path="/payment-success" element={<PaymentSuccess />} />
-            <Route path="/termos" element={<TermosDeUso />} />
-            <Route path="/privacidade" element={<PoliticaPrivacidade />} />
-            <Route path="/faq" element={<FAQ />} />
-            
-            {/* Protected routes - require authentication */}
-            <Route path="/dashboard" element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } />
-            <Route path="/profile" element={
-              <ProtectedRoute>
-                <Profile />
-              </ProtectedRoute>
-            } />
-            
-            {/* Simulator plan features */}
-            <Route path="/simulator" element={
-              <ProtectedRoute requiredPlan="simulator">
-                <Simulator />
-              </ProtectedRoute>
-            } />
-            
-            {/* Premium plan features */}
-            <Route path="/ai-chat" element={
-              <ProtectedRoute requiredPlan="premium">
-                <AIChat />
-              </ProtectedRoute>
-            } />
-            <Route path="/locacao" element={
-              <ProtectedRoute requiredPlan="premium">
-                <LocacaoSimulator />
-              </ProtectedRoute>
-            } />
-            <Route path="/regime-comparator" element={
-              <ProtectedRoute requiredPlan="premium">
-                <RegimeComparator />
-              </ProtectedRoute>
-            } />
-            <Route path="/contadores" element={
-              <ProtectedRoute requiredPlan="premium">
-                <Contadores />
-              </ProtectedRoute>
-            } />
-            
-            {/* Role-based routes */}
-            <Route path="/autonomo" element={
-              <ProtectedRoute>
-                <AutonomoPanel />
-              </ProtectedRoute>
-            } />
-            <Route path="/autonomo/onboarding" element={
-              <ProtectedRoute>
-                <AutonomoOnboardingPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/contador" element={
-              <ProtectedRoute>
-                <ContadorPanel />
-              </ProtectedRoute>
-            } />
-            <Route path="/contador/onboarding" element={
-              <ProtectedRoute>
-                <ContadorOnboarding />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin" element={
-              <ProtectedRoute>
-                <AdminPanel />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/roles" element={
-              <ProtectedRoute>
-                <RoleManagement />
-              </ProtectedRoute>
-            } />
-            <Route path="/admin/reports" element={
-              <ProtectedRoute>
-                <AdminReports />
-              </ProtectedRoute>
-            } />
-            <Route path="/chat/:consultationId" element={
-              <ProtectedRoute>
-                <ConsultationChatPage />
-              </ProtectedRoute>
-            } />
-            <Route path="/consultations" element={
-              <ProtectedRoute>
-                <ConsultationHistory />
-              </ProtectedRoute>
-            } />
-            
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <OfflineIndicator />
+          <div className="pb-16 md:pb-0">
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/auth" element={<Auth />} />
+              <Route path="/comecar" element={<UserTypeSelection />} />
+              <Route path="/onboarding" element={<PublicOnboarding />} />
+              <Route path="/autonomo-onboarding" element={<AutonomoOnboardingPage />} />
+              <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
+              <Route path="/pricing" element={<Pricing />} />
+              <Route path="/instalar" element={<InstallApp />} />
+              <Route path="/plano/simulador" element={<PlanoSimulador />} />
+              <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
+              <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
+              <Route path="/plano/comparar" element={<PlanComparison />} />
+              <Route path="/payment-success" element={<PaymentSuccess />} />
+              <Route path="/termos" element={<TermosDeUso />} />
+              <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+              <Route path="/faq" element={<FAQ />} />
+              <Route path="/simulador" element={<Simulator />} />
+              
+              {/* Protected routes - require authentication */}
+              <Route path="/dashboard" element={
+                <ProtectedRoute>
+                  <Dashboard />
+                </ProtectedRoute>
+              } />
+              <Route path="/perfil" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              <Route path="/profile" element={
+                <ProtectedRoute>
+                  <Profile />
+                </ProtectedRoute>
+              } />
+              
+              {/* Simulator plan features */}
+              <Route path="/simulator" element={
+                <ProtectedRoute requiredPlan="simulator">
+                  <Simulator />
+                </ProtectedRoute>
+              } />
+              
+              {/* Premium plan features */}
+              <Route path="/ai-chat" element={
+                <ProtectedRoute requiredPlan="premium">
+                  <AIChat />
+                </ProtectedRoute>
+              } />
+              <Route path="/locacao" element={
+                <ProtectedRoute requiredPlan="premium">
+                  <LocacaoSimulator />
+                </ProtectedRoute>
+              } />
+              <Route path="/regime-comparator" element={
+                <ProtectedRoute requiredPlan="premium">
+                  <RegimeComparator />
+                </ProtectedRoute>
+              } />
+              <Route path="/contadores" element={
+                <ProtectedRoute requiredPlan="premium">
+                  <Contadores />
+                </ProtectedRoute>
+              } />
+              
+              {/* Role-based routes */}
+              <Route path="/autonomo" element={
+                <ProtectedRoute>
+                  <AutonomoPanel />
+                </ProtectedRoute>
+              } />
+              <Route path="/autonomo/onboarding" element={
+                <ProtectedRoute>
+                  <AutonomoOnboardingPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/contador" element={
+                <ProtectedRoute>
+                  <ContadorPanel />
+                </ProtectedRoute>
+              } />
+              <Route path="/contador/onboarding" element={
+                <ProtectedRoute>
+                  <ContadorOnboarding />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin" element={
+                <ProtectedRoute>
+                  <AdminPanel />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/roles" element={
+                <ProtectedRoute>
+                  <RoleManagement />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/reports" element={
+                <ProtectedRoute>
+                  <AdminReports />
+                </ProtectedRoute>
+              } />
+              <Route path="/chat/:consultationId" element={
+                <ProtectedRoute>
+                  <ConsultationChatPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/consultations" element={
+                <ProtectedRoute>
+                  <ConsultationHistory />
+                </ProtectedRoute>
+              } />
+              
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </div>
+          <BottomNavigation />
+          <InstallPWAPrompt />
         </AuthProvider>
       </TooltipProvider>
     </BrowserRouter>
