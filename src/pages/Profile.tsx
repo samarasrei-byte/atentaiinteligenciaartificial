@@ -18,10 +18,13 @@ import {
   Mail, 
   Phone,
   CreditCard,
-  Crown
+  Crown,
+  Bell
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { formatPrice, STRIPE_PLANS } from '@/lib/stripe';
+import { ProfileSkeleton } from '@/components/ui/skeleton-loaders';
+import { NotificationSettings } from '@/components/pwa/NotificationSettings';
 
 const COMPANY_TYPES = [
   { value: 'mei', label: 'MEI - Microempreendedor Individual' },
@@ -285,8 +288,10 @@ const Profile = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 p-4">
+        <div className="max-w-4xl mx-auto">
+          <ProfileSkeleton />
+        </div>
       </div>
     );
   }
@@ -313,18 +318,26 @@ const Profile = () => {
         </div>
 
         <Tabs defaultValue="personal" className="space-y-6">
-          <TabsList className="bg-slate-800/50 border border-slate-700">
+          <TabsList className="bg-slate-800/50 border border-slate-700 flex-wrap">
             <TabsTrigger value="personal" className="data-[state=active]:bg-teal-600 text-white">
               <User className="h-4 w-4 mr-2" />
-              Dados Pessoais
+              <span className="hidden sm:inline">Dados Pessoais</span>
+              <span className="sm:hidden">Pessoal</span>
             </TabsTrigger>
             <TabsTrigger value="company" className="data-[state=active]:bg-teal-600 text-white">
               <Building2 className="h-4 w-4 mr-2" />
-              Empresa
+              <span className="hidden sm:inline">Empresa</span>
+              <span className="sm:hidden">Empresa</span>
             </TabsTrigger>
             <TabsTrigger value="subscription" className="data-[state=active]:bg-teal-600 text-white">
               <CreditCard className="h-4 w-4 mr-2" />
-              Assinatura
+              <span className="hidden sm:inline">Assinatura</span>
+              <span className="sm:hidden">Plano</span>
+            </TabsTrigger>
+            <TabsTrigger value="notifications" className="data-[state=active]:bg-teal-600 text-white">
+              <Bell className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Notificações</span>
+              <span className="sm:hidden">Alertas</span>
             </TabsTrigger>
           </TabsList>
 
@@ -707,6 +720,11 @@ const Profile = () => {
                 )}
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Notifications Tab */}
+          <TabsContent value="notifications">
+            <NotificationSettings />
           </TabsContent>
         </Tabs>
       </div>

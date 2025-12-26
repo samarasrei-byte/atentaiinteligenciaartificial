@@ -36,6 +36,7 @@ import { exportSimulationToPdf } from '@/lib/exportPdf';
 import { exportSimulationToExcel } from '@/lib/exportExcel';
 import { TaxComparisonChart } from '@/components/simulator/TaxComparisonChart';
 import { TransitionTimeline } from '@/components/simulator/TransitionTimeline';
+import { SimulatorSkeleton } from '@/components/ui/skeleton-loaders';
 
 const Simulator = () => {
   const navigate = useNavigate();
@@ -155,8 +156,10 @@ const Simulator = () => {
 
   if (authLoading || hasAccess === null) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
-        <Loader2 className="h-8 w-8 animate-spin text-teal-400" />
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 p-4">
+        <div className="container mx-auto max-w-4xl">
+          <SimulatorSkeleton />
+        </div>
       </div>
     );
   }
