@@ -8,6 +8,7 @@ import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { BottomNavigation } from "@/components/pwa/BottomNavigation";
 import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
+import { PWATour } from "@/components/tour/PWATour";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PublicOnboarding from "./pages/PublicOnboarding";
@@ -168,6 +169,7 @@ const App = () => (
           </div>
           <BottomNavigation />
           <InstallPWAPrompt />
+          <PWATour />
         </AuthProvider>
       </TooltipProvider>
     </BrowserRouter>
