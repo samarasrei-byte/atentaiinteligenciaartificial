@@ -1,0 +1,248 @@
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+
+// Dashboard Skeleton
+export function DashboardSkeleton() {
+  return (
+    <div className="space-y-6 p-4 md:p-6">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-2">
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-4 w-32" />
+        </div>
+        <Skeleton className="h-10 w-10 rounded-full" />
+      </div>
+
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {[...Array(4)].map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-4">
+              <Skeleton className="h-4 w-20 mb-2" />
+              <Skeleton className="h-8 w-24" />
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Main Content */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-32" />
+          </CardHeader>
+          <CardContent>
+            <Skeleton className="h-[200px] w-full rounded-lg" />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader>
+            <Skeleton className="h-5 w-40" />
+          </CardHeader>
+          <CardContent className="space-y-3">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="flex items-center gap-3">
+                <Skeleton className="h-10 w-10 rounded-full" />
+                <div className="flex-1 space-y-1">
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-3 w-2/3" />
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
+// Card List Skeleton
+export function CardListSkeleton({ count = 3 }: { count?: number }) {
+  return (
+    <div className="space-y-4">
+      {[...Array(count)].map((_, i) => (
+        <Card key={i}>
+          <CardContent className="p-4">
+            <div className="flex items-start gap-4">
+              <Skeleton className="h-12 w-12 rounded-xl flex-shrink-0" />
+              <div className="flex-1 space-y-2">
+                <Skeleton className="h-5 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+                <Skeleton className="h-3 w-full" />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+// Profile Skeleton
+export function ProfileSkeleton() {
+  return (
+    <div className="space-y-6 p-4">
+      {/* Avatar and Name */}
+      <div className="flex flex-col items-center text-center">
+        <Skeleton className="h-24 w-24 rounded-full mb-4" />
+        <Skeleton className="h-6 w-40 mb-2" />
+        <Skeleton className="h-4 w-32" />
+      </div>
+
+      {/* Info Cards */}
+      <div className="space-y-4">
+        {[...Array(3)].map((_, i) => (
+          <Card key={i}>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <Skeleton className="h-10 w-10 rounded-lg" />
+                  <div className="space-y-1">
+                    <Skeleton className="h-4 w-24" />
+                    <Skeleton className="h-3 w-32" />
+                  </div>
+                </div>
+                <Skeleton className="h-8 w-8 rounded-full" />
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// Simulator Skeleton
+export function SimulatorSkeleton() {
+  return (
+    <div className="space-y-6 p-4">
+      <div className="text-center mb-6">
+        <Skeleton className="h-8 w-64 mx-auto mb-2" />
+        <Skeleton className="h-4 w-48 mx-auto" />
+      </div>
+
+      <Card>
+        <CardContent className="p-6 space-y-4">
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="space-y-2">
+              <Skeleton className="h-4 w-24" />
+              <Skeleton className="h-12 w-full rounded-lg" />
+            </div>
+          ))}
+          <Skeleton className="h-12 w-full rounded-lg mt-4" />
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <Skeleton className="h-5 w-32" />
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="text-center p-4 rounded-lg bg-muted/50">
+                <Skeleton className="h-3 w-16 mx-auto mb-2" />
+                <Skeleton className="h-6 w-20 mx-auto" />
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Chat Skeleton
+export function ChatSkeleton() {
+  return (
+    <div className="flex flex-col h-full">
+      {/* Header */}
+      <div className="p-4 border-b">
+        <div className="flex items-center gap-3">
+          <Skeleton className="h-10 w-10 rounded-full" />
+          <div className="space-y-1">
+            <Skeleton className="h-4 w-32" />
+            <Skeleton className="h-3 w-20" />
+          </div>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 p-4 space-y-4">
+        {[...Array(5)].map((_, i) => (
+          <div key={i} className={cn("flex", i % 2 === 0 ? "justify-start" : "justify-end")}>
+            <div className={cn("max-w-[75%] space-y-1", i % 2 === 0 ? "items-start" : "items-end")}>
+              <Skeleton className={cn("h-12 rounded-2xl", i % 2 === 0 ? "w-48" : "w-36")} />
+              <Skeleton className="h-3 w-12" />
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Input */}
+      <div className="p-4 border-t">
+        <Skeleton className="h-12 w-full rounded-full" />
+      </div>
+    </div>
+  );
+}
+
+// Table Skeleton
+export function TableSkeleton({ rows = 5, cols = 4 }: { rows?: number; cols?: number }) {
+  return (
+    <div className="w-full">
+      {/* Header */}
+      <div className="flex gap-4 p-4 border-b bg-muted/50">
+        {[...Array(cols)].map((_, i) => (
+          <Skeleton key={i} className="h-4 flex-1" />
+        ))}
+      </div>
+      {/* Rows */}
+      {[...Array(rows)].map((_, rowIndex) => (
+        <div key={rowIndex} className="flex gap-4 p-4 border-b">
+          {[...Array(cols)].map((_, colIndex) => (
+            <Skeleton key={colIndex} className="h-4 flex-1" />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Page Loading Skeleton
+export function PageLoadingSkeleton() {
+  return (
+    <div className="min-h-screen bg-background animate-pulse">
+      {/* Header */}
+      <div className="h-14 border-b bg-background/80 backdrop-blur-lg" />
+      
+      {/* Content */}
+      <div className="container mx-auto px-4 py-8">
+        <div className="space-y-6">
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-4 w-full max-w-lg" />
+          
+          <div className="grid md:grid-cols-3 gap-6 mt-8">
+            {[...Array(6)].map((_, i) => (
+              <Card key={i}>
+                <CardContent className="p-6">
+                  <Skeleton className="h-12 w-12 rounded-xl mb-4" />
+                  <Skeleton className="h-5 w-3/4 mb-2" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-4 w-2/3 mt-1" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Inline Loading Skeleton
+export function InlineSkeleton({ className }: { className?: string }) {
+  return <Skeleton className={cn("h-4 w-20 inline-block", className)} />;
+}
