@@ -33,6 +33,54 @@ const BIO_MAX_LENGTH = 500;
 // Preço fixo por certidão emitida
 const CERTIFICATE_PRICE = 100;
 
+// Regex para detectar texto spam/inválido (3+ caracteres repetidos consecutivos)
+const SPAM_PATTERN = /(.)\1{3,}/;
+
+// Valida se a biografia tem conteúdo real (não é spam)
+function validateBioContent(bio: string): { isValid: boolean; error?: string } {
+  const trimmedBio = bio.trim();
+  
+  // Verifica caracteres repetidos excessivos
+  if (SPAM_PATTERN.test(trimmedBio)) {
+    return { isValid: false, error: 'Biografia contém caracteres repetidos em excesso. Escreva um texto real.' };
+  }
+  
+  // Verifica se tem pelo menos 3 palavras distintas
+  const words = trimmedBio.split(/\s+/).filter(w => w.length > 2);
+  const uniqueWords = new Set(words.map(w => w.toLowerCase()));
+  if (uniqueWords.size < 5) {
+    return { isValid: false, error: 'Biografia deve conter pelo menos 5 palavras distintas.' };
+  }
+  
+  // Verifica proporção de letras vs caracteres especiais
+  const letters = (trimmedBio.match(/[a-záàâãéèêíïóôõöúçñ]/gi) || []).length;
+  const total = trimmedBio.replace(/\s/g, '').length;
+  if (total > 0 && letters / total < 0.6) {
+    return { isValid: false, error: 'Biografia deve conter principalmente texto legível.' };
+  }
+  
+  return { isValid: true };
+}
+
+// Formata CRC enquanto digita
+function formatCRCInput(value: string): string {
+  // Remove espaços extras
+  let cleaned = value.trim().toUpperCase();
+  
+  // Se tem mais de 2 caracteres e começa com letra (UF), adiciona hífen automaticamente
+  if (/^[A-Z]{2}\d/.test(cleaned) && !cleaned.includes('-') && !cleaned.includes('/')) {
+    cleaned = cleaned.slice(0, 2) + '-' + cleaned.slice(2);
+  }
+  
+  // Se termina com UF sem separador, adiciona
+  const endsWithUF = cleaned.match(/(\d)([A-Z]{2})$/);
+  if (endsWithUF && !cleaned.includes('-') && !cleaned.includes('/')) {
+    cleaned = cleaned.slice(0, -2) + '-' + cleaned.slice(-2);
+  }
+  
+  return cleaned;
+}
+
 const steps = [
   { id: 1, title: 'Profissional', icon: FileText },
   { id: 2, title: 'Biografia', icon: User },
@@ -227,15 +275,16 @@ const ContadorOnboarding = () => {
     }
   };
 
-  // Validação do CRC em tempo real
+  // Validação do CRC em tempo real com formatação automática
   const handleCRCChange = async (value: string) => {
-    setData({ ...data, crc_number: value });
+    const formattedValue = formatCRCInput(value);
+    setData({ ...data, crc_number: formattedValue });
     
-    if (value.trim().length >= 5) {
+    if (formattedValue.trim().length >= 5) {
       setIsValidatingCRC(true);
       // Simula delay de validação (em produção, isso poderia consultar API do CFC)
       await new Promise(resolve => setTimeout(resolve, 300));
-      const validation = validateCRC(value);
+      const validation = validateCRC(formattedValue);
       setCrcValidation(validation);
       setIsValidatingCRC(false);
     } else {
@@ -263,6 +312,11 @@ const ContadorOnboarding = () => {
         newErrors.bio = `Biografia deve ter pelo menos ${BIO_MIN_LENGTH} caracteres`;
       } else if (data.bio.length > BIO_MAX_LENGTH) {
         newErrors.bio = `Biografia deve ter no máximo ${BIO_MAX_LENGTH} caracteres`;
+      } else {
+        const bioValidation = validateBioContent(data.bio);
+        if (!bioValidation.isValid) {
+          newErrors.bio = bioValidation.error || 'Biografia inválida';
+        }
       }
     }
 
@@ -283,7 +337,7 @@ const ContadorOnboarding = () => {
         const crcVal = validateCRC(data.crc_number);
         return crcVal.isValid && selectedSpecialties.length > 0;
       case 2:
-        return data.bio.trim().length >= BIO_MIN_LENGTH && data.bio.length <= BIO_MAX_LENGTH;
+        return data.bio.trim().length >= BIO_MIN_LENGTH && data.bio.length <= BIO_MAX_LENGTH && validateBioContent(data.bio).isValid;
       case 3:
         return parseFloat(data.hourly_rate) >= 50;
       case 4:
@@ -438,9 +492,17 @@ const ContadorOnboarding = () => {
               {errors?.crc_number && !crcValidation && (
                 <p className="text-sm text-destructive">{errors.crc_number}</p>
               )}
-              <p className="text-xs text-muted-foreground">
-                Formato: número/O-UF (ex: 12345/O-SP) ou UF-número (ex: SP-12345)
-              </p>
+              <div className="bg-muted/50 rounded-lg p-3 border border-border">
+                <p className="text-xs font-medium text-foreground mb-2">Formatos aceitos:</p>
+                <div className="grid grid-cols-2 gap-1 text-xs text-muted-foreground">
+                  <span>• 12345/O-SP</span>
+                  <span>• SP-12345</span>
+                  <span>• 1SP272142</span>
+                  <span>• SP272142</span>
+                  <span>• CRC/SP-12345</span>
+                  <span>• 12345-SP</span>
+                </div>
+              </div>
             </div>
 
             <div className="space-y-3">
@@ -498,17 +560,21 @@ const ContadorOnboarding = () => {
                   }
                 }}
                 placeholder="Descreva sua experiência profissional, formação e como você pode ajudar seus clientes..."
-                className={`min-h-[150px] ${data.bio.length > BIO_MAX_LENGTH ? 'border-destructive' : ''}`}
+                className={`min-h-[150px] ${data.bio.length > BIO_MAX_LENGTH || (data.bio.length >= BIO_MIN_LENGTH && !validateBioContent(data.bio).isValid) ? 'border-destructive' : ''}`}
                 maxLength={BIO_MAX_LENGTH + 50}
               />
-              <div className="flex justify-between items-center">
-                {data.bio.length < BIO_MIN_LENGTH ? (
-                  <p className="text-xs text-muted-foreground">Mínimo {BIO_MIN_LENGTH} caracteres (faltam {BIO_MIN_LENGTH - data.bio.length})</p>
-                ) : data.bio.length > BIO_MAX_LENGTH ? (
-                  <p className="text-xs text-destructive">Excedeu o limite em {data.bio.length - BIO_MAX_LENGTH} caracteres</p>
-                ) : (
-                  <p className="text-xs text-green-600 flex items-center gap-1"><Check className="h-3 w-3" /> Tamanho adequado</p>
-                )}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center">
+                  {data.bio.length < BIO_MIN_LENGTH ? (
+                    <p className="text-xs text-muted-foreground">Mínimo {BIO_MIN_LENGTH} caracteres (faltam {BIO_MIN_LENGTH - data.bio.length})</p>
+                  ) : data.bio.length > BIO_MAX_LENGTH ? (
+                    <p className="text-xs text-destructive">Excedeu o limite em {data.bio.length - BIO_MAX_LENGTH} caracteres</p>
+                  ) : !validateBioContent(data.bio).isValid ? (
+                    <p className="text-xs text-destructive flex items-center gap-1"><X className="h-3 w-3" /> {validateBioContent(data.bio).error}</p>
+                  ) : (
+                    <p className="text-xs text-green-600 flex items-center gap-1"><Check className="h-3 w-3" /> Biografia válida</p>
+                  )}
+                </div>
                 {errors?.bio && (
                   <p className="text-sm text-destructive">{errors.bio}</p>
                 )}
