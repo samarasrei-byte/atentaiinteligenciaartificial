@@ -36,6 +36,7 @@ import { exportSimulationToPdf } from '@/lib/exportPdf';
 import { exportSimulationToExcel } from '@/lib/exportExcel';
 import { TaxComparisonChart } from '@/components/simulator/TaxComparisonChart';
 import { TransitionTimeline } from '@/components/simulator/TransitionTimeline';
+import { TaxTransitionTimeline, TransitionDisclaimer } from '@/components/simulator/TaxTransitionTimeline';
 import { SimulatorSkeleton } from '@/components/ui/skeleton-loaders';
 
 const Simulator = () => {
@@ -386,7 +387,7 @@ const Simulator = () => {
                 {/* New Taxes */}
                 <div className="space-y-3">
                   <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
-                    Novo Sistema (2026+)
+                    Regime Definitivo (2033)
                   </h4>
                   <div className="grid grid-cols-2 gap-2 text-sm">
                     <span className="text-slate-400">IBS:</span>
@@ -436,7 +437,9 @@ const Simulator = () => {
         {result && (
           <div className="mt-8 space-y-8">
             <TaxComparisonChart result={result} />
+            <TransitionDisclaimer />
             <TransitionTimeline result={result} />
+            <TaxTransitionTimeline />
           </div>
         )}
 

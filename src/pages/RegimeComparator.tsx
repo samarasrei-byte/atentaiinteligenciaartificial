@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { TaxTransitionTimeline } from '@/components/simulator/TaxTransitionTimeline';
 import { 
   ArrowLeft, 
   Scale,
@@ -345,7 +346,7 @@ const RegimeComparator = () => {
                       />
                       <Legend />
                       <Bar dataKey="atual" name="Sistema Atual" fill="#f97316" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="reforma" name="Reforma 2026" fill="#14b8a6" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="reforma" name="Regime Definitivo 2033" fill="#14b8a6" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </CardContent>
@@ -376,7 +377,7 @@ const RegimeComparator = () => {
                         </div>
                         
                         <div>
-                          <p className="text-slate-400 text-xs mb-1">Reforma 2026</p>
+                          <p className="text-slate-400 text-xs mb-1">Regime Definitivo 2033</p>
                           <p className="text-cyan-400 font-bold">{formatCurrency(result.newSystemTax)}</p>
                           <p className="text-slate-500 text-xs">{result.newSystemRate.toFixed(2)}% efetivo</p>
                         </div>
@@ -428,6 +429,9 @@ const RegimeComparator = () => {
                   </CardContent>
                 </Card>
               )}
+
+              {/* Tax Transition Timeline */}
+              <TaxTransitionTimeline compact />
             </div>
           )}
         </div>
