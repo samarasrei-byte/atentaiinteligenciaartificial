@@ -191,6 +191,63 @@ export type Database = {
         }
         Relationships: []
       }
+      certificate_requests: {
+        Row: {
+          amount_cents: number
+          certificate_type: string
+          contador_id: string | null
+          created_at: string
+          document_name: string | null
+          document_url: string | null
+          id: string
+          notes: string | null
+          payment_status: string
+          processed_at: string | null
+          rejection_reason: string | null
+          requested_at: string
+          status: string
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          certificate_type: string
+          contador_id?: string | null
+          created_at?: string
+          document_name?: string | null
+          document_url?: string | null
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          processed_at?: string | null
+          rejection_reason?: string | null
+          requested_at?: string
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          certificate_type?: string
+          contador_id?: string | null
+          created_at?: string
+          document_name?: string | null
+          document_url?: string | null
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          processed_at?: string | null
+          rejection_reason?: string | null
+          requested_at?: string
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           attachment_name: string | null
