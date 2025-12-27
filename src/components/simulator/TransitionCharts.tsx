@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   LineChart, 
   Line, 
@@ -18,9 +19,20 @@ import {
   BarChart,
   Bar
 } from 'recharts';
-import { Calculator, TrendingDown, Wallet, PiggyBank, Loader2 } from 'lucide-react';
+import { Calculator, TrendingDown, Wallet, PiggyBank, Loader2, Download, Scale, Trophy } from 'lucide-react';
 import { formatCurrency, formatCurrencyInput, parseCurrencyInput } from '@/lib/taxData';
 import { TRANSITION_RATES } from './YearSelector';
+import { exportTransitionProjectionToPdf } from '@/lib/exportTransitionPdf';
+import { useToast } from '@/hooks/use-toast';
+
+/**
+ * Alíquotas estimadas por regime tributário
+ */
+const REGIME_TAX_RATES = {
+  simples: { name: 'Simples Nacional', rate: 9.5, description: 'Faixa média até R$ 720k/ano' },
+  presumido: { name: 'Lucro Presumido', rate: 16.33, description: 'PIS/COFINS + IRPJ/CSLL presunção 32%' },
+  real: { name: 'Lucro Real', rate: 24.25, description: 'PIS/COFINS não-cumulativo + IRPJ/CSLL' },
+};
 
 /**
  * Dados do cronograma de transição para o gráfico
@@ -145,15 +157,26 @@ interface AccumulatedSavingsResult {
   phase: string;
 }
 
+interface RegimeResult {
+  regime: string;
+  regimeName: string;
+  currentTaxRate: number;
+  yearlyData: AccumulatedSavingsResult[];
+  totalSavings: number;
+}
+
 interface AccumulatedSavingsCalculatorProps {
   className?: string;
 }
 
 export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCalculatorProps) {
+  const { toast } = useToast();
   const [monthlyRevenue, setMonthlyRevenue] = useState('');
-  const [currentTaxRate, setCurrentTaxRate] = useState('25');
+  const [selectedRegime, setSelectedRegime] = useState<string>('all');
   const [isCalculating, setIsCalculating] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [results, setResults] = useState<AccumulatedSavingsResult[] | null>(null);
+  const [regimeResults, setRegimeResults] = useState<RegimeResult[] | null>(null);
 
   const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setMonthlyRevenue(formatCurrencyInput(e.target.value));
@@ -167,42 +190,91 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
     await new Promise(resolve => setTimeout(resolve, 800));
 
     const annualRevenue = revenue * 12;
-    const currentRate = parseFloat(currentTaxRate) || 25;
-    const currentAnnualTax = annualRevenue * (currentRate / 100);
-
-    let accumulated = 0;
-    const yearResults: AccumulatedSavingsResult[] = [];
-
-    Object.entries(TRANSITION_RATES).forEach(([year, rates]) => {
-      // During transition, we pay both systems proportionally
-      const newSystemPercent = rates.percentImplemented / 100;
-      const oldSystemPercent = 1 - newSystemPercent;
+    
+    // Calculate for all regimes
+    const allRegimeResults: RegimeResult[] = Object.entries(REGIME_TAX_RATES).map(([key, regime]) => {
+      const currentRate = regime.rate;
+      const currentAnnualTax = annualRevenue * (currentRate / 100);
+      let accumulated = 0;
       
-      // New system tax
-      const newSystemTax = annualRevenue * (rates.total / 100);
-      
-      // Blended tax during transition
-      const blendedTax = (currentAnnualTax * oldSystemPercent) + (newSystemTax * newSystemPercent);
-      
-      // Savings compared to full current system
-      const annualSavings = currentAnnualTax - blendedTax;
-      accumulated += annualSavings;
+      const yearlyData: AccumulatedSavingsResult[] = Object.entries(TRANSITION_RATES).map(([year, rates]) => {
+        const newSystemPercent = rates.percentImplemented / 100;
+        const oldSystemPercent = 1 - newSystemPercent;
+        const newSystemTax = annualRevenue * (rates.total / 100);
+        const blendedTax = (currentAnnualTax * oldSystemPercent) + (newSystemTax * newSystemPercent);
+        const annualSavings = currentAnnualTax - blendedTax;
+        accumulated += annualSavings;
 
-      yearResults.push({
-        year: Number(year),
-        currentTax: currentAnnualTax,
-        newTax: blendedTax,
-        annualSavings,
-        accumulatedSavings: accumulated,
-        phase: rates.phase,
+        return {
+          year: Number(year),
+          currentTax: currentAnnualTax,
+          newTax: blendedTax,
+          annualSavings,
+          accumulatedSavings: accumulated,
+          phase: rates.phase,
+        };
       });
+
+      return {
+        regime: key,
+        regimeName: regime.name,
+        currentTaxRate: regime.rate,
+        yearlyData,
+        totalSavings: accumulated,
+      };
     });
 
-    setResults(yearResults);
+    setRegimeResults(allRegimeResults);
+    
+    // Set default view to the selected regime or first one
+    const displayRegime = selectedRegime === 'all' 
+      ? allRegimeResults[0] 
+      : allRegimeResults.find(r => r.regime === selectedRegime) || allRegimeResults[0];
+    
+    setResults(displayRegime.yearlyData);
     setIsCalculating(false);
   };
 
-  const totalSavings = results?.reduce((sum, r) => sum + r.annualSavings, 0) || 0;
+  const handleExportPdf = async () => {
+    if (!regimeResults || !monthlyRevenue) return;
+    
+    setIsExporting(true);
+    try {
+      const revenue = parseCurrencyInput(monthlyRevenue);
+      const exportData = regimeResults.map(r => ({
+        regime: r.regime,
+        regimeName: r.regimeName,
+        monthlyRevenue: revenue,
+        annualRevenue: revenue * 12,
+        currentTaxRate: r.currentTaxRate,
+        yearlyData: r.yearlyData,
+        totalSavings: r.totalSavings,
+      }));
+      
+      await exportTransitionProjectionToPdf(exportData);
+      toast({ title: 'PDF exportado com sucesso!' });
+    } catch (error) {
+      toast({ variant: 'destructive', title: 'Erro ao exportar PDF' });
+    }
+    setIsExporting(false);
+  };
+
+  const handleRegimeChange = (value: string) => {
+    setSelectedRegime(value);
+    if (regimeResults) {
+      if (value === 'all') {
+        setResults(regimeResults[0].yearlyData);
+      } else {
+        const selected = regimeResults.find(r => r.regime === value);
+        if (selected) setResults(selected.yearlyData);
+      }
+    }
+  };
+
+  const displayedRegime = regimeResults?.find(r => 
+    selectedRegime === 'all' ? r.regime === 'simples' : r.regime === selectedRegime
+  );
+  const totalSavings = displayedRegime?.totalSavings || 0;
   const chartData = results?.map(r => ({
     year: r.year,
     economia: r.annualSavings,
@@ -211,20 +283,39 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
     novo: r.newTax,
   }));
 
+  // Best regime calculation
+  const bestRegime = regimeResults?.reduce((best, r) => 
+    r.totalSavings > best.totalSavings ? r : best, regimeResults[0]
+  );
+
   return (
     <Card className={`bg-slate-800/50 border-slate-700 ${className}`}>
-      <CardHeader>
-        <CardTitle className="text-white flex items-center gap-2">
-          <PiggyBank className="h-5 w-5 text-green-400" />
-          Calculadora de Economia Acumulada
-        </CardTitle>
-        <CardDescription className="text-slate-400">
-          Simule quanto sua empresa economizará durante a transição tributária
-        </CardDescription>
+      <CardHeader className="flex flex-row items-start justify-between">
+        <div>
+          <CardTitle className="text-white flex items-center gap-2">
+            <PiggyBank className="h-5 w-5 text-green-400" />
+            Calculadora de Economia Acumulada
+          </CardTitle>
+          <CardDescription className="text-slate-400">
+            Compare a economia entre Simples, Presumido e Lucro Real
+          </CardDescription>
+        </div>
+        {regimeResults && (
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={handleExportPdf}
+            disabled={isExporting}
+            className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
+          >
+            {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+            <span className="ml-1">PDF</span>
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Input Form */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
             <Label className="text-slate-300">Faturamento Mensal</Label>
             <Input
@@ -233,18 +324,6 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
               onChange={handleRevenueChange}
               className="bg-slate-700/50 border-slate-600 text-white"
             />
-          </div>
-          <div className="space-y-2">
-            <Label className="text-slate-300">Alíquota Atual (%)</Label>
-            <Input
-              type="number"
-              value={currentTaxRate}
-              onChange={(e) => setCurrentTaxRate(e.target.value)}
-              className="bg-slate-700/50 border-slate-600 text-white"
-              min="1"
-              max="50"
-            />
-            <p className="text-xs text-slate-500">Carga tributária atual sobre consumo</p>
           </div>
           <div className="flex items-end">
             <Button
@@ -260,15 +339,81 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
               ) : (
                 <>
                   <Calculator className="h-4 w-4 mr-2" />
-                  Calcular Economia
+                  Comparar Regimes
                 </>
               )}
             </Button>
           </div>
         </div>
 
-        {results && (
+        {regimeResults && (
           <>
+            {/* Best Regime Highlight */}
+            {bestRegime && (
+              <Card className="bg-gradient-to-r from-green-900/30 to-emerald-900/30 border-green-500/50">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4">
+                    <Trophy className="h-8 w-8 text-green-400" />
+                    <div>
+                      <p className="text-green-400 text-sm">Maior economia durante a transição</p>
+                      <h3 className="text-xl font-bold text-white">{bestRegime.regimeName}</h3>
+                      <p className="text-green-300">
+                        Economia total de <span className="font-bold">{formatCurrency(bestRegime.totalSavings)}</span> até 2033
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Regime Comparison Cards */}
+            <div>
+              <h4 className="text-white font-medium mb-4 flex items-center gap-2">
+                <Scale className="h-4 w-4 text-cyan-400" />
+                Comparativo por Regime Tributário
+              </h4>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                {regimeResults.map((regime) => (
+                  <Card 
+                    key={regime.regime}
+                    className={`cursor-pointer transition-all ${
+                      selectedRegime === regime.regime || (selectedRegime === 'all' && regime.regime === 'simples')
+                        ? 'bg-cyan-900/30 border-cyan-500'
+                        : 'bg-slate-700/50 border-slate-600 hover:border-slate-500'
+                    }`}
+                    onClick={() => handleRegimeChange(regime.regime)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-2">
+                        <p className="font-medium text-white">{regime.regimeName}</p>
+                        {regime === bestRegime && (
+                          <Badge className="bg-green-500/20 text-green-400 text-xs">Melhor</Badge>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-400 mb-2">Alíquota atual: {regime.currentTaxRate}%</p>
+                      <p className="text-lg font-bold text-green-400">{formatCurrency(regime.totalSavings)}</p>
+                      <p className="text-xs text-slate-500">economia 2026-2033</p>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Regime Selector for detailed view */}
+            <div className="flex items-center gap-4">
+              <Label className="text-slate-300">Ver detalhes de:</Label>
+              <Select value={selectedRegime === 'all' ? 'simples' : selectedRegime} onValueChange={handleRegimeChange}>
+                <SelectTrigger className="w-48 bg-slate-700/50 border-slate-600 text-white">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-800 border-slate-700">
+                  {Object.entries(REGIME_TAX_RATES).map(([key, regime]) => (
+                    <SelectItem key={key} value={key}>{regime.name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
             {/* Summary Cards */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card className="bg-green-900/30 border-green-700/50">
@@ -284,7 +429,7 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
                   <TrendingDown className="h-6 w-6 text-cyan-400 mx-auto mb-2" />
                   <p className="text-xs text-cyan-400">Economia em 2033</p>
                   <p className="text-lg font-bold text-cyan-300">
-                    {formatCurrency(results[results.length - 1]?.annualSavings || 0)}
+                    {formatCurrency(results?.[results.length - 1]?.annualSavings || 0)}
                   </p>
                   <p className="text-xs text-slate-400">por ano</p>
                 </CardContent>
@@ -293,7 +438,7 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
                 <CardContent className="p-4 text-center">
                   <p className="text-xs text-amber-400">Imposto Atual/Ano</p>
                   <p className="text-lg font-bold text-amber-300">
-                    {formatCurrency(results[0]?.currentTax || 0)}
+                    {formatCurrency(results?.[0]?.currentTax || 0)}
                   </p>
                 </CardContent>
               </Card>
@@ -301,7 +446,7 @@ export function AccumulatedSavingsCalculator({ className }: AccumulatedSavingsCa
                 <CardContent className="p-4 text-center">
                   <p className="text-xs text-slate-400">Imposto 2033/Ano</p>
                   <p className="text-lg font-bold text-slate-300">
-                    {formatCurrency(results[results.length - 1]?.newTax || 0)}
+                    {formatCurrency(results?.[results.length - 1]?.newTax || 0)}
                   </p>
                 </CardContent>
               </Card>
