@@ -23,10 +23,12 @@ import { WithdrawalSystem } from '@/components/contador/WithdrawalSystem';
 import { ContadorReportGenerator } from '@/components/contador/ContadorReportGenerator';
 import CompanyOpeningManagement from '@/components/contador/CompanyOpeningManagement';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
+import { CertificateManagement } from '@/components/contador/CertificateManagement';
 import { 
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
   CheckCircle, AlertCircle, XCircle, Menu, Banknote, FileDown, Building2,
+  ScrollText,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 
@@ -393,6 +395,19 @@ const ContadorPanel = () => {
                 <p className="text-muted-foreground">Gerencie solicitações de abertura de empresa com precificação</p>
               </div>
               <CompanyOpeningManagement />
+            </div>
+          )}
+
+          {activeTab === 'certificates' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <ScrollText className="h-6 w-6 text-primary" />
+                  Gestão de Certidões
+                </h2>
+                <p className="text-muted-foreground">Gerencie solicitações de certidões e faça upload dos documentos emitidos</p>
+              </div>
+              <CertificateManagement />
             </div>
           )}
 

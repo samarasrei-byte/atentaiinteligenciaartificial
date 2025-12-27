@@ -31,6 +31,7 @@ import {
   BookOpen,
   Scale,
   Building2,
+  ScrollText,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -87,6 +88,7 @@ const adminItems: SidebarItem[] = [
 const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening', badge: 'NEW', badgeColor: 'text-emerald-400' },
+  { icon: ScrollText, label: 'Certidões', tabId: 'certificates', badge: 'NEW', badgeColor: 'text-primary' },
   { icon: MessagesSquare, label: 'Chat', tabId: 'chat' },
   { icon: Scale, label: 'Atualizações', tabId: 'updates', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: BarChart3, label: 'Stats', tabId: 'stats' },
