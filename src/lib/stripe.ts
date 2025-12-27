@@ -17,7 +17,7 @@ export const STRIPE_PLANS = {
     name: 'AtentAI Premium',
     priceId: 'price_1ShK943MU3lG84Gwd4u3Z0Za',
     productId: 'prod_TedPv32txqdcXM',
-    price: 9800, // cents (R$98,00)
+    price: 4800, // cents (R$48,00)
     description: 'Todas as respostas que você precisa sobre a Reforma Tributária',
     features: [
       'Agente de IA ilimitado',
