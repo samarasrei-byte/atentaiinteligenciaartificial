@@ -40,6 +40,8 @@ import PlanoAutonomo from "./pages/PlanoAutonomo";
 import AutonomoOnboardingPage from "./pages/AutonomoOnboarding";
 import UserTypeSelection from "./pages/UserTypeSelection";
 import InstallApp from "./pages/InstallApp";
+import TransitionSimulator from "./pages/TransitionSimulator";
+import CertificatesPage from "./pages/CertificatesPage";
 
 const queryClient = new QueryClient();
 
@@ -70,7 +72,8 @@ const App = () => (
               <Route path="/privacidade" element={<PoliticaPrivacidade />} />
               <Route path="/faq" element={<FAQ />} />
               <Route path="/simulador" element={<Simulator />} />
-              
+              <Route path="/transicao" element={<TransitionSimulator />} />
+              <Route path="/certidoes" element={<CertificatesPage />} />
               {/* Protected routes - require authentication */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
