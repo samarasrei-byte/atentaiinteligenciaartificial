@@ -116,10 +116,10 @@ export const PROFESSIONAL_CATEGORIES: ProfessionalCategory[] = [
 // MEI - Microempreendedor Individual
 export const MEI_MONTHLY_LIMIT = 81000 / 12; // R$ 6.750/mês
 export const MEI_ANNUAL_LIMIT = 81000; // R$ 81.000/ano
-export const MEI_MONTHLY_TAX = 71.60; // DAS MEI médio (INSS + ICMS/ISS)
-export const MEI_MONTHLY_TAX_SERVICES = 76.60; // DAS MEI serviços
-export const MEI_MONTHLY_TAX_COMMERCE = 72.60; // DAS MEI comércio
-export const MEI_MONTHLY_TAX_BOTH = 77.60; // DAS MEI ambos
+export const MEI_MONTHLY_TAX = 75.90; // DAS MEI médio 2025 (INSS + ICMS/ISS)
+export const MEI_MONTHLY_TAX_SERVICES = 75.90; // DAS MEI serviços 2025
+export const MEI_MONTHLY_TAX_COMMERCE = 76.90; // DAS MEI comércio/indústria 2025
+export const MEI_MONTHLY_TAX_BOTH = 77.90; // DAS MEI ambos 2025
 
 // Simples Nacional (ME)
 export const SIMPLES_ANNUAL_LIMIT = 4800000;

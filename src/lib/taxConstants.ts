@@ -19,8 +19,8 @@ export const CBS_RATE = 8.8;
 /** Alíquota base combinada (IBS + CBS) */
 export const BASE_TAX_RATE = 26.5;
 
-/** Alíquota CBS para cálculo de créditos tributários */
-export const CBS_CREDIT_RATE = 12;
+/** Alíquota CBS para cálculo de créditos tributários (LC 214/2025) */
+export const CBS_CREDIT_RATE = 8.8;
 
 // =============================================================================
 // PARÂMETROS DO LUCRO PRESUMIDO
