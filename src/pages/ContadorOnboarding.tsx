@@ -53,10 +53,6 @@ const specialties = [
   'Obrigações Acessórias',
 ];
 
-// Regex para validar CRC - Formatos aceitos:
-// 12345/O-SP, 123456/O-SP, 12345-SP, SP-12345
-const CRC_REGEX = /^(\d{1,6}\/O?-[A-Z]{2}|[A-Z]{2}-\d{1,6}|\d{1,6}-[A-Z]{2})$/i;
-
 // Lista de UFs válidas
 const VALID_UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
 
@@ -68,29 +64,86 @@ interface CRCValidation {
   error?: string;
 }
 
+// Função para validar CRC com múltiplos formatos
+// Formatos aceitos:
+// 1. 12345/O-SP (formato padrão com categoria)
+// 2. 123456/O-SP (6 dígitos)
+// 3. 12345-SP (sem categoria)
+// 4. SP-12345 (UF primeiro)
+// 5. 1SP272142 (categoria + UF + número junto)
+// 6. SP272142 (UF + número junto)
+// 7. CRC/SP-12345 (com prefixo CRC)
+// 8. CRC-SP-12345 (variação)
 function validateCRC(crc: string): CRCValidation {
-  const cleanCrc = crc.trim().toUpperCase();
+  const cleanCrc = crc.trim().toUpperCase().replace(/\s+/g, '');
   
   if (!cleanCrc) {
     return { isValid: false, formatted: null, uf: null, number: null, error: 'CRC é obrigatório' };
   }
   
-  // Tenta extrair número e UF de diferentes formatos
   let number: string | null = null;
   let uf: string | null = null;
   
-  // Formato: 12345/O-SP ou 12345-SP
-  const match1 = cleanCrc.match(/^(\d{1,6})\/?O?-([A-Z]{2})$/);
+  // Remove prefixo CRC se existir
+  const withoutPrefix = cleanCrc.replace(/^CRC[\/-]?/i, '');
+  
+  // Formato 1: 12345/O-SP ou 123456/O-SP (com ou sem O)
+  const match1 = withoutPrefix.match(/^(\d{3,6})\/?O?-([A-Z]{2})$/);
   if (match1) {
     number = match1[1];
     uf = match1[2];
   }
   
-  // Formato: SP-12345
-  const match2 = cleanCrc.match(/^([A-Z]{2})-(\d{1,6})$/);
-  if (match2) {
-    uf = match2[1];
-    number = match2[2];
+  // Formato 2: 12345-SP (número-UF)
+  if (!number) {
+    const match2 = withoutPrefix.match(/^(\d{3,6})-([A-Z]{2})$/);
+    if (match2) {
+      number = match2[1];
+      uf = match2[2];
+    }
+  }
+  
+  // Formato 3: SP-12345 (UF-número)
+  if (!number) {
+    const match3 = withoutPrefix.match(/^([A-Z]{2})-(\d{3,6})$/);
+    if (match3) {
+      uf = match3[1];
+      number = match3[2];
+    }
+  }
+  
+  // Formato 4: 1SP272142 (categoria + UF + número) - NOVO
+  if (!number) {
+    const match4 = withoutPrefix.match(/^(\d)?([A-Z]{2})(\d{4,6})$/);
+    if (match4) {
+      uf = match4[2];
+      number = match4[3];
+    }
+  }
+  
+  // Formato 5: SP272142 (UF + número junto) - NOVO
+  if (!number) {
+    const match5 = withoutPrefix.match(/^([A-Z]{2})(\d{4,6})$/);
+    if (match5) {
+      uf = match5[1];
+      number = match5[2];
+    }
+  }
+  
+  // Formato 6: Apenas números (assume SP se não especificado)
+  if (!number) {
+    const match6 = withoutPrefix.match(/^(\d{5,8})$/);
+    if (match6) {
+      number = match6[1];
+      // Não validamos sem UF, usuário deve fornecer
+      return { 
+        isValid: false, 
+        formatted: null, 
+        uf: null, 
+        number, 
+        error: 'Informe a UF. Ex: 12345/O-SP ou 1SP272142' 
+      };
+    }
   }
   
   if (!number || !uf) {
@@ -99,7 +152,7 @@ function validateCRC(crc: string): CRCValidation {
       formatted: null, 
       uf: null, 
       number: null, 
-      error: 'Formato inválido. Use: 12345/O-SP ou SP-12345' 
+      error: 'Formato inválido. Exemplos: 12345/O-SP, SP-12345, 1SP272142' 
     };
   }
   
@@ -113,14 +166,14 @@ function validateCRC(crc: string): CRCValidation {
     };
   }
   
-  // Valida tamanho do número
-  if (number.length < 3 || number.length > 6) {
+  // Valida tamanho do número (3 a 8 dígitos para cobrir todos os formatos)
+  if (number.length < 3 || number.length > 8) {
     return { 
       isValid: false, 
       formatted: null, 
       uf, 
       number, 
-      error: 'Número do CRC deve ter entre 3 e 6 dígitos' 
+      error: 'Número do CRC deve ter entre 3 e 8 dígitos' 
     };
   }
   
