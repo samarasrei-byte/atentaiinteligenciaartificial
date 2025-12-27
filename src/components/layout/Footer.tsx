@@ -15,9 +15,9 @@ export function Footer({ onNavigate }: FooterProps) {
   ];
 
   const resources = [
+    { label: "Transição 2026-2033", to: "/transicao-tributaria" },
     { label: "Sobre a Reforma", href: "#" },
     { label: "Legislação Oficial", href: "#" },
-    { label: "Blog", href: "#" },
     { label: "Glossário Tributário", href: "#" },
   ];
 
@@ -96,12 +96,21 @@ export function Footer({ onNavigate }: FooterProps) {
             <ul className="space-y-3">
               {resources.map((item) => (
                 <li key={item.label}>
-                  <a 
-                    href={item.href}
-                    className="text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
-                  >
-                    {item.label}
-                  </a>
+                  {'to' in item ? (
+                    <Link 
+                      to={item.to}
+                      className="text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
+                    >
+                      {item.label}
+                    </Link>
+                  ) : (
+                    <a 
+                      href={item.href}
+                      className="text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
+                    >
+                      {item.label}
+                    </a>
+                  )}
                 </li>
               ))}
             </ul>
