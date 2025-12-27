@@ -19,6 +19,7 @@ import { UsageMetrics } from '@/components/dashboard/UsageMetrics';
 import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
 import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
 import { AdminWithdrawalPanel } from '@/components/support/AdminWithdrawalPanel';
+import { RealtimeNotifications } from '@/components/admin/RealtimeNotifications';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
@@ -186,6 +187,10 @@ const AdminPanel = () => {
       navigate('/admin/roles');
       return;
     }
+    if (tab === 'realtime') {
+      navigate('/admin/metrics');
+      return;
+    }
     setActiveTab(tab); 
     setSearchParams({ tab }); 
     setMobileMenuOpen(false); 
@@ -274,7 +279,12 @@ const AdminPanel = () => {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2"><RevenueChart data={revenueChartData} /></div>
-                <ActivityFeed activities={users.slice(0, 5).map(u => ({ id: u.id, type: 'signup' as const, title: u.profile?.full_name || 'Novo usuário', description: u.email, timestamp: new Date(u.created_at).toLocaleDateString('pt-BR') }))} />
+                <div className="space-y-6">
+                  <ActivityFeed activities={users.slice(0, 5).map(u => ({ id: u.id, type: 'signup' as const, title: u.profile?.full_name || 'Novo usuário', description: u.email, timestamp: new Date(u.created_at).toLocaleDateString('pt-BR') }))} />
+                </div>
+              </div>
+              <div className="mt-6">
+                <RealtimeNotifications />
               </div>
             </>
           )}
