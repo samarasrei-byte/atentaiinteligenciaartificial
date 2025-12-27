@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
+  Activity,
   Users,
   Home,
   Target,
@@ -74,6 +75,7 @@ const userItems: SidebarItem[] = [
 
 const adminItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+  { icon: Activity, label: 'Tempo Real', tabId: 'realtime', badge: 'LIVE', badgeColor: 'text-emerald-400' },
   { icon: Users, label: 'Usuários', tabId: 'users' },
   { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
   { icon: Wallet, label: 'Saques', tabId: 'withdrawals', badge: 'NEW', badgeColor: 'text-amber-400' },
