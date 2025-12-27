@@ -326,3 +326,194 @@ export function InlineSkeleton({ className }: { className?: string }) {
     </span>
   );
 }
+
+// Panel Loading Skeleton - for profile/role verification
+export function PanelLoadingSkeleton({ 
+  title = "Carregando...", 
+  description = "Verificando seu perfil e permissões" 
+}: { 
+  title?: string; 
+  description?: string;
+}) {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="text-center space-y-6 p-8">
+        <SkeletonWrapper delay={0}>
+          <div className="relative mx-auto w-20 h-20">
+            <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+            <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
+            <div className="absolute inset-2 rounded-full bg-gradient-to-br from-primary/20 to-transparent animate-pulse" />
+          </div>
+        </SkeletonWrapper>
+        
+        <SkeletonWrapper delay={100}>
+          <div className="space-y-2">
+            <h2 className="text-xl font-semibold text-foreground">{title}</h2>
+            <p className="text-muted-foreground text-sm">{description}</p>
+          </div>
+        </SkeletonWrapper>
+        
+        <SkeletonWrapper delay={200}>
+          <div className="flex justify-center gap-1">
+            {[0, 1, 2].map((i) => (
+              <div 
+                key={i}
+                className="w-2 h-2 rounded-full bg-primary animate-bounce"
+                style={{ animationDelay: `${i * 150}ms` }}
+              />
+            ))}
+          </div>
+        </SkeletonWrapper>
+      </div>
+    </div>
+  );
+}
+
+// Contador Panel Loading Skeleton
+export function ContadorPanelSkeleton() {
+  return (
+    <div className="min-h-screen bg-background flex w-full">
+      {/* Sidebar placeholder */}
+      <div className="hidden lg:block w-56 border-r bg-card/50">
+        <div className="p-4 space-y-4">
+          <Skeleton className="h-10 w-full rounded-lg" />
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+      
+      {/* Main content */}
+      <div className="flex-1 p-4 lg:p-6 space-y-6">
+        {/* Header */}
+        <SkeletonWrapper delay={0}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Skeleton className="h-12 w-12 rounded-xl" />
+              <div className="space-y-2">
+                <Skeleton className="h-6 w-48" />
+                <Skeleton className="h-4 w-32" />
+              </div>
+            </div>
+            <Skeleton className="h-10 w-10 rounded-full" />
+          </div>
+        </SkeletonWrapper>
+        
+        {/* Stats */}
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          {[...Array(5)].map((_, i) => (
+            <SkeletonWrapper key={i} delay={100 + i * 50}>
+              <Card>
+                <CardContent className="p-4">
+                  <Skeleton className="h-4 w-16 mb-2" />
+                  <Skeleton className="h-8 w-20" />
+                </CardContent>
+              </Card>
+            </SkeletonWrapper>
+          ))}
+        </div>
+        
+        {/* Content area */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <SkeletonWrapper delay={400}>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-5 w-40" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-[300px] w-full rounded-lg" />
+              </CardContent>
+            </Card>
+          </SkeletonWrapper>
+          <SkeletonWrapper delay={500}>
+            <Card>
+              <CardHeader>
+                <Skeleton className="h-5 w-36" />
+              </CardHeader>
+              <CardContent className="space-y-3">
+                {[...Array(4)].map((_, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <Skeleton className="h-10 w-10 rounded-full" />
+                    <div className="flex-1 space-y-1">
+                      <Skeleton className="h-4 w-full" />
+                      <Skeleton className="h-3 w-2/3" />
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </SkeletonWrapper>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Autonomo Panel Loading Skeleton
+export function AutonomoPanelSkeleton() {
+  return (
+    <div className="min-h-screen bg-background flex w-full">
+      {/* Sidebar placeholder */}
+      <div className="hidden lg:block w-56 border-r bg-card/50">
+        <div className="p-4 space-y-4">
+          <Skeleton className="h-10 w-full rounded-lg" />
+          {[...Array(8)].map((_, i) => (
+            <Skeleton key={i} className="h-10 w-full rounded-lg" />
+          ))}
+        </div>
+      </div>
+      
+      {/* Main content */}
+      <div className="flex-1 p-4 lg:p-6 space-y-6">
+        {/* Header */}
+        <SkeletonWrapper delay={0}>
+          <div className="flex items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-48" />
+            </div>
+            <Skeleton className="h-10 w-32 rounded-lg" />
+          </div>
+        </SkeletonWrapper>
+        
+        {/* Stats */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <SkeletonWrapper key={i} delay={100 + i * 50}>
+              <Card className="bg-gradient-to-br from-muted/50 to-transparent">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-12 w-12 rounded-xl" />
+                    <div className="space-y-2">
+                      <Skeleton className="h-3 w-20" />
+                      <Skeleton className="h-6 w-16" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </SkeletonWrapper>
+          ))}
+        </div>
+        
+        {/* Quick actions */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[...Array(3)].map((_, i) => (
+            <SkeletonWrapper key={i} delay={300 + i * 80}>
+              <Card>
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <Skeleton className="h-8 w-8 rounded-lg" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-5 w-32" />
+                      <Skeleton className="h-4 w-48" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </SkeletonWrapper>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}

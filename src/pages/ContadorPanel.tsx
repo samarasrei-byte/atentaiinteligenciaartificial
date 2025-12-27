@@ -273,7 +273,43 @@ const ContadorPanel = () => {
   };
 
   if (authLoading || isLoading) {
-    return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
+    return (
+      <div className="min-h-screen bg-background flex w-full">
+        {/* Sidebar placeholder */}
+        <div className="hidden lg:block w-56 border-r bg-card/50">
+          <div className="p-4 space-y-4">
+            <div className="h-10 w-full rounded-lg bg-muted animate-pulse" />
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="h-10 w-full rounded-lg bg-muted/60 animate-pulse" style={{ animationDelay: `${i * 100}ms` }} />
+            ))}
+          </div>
+        </div>
+        
+        {/* Main content */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center space-y-6 p-8">
+            <div className="relative mx-auto w-20 h-20">
+              <div className="absolute inset-0 rounded-full border-4 border-blue-500/20" />
+              <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-blue-500 animate-spin" />
+              <FileText className="absolute inset-0 m-auto h-8 w-8 text-blue-500/60" />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-xl font-semibold text-foreground">Carregando Painel</h2>
+              <p className="text-muted-foreground text-sm">Verificando perfil e permissões do contador...</p>
+            </div>
+            <div className="flex justify-center gap-1">
+              {[0, 1, 2].map((i) => (
+                <div 
+                  key={i}
+                  className="w-2 h-2 rounded-full bg-blue-500 animate-bounce"
+                  style={{ animationDelay: `${i * 150}ms` }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const pendingConsultations = consultations.filter(c => c.status === 'pending');
