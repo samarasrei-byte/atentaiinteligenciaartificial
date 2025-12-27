@@ -15,7 +15,7 @@ export function Header({ onNavigate }: HeaderProps) {
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
     { label: "Autônomos", icon: User, href: "/plano/autonomo" },
-    { label: "Planos", icon: Users, section: "pricing" },
+    { label: "Por Perfil", icon: Users, href: "/planos-perfil" },
   ];
 
   return (

@@ -302,16 +302,17 @@ const PlanosPorPerfil = () => {
 
               {/* Plans Grid */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {profile.plans.map((planItem) => {
+                {profile.plans.map((planItem, index) => {
                   const plan = STRIPE_PLANS[planItem.planKey];
                   
                   return (
                     <Card 
                       key={planItem.planKey}
                       className={cn(
-                        "relative overflow-hidden transition-all hover:shadow-lg",
+                        "relative overflow-hidden transition-all hover:shadow-lg animate-fade-in hover-scale",
                         planItem.recommended && "ring-2 ring-primary"
                       )}
+                      style={{ animationDelay: `${index * 100}ms` }}
                     >
                       {planItem.recommended && (
                         <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-center py-1.5 text-xs font-medium">

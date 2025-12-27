@@ -84,9 +84,17 @@ export function ProfilesSection() {
           <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-foreground mb-4">
             Uma plataforma para cada perfil
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-6">
             Seja você empresário, autônomo ou contador, temos as ferramentas certas para te ajudar a navegar pela Reforma Tributária.
           </p>
+          <Button
+            variant="outline"
+            onClick={() => navigate('/planos-perfil')}
+            className="border-primary text-primary hover:bg-primary/10"
+          >
+            Ver planos por perfil
+            <ArrowRight className="h-4 w-4 ml-2" />
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
