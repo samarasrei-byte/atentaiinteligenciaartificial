@@ -470,7 +470,6 @@ export function AISection() {
                 </div>
 
                 <div className="p-3 bg-muted/50 rounded-lg text-xs md:text-sm text-muted-foreground">
-                  <p>Usuários gratuitos: <strong>{DAILY_QUESTION_LIMIT} perguntas/dia</strong></p>
                   <p>Premium: <strong>Perguntas ilimitadas</strong></p>
                 </div>
 
