@@ -43,6 +43,7 @@ import InstallApp from "./pages/InstallApp";
 import TransitionSimulator from "./pages/TransitionSimulator";
 import CertificatesPage from "./pages/CertificatesPage";
 import TransicaoTributaria from "./pages/TransicaoTributaria";
+import MetricsDashboard from "./pages/MetricsDashboard";
 
 const queryClient = new QueryClient();
 
@@ -156,6 +157,11 @@ const App = () => (
               <Route path="/admin/reports" element={
                 <ProtectedRoute>
                   <AdminReports />
+                </ProtectedRoute>
+              } />
+              <Route path="/admin/metrics" element={
+                <ProtectedRoute>
+                  <MetricsDashboard />
                 </ProtectedRoute>
               } />
               <Route path="/chat/:consultationId" element={
