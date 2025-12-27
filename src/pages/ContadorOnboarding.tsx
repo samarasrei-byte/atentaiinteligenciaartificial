@@ -11,18 +11,27 @@ import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { 
   Calculator, FileText, DollarSign, User, CheckCircle, 
-  Loader2, Award, Star, Clock,
+  Loader2, Award, Star, Clock, AlertCircle, Check, X,
 } from 'lucide-react';
 import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
 import OnboardingStepHeader from '@/components/onboarding/OnboardingStepHeader';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 interface OnboardingData {
   crc_number: string;
   specialty: string;
   bio: string;
   hourly_rate: string;
+  certificate_rate: string;
   available: boolean;
 }
+
+// Limites de caracteres
+const BIO_MIN_LENGTH = 50;
+const BIO_MAX_LENGTH = 500;
+
+// Preço fixo por certidão emitida
+const CERTIFICATE_PRICE = 100;
 
 const steps = [
   { id: 1, title: 'Profissional', icon: FileText },
@@ -44,6 +53,83 @@ const specialties = [
   'Obrigações Acessórias',
 ];
 
+// Regex para validar CRC - Formatos aceitos:
+// 12345/O-SP, 123456/O-SP, 12345-SP, SP-12345
+const CRC_REGEX = /^(\d{1,6}\/O?-[A-Z]{2}|[A-Z]{2}-\d{1,6}|\d{1,6}-[A-Z]{2})$/i;
+
+// Lista de UFs válidas
+const VALID_UFS = ['AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA','PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO'];
+
+interface CRCValidation {
+  isValid: boolean;
+  formatted: string | null;
+  uf: string | null;
+  number: string | null;
+  error?: string;
+}
+
+function validateCRC(crc: string): CRCValidation {
+  const cleanCrc = crc.trim().toUpperCase();
+  
+  if (!cleanCrc) {
+    return { isValid: false, formatted: null, uf: null, number: null, error: 'CRC é obrigatório' };
+  }
+  
+  // Tenta extrair número e UF de diferentes formatos
+  let number: string | null = null;
+  let uf: string | null = null;
+  
+  // Formato: 12345/O-SP ou 12345-SP
+  const match1 = cleanCrc.match(/^(\d{1,6})\/?O?-([A-Z]{2})$/);
+  if (match1) {
+    number = match1[1];
+    uf = match1[2];
+  }
+  
+  // Formato: SP-12345
+  const match2 = cleanCrc.match(/^([A-Z]{2})-(\d{1,6})$/);
+  if (match2) {
+    uf = match2[1];
+    number = match2[2];
+  }
+  
+  if (!number || !uf) {
+    return { 
+      isValid: false, 
+      formatted: null, 
+      uf: null, 
+      number: null, 
+      error: 'Formato inválido. Use: 12345/O-SP ou SP-12345' 
+    };
+  }
+  
+  if (!VALID_UFS.includes(uf)) {
+    return { 
+      isValid: false, 
+      formatted: null, 
+      uf, 
+      number, 
+      error: `UF inválida: ${uf}. Use uma UF válida.` 
+    };
+  }
+  
+  // Valida tamanho do número
+  if (number.length < 3 || number.length > 6) {
+    return { 
+      isValid: false, 
+      formatted: null, 
+      uf, 
+      number, 
+      error: 'Número do CRC deve ter entre 3 e 6 dígitos' 
+    };
+  }
+  
+  // Formato padrão de saída
+  const formatted = `${number}/O-${uf}`;
+  
+  return { isValid: true, formatted, uf, number };
+}
+
 const ContadorOnboarding = () => {
   const navigate = useNavigate();
   const { user, loading: authLoading } = useAuth();
@@ -51,15 +137,18 @@ const ContadorOnboarding = () => {
 
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
+  const [isValidatingCRC, setIsValidatingCRC] = useState(false);
+  const [crcValidation, setCrcValidation] = useState<CRCValidation | null>(null);
   const [selectedSpecialties, setSelectedSpecialties] = useState<string[]>([]);
   const [data, setData] = useState<OnboardingData>({
     crc_number: '',
     specialty: '',
     bio: '',
     hourly_rate: '150',
+    certificate_rate: String(CERTIFICATE_PRICE),
     available: true,
   });
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [errors, setErrors] = useState<Record<string, string>>();
 
   useEffect(() => {
     if (!authLoading) {
@@ -85,14 +174,29 @@ const ContadorOnboarding = () => {
     }
   };
 
+  // Validação do CRC em tempo real
+  const handleCRCChange = async (value: string) => {
+    setData({ ...data, crc_number: value });
+    
+    if (value.trim().length >= 5) {
+      setIsValidatingCRC(true);
+      // Simula delay de validação (em produção, isso poderia consultar API do CFC)
+      await new Promise(resolve => setTimeout(resolve, 300));
+      const validation = validateCRC(value);
+      setCrcValidation(validation);
+      setIsValidatingCRC(false);
+    } else {
+      setCrcValidation(null);
+    }
+  };
+
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
 
     if (step === 1) {
-      if (!data.crc_number.trim()) {
-        newErrors.crc_number = 'CRC é obrigatório';
-      } else if (!/^\d{1,6}\/O?-[A-Z]{2}$/.test(data.crc_number.trim())) {
-        newErrors.crc_number = 'Formato inválido (ex: 12345/O-SP)';
+      const crcVal = validateCRC(data.crc_number);
+      if (!crcVal.isValid) {
+        newErrors.crc_number = crcVal.error || 'CRC inválido';
       }
       if (selectedSpecialties.length === 0) {
         newErrors.specialty = 'Selecione pelo menos uma especialidade';
@@ -102,8 +206,10 @@ const ContadorOnboarding = () => {
     if (step === 2) {
       if (!data.bio.trim()) {
         newErrors.bio = 'Biografia é obrigatória';
-      } else if (data.bio.length < 50) {
-        newErrors.bio = 'Biografia deve ter pelo menos 50 caracteres';
+      } else if (data.bio.length < BIO_MIN_LENGTH) {
+        newErrors.bio = `Biografia deve ter pelo menos ${BIO_MIN_LENGTH} caracteres`;
+      } else if (data.bio.length > BIO_MAX_LENGTH) {
+        newErrors.bio = `Biografia deve ter no máximo ${BIO_MAX_LENGTH} caracteres`;
       }
     }
 
@@ -121,9 +227,10 @@ const ContadorOnboarding = () => {
   const canProceed = () => {
     switch (currentStep) {
       case 1:
-        return data.crc_number.trim() && selectedSpecialties.length > 0;
+        const crcVal = validateCRC(data.crc_number);
+        return crcVal.isValid && selectedSpecialties.length > 0;
       case 2:
-        return data.bio.trim().length >= 50;
+        return data.bio.trim().length >= BIO_MIN_LENGTH && data.bio.length <= BIO_MAX_LENGTH;
       case 3:
         return parseFloat(data.hourly_rate) >= 50;
       case 4:
@@ -162,9 +269,11 @@ const ContadorOnboarding = () => {
 
     setIsLoading(true);
     try {
+      const crcVal = validateCRC(data.crc_number);
+      
       const profileData = {
         user_id: user.id,
-        crc_number: data.crc_number.trim(),
+        crc_number: crcVal.formatted || data.crc_number.trim(),
         specialty: selectedSpecialties.join(', '),
         bio: data.bio.trim(),
         hourly_rate_cents: Math.round(parseFloat(data.hourly_rate) * 100),
@@ -243,16 +352,32 @@ const ContadorOnboarding = () => {
           <div className="space-y-4">
             <div className="space-y-2">
               <Label>Número do CRC *</Label>
-              <Input
-                value={data.crc_number}
-                onChange={(e) => setData({ ...data, crc_number: e.target.value })}
-                placeholder="12345/O-SP"
-              />
-              {errors.crc_number && (
+              <div className="relative">
+                <Input
+                  value={data.crc_number}
+                  onChange={(e) => handleCRCChange(e.target.value)}
+                  placeholder="12345/O-SP"
+                  className={`pr-10 ${crcValidation?.isValid === true ? 'border-green-500' : crcValidation?.isValid === false ? 'border-destructive' : ''}`}
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  {isValidatingCRC && <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />}
+                  {!isValidatingCRC && crcValidation?.isValid === true && <Check className="h-4 w-4 text-green-500" />}
+                  {!isValidatingCRC && crcValidation?.isValid === false && <X className="h-4 w-4 text-destructive" />}
+                </div>
+              </div>
+              {crcValidation?.isValid === false && (
+                <p className="text-sm text-destructive">{crcValidation.error}</p>
+              )}
+              {crcValidation?.isValid === true && (
+                <p className="text-sm text-green-600">
+                  CRC válido: {crcValidation.formatted} ({crcValidation.uf})
+                </p>
+              )}
+              {errors?.crc_number && !crcValidation && (
                 <p className="text-sm text-destructive">{errors.crc_number}</p>
               )}
               <p className="text-xs text-muted-foreground">
-                Formato: número/O-UF (ex: 12345/O-SP)
+                Formato: número/O-UF (ex: 12345/O-SP) ou UF-número (ex: SP-12345)
               </p>
             </div>
 
@@ -278,7 +403,7 @@ const ContadorOnboarding = () => {
                   );
                 })}
               </div>
-              {errors.specialty && (
+              {errors?.specialty && (
                 <p className="text-sm text-destructive">{errors.specialty}</p>
               )}
             </div>
@@ -297,19 +422,34 @@ const ContadorOnboarding = () => {
 
           <div className="space-y-4">
             <div className="space-y-2">
+              <div className="flex justify-between items-center">
+                <Label>Sua Biografia *</Label>
+                <span className={`text-xs ${data.bio.length > BIO_MAX_LENGTH ? 'text-destructive' : data.bio.length >= BIO_MIN_LENGTH ? 'text-green-600' : 'text-muted-foreground'}`}>
+                  {data.bio.length}/{BIO_MAX_LENGTH}
+                </span>
+              </div>
               <Textarea
                 value={data.bio}
-                onChange={(e) => setData({ ...data, bio: e.target.value })}
+                onChange={(e) => {
+                  if (e.target.value.length <= BIO_MAX_LENGTH + 50) { // Allow slight overage for UX
+                    setData({ ...data, bio: e.target.value });
+                  }
+                }}
                 placeholder="Descreva sua experiência profissional, formação e como você pode ajudar seus clientes..."
-                className="min-h-[150px]"
+                className={`min-h-[150px] ${data.bio.length > BIO_MAX_LENGTH ? 'border-destructive' : ''}`}
+                maxLength={BIO_MAX_LENGTH + 50}
               />
-              <div className="flex justify-between">
-                {errors.bio ? (
-                  <p className="text-sm text-destructive">{errors.bio}</p>
+              <div className="flex justify-between items-center">
+                {data.bio.length < BIO_MIN_LENGTH ? (
+                  <p className="text-xs text-muted-foreground">Mínimo {BIO_MIN_LENGTH} caracteres (faltam {BIO_MIN_LENGTH - data.bio.length})</p>
+                ) : data.bio.length > BIO_MAX_LENGTH ? (
+                  <p className="text-xs text-destructive">Excedeu o limite em {data.bio.length - BIO_MAX_LENGTH} caracteres</p>
                 ) : (
-                  <span />
+                  <p className="text-xs text-green-600 flex items-center gap-1"><Check className="h-3 w-3" /> Tamanho adequado</p>
                 )}
-                <p className="text-xs text-muted-foreground">{data.bio.length} caracteres</p>
+                {errors?.bio && (
+                  <p className="text-sm text-destructive">{errors.bio}</p>
+                )}
               </div>
             </div>
 
@@ -354,13 +494,23 @@ const ContadorOnboarding = () => {
                   className="pl-10"
                 />
               </div>
-              {errors.hourly_rate && (
+              {errors?.hourly_rate && (
                 <p className="text-sm text-destructive">{errors.hourly_rate}</p>
               )}
               <p className="text-xs text-muted-foreground">
                 Taxa da plataforma: 10% sobre cada consulta
               </p>
             </div>
+
+            {/* Valor por Certidão */}
+            <Alert className="bg-emerald-500/10 border-emerald-500/30">
+              <FileText className="h-4 w-4 text-emerald-600" />
+              <AlertDescription className="text-foreground">
+                <strong>Emissão de Certidões:</strong> Você receberá{' '}
+                <span className="font-bold text-emerald-600">R$ {CERTIFICATE_PRICE.toFixed(2)}</span>{' '}
+                por cada certidão emitida através da plataforma.
+              </AlertDescription>
+            </Alert>
 
             <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl border border-border">
               <div className="flex items-center gap-3">
@@ -384,17 +534,24 @@ const ContadorOnboarding = () => {
                   <Award className="h-4 w-4" />
                   Seus ganhos estimados
                 </h4>
-                <p className="text-muted-foreground">
-                  Com o valor de{' '}
-                  <span className="font-bold text-foreground">
-                    R$ {parseFloat(data.hourly_rate || '0').toFixed(2)}
-                  </span>{' '}
-                  por consulta, você receberá{' '}
-                  <span className="font-bold text-primary">
-                    R$ {(parseFloat(data.hourly_rate || '0') * 0.9).toFixed(2)}
-                  </span>{' '}
-                  líquido.
-                </p>
+                <div className="space-y-2 text-muted-foreground">
+                  <p>
+                    <strong className="text-foreground">Consulta:</strong>{' '}
+                    R$ {parseFloat(data.hourly_rate || '0').toFixed(2)} →{' '}
+                    <span className="font-bold text-primary">
+                      R$ {(parseFloat(data.hourly_rate || '0') * 0.9).toFixed(2)}
+                    </span>{' '}
+                    líquido (taxa 10%)
+                  </p>
+                  <p>
+                    <strong className="text-foreground">Certidão:</strong>{' '}
+                    R$ {CERTIFICATE_PRICE.toFixed(2)} →{' '}
+                    <span className="font-bold text-emerald-600">
+                      R$ {(CERTIFICATE_PRICE * 0.9).toFixed(2)}
+                    </span>{' '}
+                    líquido (taxa 10%)
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
@@ -414,7 +571,10 @@ const ContadorOnboarding = () => {
             <CardContent className="pt-4 space-y-4">
               <div className="flex justify-between py-2 border-b border-border">
                 <span className="text-muted-foreground">CRC</span>
-                <span className="font-medium text-foreground">{data.crc_number}</span>
+                <span className="font-medium text-foreground flex items-center gap-2">
+                  {crcValidation?.formatted || data.crc_number}
+                  {crcValidation?.isValid && <Check className="h-4 w-4 text-green-500" />}
+                </span>
               </div>
               <div className="flex justify-between py-2 border-b border-border">
                 <span className="text-muted-foreground">Especialidades</span>
@@ -426,6 +586,12 @@ const ContadorOnboarding = () => {
                 <span className="text-muted-foreground">Valor por consulta</span>
                 <span className="font-medium text-foreground">
                   R$ {parseFloat(data.hourly_rate).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex justify-between py-2 border-b border-border">
+                <span className="text-muted-foreground">Valor por certidão</span>
+                <span className="font-medium text-emerald-600">
+                  R$ {CERTIFICATE_PRICE.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between py-2">
@@ -445,12 +611,23 @@ const ContadorOnboarding = () => {
 
           <Card className="bg-muted/50 border-border">
             <CardContent className="pt-4">
+              <p className="text-sm font-medium text-foreground mb-1">Biografia:</p>
               <p className="text-sm text-muted-foreground">
-                <strong className="text-foreground">Biografia:</strong> {data.bio.substring(0, 150)}
-                {data.bio.length > 150 && '...'}
+                {data.bio.substring(0, 200)}
+                {data.bio.length > 200 && '...'}
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                {data.bio.length} caracteres
               </p>
             </CardContent>
           </Card>
+
+          <Alert className="bg-blue-500/10 border-blue-500/30">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-foreground text-sm">
+              Ao confirmar, você concorda com os termos de uso da plataforma e está ciente que seu CRC será verificado para garantir a conformidade com o Conselho Federal de Contabilidade.
+            </AlertDescription>
+          </Alert>
         </div>
       )}
     </OnboardingLayout>
