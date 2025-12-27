@@ -5,7 +5,7 @@ import { Users, MessageSquare, TrendingUp, Building2 } from "lucide-react";
 const stats = [
   {
     icon: Users,
-    value: 2500,
+    value: 2521,
     suffix: "+",
     label: "Usuários Ativos",
     description: "Profissionais utilizando a plataforma",
@@ -16,7 +16,7 @@ const stats = [
   },
   {
     icon: MessageSquare,
-    value: 45000,
+    value: 47635,
     suffix: "+",
     label: "Consultas IA",
     description: "Perguntas respondidas pela IA",
@@ -27,7 +27,7 @@ const stats = [
   },
   {
     icon: TrendingUp,
-    value: 12,
+    value: 50.857,
     prefix: "R$",
     suffix: "M",
     label: "Economia Gerada",
@@ -39,7 +39,7 @@ const stats = [
   },
   {
     icon: Building2,
-    value: 850,
+    value: 857,
     suffix: "+",
     label: "Empresas",
     description: "Empresas utilizando o simulador",
