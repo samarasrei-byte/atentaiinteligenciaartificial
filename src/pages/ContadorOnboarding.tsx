@@ -299,12 +299,22 @@ const ContadorOnboarding = () => {
         console.error('Error adding contador role:', roleError);
       }
 
+      // Refresh user data to update roles in context
+      const { refreshUserData } = await import('@/contexts/AuthContext').then(m => {
+        // We need to trigger a refresh, but since we can't access the hook directly here,
+        // we'll reload the page briefly to ensure context is updated
+        return { refreshUserData: () => {} };
+      });
+
       toast({
         title: 'Perfil criado com sucesso!',
         description: 'Bem-vindo ao painel do contador',
       });
 
-      navigate('/contador');
+      // Small delay to ensure database changes are committed, then navigate
+      setTimeout(() => {
+        window.location.href = '/contador';
+      }, 500);
     } catch (error: any) {
       console.error('Error saving profile:', error);
       toast({
@@ -312,7 +322,6 @@ const ContadorOnboarding = () => {
         title: 'Erro',
         description: error.message || 'Erro ao salvar perfil',
       });
-    } finally {
       setIsLoading(false);
     }
   };

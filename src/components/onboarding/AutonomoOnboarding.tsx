@@ -162,19 +162,31 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
 
       if (error) throw error;
 
+      // Add autonomo role
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert(
+          { user_id: user.id, role: 'autonomo' },
+          { onConflict: 'user_id,role', ignoreDuplicates: true }
+        );
+
+      if (roleError) {
+        console.error('Error adding autonomo role:', roleError);
+      }
+
       toast({
         title: 'Perfil configurado!',
         description: 'Seus dados foram salvos com sucesso',
       });
       
-      onComplete();
+      // Reload page to refresh auth context with new role
+      window.location.href = '/autonomo';
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Erro',
         description: error.message || 'Erro ao salvar dados do perfil',
       });
-    } finally {
       setIsSubmitting(false);
     }
   };
