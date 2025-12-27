@@ -258,7 +258,7 @@ export function EmbeddedRegimeComparator() {
                     <Tooltip formatter={(value: number) => formatCurrency(value)} />
                     <Legend />
                     <Bar dataKey="atual" name="Sistema Atual" fill="hsl(var(--destructive))" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="reforma" name="Reforma 2026" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="reforma" name="Regime Definitivo 2033" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
