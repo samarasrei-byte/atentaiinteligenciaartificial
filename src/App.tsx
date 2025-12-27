@@ -42,6 +42,7 @@ import UserTypeSelection from "./pages/UserTypeSelection";
 import InstallApp from "./pages/InstallApp";
 import TransitionSimulator from "./pages/TransitionSimulator";
 import CertificatesPage from "./pages/CertificatesPage";
+import TransicaoTributaria from "./pages/TransicaoTributaria";
 
 const queryClient = new QueryClient();
 
@@ -73,6 +74,7 @@ const App = () => (
               <Route path="/faq" element={<FAQ />} />
               <Route path="/simulador" element={<Simulator />} />
               <Route path="/transicao" element={<TransitionSimulator />} />
+              <Route path="/transicao-tributaria" element={<TransicaoTributaria />} />
               <Route path="/certidoes" element={<CertificatesPage />} />
               {/* Protected routes - require authentication */}
               <Route path="/dashboard" element={

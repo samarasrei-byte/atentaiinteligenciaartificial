@@ -37,6 +37,7 @@ import { exportSimulationToExcel } from '@/lib/exportExcel';
 import { TaxComparisonChart } from '@/components/simulator/TaxComparisonChart';
 import { TransitionTimeline } from '@/components/simulator/TransitionTimeline';
 import { TaxTransitionTimeline, TransitionDisclaimer } from '@/components/simulator/TaxTransitionTimeline';
+import { YearSelector, TRANSITION_RATES, TransitionYear, calculateTransitionTax } from '@/components/simulator/YearSelector';
 import { SimulatorSkeleton } from '@/components/ui/skeleton-loaders';
 
 const Simulator = () => {
@@ -52,6 +53,7 @@ const Simulator = () => {
   const [isSimulating, setIsSimulating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [result, setResult] = useState<SimulationResult | null>(null);
+  const [selectedYear, setSelectedYear] = useState<TransitionYear>(2033);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -288,7 +290,13 @@ const Simulator = () => {
                     <p className="text-xs text-cyan-400">
                       Alíquota de ICMS para {brazilianStates.find(s => s.value === state)?.label}: {stateICMSRates[state]}%
                     </p>
-                  )}
+              )}
+
+              {/* Year Selector */}
+              <YearSelector 
+                value={selectedYear} 
+                onChange={setSelectedYear}
+              />
                 </div>
               )}
 
@@ -384,27 +392,46 @@ const Simulator = () => {
                   <ArrowRight className="h-8 w-8 text-slate-500" />
                 </div>
 
-                {/* New Taxes */}
+                {/* New Taxes - with year selection */}
                 <div className="space-y-3">
                   <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
-                    Regime Definitivo (2033)
+                    Novo Sistema ({selectedYear}) - {TRANSITION_RATES[selectedYear].phase}
                   </h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <span className="text-slate-400">IBS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.afterTaxes.ibs)}</span>
-                    <span className="text-slate-400">CBS:</span>
-                    <span className="text-white text-right">{formatCurrency(result.afterTaxes.cbs)}</span>
-                    {result.afterTaxes.is > 0 && (
+                  {(() => {
+                    const yearTaxes = calculateTransitionTax(
+                      parseCurrencyInput(revenue),
+                      selectedYear,
+                      0 // No credit factor for now
+                    );
+                    return (
                       <>
-                        <span className="text-slate-400">Imp. Seletivo:</span>
-                        <span className="text-white text-right">{formatCurrency(result.afterTaxes.is)}</span>
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          <span className="text-slate-400">IBS ({TRANSITION_RATES[selectedYear].ibs}%):</span>
+                          <span className="text-white text-right">{formatCurrency(yearTaxes.ibs)}</span>
+                          <span className="text-slate-400">CBS ({TRANSITION_RATES[selectedYear].cbs}%):</span>
+                          <span className="text-white text-right">{formatCurrency(yearTaxes.cbs)}</span>
+                          {result.afterTaxes.is > 0 && (
+                            <>
+                              <span className="text-slate-400">Imp. Seletivo:</span>
+                              <span className="text-white text-right">{formatCurrency(result.afterTaxes.is)}</span>
+                            </>
+                          )}
+                        </div>
+                        <div className="flex justify-between items-center pt-2 border-t border-slate-700">
+                          <span className="font-semibold text-slate-300">Total {selectedYear}:</span>
+                          <span className="text-xl font-bold text-cyan-400">
+                            {formatCurrency(yearTaxes.total + (result.afterTaxes.is || 0))}
+                          </span>
+                        </div>
+                        {TRANSITION_RATES[selectedYear].percentImplemented > 0 && 
+                         TRANSITION_RATES[selectedYear].percentImplemented < 100 && (
+                          <p className="text-xs text-amber-400 text-center">
+                            {TRANSITION_RATES[selectedYear].percentImplemented}% do novo sistema implementado
+                          </p>
+                        )}
                       </>
-                    )}
-                  </div>
-                  <div className="flex justify-between items-center pt-2 border-t border-slate-700">
-                    <span className="font-semibold text-slate-300">Total Novo:</span>
-                    <span className="text-xl font-bold text-cyan-400">{formatCurrency(result.afterTaxes.total)}</span>
-                  </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Difference */}
