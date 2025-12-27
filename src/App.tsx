@@ -44,6 +44,7 @@ import TransitionSimulator from "./pages/TransitionSimulator";
 import CertificatesPage from "./pages/CertificatesPage";
 import TransicaoTributaria from "./pages/TransicaoTributaria";
 import MetricsDashboard from "./pages/MetricsDashboard";
+import PlanosPorPerfil from "./pages/PlanosPorPerfil";
 
 const queryClient = new QueryClient();
 
@@ -69,6 +70,7 @@ const App = () => (
               <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
               <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
               <Route path="/plano/comparar" element={<PlanComparison />} />
+              <Route path="/planos-perfil" element={<PlanosPorPerfil />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/termos" element={<TermosDeUso />} />
               <Route path="/privacidade" element={<PoliticaPrivacidade />} />
