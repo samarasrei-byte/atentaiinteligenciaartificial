@@ -101,7 +101,7 @@ type PanelSection =
   | 'support' 
   | 'profile';
 const AutonomoPanel: React.FC = () => {
-  const { user, signOut, profile: authProfile } = useAuth();
+  const { user, signOut, profile: authProfile, loading: authLoading, hasRole } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
@@ -120,7 +120,7 @@ const AutonomoPanel: React.FC = () => {
   });
 
   // Fetch autonomo profile
-  const { data: profile, isLoading: isLoadingProfile } = useQuery({
+  const { data: profile, isLoading: isLoadingProfile, isError } = useQuery({
     queryKey: ['autonomo-profile', user?.id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -134,6 +134,21 @@ const AutonomoPanel: React.FC = () => {
     },
     enabled: !!user,
   });
+
+  // Redirect to auth if not logged in, or to onboarding if no profile
+  useEffect(() => {
+    if (authLoading || isLoadingProfile) return;
+    
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    
+    // If profile query finished and there's no profile, redirect to onboarding
+    if (!isLoadingProfile && !profile && !isError) {
+      navigate('/autonomo-onboarding');
+    }
+  }, [user, authLoading, profile, isLoadingProfile, isError, navigate]);
 
   // Fetch simulations count
   const { data: simulationsCount } = useQuery({
@@ -559,7 +574,7 @@ const AutonomoPanel: React.FC = () => {
     }
   };
 
-  if (!user) {
+  if (authLoading || isLoadingProfile || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />

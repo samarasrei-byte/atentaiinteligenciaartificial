@@ -121,28 +121,22 @@ const ContadorPanel = () => {
   useEffect(() => {
     if (!authLoading) {
       if (!user) navigate('/auth');
-      else if (!hasRole('contador') && !hasRole('admin')) {
-        // Check if it's the test email for simulation
-        if (user.email === 'teste@atentai.com.br') {
-          setIsSimulation(true);
-        } else {
-          toast({ variant: 'destructive', title: 'Acesso negado', description: 'Você não tem permissão' });
-          navigate('/dashboard');
-        }
-      }
+      // Allow access if user has contador role, admin role, or has a contador profile
+      // The profile check will happen in fetchContadorData
     }
-  }, [user, authLoading, hasRole, navigate, toast]);
+  }, [user, authLoading, navigate]);
 
   useEffect(() => {
-    if (user && (hasRole('contador') || hasRole('admin') || isSimulation)) {
+    if (user && !authLoading) {
       fetchContadorData();
     }
-  }, [user, hasRole, isSimulation]);
+  }, [user, authLoading]);
 
   const fetchContadorData = async () => {
     try {
       // Use mock data for simulation mode
-      if (isSimulation || user?.email === 'teste@atentai.com.br') {
+      if (user?.email === 'teste@atentai.com.br') {
+        setIsSimulation(true);
         setContadorProfile(mockProfile);
         setConsultations(mockConsultations);
         setClients(mockClients);
@@ -153,6 +147,13 @@ const ContadorPanel = () => {
         setIsAvailable(mockProfile.available);
         setIsLoading(false);
         setIsRefreshing(false);
+        return;
+      }
+
+      // First check if user has admin role - they can access everything
+      if (hasRole('admin')) {
+        // Admin can view but may not have a contador profile
+        setIsLoading(false);
         return;
       }
 
@@ -175,9 +176,17 @@ const ContadorPanel = () => {
         setHourlyRate(((profileData.hourly_rate_cents || 15000) / 100).toString());
         setIsAvailable(profileData.available);
       } else {
-        // No profile exists, redirect to onboarding
-        navigate('/contador/onboarding');
-        return;
+        // No profile exists - check if they have contador role
+        if (hasRole('contador')) {
+          // Has role but no profile, redirect to onboarding
+          navigate('/contador/onboarding');
+          return;
+        } else {
+          // No role and no profile, access denied
+          toast({ variant: 'destructive', title: 'Acesso negado', description: 'Você não tem permissão para acessar esta área' });
+          navigate('/dashboard');
+          return;
+        }
       }
 
       const { data: consultData } = await supabase
