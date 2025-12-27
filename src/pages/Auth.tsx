@@ -10,6 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Mail, Lock, User, Loader2, Building2, ArrowLeft, Briefcase, Calculator, Eye, EyeOff, Sparkles, ArrowRight, Check } from 'lucide-react';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
@@ -25,10 +26,14 @@ interface UserTypeOption {
   color: string;
 }
 
-const userTypes: UserTypeOption[] = [
-  { type: 'empresa', label: 'Empresa', icon: Building2, color: 'text-blue-500 bg-blue-500/10 border-blue-500' },
-  { type: 'autonomo', label: 'Autônomo', icon: Briefcase, color: 'text-purple-500 bg-purple-500/10 border-purple-500' },
-  { type: 'contador', label: 'Contador', icon: Calculator, color: 'text-teal-500 bg-teal-500/10 border-teal-500' },
+interface UserTypeOptionWithDesc extends UserTypeOption {
+  description: string;
+}
+
+const userTypes: UserTypeOptionWithDesc[] = [
+  { type: 'empresa', label: 'Empresa', icon: Building2, color: 'text-blue-500 bg-blue-500/10 border-blue-500', description: 'Para empresas de todos os portes que buscam otimizar sua carga tributária' },
+  { type: 'autonomo', label: 'Autônomo', icon: Briefcase, color: 'text-purple-500 bg-purple-500/10 border-purple-500', description: 'Para profissionais liberais e prestadores de serviço autônomos' },
+  { type: 'contador', label: 'Contador', icon: Calculator, color: 'text-teal-500 bg-teal-500/10 border-teal-500', description: 'Para contadores que desejam atender clientes na plataforma' },
 ];
 
 const Auth = () => {
@@ -300,25 +305,31 @@ const Auth = () => {
                 </p>
                 {/* Profile type indicators */}
                 {mode === 'login' && (
-                  <div className="flex items-center justify-center gap-2 xs:gap-3 sm:gap-4 mt-4">
-                    {userTypes.map((type) => {
-                      const Icon = type.icon;
-                      return (
-                        <div
-                          key={type.type}
-                          className="flex flex-col items-center gap-1 sm:gap-1.5"
-                        >
-                          <div className={cn(
-                            "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-transform hover:scale-110",
-                            type.color
-                          )}>
-                            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
-                          </div>
-                          <span className="text-[10px] sm:text-xs text-muted-foreground">{type.label}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
+                  <TooltipProvider>
+                    <div className="flex items-center justify-center gap-2 xs:gap-3 sm:gap-4 mt-4">
+                      {userTypes.map((type) => {
+                        const Icon = type.icon;
+                        return (
+                          <Tooltip key={type.type}>
+                            <TooltipTrigger asChild>
+                              <div className="flex flex-col items-center gap-1 sm:gap-1.5 cursor-pointer">
+                                <div className={cn(
+                                  "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-transform hover:scale-110",
+                                  type.color
+                                )}>
+                                  <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
+                                </div>
+                                <span className="text-[10px] sm:text-xs text-muted-foreground">{type.label}</span>
+                              </div>
+                            </TooltipTrigger>
+                            <TooltipContent side="bottom" className="max-w-[200px] text-center">
+                              <p className="text-xs">{type.description}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        );
+                      })}
+                    </div>
+                  </TooltipProvider>
                 )}
               </>
             )}
