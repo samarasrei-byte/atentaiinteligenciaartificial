@@ -15,6 +15,7 @@ import {
   Info,
   ArrowRight
 } from 'lucide-react';
+import { TransitionEvolutionChart, AccumulatedSavingsCalculator } from '@/components/simulator/TransitionCharts';
 
 /**
  * Cronograma de transição tributária conforme LC 214/2025
@@ -371,6 +372,12 @@ const TransicaoTributaria = () => {
             })}
           </div>
         </div>
+
+        {/* Evolution Chart */}
+        <TransitionEvolutionChart className="mb-12" />
+
+        {/* Savings Calculator */}
+        <AccumulatedSavingsCalculator className="mb-12" />
 
         {/* CTA */}
         <Card className="bg-gradient-to-r from-cyan-900/50 to-teal-900/50 border-cyan-500/30">
