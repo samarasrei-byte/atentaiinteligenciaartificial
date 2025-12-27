@@ -300,21 +300,21 @@ const Auth = () => {
                 </p>
                 {/* Profile type indicators */}
                 {mode === 'login' && (
-                  <div className="flex items-center justify-center gap-4 mt-4">
+                  <div className="flex items-center justify-center gap-2 xs:gap-3 sm:gap-4 mt-4">
                     {userTypes.map((type) => {
                       const Icon = type.icon;
                       return (
                         <div
                           key={type.type}
-                          className="flex flex-col items-center gap-1.5"
+                          className="flex flex-col items-center gap-1 sm:gap-1.5"
                         >
                           <div className={cn(
-                            "w-10 h-10 rounded-full flex items-center justify-center border",
+                            "w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-transform hover:scale-110",
                             type.color
                           )}>
-                            <Icon className="h-5 w-5" />
+                            <Icon className="h-4 w-4 sm:h-5 sm:w-5" />
                           </div>
-                          <span className="text-xs text-muted-foreground">{type.label}</span>
+                          <span className="text-[10px] sm:text-xs text-muted-foreground">{type.label}</span>
                         </div>
                       );
                     })}
