@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Calculator, TrendingUp, TrendingDown, Minus, RefreshCw, Download, MapPin, Lock, Sparkles } from "lucide-react";
+import { Calculator, TrendingUp, TrendingDown, Minus, RefreshCw, Download, MapPin, Lock, Sparkles, AlertTriangle, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -41,6 +42,20 @@ export function SimulatorSection() {
 
   const selectedSector = sectors.find(s => s.value === sector);
   const showStateSelector = selectedSector && selectedSector.icms > 0;
+
+  // Limites tributários
+  const MEI_ANNUAL_LIMIT = 81000;
+  const SIMPLES_ANNUAL_LIMIT = 4800000;
+  
+  // Calcula faturamento anual para validação
+  const rawRevenueValue = parseCurrencyInput(revenue) || 0;
+  const annualRevenue = revenueType === "annual" ? rawRevenueValue : rawRevenueValue * 12;
+  
+  // Alertas de limites
+  const exceedsMEILimit = annualRevenue > MEI_ANNUAL_LIMIT && annualRevenue <= SIMPLES_ANNUAL_LIMIT;
+  const exceedsSimplesLimit = annualRevenue > SIMPLES_ANNUAL_LIMIT;
+  const nearMEILimit = annualRevenue > MEI_ANNUAL_LIMIT * 0.8 && annualRevenue <= MEI_ANNUAL_LIMIT;
+  const nearSimplesLimit = annualRevenue > SIMPLES_ANNUAL_LIMIT * 0.9 && annualRevenue <= SIMPLES_ANNUAL_LIMIT;
 
   const handleCalculate = () => {
     if (!revenue || !sector || !companyType) return;
@@ -164,6 +179,71 @@ export function SimulatorSection() {
                       </p>
                     )}
                   </div>
+                </div>
+
+                {/* Tax Limit Alerts */}
+                {rawRevenueValue > 0 && (
+                  <div className="space-y-3">
+                    {exceedsSimplesLimit && (
+                      <Alert variant="destructive" className="border-destructive/50 bg-destructive/10">
+                        <AlertTriangle className="h-4 w-4" />
+                        <AlertDescription className="font-medium">
+                          <strong>Faturamento excede o limite do Simples Nacional!</strong>
+                          <br />
+                          <span className="text-sm font-normal">
+                            Com R$ {annualRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} anuais, você ultrapassa o limite de R$ 4.800.000/ano. 
+                            Considere <strong>Lucro Presumido</strong> ou <strong>Lucro Real</strong>.
+                          </span>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    {exceedsMEILimit && (
+                      <Alert className="border-amber-500/50 bg-amber-500/10 text-amber-700">
+                        <AlertTriangle className="h-4 w-4 text-amber-600" />
+                        <AlertDescription>
+                          <strong>Faturamento excede o limite MEI!</strong>
+                          <br />
+                          <span className="text-sm">
+                            Com R$ {annualRevenue.toLocaleString('pt-BR', { minimumFractionDigits: 2 })} anuais, você ultrapassa R$ 81.000/ano do MEI. 
+                            Considere <strong>ME - Simples Nacional</strong> ou outro regime.
+                          </span>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    {nearMEILimit && (
+                      <Alert className="border-blue-500/50 bg-blue-500/10 text-blue-700">
+                        <Info className="h-4 w-4 text-blue-600" />
+                        <AlertDescription>
+                          <strong>Atenção: Aproximando-se do limite MEI</strong>
+                          <br />
+                          <span className="text-sm">
+                            Você está em {((annualRevenue / MEI_ANNUAL_LIMIT) * 100).toFixed(0)}% do limite de R$ 81.000/ano. 
+                            Planeje a transição para evitar desenquadramento.
+                          </span>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                    
+                    {nearSimplesLimit && !exceedsSimplesLimit && (
+                      <Alert className="border-orange-500/50 bg-orange-500/10 text-orange-700">
+                        <Info className="h-4 w-4 text-orange-600" />
+                        <AlertDescription>
+                          <strong>Atenção: Aproximando-se do limite Simples Nacional</strong>
+                          <br />
+                          <span className="text-sm">
+                            Você está em {((annualRevenue / SIMPLES_ANNUAL_LIMIT) * 100).toFixed(0)}% do limite de R$ 4,8M/ano. 
+                            Avalie migração para Lucro Presumido.
+                          </span>
+                        </AlertDescription>
+                      </Alert>
+                    )}
+                  </div>
+                )}
+
+                {/* Row 2 - Sector and Regime */}
+                <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label>Setor de Atuação</Label>
                     <Select value={sector} onValueChange={(value) => { setSector(value); setState(""); }}>

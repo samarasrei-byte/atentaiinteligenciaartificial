@@ -174,45 +174,118 @@ export function IRManagement() {
         </Button>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
+      {/* Enhanced Stats Dashboard */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+        <Card className="bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20">
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold">
-              {requests.filter(r => r.payment_status === 'paid' && r.status !== 'completed').length}
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-bold text-amber-600">
+                  {requests.filter(r => r.payment_status === 'paid' && r.status !== 'completed' && r.status !== 'in_progress').length}
+                </div>
+                <p className="text-sm text-muted-foreground">Aguardando Início</p>
+              </div>
+              <Clock className="h-8 w-8 text-amber-500/50" />
             </div>
-            <p className="text-sm text-muted-foreground">Aguardando</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-blue-500/10 to-transparent border-blue-500/20">
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold">
-              {requests.filter(r => r.status === 'in_progress').length}
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-bold text-blue-600">
+                  {requests.filter(r => r.status === 'in_progress').length}
+                </div>
+                <p className="text-sm text-muted-foreground">Em Andamento</p>
+              </div>
+              <RefreshCw className="h-8 w-8 text-blue-500/50" />
             </div>
-            <p className="text-sm text-muted-foreground">Em Andamento</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-emerald-500/10 to-transparent border-emerald-500/20">
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold">
-              {requests.filter(r => r.status === 'completed').length}
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-bold text-emerald-600">
+                  {requests.filter(r => r.status === 'completed').length}
+                </div>
+                <p className="text-sm text-muted-foreground">Concluídas</p>
+              </div>
+              <CheckCircle className="h-8 w-8 text-emerald-500/50" />
             </div>
-            <p className="text-sm text-muted-foreground">Concluídas</p>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
           <CardContent className="pt-4">
-            <div className="text-2xl font-bold text-success">
-              {formatPrice(
-                requests
-                  .filter(r => r.payment_status === 'paid')
-                  .reduce((sum, r) => sum + r.final_price_cents * 0.85, 0)
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-bold text-primary">
+                  {requests.filter(r => r.ir_type === 'simples').length} / {requests.filter(r => r.ir_type === 'completo').length}
+                </div>
+                <p className="text-sm text-muted-foreground">Simples / Completo</p>
+              </div>
+              <FileSpreadsheet className="h-8 w-8 text-primary/50" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-success/10 to-transparent border-success/20">
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-bold text-success">
+                  {formatPrice(
+                    requests
+                      .filter(r => r.payment_status === 'paid')
+                      .reduce((sum, r) => sum + r.final_price_cents * 0.85, 0)
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground">Receita Total (85%)</p>
+              </div>
+            </div>
+            <div className="mt-2 text-xs text-muted-foreground">
+              {requests.filter(r => r.status === 'completed').length > 0 && (
+                <span>
+                  Média: {formatPrice(
+                    requests
+                      .filter(r => r.payment_status === 'paid')
+                      .reduce((sum, r) => sum + r.final_price_cents * 0.85, 0) / 
+                    Math.max(requests.filter(r => r.status === 'completed').length, 1)
+                  )}/declaração
+                </span>
               )}
             </div>
-            <p className="text-sm text-muted-foreground">Receita (85%)</p>
           </CardContent>
         </Card>
       </div>
+
+      {/* Year breakdown card */}
+      {requests.length > 0 && (
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="h-5 w-5 text-primary" />
+              Resumo por Ano Fiscal
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex flex-wrap gap-4">
+              {Array.from(new Set(requests.map(r => r.fiscal_year))).sort((a, b) => b - a).map(year => {
+                const yearRequests = requests.filter(r => r.fiscal_year === year);
+                const completed = yearRequests.filter(r => r.status === 'completed').length;
+                return (
+                  <div key={year} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">{year}</div>
+                    <div className="text-sm">
+                      <p><strong>{yearRequests.length}</strong> declarações</p>
+                      <p className="text-muted-foreground">{completed} concluídas</p>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Requests Table */}
       <Card>
