@@ -46,6 +46,8 @@ import TransicaoTributaria from "./pages/TransicaoTributaria";
 import MetricsDashboard from "./pages/MetricsDashboard";
 import PlanosPorPerfil from "./pages/PlanosPorPerfil";
 import ContadoresPublic from "./pages/ContadoresPublic";
+import ServicosPage from "./pages/ServicosPage";
+import IRPage from "./pages/IRPage";
 
 const queryClient = new QueryClient();
 
@@ -81,6 +83,8 @@ const App = () => (
               <Route path="/transicao" element={<TransitionSimulator />} />
               <Route path="/transicao-tributaria" element={<TransicaoTributaria />} />
               <Route path="/certidoes" element={<CertificatesPage />} />
+              <Route path="/servicos" element={<ServicosPage />} />
+              <Route path="/ir" element={<IRPage />} />
               {/* Protected routes - require authentication */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>

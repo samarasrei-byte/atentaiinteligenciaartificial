@@ -75,21 +75,43 @@ export type PlanType = keyof typeof STRIPE_PLANS;
 export const SUBSCRIBER_DISCOUNTS = {
   consultation: {
     name: 'Consulta com Contador',
+    description: 'Tire dúvidas tributárias com um contador especializado',
     basePrice: 15000, // cents (R$150,00)
     discount: 0.20, // 20% off for subscribers
     discountedPrice: 12000, // cents (R$120,00)
+    icon: 'MessageSquare',
   },
   company_opening: {
     name: 'Abertura de Empresa',
+    description: 'Abertura completa de CNPJ com suporte contábil',
     basePrice: 50000, // cents (R$500,00) - price varies
     discount: 0.15, // 15% off for subscribers
     discountedPrice: 42500, // cents (R$425,00)
+    icon: 'Building2',
   },
   certificate: {
     name: 'Emissão de Certidão',
+    description: 'Certidões negativas de débitos fiscais',
     basePrice: 8000, // cents (R$80,00)
     discount: 0.10, // 10% off for subscribers
     discountedPrice: 7200, // cents (R$72,00)
+    icon: 'FileCheck',
+  },
+  ir_simples: {
+    name: 'Declaração IR Simples',
+    description: 'Para CLT com poucos rendimentos e sem investimentos',
+    basePrice: 15000, // cents (R$150,00)
+    discount: 0.20, // 20% off for subscribers
+    discountedPrice: 12000, // cents (R$120,00)
+    icon: 'FileText',
+  },
+  ir_completo: {
+    name: 'Declaração IR Completo',
+    description: 'Para autônomos, investidores ou múltiplas fontes de renda',
+    basePrice: 35000, // cents (R$350,00)
+    discount: 0.20, // 20% off for subscribers
+    discountedPrice: 28000, // cents (R$280,00)
+    icon: 'FileSpreadsheet',
   },
 } as const;
 
