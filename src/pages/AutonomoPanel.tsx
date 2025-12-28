@@ -72,6 +72,9 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
 import CompanyOpeningStatus from '@/components/abertura/CompanyOpeningStatus';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
+import { ServicesHub } from '@/components/dashboard/ServicesHub';
+import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
+
 interface AutonomoProfile {
   id: string;
   user_id: string;
@@ -403,6 +406,9 @@ const AutonomoPanel: React.FC = () => {
       {/* Company Opening Status */}
       <CompanyOpeningStatus onStartNew={() => handleTabChange('abertura-empresa')} />
 
+      {/* Services Hub */}
+      <ServicesHub />
+
       {/* Recent Activity */}
       <Card data-tour="history-section">
         <CardHeader>
@@ -636,6 +642,7 @@ const AutonomoPanel: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <ServiceNotificationBell />
               <NotificationCenter 
                 notifications={notificationsHook.notifications}
                 unreadCount={notificationsHook.unreadCount}
