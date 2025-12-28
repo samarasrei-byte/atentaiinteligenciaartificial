@@ -14,8 +14,8 @@ export function Header({ onNavigate }: HeaderProps) {
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
+    { label: "Contadores", icon: Users, href: "/contadores-publico" },
     { label: "Autônomos", icon: User, href: "/plano/autonomo" },
-    { label: "Por Perfil", icon: Users, href: "/planos-perfil" },
   ];
 
   return (
