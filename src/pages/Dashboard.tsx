@@ -77,7 +77,7 @@ import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionH
 import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
-// Enhanced AI Agent with Power Calculator
+import { ServicesHub } from '@/components/dashboard/ServicesHub';
 const EmbeddedAIAgent = () => {
   return (
     <div className="space-y-6">
@@ -713,6 +713,9 @@ const Dashboard = () => {
                 })}
               </div>
             </div>
+
+            {/* Services Hub */}
+            <ServicesHub />
           </>
         );
     }
