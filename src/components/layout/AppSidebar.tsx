@@ -157,10 +157,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
+          // Aumentado touch target para mobile: min-h-12 (48px) e padding maior
+          'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all duration-200 group relative',
+          'touch-manipulation active:scale-[0.98]',
           active
             ? 'bg-white/10 text-white'
-            : 'text-white/60 hover:bg-white/5 hover:text-white'
+            : 'text-white/60 hover:bg-white/5 hover:text-white active:bg-white/10'
         )}
       >
         <Icon className={cn(
@@ -200,15 +202,15 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-slate-900',
-          collapsed ? 'w-16' : 'w-56'
+          'bg-slate-900 safe-area-top',
+          collapsed ? 'w-16' : 'w-64'
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-3 py-4 border-b border-white/5">
-          <div className={cn('flex items-center gap-2', collapsed && 'justify-center w-full')}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-white" />
+        <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
+          <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
             {!collapsed && (
               <span className="text-lg font-bold text-white">AtentAI</span>
@@ -216,18 +218,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
         </div>
 
-        {/* Toggle Button */}
+        {/* Toggle Button - Hidden on mobile for better touch */}
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-slate-800 border border-white/10 text-white/60 hover:text-white hover:bg-slate-700"
+          className="absolute -right-3 top-7 h-8 w-8 rounded-full bg-slate-800 border border-white/10 text-white/60 hover:text-white hover:bg-slate-700 hidden lg:flex"
         >
-          {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-1 overflow-y-auto">
+        {/* Navigation - Improved scrolling for mobile */}
+        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto overscroll-contain">
           {items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
@@ -235,15 +237,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
         {/* Role Switchers */}
         {(hasRole('admin') || hasRole('contador')) && variant === 'user' && (
-          <div className="px-2 py-2 border-t border-white/5 space-y-1">
+          <div className="px-2 py-2 border-t border-white/5 space-y-0.5">
             {hasRole('admin') && (
               <Tooltip delayDuration={0}>
                 <TooltipTrigger asChild>
                   <button
                     onClick={() => navigate('/admin')}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
-                      'text-white/60 hover:bg-red-500/10 hover:text-red-400',
+                      'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                      'text-white/60 hover:bg-red-500/10 hover:text-red-400 active:bg-red-500/20',
+                      'touch-manipulation active:scale-[0.98]',
                       collapsed && 'justify-center'
                     )}
                   >
@@ -264,8 +267,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   <button
                     onClick={() => navigate('/contador')}
                     className={cn(
-                      'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
-                      'text-white/60 hover:bg-blue-500/10 hover:text-blue-400',
+                      'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                      'text-white/60 hover:bg-blue-500/10 hover:text-blue-400 active:bg-blue-500/20',
+                      'touch-manipulation active:scale-[0.98]',
                       collapsed && 'justify-center'
                     )}
                   >
@@ -291,8 +295,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 <button
                   onClick={() => navigate('/dashboard')}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
-                    'text-white/60 hover:bg-primary/10 hover:text-primary',
+                    'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                    'text-white/60 hover:bg-primary/10 hover:text-primary active:bg-primary/20',
+                    'touch-manipulation active:scale-[0.98]',
                     collapsed && 'justify-center'
                   )}
                 >
@@ -310,11 +315,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         )}
 
         {/* User & Logout */}
-        <div className="px-2 py-3 border-t border-white/5">
+        <div className="px-2 py-3 border-t border-white/5 safe-area-bottom">
           {!collapsed && (
-            <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="h-8 w-8 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center">
-                <span className="text-xs font-bold text-white">
+            <div className="flex items-center gap-3 px-4 py-2 mb-2">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center">
+                <span className="text-sm font-bold text-white">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
@@ -330,8 +335,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2 rounded-xl transition-all',
-                  'text-white/40 hover:bg-red-500/10 hover:text-red-400',
+                  'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                  'text-white/40 hover:bg-red-500/10 hover:text-red-400 active:bg-red-500/20',
+                  'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
                 )}
               >

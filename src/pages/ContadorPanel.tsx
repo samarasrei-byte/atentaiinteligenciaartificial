@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -338,16 +339,22 @@ const ContadorPanel = () => {
   }));
 
   return (
-    <div className="min-h-screen bg-background flex w-full">
-      {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
+    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
+      {mobileMenuOpen && <div className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
       <div className="hidden lg:block">
         <AppSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} variant="contador" activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
-      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <div className={cn(
+        'lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-out',
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      )}>
         <AppSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} variant="contador" activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-56'}`}>
+      <main className={cn(
+        'flex-1 transition-all duration-300 w-full min-w-0',
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+      )}>
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -737,7 +738,7 @@ const Dashboard = () => {
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/60 z-40 lg:hidden backdrop-blur-sm"
           onClick={() => setMobileMenuOpen(false)}
         />
       )}
@@ -753,8 +754,11 @@ const Dashboard = () => {
         />
       </div>
       
-      {/* Mobile Sidebar */}
-      <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      {/* Mobile Sidebar - Improved with better touch handling */}
+      <div className={cn(
+        'lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ease-out',
+        mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+      )}>
         <AppSidebar 
           collapsed={false} 
           onToggle={() => setMobileMenuOpen(false)} 
@@ -764,7 +768,10 @@ const Dashboard = () => {
         />
       </div>
       
-      <main className={`flex-1 transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-56'}`}>
+      <main className={cn(
+        'flex-1 transition-all duration-300 w-full min-w-0',
+        sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
+      )}>
         {/* Top Bar */}
         <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4">
           <div className="flex items-center justify-between">

@@ -44,7 +44,7 @@ export function BottomNavigation() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden bg-background/95 backdrop-blur-lg border-t border-border safe-area-bottom">
-      <div className="flex items-center justify-around h-16 px-2">
+      <div className="flex items-center justify-around h-[72px] px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = isActive(item.path);
@@ -54,16 +54,18 @@ export function BottomNavigation() {
               key={item.path}
               onClick={() => handleNavigation(item)}
               className={cn(
-                "flex flex-col items-center justify-center flex-1 h-full gap-0.5 transition-all duration-200",
-                "active:scale-95 touch-manipulation",
+                // Aumentado touch target: min-w-16 (64px) e min-h-16 (64px)
+                "flex flex-col items-center justify-center flex-1 min-w-16 min-h-16 gap-1 transition-all duration-200",
+                "active:scale-95 touch-manipulation select-none",
+                "-webkit-tap-highlight-color-transparent",
                 active 
                   ? "text-primary" 
                   : "text-muted-foreground hover:text-foreground"
               )}
             >
               <div className={cn(
-                "p-1.5 rounded-xl transition-all duration-200",
-                active && "bg-primary/10"
+                "p-2.5 rounded-2xl transition-all duration-200",
+                active && "bg-primary/15 shadow-sm"
               )}>
                 <Icon className={cn(
                   "h-5 w-5 transition-all duration-200",
@@ -71,8 +73,8 @@ export function BottomNavigation() {
                 )} />
               </div>
               <span className={cn(
-                "text-[10px] font-medium transition-all duration-200",
-                active && "font-semibold"
+                "text-[11px] font-medium transition-all duration-200 leading-tight",
+                active && "font-semibold text-primary"
               )}>
                 {item.label}
               </span>
