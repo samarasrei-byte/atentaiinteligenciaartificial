@@ -357,7 +357,68 @@ const Pricing = () => {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
-          <p className="mt-2 text-accent font-medium">Plano Contador Premium Plus parcelável em até 10x sem juros!</p>
+          <p className="mt-2 text-accent font-medium">Plano Business Pro parcelável em até 10x sem juros!</p>
+        </div>
+
+        {/* Seção para Contadores */}
+        <Separator className="my-16" />
+        
+        <div className="max-w-3xl mx-auto text-center">
+          <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 px-4 py-2 rounded-full mb-6">
+            <Users className="h-5 w-5" />
+            <span className="font-medium">Área do Profissional Contábil</span>
+          </div>
+          
+          <h2 className="text-3xl font-bold text-foreground mb-4">
+            É Contador? Cadastre-se e ganhe com cada serviço!
+          </h2>
+          <p className="text-lg text-muted-foreground mb-8">
+            Ofereça consultas, abertura de empresas e emissão de certidões. 
+            Você fica com <span className="text-emerald-600 font-semibold">85% de cada serviço</span> realizado.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+            <Card className="bg-card/50 border-border">
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center mx-auto mb-3">
+                  <Calculator className="h-6 w-6 text-emerald-500" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">Consultas</h3>
+                <p className="text-sm text-muted-foreground">Defina seu valor por consulta</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card/50 border-border">
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto mb-3">
+                  <Users className="h-6 w-6 text-blue-500" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">Abertura de Empresas</h3>
+                <p className="text-sm text-muted-foreground">Precifique conforme complexidade</p>
+              </CardContent>
+            </Card>
+            <Card className="bg-card/50 border-border">
+              <CardContent className="pt-6 text-center">
+                <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center mx-auto mb-3">
+                  <Star className="h-6 w-6 text-accent" />
+                </div>
+                <h3 className="font-semibold text-foreground mb-1">Certidões</h3>
+                <p className="text-sm text-muted-foreground">Emita certidões com agilidade</p>
+              </CardContent>
+            </Card>
+          </div>
+          
+          <Button 
+            size="lg"
+            onClick={() => navigate('/contador/onboarding')}
+            className="bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600"
+          >
+            <Crown className="h-5 w-5 mr-2" />
+            Cadastrar como Contador
+          </Button>
+          
+          <p className="text-xs text-muted-foreground mt-4">
+            Cadastro gratuito. Você só paga 15% de comissão quando realiza um serviço.
+          </p>
         </div>
       </main>
     </div>
