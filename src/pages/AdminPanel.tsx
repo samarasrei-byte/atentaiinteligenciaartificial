@@ -20,6 +20,7 @@ import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionCh
 import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
 import { AdminWithdrawalPanel } from '@/components/support/AdminWithdrawalPanel';
 import { RealtimeNotifications } from '@/components/admin/RealtimeNotifications';
+import { ContadoresManagement } from '@/components/admin/ContadoresManagement';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
@@ -334,6 +335,10 @@ const AdminPanel = () => {
           )}
 
           {activeTab === 'metrics' && <UsageMetrics data={{ aiQuestionsToday: stats.aiQuestionsToday, aiQuestionsThisWeek: stats.aiQuestionsThisWeek, aiQuestionsThisMonth: stats.aiQuestionsThisMonth, simulationsToday: stats.simulationsToday, simulationsThisWeek: stats.simulationsThisWeek, simulationsThisMonth: stats.simulationsThisMonth, activeUsersToday: stats.activeUsersToday, activeUsersThisWeek: stats.activeUsersThisWeek, consultationsScheduledThisWeek: 0, consultationsCompletedThisWeek: 0, averageResponseTime: 2.5, peakHour: '14:00' }} />}
+          
+          {activeTab === 'contadores' && (
+            <ContadoresManagement />
+          )}
           
           {activeTab === 'revenue' && (
             <div className="space-y-6">
