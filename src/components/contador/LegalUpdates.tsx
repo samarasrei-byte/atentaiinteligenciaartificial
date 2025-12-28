@@ -19,7 +19,6 @@ import {
   AlertTriangle,
   TrendingUp,
   FileText,
-  Star,
   Crown,
   Loader2,
 } from "lucide-react";
@@ -139,11 +138,10 @@ const categories = [
 ];
 
 interface Props {
-  trialDaysRemaining?: number;
-  isTrialActive?: boolean;
+  // Removed trial props - not used anymore
 }
 
-export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: Props) {
+export function LegalUpdates({}: Props) {
   const { toast } = useToast();
   const { user, subscription } = useAuth();
   const navigate = useNavigate();
@@ -277,34 +275,34 @@ export function LegalUpdates({ trialDaysRemaining = 30, isTrialActive = true }: 
 
   return (
     <div className="space-y-6">
-      {/* Trial Banner */}
-      {isTrialActive && !hasContadorPlan && (
-        <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30">
+{/* Subscription Status Banner */}
+      {!hasContadorPlan && (
+        <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/30">
           <CardContent className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-amber-500/20 rounded-full">
-                <Star className="h-5 w-5 text-amber-500" />
+              <div className="p-2 bg-primary/20 rounded-full">
+                <Crown className="h-5 w-5 text-primary" />
               </div>
               <div>
                 <p className="font-medium text-foreground">
-                  Período de teste gratuito
+                  Assine para acesso completo
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  {trialDaysRemaining} dias restantes para acessar todas as atualizações
+                  Tenha acesso a todas as atualizações legais e recursos premium
                 </p>
               </div>
             </div>
             <Button 
               onClick={handleSubscribePremium}
               disabled={isLoadingSubscription}
-              className="bg-gradient-to-r from-amber-500 to-orange-500 text-white w-full sm:w-auto"
+              className="bg-primary hover:bg-primary/90 text-primary-foreground w-full sm:w-auto"
             >
               {isLoadingSubscription ? (
                 <Loader2 className="h-4 w-4 mr-2 animate-spin" />
               ) : (
                 <Crown className="h-4 w-4 mr-2" />
               )}
-              Assinar Premium
+              Ver Planos
             </Button>
           </CardContent>
         </Card>

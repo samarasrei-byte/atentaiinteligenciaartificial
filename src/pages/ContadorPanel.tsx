@@ -477,7 +477,7 @@ const ContadorPanel = () => {
                 <h2 className="text-2xl font-bold text-foreground">Central de Atualizações Legais</h2>
                 <p className="text-muted-foreground">Mantenha-se atualizado com as últimas mudanças na legislação tributária</p>
               </div>
-              <LegalUpdates trialDaysRemaining={30} isTrialActive={true} />
+              <LegalUpdates />
             </div>
           )}
 
