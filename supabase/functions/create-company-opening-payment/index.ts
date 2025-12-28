@@ -12,6 +12,40 @@ const logStep = (step: string, details?: any) => {
   console.log(`[COMPANY-OPENING-PAYMENT] ${step}${detailsStr}`);
 };
 
+// Platform commission percentage (15%)
+const PLATFORM_COMMISSION_PERCENT = 15;
+
+// Subscriber discount for company opening (15%)
+const SUBSCRIBER_DISCOUNT_PERCENT = 15;
+
+// Check if user has active subscription
+async function checkSubscription(stripe: Stripe, email: string): Promise<{ isSubscriber: boolean; plan: string | null }> {
+  try {
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    if (customers.data.length === 0) {
+      return { isSubscriber: false, plan: null };
+    }
+
+    const customerId = customers.data[0].id;
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    if (subscriptions.data.length > 0) {
+      const subscription = subscriptions.data[0];
+      const productId = subscription.items.data[0].price.product as string;
+      return { isSubscriber: true, plan: productId };
+    }
+
+    return { isSubscriber: false, plan: null };
+  } catch (error) {
+    logStep("Error checking subscription", { error: String(error) });
+    return { isSubscriber: false, plan: null };
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -61,6 +95,38 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil",
     });
 
+    // Check if user is a subscriber to apply discount
+    const { isSubscriber, plan } = await checkSubscription(stripe, user.email);
+    logStep("Subscription status", { isSubscriber, plan });
+
+    // Calculate final price with discount if subscriber
+    const originalPriceCents = request.service_price_cents;
+    let finalPriceCents = originalPriceCents;
+    let discountApplied = 0;
+    
+    if (isSubscriber) {
+      discountApplied = Math.round(originalPriceCents * (SUBSCRIBER_DISCOUNT_PERCENT / 100));
+      finalPriceCents = originalPriceCents - discountApplied;
+      logStep("Subscriber discount applied", { 
+        originalPrice: originalPriceCents, 
+        discount: discountApplied, 
+        finalPrice: finalPriceCents,
+        discountPercent: SUBSCRIBER_DISCOUNT_PERCENT
+      });
+    }
+
+    // Calculate platform commission
+    const platformCommissionCents = Math.round(finalPriceCents * (PLATFORM_COMMISSION_PERCENT / 100));
+    const contadorReceivesCents = finalPriceCents - platformCommissionCents;
+
+    logStep("Fee calculation", { 
+      originalPrice: originalPriceCents,
+      discountApplied,
+      finalPrice: finalPriceCents, 
+      platformCommission: platformCommissionCents,
+      contadorReceives: contadorReceivesCents
+    });
+
     // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
@@ -73,6 +139,12 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
     
+    // Build product description
+    let productDescription = request.service_description || `Serviço de abertura de empresa - ${request.recommended_regime?.toUpperCase() || 'Regime a definir'}`;
+    if (isSubscriber) {
+      productDescription += ` | Desconto de assinante: ${SUBSCRIBER_DISCOUNT_PERCENT}% aplicado!`;
+    }
+    
     // Create a one-time payment session
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
@@ -82,10 +154,10 @@ serve(async (req) => {
           price_data: {
             currency: 'brl',
             product_data: {
-              name: 'Abertura de Empresa',
-              description: request.service_description || `Serviço de abertura de empresa - ${request.recommended_regime?.toUpperCase() || 'Regime a definir'}`,
+              name: `Abertura de Empresa${isSubscriber ? ' (Desconto Assinante)' : ''}`,
+              description: productDescription,
             },
-            unit_amount: request.service_price_cents,
+            unit_amount: finalPriceCents,
           },
           quantity: 1,
         },
@@ -97,10 +169,21 @@ serve(async (req) => {
         user_id: user.id,
         request_id: requestId,
         payment_type: 'company_opening',
+        original_price_cents: originalPriceCents.toString(),
+        discount_applied_cents: discountApplied.toString(),
+        final_price_cents: finalPriceCents.toString(),
+        platform_commission_cents: platformCommissionCents.toString(),
+        is_subscriber: isSubscriber.toString(),
       },
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created", { 
+      sessionId: session.id, 
+      url: session.url,
+      originalPrice: originalPriceCents,
+      discountApplied,
+      finalPrice: finalPriceCents
+    });
 
     // Update payment status to pending
     await supabaseClient
@@ -108,7 +191,15 @@ serve(async (req) => {
       .update({ payment_status: 'pending' })
       .eq('id', requestId);
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    return new Response(JSON.stringify({ 
+      url: session.url,
+      originalPrice: originalPriceCents,
+      discountApplied,
+      finalPrice: finalPriceCents,
+      platformCommission: platformCommissionCents,
+      contadorReceives: contadorReceivesCents,
+      isSubscriber,
+    }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });

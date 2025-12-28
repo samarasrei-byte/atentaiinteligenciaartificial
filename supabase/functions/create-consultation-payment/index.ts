@@ -12,8 +12,39 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CONSULTATION-PAYMENT] ${step}${detailsStr}`);
 };
 
-// Platform fee percentage (10%)
-const PLATFORM_FEE_PERCENT = 10;
+// Platform commission percentage (15%)
+const PLATFORM_COMMISSION_PERCENT = 15;
+
+// Subscriber discount for consultations (20%)
+const SUBSCRIBER_DISCOUNT_PERCENT = 20;
+
+// Check if user has active subscription
+async function checkSubscription(stripe: Stripe, email: string): Promise<{ isSubscriber: boolean; plan: string | null }> {
+  try {
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    if (customers.data.length === 0) {
+      return { isSubscriber: false, plan: null };
+    }
+
+    const customerId = customers.data[0].id;
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    if (subscriptions.data.length > 0) {
+      const subscription = subscriptions.data[0];
+      const productId = subscription.items.data[0].price.product as string;
+      return { isSubscriber: true, plan: productId };
+    }
+
+    return { isSubscriber: false, plan: null };
+  } catch (error) {
+    logStep("Error checking subscription", { error: String(error) });
+    return { isSubscriber: false, plan: null };
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -47,6 +78,29 @@ serve(async (req) => {
     
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2025-08-27.basil",
+    });
+
+    // Check if user is a subscriber to apply discount
+    const { isSubscriber, plan } = await checkSubscription(stripe, user.email);
+    logStep("Subscription status", { isSubscriber, plan });
+
+    // Calculate final price with discount if subscriber
+    let finalPriceCents = priceCents;
+    let discountApplied = 0;
+    
+    if (isSubscriber) {
+      discountApplied = Math.round(priceCents * (SUBSCRIBER_DISCOUNT_PERCENT / 100));
+      finalPriceCents = priceCents - discountApplied;
+      logStep("Subscriber discount applied", { 
+        originalPrice: priceCents, 
+        discount: discountApplied, 
+        finalPrice: finalPriceCents,
+        discountPercent: SUBSCRIBER_DISCOUNT_PERCENT
+      });
+    }
+
     // Check if contador has a connected Stripe account
     const { data: contadorProfile, error: profileError } = await supabaseClient
       .from("contador_profiles")
@@ -64,17 +118,16 @@ serve(async (req) => {
       status: contadorProfile?.stripe_account_status
     });
 
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
-    });
-
-    // Calculate platform fee (10%)
-    const platformFeeCents = Math.round(priceCents * (PLATFORM_FEE_PERCENT / 100));
+    // Calculate platform commission (15%)
+    const platformCommissionCents = Math.round(finalPriceCents * (PLATFORM_COMMISSION_PERCENT / 100));
+    const contadorReceivesCents = finalPriceCents - platformCommissionCents;
     
     logStep("Fee calculation", { 
-      totalPrice: priceCents, 
-      platformFee: platformFeeCents,
-      contadorReceives: priceCents - platformFeeCents 
+      originalPrice: priceCents,
+      discountApplied,
+      finalPrice: finalPriceCents, 
+      platformCommission: platformCommissionCents,
+      contadorReceives: contadorReceivesCents
     });
 
     // Check if customer exists
@@ -89,6 +142,13 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
     
+    // Build product description
+    let productDescription = `Sessão de consultoria especializada em Reforma Tributária.`;
+    if (isSubscriber) {
+      productDescription += ` Desconto de assinante: ${SUBSCRIBER_DISCOUNT_PERCENT}% aplicado!`;
+    }
+    productDescription += ` Comissão da plataforma: ${PLATFORM_COMMISSION_PERCENT}%`;
+    
     // Build session options
     const sessionOptions: Stripe.Checkout.SessionCreateParams = {
       customer: customerId,
@@ -98,10 +158,10 @@ serve(async (req) => {
           price_data: {
             currency: 'brl',
             product_data: {
-              name: `Consulta com ${contadorName || 'Contador'}`,
-              description: `Sessão de consultoria especializada em Reforma Tributária. Taxa de serviço: ${PLATFORM_FEE_PERCENT}%`,
+              name: `Consulta com ${contadorName || 'Contador'}${isSubscriber ? ' (Desconto Assinante)' : ''}`,
+              description: productDescription,
             },
-            unit_amount: priceCents,
+            unit_amount: finalPriceCents,
           },
           quantity: 1,
         },
@@ -112,8 +172,11 @@ serve(async (req) => {
       metadata: {
         user_id: user.id,
         contador_id: contadorId,
-        price_cents: priceCents.toString(),
-        platform_fee_cents: platformFeeCents.toString(),
+        original_price_cents: priceCents.toString(),
+        discount_applied_cents: discountApplied.toString(),
+        final_price_cents: finalPriceCents.toString(),
+        platform_commission_cents: platformCommissionCents.toString(),
+        is_subscriber: isSubscriber.toString(),
       },
     };
 
@@ -124,16 +187,17 @@ serve(async (req) => {
       });
 
       sessionOptions.payment_intent_data = {
-        application_fee_amount: platformFeeCents,
+        application_fee_amount: platformCommissionCents,
         transfer_data: {
           destination: contadorProfile.stripe_account_id,
         },
         metadata: {
           user_id: user.id,
           contador_id: contadorId,
-          platform_fee_cents: platformFeeCents.toString(),
+          platform_commission_cents: platformCommissionCents.toString(),
           consultation_type: 'scheduled',
           payment_type: 'stripe_connect_split',
+          is_subscriber: isSubscriber.toString(),
         },
       };
     } else {
@@ -143,9 +207,10 @@ serve(async (req) => {
         metadata: {
           user_id: user.id,
           contador_id: contadorId,
-          platform_fee_cents: platformFeeCents.toString(),
+          platform_commission_cents: platformCommissionCents.toString(),
           consultation_type: 'scheduled',
           payment_type: 'standard',
+          is_subscriber: isSubscriber.toString(),
         },
       };
     }
@@ -156,7 +221,7 @@ serve(async (req) => {
     logStep("Checkout session created", { 
       sessionId: session.id, 
       url: session.url,
-      platformFee: platformFeeCents,
+      platformCommission: platformCommissionCents,
       paymentType: hasConnectedAccount ? 'stripe_connect_split' : 'standard'
     });
 
@@ -166,10 +231,10 @@ serve(async (req) => {
       .insert({
         user_id: user.id,
         contador_id: contadorId,
-        price_cents: priceCents,
-        platform_fee_cents: platformFeeCents,
+        price_cents: finalPriceCents,
+        platform_fee_cents: platformCommissionCents,
         status: 'pending',
-        notes: `Pagamento via Stripe - Session: ${session.id} | Tipo: ${hasConnectedAccount ? 'Split automático' : 'Manual'}`,
+        notes: `Pagamento via Stripe - Session: ${session.id} | Tipo: ${hasConnectedAccount ? 'Split automático' : 'Manual'}${isSubscriber ? ' | Desconto assinante aplicado' : ''}`,
       })
       .select()
       .single();
@@ -184,8 +249,12 @@ serve(async (req) => {
       url: session.url,
       sessionId: session.id,
       consultationId: consultation?.id,
-      platformFee: platformFeeCents,
-      contadorReceives: priceCents - platformFeeCents,
+      originalPrice: priceCents,
+      discountApplied,
+      finalPrice: finalPriceCents,
+      platformCommission: platformCommissionCents,
+      contadorReceives: contadorReceivesCents,
+      isSubscriber,
       paymentType: hasConnectedAccount ? 'stripe_connect_split' : 'standard',
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
