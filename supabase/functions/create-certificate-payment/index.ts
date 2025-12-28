@@ -12,8 +12,42 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CERTIFICATE-PAYMENT] ${step}${detailsStr}`);
 };
 
-// Price ID para certidão R$100
-const CERTIFICATE_PRICE_ID = "price_1Siv6S3MU3lG84GwJJUaGRBw";
+// Base price for certificate in cents (R$80,00)
+const CERTIFICATE_BASE_PRICE_CENTS = 8000;
+
+// Platform commission percentage (15%)
+const PLATFORM_COMMISSION_PERCENT = 15;
+
+// Subscriber discount for certificates (10%)
+const SUBSCRIBER_DISCOUNT_PERCENT = 10;
+
+// Check if user has active subscription
+async function checkSubscription(stripe: Stripe, email: string): Promise<{ isSubscriber: boolean; plan: string | null }> {
+  try {
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    if (customers.data.length === 0) {
+      return { isSubscriber: false, plan: null };
+    }
+
+    const customerId = customers.data[0].id;
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    if (subscriptions.data.length > 0) {
+      const subscription = subscriptions.data[0];
+      const productId = subscription.items.data[0].price.product as string;
+      return { isSubscriber: true, plan: productId };
+    }
+
+    return { isSubscriber: false, plan: null };
+  } catch (error) {
+    logStep("Error checking subscription", { error: String(error) });
+    return { isSubscriber: false, plan: null };
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -45,6 +79,38 @@ serve(async (req) => {
       apiVersion: "2025-08-27.basil" 
     });
 
+    // Check if user is a subscriber to apply discount
+    const { isSubscriber, plan } = await checkSubscription(stripe, user.email);
+    logStep("Subscription status", { isSubscriber, plan });
+
+    // Calculate final price with discount if subscriber
+    const originalPriceCents = CERTIFICATE_BASE_PRICE_CENTS;
+    let finalPriceCents = originalPriceCents;
+    let discountApplied = 0;
+    
+    if (isSubscriber) {
+      discountApplied = Math.round(originalPriceCents * (SUBSCRIBER_DISCOUNT_PERCENT / 100));
+      finalPriceCents = originalPriceCents - discountApplied;
+      logStep("Subscriber discount applied", { 
+        originalPrice: originalPriceCents, 
+        discount: discountApplied, 
+        finalPrice: finalPriceCents,
+        discountPercent: SUBSCRIBER_DISCOUNT_PERCENT
+      });
+    }
+
+    // Calculate platform commission
+    const platformCommissionCents = Math.round(finalPriceCents * (PLATFORM_COMMISSION_PERCENT / 100));
+    const contadorReceivesCents = finalPriceCents - platformCommissionCents;
+
+    logStep("Fee calculation", { 
+      originalPrice: originalPriceCents,
+      discountApplied,
+      finalPrice: finalPriceCents, 
+      platformCommission: platformCommissionCents,
+      contadorReceives: contadorReceivesCents
+    });
+
     // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
@@ -55,13 +121,35 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
 
-    // Create checkout session for certificate
+    // Certificate type names
+    const certificateNames: Record<string, string> = {
+      certidao_negativa: "Certidão Negativa de Débitos",
+      certidao_positiva: "Certidão Positiva com Efeitos de Negativa",
+      certidao_regularidade: "Certidão de Regularidade Fiscal",
+    };
+
+    const certificateName = certificateNames[certificate_type] || "Certidão";
+
+    // Build product description
+    let productDescription = `Emissão de ${certificateName}`;
+    if (isSubscriber) {
+      productDescription += ` | Desconto de assinante: ${SUBSCRIBER_DISCOUNT_PERCENT}% aplicado!`;
+    }
+
+    // Create checkout session for certificate with dynamic pricing
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
       line_items: [
         {
-          price: CERTIFICATE_PRICE_ID,
+          price_data: {
+            currency: 'brl',
+            product_data: {
+              name: `${certificateName}${isSubscriber ? ' (Desconto Assinante)' : ''}`,
+              description: productDescription,
+            },
+            unit_amount: finalPriceCents,
+          },
           quantity: 1,
         },
       ],
@@ -72,16 +160,33 @@ serve(async (req) => {
         user_id: user.id,
         certificate_type: certificate_type || "certidao_negativa",
         contador_id: contador_id || "",
+        original_price_cents: originalPriceCents.toString(),
+        discount_applied_cents: discountApplied.toString(),
+        final_price_cents: finalPriceCents.toString(),
+        platform_commission_cents: platformCommissionCents.toString(),
+        is_subscriber: isSubscriber.toString(),
         ...metadata,
       },
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created", { 
+      sessionId: session.id, 
+      url: session.url,
+      originalPrice: originalPriceCents,
+      discountApplied,
+      finalPrice: finalPriceCents
+    });
 
     return new Response(
       JSON.stringify({ 
         url: session.url, 
-        session_id: session.id 
+        session_id: session.id,
+        originalPrice: originalPriceCents,
+        discountApplied,
+        finalPrice: finalPriceCents,
+        platformCommission: platformCommissionCents,
+        contadorReceives: contadorReceivesCents,
+        isSubscriber,
       }), 
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
