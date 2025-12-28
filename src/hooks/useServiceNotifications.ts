@@ -8,8 +8,17 @@ export interface ServiceNotification {
   user_id: string;
   title: string;
   message: string;
-  notification_type: 'new_contador' | 'promotion' | 'service_update' | 'info';
-  service_type: 'consultation' | 'company_opening' | 'certificate' | null;
+  notification_type: 
+    | 'new_contador' 
+    | 'promotion' 
+    | 'service_update' 
+    | 'info'
+    | 'mei_limit_warning'
+    | 'mei_limit_exceeded'
+    | 'simples_limit_warning'
+    | 'simples_limit_exceeded'
+    | 'contador_client_alert';
+  service_type: 'consultation' | 'company_opening' | 'certificate' | 'tax_alert' | null;
   metadata: Record<string, any>;
   is_read: boolean;
   read_at: string | null;
