@@ -23,6 +23,7 @@ import { WithdrawalSystem } from '@/components/contador/WithdrawalSystem';
 import { StripeConnectSetup } from '@/components/contador/StripeConnectSetup';
 import { ContadorReportGenerator } from '@/components/contador/ContadorReportGenerator';
 import CompanyOpeningManagement from '@/components/contador/CompanyOpeningManagement';
+import { IRManagement } from '@/components/contador/IRManagement';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { CertificateManagement } from '@/components/contador/CertificateManagement';
 import { 
@@ -454,6 +455,19 @@ const ContadorPanel = () => {
                 <p className="text-muted-foreground">Gerencie solicitações de certidões e faça upload dos documentos emitidos</p>
               </div>
               <CertificateManagement />
+            </div>
+          )}
+
+          {activeTab === 'ir' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <FileText className="h-6 w-6 text-amber-500" />
+                  Gestão de Imposto de Renda
+                </h2>
+                <p className="text-muted-foreground">Gerencie solicitações de declaração de IR dos seus clientes</p>
+              </div>
+              <IRManagement />
             </div>
           )}
 

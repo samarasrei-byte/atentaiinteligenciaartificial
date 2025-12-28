@@ -28,6 +28,7 @@ export function SimulatorSection() {
   const { toast } = useToast();
   const resultRef = useRef<HTMLDivElement>(null);
   const [revenue, setRevenue] = useState("");
+  const [revenueType, setRevenueType] = useState<"monthly" | "annual">("monthly");
   const [sector, setSector] = useState("");
   const [companyType, setCompanyType] = useState("");
   const [state, setState] = useState("");
@@ -47,7 +48,9 @@ export function SimulatorSection() {
     setIsCalculating(true);
 
     setTimeout(() => {
-      const revenueValue = parseCurrencyInput(revenue);
+      const rawRevenueValue = parseCurrencyInput(revenue);
+      // Convert to monthly if annual was entered
+      const revenueValue = revenueType === "annual" ? rawRevenueValue / 12 : rawRevenueValue;
       
       const simulationResult = calculateTaxes({
         revenue: revenueValue,
@@ -61,7 +64,9 @@ export function SimulatorSection() {
       
       toast({
         title: "Simulação concluída!",
-        description: "Veja o comparativo abaixo",
+        description: revenueType === "annual" 
+          ? "Valores mensais calculados a partir do faturamento anual" 
+          : "Veja o comparativo abaixo",
       });
     }, 1000);
   };
@@ -92,6 +97,7 @@ export function SimulatorSection() {
 
   const reset = () => {
     setRevenue("");
+    setRevenueType("monthly");
     setSector("");
     setCompanyType("");
     setState("");
@@ -135,14 +141,28 @@ export function SimulatorSection() {
                 {/* Input Fields - Row 1 */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="revenue">Faturamento Mensal</Label>
+                    <Label htmlFor="revenue" className="flex items-center justify-between">
+                      <span>Faturamento {revenueType === "monthly" ? "Mensal" : "Anual"}</span>
+                      <button
+                        type="button"
+                        onClick={() => setRevenueType(prev => prev === "monthly" ? "annual" : "monthly")}
+                        className="text-xs text-primary hover:underline font-medium"
+                      >
+                        {revenueType === "monthly" ? "Usar anual?" : "Usar mensal?"}
+                      </button>
+                    </Label>
                     <Input
                       id="revenue"
-                      placeholder="R$ 0,00"
+                      placeholder={revenueType === "monthly" ? "R$ 0,00" : "R$ 0,00 (anual)"}
                       value={revenue}
                       onChange={handleRevenueChange}
                       className="h-12"
                     />
+                    {revenueType === "annual" && (
+                      <p className="text-xs text-muted-foreground">
+                        Faturamento anual é mais preciso para enquadramento tributário
+                      </p>
+                    )}
                   </div>
                   <div className="space-y-2">
                     <Label>Setor de Atuação</Label>
