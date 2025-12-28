@@ -78,6 +78,8 @@ import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { ServicesHub } from '@/components/dashboard/ServicesHub';
+import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
+
 const EmbeddedAIAgent = () => {
   return (
     <div className="space-y-6">
@@ -782,7 +784,8 @@ const Dashboard = () => {
                 onResetTour={tour.resetTour}
                 hasCompletedTour={tour.hasCompletedTour}
               />
-              <div data-tour="notifications">
+              <div data-tour="notifications" className="flex items-center gap-1">
+                <ServiceNotificationBell />
                 <NotificationCenter
                   notifications={notifications}
                   unreadCount={unreadCount}
