@@ -31,11 +31,11 @@ export const STRIPE_PLANS = {
     popular: true,
   },
   contador: {
-    name: 'Contador Premium Plus',
+    name: 'Business Pro',
     priceId: 'price_1ShOGL3MU3lG84Gw1iPrqUkt',
     productId: 'prod_Tehfc8IkhNyBJ7',
     price: 19899, // cents (R$198,99)
-    description: 'Acesso completo a todas as ferramentas + descontos exclusivos em serviços',
+    description: 'Plano completo para empresários que querem maximizar economia tributária',
     features: [
       'Tudo do AtentAI Premium',
       'Piloto Automático Tributário completo',
