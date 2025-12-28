@@ -6,6 +6,19 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const logStep = (step: string, details?: Record<string, unknown>) => {
+  const logEntry: Record<string, unknown> = {
+    step,
+    timestamp: new Date().toISOString(),
+  };
+  if (details) {
+    Object.entries(details).forEach(([key, value]) => {
+      logEntry[key] = value;
+    });
+  }
+  console.log(JSON.stringify(logEntry));
+};
+
 const BASE_SYSTEM_PROMPT = `Você é o AtentAI, assistente de IA especializado na Reforma Tributária Brasileira (LC 214/2025).
 
 CONHECIMENTO TRIBUTÁRIO ATUALIZADO:
@@ -160,6 +173,35 @@ serve(async (req) => {
   }
 
   try {
+    logStep('ai-agent-request-started');
+
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      logStep('ai-agent-auth-missing');
+      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const supabaseClient = createClient(
+      Deno.env.get('SUPABASE_URL') ?? '',
+      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+      { global: { headers: { Authorization: authHeader } } }
+    );
+
+    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
+    if (userError || !user) {
+      logStep('ai-agent-auth-failed', { error: userError?.message });
+      return new Response(JSON.stringify({ error: 'Usuário não autenticado' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    logStep('ai-agent-auth-success', { userId: user.id });
+
     const { messages, context, customContext } = await req.json();
 
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
