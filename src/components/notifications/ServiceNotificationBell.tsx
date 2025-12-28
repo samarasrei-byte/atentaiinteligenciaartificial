@@ -17,6 +17,7 @@ import {
   MessageSquare,
   CheckCheck,
   Sparkles,
+  AlertTriangle,
 } from 'lucide-react';
 import { useServiceNotifications, ServiceNotification } from '@/hooks/useServiceNotifications';
 import { formatDistanceToNow } from 'date-fns';
@@ -25,9 +26,13 @@ import { ptBR } from 'date-fns/locale';
 const getNotificationIcon = (type: string, serviceType: string | null) => {
   if (type === 'new_contador') return User;
   if (type === 'promotion') return Percent;
+  if (type === 'mei_limit_warning' || type === 'simples_limit_warning') return AlertTriangle;
+  if (type === 'mei_limit_exceeded' || type === 'simples_limit_exceeded') return AlertTriangle;
+  if (type === 'contador_client_alert') return User;
   if (serviceType === 'company_opening') return Building2;
   if (serviceType === 'certificate') return FileText;
   if (serviceType === 'consultation') return MessageSquare;
+  if (serviceType === 'tax_alert') return AlertTriangle;
   return Sparkles;
 };
 
@@ -36,6 +41,14 @@ const getNotificationColor = (type: string) => {
     case 'new_contador': return 'text-emerald-500 bg-emerald-500/10';
     case 'promotion': return 'text-accent bg-accent/10';
     case 'service_update': return 'text-blue-500 bg-blue-500/10';
+    case 'mei_limit_warning': 
+    case 'simples_limit_warning':
+      return 'text-amber-500 bg-amber-500/10';
+    case 'mei_limit_exceeded': 
+    case 'simples_limit_exceeded':
+      return 'text-red-500 bg-red-500/10';
+    case 'contador_client_alert':
+      return 'text-orange-500 bg-orange-500/10';
     default: return 'text-primary bg-primary/10';
   }
 };
@@ -103,6 +116,16 @@ export const ServiceNotificationBell: React.FC = () => {
     // Navigate based on notification type
     if (notification.notification_type === 'new_contador') {
       navigate('/contadores');
+    } else if (notification.notification_type === 'contador_client_alert') {
+      // For contador alerts about client limits, go to dashboard
+      navigate('/contador?tab=overview');
+    } else if (notification.notification_type === 'mei_limit_warning' || notification.notification_type === 'mei_limit_exceeded') {
+      // For autonomo/company alerts, go to their simulator
+      navigate('/autonomo?tab=simulator');
+    } else if (notification.notification_type === 'simples_limit_warning' || notification.notification_type === 'simples_limit_exceeded') {
+      navigate('/dashboard');
+    } else if (notification.service_type === 'tax_alert') {
+      navigate('/simulador');
     } else if (notification.service_type === 'company_opening') {
       navigate('/abertura-empresa');
     } else if (notification.service_type === 'certificate') {

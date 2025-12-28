@@ -16,6 +16,7 @@ export function Header({ onNavigate }: HeaderProps) {
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
     { label: "Contadores", icon: Users, href: "/contadores-publico" },
     { label: "Autônomos", icon: User, href: "/plano/autonomo" },
+    { label: "Serviços", icon: Calculator, href: "/servicos" },
   ];
 
   return (
@@ -66,10 +67,15 @@ export function Header({ onNavigate }: HeaderProps) {
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-2">
             <InstallPWAButton />
-            <Button variant="ghost" size="sm" asChild>
+            <Button variant="outline" size="sm" asChild className="border-primary text-primary hover:bg-primary/10">
+              <Link to="/planos-perfil" className="flex items-center gap-2">
+                Ver Planos
+              </Link>
+            </Button>
+            <Button size="sm" asChild className="bg-primary hover:bg-primary/90">
               <Link to="/auth" className="flex items-center gap-2">
                 <LogIn className="w-4 h-4" />
-                Login
+                Entrar
               </Link>
             </Button>
           </div>

@@ -165,22 +165,45 @@ const UserTypeSelection = () => {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button
-              size="lg"
-              disabled={!selectedType}
-              onClick={handleContinue}
-              className="w-full sm:w-auto min-w-[200px] h-12 text-base"
-            >
-              Continuar
-              <ArrowRight className="h-4 w-4 ml-2" />
-            </Button>
+            <div className="relative">
+              <Button
+                size="lg"
+                disabled={!selectedType}
+                onClick={handleContinue}
+                className="w-full sm:w-auto min-w-[200px] h-12 text-base"
+              >
+                Continuar
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </Button>
+              {!selectedType && (
+                <p className="absolute -bottom-6 left-0 right-0 text-center text-xs text-muted-foreground">
+                  Selecione um perfil acima
+                </p>
+              )}
+            </div>
             <Button
               variant="ghost"
-              className="text-muted-foreground"
+              className="text-muted-foreground mt-4 sm:mt-0"
               onClick={() => navigate('/auth')}
             >
               Já tenho uma conta
             </Button>
+          </div>
+          
+          {/* Quick links */}
+          <div className="mt-8 pt-6 border-t border-border/50 text-center">
+            <p className="text-sm text-muted-foreground mb-3">Quer conhecer mais antes de começar?</p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button variant="link" size="sm" onClick={() => navigate('/planos-perfil')}>
+                Ver todos os planos
+              </Button>
+              <Button variant="link" size="sm" onClick={() => navigate('/faq')}>
+                Perguntas frequentes
+              </Button>
+              <Button variant="link" size="sm" onClick={() => navigate('/servicos')}>
+                Nossos serviços
+              </Button>
+            </div>
           </div>
         </div>
       </div>
