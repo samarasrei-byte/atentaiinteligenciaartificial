@@ -680,6 +680,93 @@ export type Database = {
         }
         Relationships: []
       }
+      ir_requests: {
+        Row: {
+          base_price_cents: number
+          completed_at: string | null
+          contador_id: string | null
+          cpf: string | null
+          created_at: string
+          declaration_receipt_url: string | null
+          discount_applied: boolean | null
+          document_url: string | null
+          email: string | null
+          final_price_cents: number
+          fiscal_year: number
+          full_name: string
+          has_foreign_income: boolean | null
+          has_investments: boolean | null
+          has_rental_income: boolean | null
+          id: string
+          income_sources_count: number | null
+          ir_type: string
+          notes: string | null
+          payment_status: string
+          phone: string | null
+          status: string
+          stripe_session_id: string | null
+          submitted_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          base_price_cents?: number
+          completed_at?: string | null
+          contador_id?: string | null
+          cpf?: string | null
+          created_at?: string
+          declaration_receipt_url?: string | null
+          discount_applied?: boolean | null
+          document_url?: string | null
+          email?: string | null
+          final_price_cents?: number
+          fiscal_year: number
+          full_name: string
+          has_foreign_income?: boolean | null
+          has_investments?: boolean | null
+          has_rental_income?: boolean | null
+          id?: string
+          income_sources_count?: number | null
+          ir_type?: string
+          notes?: string | null
+          payment_status?: string
+          phone?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          base_price_cents?: number
+          completed_at?: string | null
+          contador_id?: string | null
+          cpf?: string | null
+          created_at?: string
+          declaration_receipt_url?: string | null
+          discount_applied?: boolean | null
+          document_url?: string | null
+          email?: string | null
+          final_price_cents?: number
+          fiscal_year?: number
+          full_name?: string
+          has_foreign_income?: boolean | null
+          has_investments?: boolean | null
+          has_rental_income?: boolean | null
+          id?: string
+          income_sources_count?: number | null
+          ir_type?: string
+          notes?: string | null
+          payment_status?: string
+          phone?: string | null
+          status?: string
+          stripe_session_id?: string | null
+          submitted_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           amount_cents: number
