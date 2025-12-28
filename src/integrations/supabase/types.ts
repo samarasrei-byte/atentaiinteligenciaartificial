@@ -612,6 +612,9 @@ export type Database = {
           id: string
           rating: number | null
           specialty: string | null
+          stripe_account_id: string | null
+          stripe_account_status: string | null
+          stripe_onboarding_completed: boolean | null
           total_consultations: number | null
           updated_at: string
           user_id: string
@@ -625,6 +628,9 @@ export type Database = {
           id?: string
           rating?: number | null
           specialty?: string | null
+          stripe_account_id?: string | null
+          stripe_account_status?: string | null
+          stripe_onboarding_completed?: boolean | null
           total_consultations?: number | null
           updated_at?: string
           user_id: string
@@ -638,6 +644,9 @@ export type Database = {
           id?: string
           rating?: number | null
           specialty?: string | null
+          stripe_account_id?: string | null
+          stripe_account_status?: string | null
+          stripe_onboarding_completed?: boolean | null
           total_consultations?: number | null
           updated_at?: string
           user_id?: string

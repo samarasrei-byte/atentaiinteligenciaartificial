@@ -20,6 +20,7 @@ import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { ContadorAgenda } from '@/components/contador/ContadorAgenda';
 import { LegalUpdates } from '@/components/contador/LegalUpdates';
 import { WithdrawalSystem } from '@/components/contador/WithdrawalSystem';
+import { StripeConnectSetup } from '@/components/contador/StripeConnectSetup';
 import { ContadorReportGenerator } from '@/components/contador/ContadorReportGenerator';
 import CompanyOpeningManagement from '@/components/contador/CompanyOpeningManagement';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
@@ -550,6 +551,9 @@ const ContadorPanel = () => {
 
           {activeTab === 'earnings' && (
             <div className="space-y-6">
+              {/* Stripe Connect Section */}
+              <StripeConnectSetup />
+              
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatsCard icon={Wallet} label="Ganhos Totais" value={formatCurrency(totalEarnings)} color="success" />
                 <StatsCard icon={DollarSign} label="Taxa Plataforma" value={formatCurrency(totalPlatformFees)} color="accent" />
