@@ -92,15 +92,16 @@ const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening', badge: 'NEW', badgeColor: 'text-emerald-400' },
   { icon: ScrollText, label: 'Certidões', tabId: 'certificates', badge: 'NEW', badgeColor: 'text-primary' },
+  { icon: FileText, label: 'Imposto de Renda', tabId: 'ir', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: MessagesSquare, label: 'Chat', tabId: 'chat' },
-  { icon: Scale, label: 'Atualizações', tabId: 'updates', badge: 'NEW', badgeColor: 'text-amber-400' },
+  { icon: Scale, label: 'Atualizações', tabId: 'updates' },
   { icon: BarChart3, label: 'Stats', tabId: 'stats' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
   { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
   { icon: DollarSign, label: 'Ganhos', tabId: 'earnings' },
   { icon: Star, label: 'Avaliações', tabId: 'reviews' },
-  { icon: FileText, label: 'Perfil', tabId: 'profile' },
+  { icon: User, label: 'Perfil', tabId: 'profile' },
 ];
 
 const autonomoItems: SidebarItem[] = [
