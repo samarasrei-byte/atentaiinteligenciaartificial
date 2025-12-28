@@ -10,12 +10,14 @@ type Feature =
   | 'locacao-simulator'
   | 'regime-comparator'
   | 'timeline-2026-2033'
-  | 'contador-consultation'
-  | 'custom-reports'
-  | 'api-integration'
-  | 'multiple-companies';
+  | 'pf-pj-calculator'
+  | 'glossary'
+  | 'tax-autopilot'
+  | 'transition-simulator'
+  | 'company-edit'
+  | 'subscriber-discounts';
 
-// Feature access matrix by plan
+// Feature access matrix by plan - aligned with STRIPE_PLANS features
 const featuresByPlan: Record<PlanType, Feature[]> = {
   simulator: [
     'simulator',
@@ -28,6 +30,7 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'ai-chat-unlimited',
     'pdf-export',
     'regime-comparator',
+    'pf-pj-calculator',
     'timeline-2026-2033',
   ],
   premium: [
@@ -39,6 +42,9 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'regime-comparator',
     'timeline-2026-2033',
     'locacao-simulator',
+    'pf-pj-calculator',
+    'glossary',
+    'tax-autopilot',
   ],
   contador: [
     'simulator',
@@ -49,9 +55,12 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'regime-comparator',
     'timeline-2026-2033',
     'locacao-simulator',
-    'contador-consultation',
-    'custom-reports',
-    'multiple-companies',
+    'pf-pj-calculator',
+    'glossary',
+    'tax-autopilot',
+    'transition-simulator',
+    'company-edit',
+    'subscriber-discounts',
   ],
 };
 

@@ -6,17 +6,19 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, 
   Users,
   Star,
-  Calendar,
   MessageSquare,
   Loader2,
   Clock,
   CreditCard
 } from 'lucide-react';
+import { ServicePricePreview } from '@/components/pricing/ServicePricePreview';
+import { SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
 
 interface ContadorProfile {
   id: string;
@@ -36,12 +38,14 @@ interface ContadorProfile {
 
 const Contadores = () => {
   const navigate = useNavigate();
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, subscription } = useAuth();
   const { toast } = useToast();
   
   const [contadores, setContadores] = useState<ContadorProfile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [processingPayment, setProcessingPayment] = useState<string | null>(null);
+  const [selectedContador, setSelectedContador] = useState<ContadorProfile | null>(null);
+  const [showPriceDialog, setShowPriceDialog] = useState(false);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -81,24 +85,36 @@ const Contadores = () => {
     }
   };
 
-  const handleScheduleWithPayment = async (contador: ContadorProfile) => {
-    setProcessingPayment(contador.id);
+  const openPricePreview = (contador: ContadorProfile) => {
+    setSelectedContador(contador);
+    setShowPriceDialog(true);
+  };
+
+  const handleConfirmPayment = async () => {
+    if (!selectedContador) return;
+    
+    setProcessingPayment(selectedContador.id);
+    setShowPriceDialog(false);
     
     try {
       const { data, error } = await supabase.functions.invoke('create-consultation-payment', {
         body: {
-          contadorId: contador.user_id,
-          priceCents: contador.hourly_rate_cents,
-          contadorName: contador.profile?.full_name || 'Contador',
+          contadorId: selectedContador.user_id,
+          priceCents: selectedContador.hourly_rate_cents,
+          contadorName: selectedContador.profile?.full_name || 'Contador',
         },
       });
 
       if (error) throw error;
 
       if (data?.url) {
+        const isSubscriber = subscription.subscribed;
+        const discount = isSubscriber ? SUBSCRIBER_DISCOUNTS.consultation.discount * 100 : 0;
         toast({
           title: 'Redirecionando para pagamento',
-          description: `Taxa de serviço: 10% (${formatCurrency(data.platformFee)})`,
+          description: isSubscriber 
+            ? `Desconto de ${discount}% aplicado!`
+            : 'Assine para obter 20% de desconto!',
         });
         window.open(data.url, '_blank');
       } else {
@@ -113,6 +129,7 @@ const Contadores = () => {
       });
     } finally {
       setProcessingPayment(null);
+      setSelectedContador(null);
     }
   };
 
@@ -232,9 +249,14 @@ const Contadores = () => {
                         {formatCurrency(contador.hourly_rate_cents)}
                       </span>
                       <span className="text-slate-400 text-sm">/sessão</span>
+                      {subscription.subscribed && (
+                        <Badge className="ml-2 bg-success/20 text-success border-success/30 text-xs">
+                          -20%
+                        </Badge>
+                      )}
                     </div>
                     <Button
-                      onClick={() => handleScheduleWithPayment(contador)}
+                      onClick={() => openPricePreview(contador)}
                       disabled={processingPayment === contador.id}
                       className="bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
                     >
@@ -250,13 +272,52 @@ const Contadores = () => {
                   </div>
 
                   <p className="text-xs text-slate-500 text-center">
-                    Taxa de serviço: 10% • Pagamento seguro via Stripe
+                    {subscription.subscribed 
+                      ? 'Desconto de 20% aplicado • Pagamento seguro via Stripe'
+                      : 'Assinantes têm 20% de desconto • Pagamento seguro via Stripe'
+                    }
                   </p>
                 </CardContent>
               </Card>
             ))}
           </div>
         )}
+
+        {/* Price Preview Dialog */}
+        <Dialog open={showPriceDialog} onOpenChange={setShowPriceDialog}>
+          <DialogContent className="sm:max-w-md bg-slate-800 border-slate-700">
+            <DialogHeader>
+              <DialogTitle className="text-white">Confirmar Contratação</DialogTitle>
+              <DialogDescription className="text-slate-400">
+                Consulta com {selectedContador?.profile?.full_name || 'Contador'}
+              </DialogDescription>
+            </DialogHeader>
+            
+            {selectedContador && (
+              <ServicePricePreview 
+                serviceType="consultation" 
+                customPrice={selectedContador.hourly_rate_cents}
+              />
+            )}
+
+            <DialogFooter className="gap-2 sm:gap-0">
+              <Button
+                variant="outline"
+                onClick={() => setShowPriceDialog(false)}
+                className="border-slate-600 text-slate-300"
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleConfirmPayment}
+                className="bg-gradient-to-r from-blue-500 to-indigo-500"
+              >
+                <CreditCard className="h-4 w-4 mr-2" />
+                Ir para Pagamento
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
 
         {/* Info Section */}
         <Card className="mt-12 bg-slate-800/50 border-slate-700">
