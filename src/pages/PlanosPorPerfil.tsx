@@ -45,6 +45,7 @@ interface ProfileData {
   description: string;
   headline: string;
   plans: ProfilePlan[];
+  isContadorProfile?: boolean;
 }
 
 const profilesData: ProfileData[] = [
@@ -146,45 +147,10 @@ const profilesData: ProfileData[] = [
     icon: Calculator,
     color: 'text-teal-500',
     bgGradient: 'from-teal-500/20 to-emerald-500/20',
-    description: 'Ferramentas para atender seus clientes',
-    headline: 'Atenda mais clientes com ferramentas inteligentes',
-    plans: [
-      {
-        planKey: 'simulator',
-        recommended: false,
-        useCase: 'Para demonstrar o impacto aos clientes',
-        benefits: [
-          'Mostre simulações de impacto para clientes',
-          'Gere relatórios profissionais em PDF',
-          'Ferramenta de apoio para reuniões',
-          'Comparativos visuais antes/depois'
-        ]
-      },
-      {
-        planKey: 'premium',
-        recommended: true,
-        useCase: 'Para oferecer consultoria completa',
-        benefits: [
-          'IA para responder dúvidas complexas',
-          'Todas as ferramentas de simulação',
-          'Comparador de regimes para cada cliente',
-          'Relatórios Excel para análises detalhadas',
-          'Piloto automático para monitorar clientes'
-        ]
-      },
-      {
-        planKey: 'contador',
-        recommended: false,
-        useCase: 'Para atender clientes na plataforma',
-        benefits: [
-          'Receba consultas de clientes da plataforma',
-          'Chat integrado para comunicação',
-          'Gerencie sua agenda de consultas',
-          'Ganhe por cada consulta realizada',
-          'Dashboard de métricas e ganhos'
-        ]
-      }
-    ]
+    description: 'Para contadores que desejam atender clientes na plataforma',
+    headline: 'Atenda clientes e aumente sua renda na plataforma',
+    plans: [], // Contador não usa planos de assinatura, usa cadastro próprio
+    isContadorProfile: true,
   }
 ];
 
@@ -300,86 +266,153 @@ const PlanosPorPerfil = () => {
                 </div>
               </div>
 
-              {/* Plans Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {profile.plans.map((planItem, index) => {
-                  const plan = STRIPE_PLANS[planItem.planKey];
-                  
-                  return (
-                    <Card 
-                      key={planItem.planKey}
-                      className={cn(
-                        "relative overflow-hidden transition-all hover:shadow-lg animate-fade-in hover-scale",
-                        planItem.recommended && "ring-2 ring-primary"
-                      )}
-                      style={{ animationDelay: `${index * 100}ms` }}
-                    >
-                      {planItem.recommended && (
-                        <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-center py-1.5 text-xs font-medium">
-                          <Star className="h-3 w-3 inline mr-1" />
-                          Recomendado para você
-                        </div>
-                      )}
+              {/* Contador Profile - Special CTA instead of plans */}
+              {profile.isContadorProfile ? (
+                <div className="max-w-2xl mx-auto">
+                  <Card className="relative overflow-hidden ring-2 ring-primary">
+                    <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-center py-2 text-sm font-medium">
+                      <Star className="h-4 w-4 inline mr-2" />
+                      Cadastre-se Gratuitamente
+                    </div>
+                    
+                    <CardHeader className="text-center pt-12">
+                      <div className="w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center bg-gradient-to-br from-teal-500 to-emerald-500 text-white">
+                        <Calculator className="h-8 w-8" />
+                      </div>
+                      <CardTitle className="text-2xl">Seja um Contador Parceiro</CardTitle>
+                      <CardDescription className="text-base mt-2">
+                        Cadastre-se gratuitamente e comece a atender clientes na plataforma
+                      </CardDescription>
+                    </CardHeader>
+                    
+                    <CardContent className="space-y-6">
+                      <ul className="space-y-3">
+                        <li className="flex items-start gap-3">
+                          <Check className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
+                          <span className="text-foreground">Receba consultas de clientes da plataforma</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
+                          <span className="text-foreground">Chat integrado para comunicação direta</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
+                          <span className="text-foreground">Gerencie sua agenda de consultas</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
+                          <span className="text-foreground">Ganhe por cada consulta realizada</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
+                          <span className="text-foreground">Dashboard completo de métricas e ganhos</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <Check className="h-5 w-5 mt-0.5 text-primary flex-shrink-0" />
+                          <span className="text-foreground">Receba pagamentos via Stripe Connect</span>
+                        </li>
+                      </ul>
                       
-                      <CardHeader className={cn("text-center", planItem.recommended && "pt-10")}>
-                        <div className={cn(
-                          "w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br text-white",
-                          getPlanColor(planItem.planKey)
-                        )}>
-                          {getPlanIcon(planItem.planKey)}
-                        </div>
-                        <CardTitle className="text-lg">{plan.name}</CardTitle>
-                        <CardDescription className="text-sm">
-                          {planItem.useCase}
-                        </CardDescription>
-                        <div className="mt-3">
-                          <span className="text-3xl font-bold">{formatPrice(plan.price)}</span>
-                          <span className="text-muted-foreground">/mês</span>
-                        </div>
-                      </CardHeader>
-                      
-                      <CardContent>
-                        <ul className="space-y-3">
-                          {planItem.benefits.map((benefit, idx) => (
-                            <li key={idx} className="flex items-start gap-2">
-                              <Check className={cn(
-                                "h-4 w-4 mt-0.5 flex-shrink-0",
-                                planItem.recommended ? "text-primary" : "text-muted-foreground"
-                              )} />
-                              <span className="text-sm text-foreground">{benefit}</span>
-                            </li>
-                          ))}
-                        </ul>
-                        
+                      <div className="pt-4 border-t border-border">
+                        <p className="text-sm text-muted-foreground text-center mb-4">
+                          Sem mensalidade - você só paga uma pequena taxa por consulta realizada
+                        </p>
                         <Button 
-                          className={cn(
-                            "w-full mt-6",
-                            planItem.recommended 
-                              ? "bg-primary hover:bg-primary/90" 
-                              : "bg-muted text-foreground hover:bg-muted/80"
-                          )}
-                          onClick={() => navigate('/auth')}
+                          size="lg"
+                          className="w-full bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600"
+                          onClick={() => navigate('/contador-onboarding')}
                         >
-                          {planItem.recommended ? 'Começar Agora' : 'Selecionar Plano'}
+                          <Users className="h-5 w-5 mr-2" />
+                          Cadastrar como Contador
                         </Button>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : (
+                <>
+                  {/* Plans Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {profile.plans.map((planItem, index) => {
+                      const plan = STRIPE_PLANS[planItem.planKey];
+                      
+                      return (
+                        <Card 
+                          key={planItem.planKey}
+                          className={cn(
+                            "relative overflow-hidden transition-all hover:shadow-lg animate-fade-in hover-scale",
+                            planItem.recommended && "ring-2 ring-primary"
+                          )}
+                          style={{ animationDelay: `${index * 100}ms` }}
+                        >
+                          {planItem.recommended && (
+                            <div className="absolute top-0 left-0 right-0 bg-primary text-primary-foreground text-center py-1.5 text-xs font-medium">
+                              <Star className="h-3 w-3 inline mr-1" />
+                              Recomendado para você
+                            </div>
+                          )}
+                          
+                          <CardHeader className={cn("text-center", planItem.recommended && "pt-10")}>
+                            <div className={cn(
+                              "w-12 h-12 rounded-xl mx-auto mb-3 flex items-center justify-center bg-gradient-to-br text-white",
+                              getPlanColor(planItem.planKey)
+                            )}>
+                              {getPlanIcon(planItem.planKey)}
+                            </div>
+                            <CardTitle className="text-lg">{plan.name}</CardTitle>
+                            <CardDescription className="text-sm">
+                              {planItem.useCase}
+                            </CardDescription>
+                            <div className="mt-3">
+                              <span className="text-3xl font-bold">{formatPrice(plan.price)}</span>
+                              <span className="text-muted-foreground">/mês</span>
+                            </div>
+                          </CardHeader>
+                          
+                          <CardContent>
+                            <ul className="space-y-3">
+                              {planItem.benefits.map((benefit, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                  <Check className={cn(
+                                    "h-4 w-4 mt-0.5 flex-shrink-0",
+                                    planItem.recommended ? "text-primary" : "text-muted-foreground"
+                                  )} />
+                                  <span className="text-sm text-foreground">{benefit}</span>
+                                </li>
+                              ))}
+                            </ul>
+                            
+                            <Button 
+                              className={cn(
+                                "w-full mt-6",
+                                planItem.recommended 
+                                  ? "bg-primary hover:bg-primary/90" 
+                                  : "bg-muted text-foreground hover:bg-muted/80"
+                              )}
+                              onClick={() => navigate('/auth')}
+                            >
+                              {planItem.recommended ? 'Começar Agora' : 'Selecionar Plano'}
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      );
+                    })}
+                  </div>
 
-              {/* CTA Section */}
-              <div className="mt-12 text-center">
-                <p className="text-muted-foreground mb-4">
-                  Ainda não tem certeza? Compare todos os recursos em detalhes
-                </p>
-                <Button 
-                  variant="outline"
-                  onClick={() => navigate('/planos')}
-                >
-                  Ver Comparativo Completo
-                </Button>
-              </div>
+                  {/* CTA Section */}
+                  <div className="mt-12 text-center">
+                    <p className="text-muted-foreground mb-4">
+                      Ainda não tem certeza? Compare todos os recursos em detalhes
+                    </p>
+                    <Button 
+                      variant="outline"
+                      onClick={() => navigate('/planos')}
+                    >
+                      Ver Comparativo Completo
+                    </Button>
+                  </div>
+                </>
+              )}
             </TabsContent>
           ))}
         </Tabs>

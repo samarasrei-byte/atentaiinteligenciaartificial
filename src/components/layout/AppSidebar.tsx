@@ -77,6 +77,7 @@ const adminItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: Activity, label: 'Tempo Real', tabId: 'realtime', badge: 'LIVE', badgeColor: 'text-emerald-400' },
   { icon: Users, label: 'Usuários', tabId: 'users' },
+  { icon: UserCheck, label: 'Contadores', tabId: 'contadores', badge: 'NEW', badgeColor: 'text-primary' },
   { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
   { icon: Wallet, label: 'Saques', tabId: 'withdrawals', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },

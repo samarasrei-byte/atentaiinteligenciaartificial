@@ -328,17 +328,26 @@ const Dashboard = () => {
 
   const fetchUserData = async () => {
     try {
-      const { data: companyData } = await supabase
-        .from('companies')
-        .select('*')
-        .eq('user_id', user!.id)
-        .single();
+      // Contadores e autônomos não precisam de empresa cadastrada
+      const isContador = hasRole('contador');
+      const isAutonomo = hasRole('autonomo');
       
-      if (companyData) {
-        setCompany(companyData);
-        setShowOnboarding(!companyData.onboarding_completed);
+      if (!isContador && !isAutonomo) {
+        const { data: companyData } = await supabase
+          .from('companies')
+          .select('*')
+          .eq('user_id', user!.id)
+          .single();
+        
+        if (companyData) {
+          setCompany(companyData);
+          setShowOnboarding(!companyData.onboarding_completed);
+        } else {
+          setShowOnboarding(true);
+        }
       } else {
-        setShowOnboarding(true);
+        // Contador ou autônomo não precisa de onboarding de empresa
+        setShowOnboarding(false);
       }
 
       const { data: subData } = await supabase
