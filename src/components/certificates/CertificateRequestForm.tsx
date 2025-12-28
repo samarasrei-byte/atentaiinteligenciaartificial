@@ -11,15 +11,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
 import { 
-  FileText, CreditCard, Shield, Clock, CheckCircle2, 
-  Loader2, AlertCircle, ExternalLink 
+  FileText, CreditCard, Shield, Clock, 
+  Loader2, ExternalLink 
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { ServicePricePreview } from '@/components/pricing/ServicePricePreview';
+import { SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
 
 const CERTIFICATE_TYPES = [
   { 
@@ -60,7 +60,8 @@ const CERTIFICATE_TYPES = [
   },
 ];
 
-const CERTIFICATE_PRICE = 100;
+// Use base price from stripe config
+const CERTIFICATE_PRICE_CENTS = SUBSCRIBER_DISCOUNTS.certificate.basePrice;
 
 interface CertificateRequestFormProps {
   onSuccess?: () => void;
@@ -150,18 +151,8 @@ const CertificateRequestForm: React.FC<CertificateRequestFormProps> = ({ onSucce
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Price Badge */}
-        <Alert className="bg-emerald-500/10 border-emerald-500/30">
-          <CreditCard className="h-4 w-4 text-emerald-600" />
-          <AlertDescription className="flex items-center justify-between">
-            <span className="text-foreground">
-              <strong>Valor fixo por certidão:</strong>
-            </span>
-            <Badge className="bg-emerald-500 text-white text-lg px-3">
-              R$ {CERTIFICATE_PRICE.toFixed(2)}
-            </Badge>
-          </AlertDescription>
-        </Alert>
+        {/* Price Preview Component */}
+        <ServicePricePreview serviceType="certificate" />
 
         {/* Certificate Type Selection */}
         <div className="space-y-2">
@@ -275,7 +266,7 @@ const CertificateRequestForm: React.FC<CertificateRequestFormProps> = ({ onSucce
           ) : (
             <>
               <CreditCard className="h-4 w-4 mr-2" />
-              Pagar R$ {CERTIFICATE_PRICE.toFixed(2)} e Solicitar
+              Ir para Pagamento
               <ExternalLink className="h-4 w-4 ml-2" />
             </>
           )}
