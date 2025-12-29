@@ -49,6 +49,7 @@ import PlanosPorPerfil from "./pages/PlanosPorPerfil";
 import ContadoresPublic from "./pages/ContadoresPublic";
 import ServicosPage from "./pages/ServicosPage";
 import IRPage from "./pages/IRPage";
+import FerramentasLC214 from "./pages/FerramentasLC214";
 
 const queryClient = new QueryClient();
 
@@ -87,6 +88,7 @@ const App = () => (
               <Route path="/certidoes" element={<CertificatesPage />} />
               <Route path="/servicos" element={<ServicosPage />} />
               <Route path="/ir" element={<IRPage />} />
+              <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               {/* Protected routes - require authentication */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
