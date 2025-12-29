@@ -32,9 +32,11 @@ export function BottomNavigation() {
   const handleNavigation = (item: NavItem) => {
     if (item.requiresAuth && !user) {
       navigate("/auth");
+      window.scrollTo({ top: 0, behavior: "instant" });
       return;
     }
     navigate(item.path);
+    window.scrollTo({ top: 0, behavior: "instant" });
   };
 
   const isActive = (path: string) => {

@@ -9,6 +9,7 @@ import { BottomNavigation } from "@/components/pwa/BottomNavigation";
 import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { PWATour } from "@/components/tour/PWATour";
+import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PublicOnboarding from "./pages/PublicOnboarding";
@@ -56,6 +57,7 @@ const App = () => (
     <BrowserRouter>
       <TooltipProvider>
         <AuthProvider>
+          <ScrollToTop />
           <Toaster />
           <Sonner />
           <OfflineIndicator />
