@@ -255,13 +255,21 @@ export function ProfessionalChat({ isContador = false }: ProfessionalChatProps) 
       return null;
     }
 
-    const { data } = supabase.storage.from('chat-attachments').getPublicUrl(fileName);
+    // Use signed URL for private bucket (valid for 24 hours)
+    const { data, error: signedUrlError } = await supabase.storage
+      .from('chat-attachments')
+      .createSignedUrl(fileName, 86400); // 24 hours
+
+    if (signedUrlError || !data?.signedUrl) {
+      console.error('Signed URL error:', signedUrlError);
+      return null;
+    }
 
     let type = 'file';
     if (file.type.startsWith('image/')) type = 'image';
     else if (file.type.startsWith('audio/')) type = 'audio';
 
-    return { url: data.publicUrl, type, name: file.name };
+    return { url: data.signedUrl, type, name: file.name };
   };
 
   const handleSend = async (e: React.FormEvent) => {
