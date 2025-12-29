@@ -29,10 +29,10 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background overflow-x-hidden">
       <Header onNavigate={scrollToSection} />
       
-      <main>
+      <main className="animate-page-enter">
         <HeroSection onNavigate={scrollToSection} />
         <FeaturesSection />
         <StatsSection />

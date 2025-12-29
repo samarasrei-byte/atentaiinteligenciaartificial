@@ -146,6 +146,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const handleItemClick = (tabId: string) => {
     if (onTabChange) {
       onTabChange(tabId);
+      // Scroll to top when changing tabs for better UX
+      window.scrollTo({ top: 0, behavior: "instant" });
     }
   };
 
