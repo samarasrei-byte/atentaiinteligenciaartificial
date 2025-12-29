@@ -200,12 +200,18 @@ export function ConsultationChat({
       return null;
     }
 
-    const { data } = supabase.storage
+    // Use signed URL for private bucket (valid for 24 hours)
+    const { data, error: signedUrlError } = await supabase.storage
       .from('chat-attachments')
-      .getPublicUrl(fileName);
+      .createSignedUrl(fileName, 86400); // 24 hours
+
+    if (signedUrlError || !data?.signedUrl) {
+      console.error('Signed URL error:', signedUrlError);
+      return null;
+    }
 
     return {
-      url: data.publicUrl,
+      url: data.signedUrl,
       type: file.type.startsWith('image/') ? 'image' : 'file',
       name: file.name,
     };
