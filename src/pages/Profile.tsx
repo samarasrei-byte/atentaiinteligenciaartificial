@@ -121,30 +121,38 @@ const Profile = () => {
   }, [user]);
 
   const loadData = async () => {
+    if (!user?.id) return;
+
     setIsLoading(true);
     try {
-      // Load profile
-      const { data: profileResult } = await supabase
+      // Load profile (0 rows should not throw)
+      const { data: profileResult, error: profileError } = await supabase
         .from('profiles')
         .select('*')
-        .eq('user_id', user!.id)
-        .single();
-      
-      if (profileResult) {
-        setProfileData({
-          full_name: profileResult.full_name || '',
-          email: profileResult.email || user?.email || '',
-          phone: profileResult.phone || '',
-        });
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Error loading profile:', profileError);
       }
 
-      // Load company
-      const { data: companyResult } = await supabase
+      setProfileData({
+        full_name: profileResult?.full_name || authProfile?.full_name || '',
+        email: profileResult?.email || user.email || '',
+        phone: profileResult?.phone || '',
+      });
+
+      // Load company (0 rows should not throw)
+      const { data: companyResult, error: companyError } = await supabase
         .from('companies')
         .select('*')
-        .eq('user_id', user!.id)
-        .single();
-      
+        .eq('user_id', user.id)
+        .maybeSingle();
+
+      if (companyError) {
+        console.error('Error loading company:', companyError);
+      }
+
       if (companyResult) {
         setCompanyData({
           id: companyResult.id,
@@ -169,24 +177,46 @@ const Profile = () => {
   };
 
   const handleSaveProfile = async () => {
+    if (!user?.id) return;
+
     setIsSaving(true);
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: profileData.full_name,
-          phone: profileData.phone,
-          updated_at: new Date().toISOString(),
-        })
-        .eq('user_id', user!.id);
+      const payload = {
+        full_name: profileData.full_name,
+        phone: profileData.phone,
+        updated_at: new Date().toISOString(),
+      };
 
-      if (error) throw error;
+      // Try update first
+      const { data: updatedRow, error: updateError } = await supabase
+        .from('profiles')
+        .update(payload)
+        .eq('user_id', user.id)
+        .select('*')
+        .maybeSingle();
+
+      if (updateError) throw updateError;
+
+      // If no row existed, insert it
+      if (!updatedRow) {
+        const { error: insertError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: user.id,
+            email: user.email ?? null,
+            full_name: profileData.full_name,
+            phone: profileData.phone,
+          });
+
+        if (insertError) throw insertError;
+      }
 
       toast({
         title: 'Perfil atualizado!',
         description: 'Seus dados pessoais foram salvos',
       });
     } catch (error: any) {
+      console.error('Error saving profile:', error);
       toast({
         variant: 'destructive',
         title: 'Erro',
