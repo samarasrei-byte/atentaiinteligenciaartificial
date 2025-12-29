@@ -4,10 +4,20 @@
  * 
  * Este arquivo centraliza todas as alíquotas e parâmetros tributários
  * para evitar hardcoding e manter consistência em todo o sistema.
+ * 
+ * FONTE: Lei Complementar nº 214/2025 (16 de janeiro de 2025)
+ * VIGÊNCIA: A partir de 2026 (transição até 2033)
+ * 
+ * PERÍODO DE TRANSIÇÃO:
+ * - 2026: Alíquotas de teste (CBS 0,9% + IBS 0,1%)
+ * - 2027: Aumento gradual das alíquotas
+ * - 2028-2032: Redução progressiva de ICMS, ISS, PIS e COFINS
+ * - 2033: Extinção total dos tributos antigos
  */
 
 // =============================================================================
-// ALÍQUOTAS DO NOVO SISTEMA TRIBUTÁRIO (Reforma EC 132/2023)
+// ALÍQUOTAS DO NOVO SISTEMA TRIBUTÁRIO (LC 214/2025)
+// Alíquota de referência: entre 26,5% e 28% (plena a partir de 2033)
 // =============================================================================
 
 /** Alíquota do IBS - Imposto sobre Bens e Serviços (estadual/municipal) */
@@ -16,7 +26,7 @@ export const IBS_RATE = 17.7;
 /** Alíquota da CBS - Contribuição sobre Bens e Serviços (federal) */
 export const CBS_RATE = 8.8;
 
-/** Alíquota base combinada (IBS + CBS) */
+/** Alíquota base combinada (IBS + CBS) - alíquota de referência LC 214/2025 */
 export const BASE_TAX_RATE = 26.5;
 
 /** Alíquota CBS para cálculo de créditos tributários (LC 214/2025) */

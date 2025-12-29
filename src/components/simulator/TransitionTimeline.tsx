@@ -10,11 +10,11 @@ interface TransitionTimelineProps {
   result: SimulationResult;
 }
 
-// Cronograma de transição da reforma tributária
+// Cronograma de transição da reforma tributária - LC 214/2025
 const transitionSchedule = [
   { year: 2026, ibsRate: 0.1, cbsRate: 0.9, oldSystemRate: 100, phase: 'Teste' },
-  { year: 2027, ibsRate: 0.1, cbsRate: 0.9, oldSystemRate: 100, phase: 'Teste' },
-  { year: 2028, ibsRate: 10, cbsRate: 0.9, oldSystemRate: 90, phase: 'Transição' },
+  { year: 2027, ibsRate: 8, cbsRate: 8.8, oldSystemRate: 100, phase: 'Teste + Início' },
+  { year: 2028, ibsRate: 10, cbsRate: 8.8, oldSystemRate: 90, phase: 'Transição' },
   { year: 2029, ibsRate: 20, cbsRate: 8.8, oldSystemRate: 80, phase: 'Transição' },
   { year: 2030, ibsRate: 40, cbsRate: 8.8, oldSystemRate: 60, phase: 'Transição' },
   { year: 2031, ibsRate: 60, cbsRate: 8.8, oldSystemRate: 40, phase: 'Transição' },
@@ -49,6 +49,7 @@ export const TransitionTimeline: React.FC<TransitionTimelineProps> = ({ result }
   const getPhaseColor = (phase: string) => {
     switch (phase) {
       case 'Teste': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+      case 'Teste + Início': return 'bg-indigo-500/20 text-indigo-400 border-indigo-500/30';
       case 'Transição': return 'bg-amber-500/20 text-amber-400 border-amber-500/30';
       case 'Definitivo': return 'bg-green-500/20 text-green-400 border-green-500/30';
       default: return 'bg-slate-500/20 text-slate-400';
