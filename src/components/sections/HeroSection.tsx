@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight, Users, Bot, Clock, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { STRIPE_PLANS, formatPrice } from "@/lib/stripe";
 
@@ -24,6 +24,12 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-4 py-20">
         <div className="max-w-3xl mx-auto text-center">
+          {/* Urgency Badge */}
+          <div className="inline-flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-destructive/20 backdrop-blur-sm border border-destructive/30 text-white text-xs sm:text-sm mb-4 animate-pulse">
+            <Clock className="w-4 h-4 text-destructive flex-shrink-0" />
+            <span className="font-semibold">Faltam menos de 12 meses para 2026!</span>
+          </div>
+
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-white/10 backdrop-blur-sm border border-white/10 text-white/90 text-xs sm:text-sm mb-8 sm:mb-10 animate-fade-in">
             <span className="w-2 h-2 rounded-full bg-green-400 flex-shrink-0 animate-pulse" />
@@ -36,9 +42,9 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             <span className="block text-accent mt-1 sm:mt-2">Simplificada</span>
           </h1>
 
-          {/* Subtitle */}
+          {/* Subtitle with AI emphasis */}
           <p className="text-base sm:text-xl text-white/70 mb-8 sm:mb-12 max-w-xl mx-auto animate-slide-up leading-relaxed px-2" style={{ animationDelay: "0.1s" }}>
-            Simule impactos, tire dúvidas com IA e tenha acesso ao contador especializado sobre o novo sistema tributário brasileiro.
+            Simule impactos, <span className="text-accent font-semibold">tire dúvidas com IA em segundos</span> e tenha acesso ao contador especializado sobre o novo sistema tributário brasileiro.
           </p>
 
           {/* CTA */}
@@ -61,6 +67,19 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <Users className="w-5 h-5 mr-2" />
               Ver Planos
             </Button>
+          </div>
+
+          {/* AI Feature highlight */}
+          <div className="mt-8 inline-flex items-center gap-3 px-4 py-3 rounded-xl bg-accent/20 border border-accent/30 animate-fade-in" style={{ animationDelay: "0.4s" }}>
+            <div className="p-2 rounded-lg bg-accent/30">
+              <Bot className="w-5 h-5 text-accent" />
+            </div>
+            <div className="text-left">
+              <p className="text-sm font-semibold text-white flex items-center gap-1">
+                IA Especializada <Sparkles className="w-3 h-3 text-accent" />
+              </p>
+              <p className="text-xs text-white/60">Tire suas dúvidas 24h por dia, sem espera</p>
+            </div>
           </div>
 
           {/* Price hint */}

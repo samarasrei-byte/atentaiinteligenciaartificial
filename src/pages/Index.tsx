@@ -8,6 +8,8 @@ import { ProfilesSection } from "@/components/sections/ProfilesSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
+import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
+
 const Index = () => {
   const scrollToSection = (section: string) => {
     if (section === "hero") {
@@ -44,6 +46,9 @@ const Index = () => {
       </main>
 
       <Footer onNavigate={scrollToSection} />
+      
+      {/* Agente de IA flutuante para conversão */}
+      <LandingAIAgent />
     </div>
   );
 };
