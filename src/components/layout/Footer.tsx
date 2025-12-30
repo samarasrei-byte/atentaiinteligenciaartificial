@@ -15,9 +15,9 @@ export function Footer({ onNavigate }: FooterProps) {
   ];
 
   const resources = [
+    { label: "Timeline da Reforma", to: "/timeline-reforma" },
     { label: "Transição 2026-2033", to: "/transicao-tributaria" },
-    { label: "Sobre a Reforma", href: "#" },
-    { label: "Legislação Oficial", href: "#" },
+    { label: "Ferramentas LC 214", to: "/ferramentas-lc214" },
     { label: "Glossário Tributário", href: "#" },
   ];
 
