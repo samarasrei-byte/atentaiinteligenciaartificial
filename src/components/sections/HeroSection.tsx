@@ -25,9 +25,12 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
       <div className="relative z-10 container mx-auto px-4 py-20">
         <div className="max-w-3xl mx-auto text-center">
           {/* Urgency Badge */}
-          <div className="inline-flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-destructive/20 backdrop-blur-sm border border-destructive/30 text-white text-xs sm:text-sm mb-4 animate-pulse">
-            <Clock className="w-4 h-4 text-destructive flex-shrink-0" />
-            <span className="font-semibold">Faltam menos de 12 meses para 2026!</span>
+          <div className="inline-flex items-center gap-2 px-3 sm:px-5 py-2 sm:py-2.5 rounded-full bg-gradient-to-r from-destructive/30 to-orange-500/30 backdrop-blur-sm border border-destructive/40 text-white text-xs sm:text-sm mb-4 animate-pulse shadow-lg shadow-destructive/20">
+            <span className="relative flex h-3 w-3 flex-shrink-0">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-destructive"></span>
+            </span>
+            <span className="font-bold tracking-wide">🚨 A HORA É AGORA — Prepare-se antes que seja tarde!</span>
           </div>
 
           {/* Badge */}

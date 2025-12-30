@@ -20,6 +20,13 @@ export function NotificationSettings() {
   const [isRequesting, setIsRequesting] = useState(false);
   const [preferences, setPreferences] = useState<NotificationPreference[]>([
     {
+      id: "reforma-tributaria",
+      label: "🚨 Reforma Tributária",
+      description: "Alertas sobre prazos da LC 214/2025 e transição IBS/CBS",
+      icon: AlertTriangle,
+      enabled: true,
+    },
+    {
       id: "tax-deadlines",
       label: "Vencimento de Impostos",
       description: "Lembretes 3 dias antes do vencimento",
@@ -43,9 +50,9 @@ export function NotificationSettings() {
     {
       id: "updates",
       label: "Atualizações Fiscais",
-      description: "Novidades sobre a Reforma Tributária",
+      description: "Mudanças legislativas e novidades",
       icon: Bell,
-      enabled: false,
+      enabled: true,
     },
   ]);
 

@@ -117,9 +117,7 @@ export function usePushNotifications() {
 
   // Common tax deadlines for MEI and small businesses
   const getMEIDeadlines = () => {
-    const now = new Date();
-    const currentMonth = now.getMonth();
-    const currentYear = now.getFullYear();
+    const currentYear = new Date().getFullYear();
 
     return [
       {
@@ -138,8 +136,7 @@ export function usePushNotifications() {
   };
 
   const getAutonomoDeadlines = () => {
-    const now = new Date();
-    const currentYear = now.getFullYear();
+    const currentYear = new Date().getFullYear();
 
     return [
       {
@@ -157,6 +154,59 @@ export function usePushNotifications() {
     ];
   };
 
+  // Tax Reform (LC 214/2025) important dates
+  const getReformaTributariaDeadlines = () => {
+    return [
+      {
+        name: "Início da Transição IBS/CBS",
+        description: "Entrada em vigor do período de teste",
+        dueDate: new Date(2026, 0, 1), // January 1st, 2026
+        type: "reforma",
+      },
+      {
+        name: "Fim do Período de Teste",
+        description: "Encerramento da fase inicial de transição",
+        dueDate: new Date(2026, 11, 31), // December 31st, 2026
+        type: "reforma",
+      },
+      {
+        name: "Transição Gradual - Fase 2",
+        description: "Aumento das alíquotas IBS/CBS",
+        dueDate: new Date(2027, 0, 1), // January 1st, 2027
+        type: "reforma",
+      },
+      {
+        name: "Extinção Total PIS/COFINS",
+        description: "Fim definitivo do PIS e COFINS",
+        dueDate: new Date(2033, 0, 1), // January 1st, 2033
+        type: "reforma",
+      },
+    ];
+  };
+
+  // Schedule reform notifications
+  const scheduleReformNotifications = useCallback(() => {
+    const deadlines = getReformaTributariaDeadlines();
+    const now = new Date();
+
+    deadlines.forEach((deadline) => {
+      const daysUntil = Math.ceil(
+        (deadline.dueDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+      );
+
+      // Notify 30, 7, and 1 day before
+      [30, 7, 1].forEach((daysBefore) => {
+        if (daysUntil === daysBefore) {
+          sendLocalNotification(`⚠️ Reforma Tributária: ${deadline.name}`, {
+            body: `${deadline.description}. Faltam ${daysBefore} dia(s)!`,
+            tag: `reforma-${deadline.name}-${daysBefore}`,
+            requireInteraction: true,
+          });
+        }
+      });
+    });
+  }, [sendLocalNotification]);
+
   return {
     permission,
     isSubscribed,
@@ -165,5 +215,7 @@ export function usePushNotifications() {
     scheduleTaxReminder,
     getMEIDeadlines,
     getAutonomoDeadlines,
+    getReformaTributariaDeadlines,
+    scheduleReformNotifications,
   };
 }
