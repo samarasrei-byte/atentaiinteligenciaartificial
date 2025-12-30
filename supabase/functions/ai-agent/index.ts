@@ -175,32 +175,24 @@ serve(async (req) => {
   try {
     logStep('ai-agent-request-started');
 
-    // Authentication check
+    // Check for authentication (optional for landing page context)
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader) {
-      logStep('ai-agent-auth-missing');
-      return new Response(JSON.stringify({ error: 'Não autorizado' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    let userId = 'anonymous';
+    
+    if (authHeader) {
+      const supabaseClient = createClient(
+        Deno.env.get('SUPABASE_URL') ?? '',
+        Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+        { global: { headers: { Authorization: authHeader } } }
+      );
+
+      const { data: { user } } = await supabaseClient.auth.getUser();
+      if (user) {
+        userId = user.id;
+      }
     }
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      { global: { headers: { Authorization: authHeader } } }
-    );
-
-    const { data: { user }, error: userError } = await supabaseClient.auth.getUser();
-    if (userError || !user) {
-      logStep('ai-agent-auth-failed', { error: userError?.message });
-      return new Response(JSON.stringify({ error: 'Usuário não autenticado' }), {
-        status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    logStep('ai-agent-auth-success', { userId: user.id });
+    logStep('ai-agent-user-identified', { userId });
 
     const { messages, context, customContext } = await req.json();
 
