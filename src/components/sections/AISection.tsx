@@ -345,7 +345,7 @@ export function AISection() {
                 <Button 
                   size="lg" 
                   className="whitespace-nowrap"
-                  onClick={() => navigate('/auth')}
+                  onClick={() => navigate('/pricing')}
                 >
                   Faça sua Análise
                 </Button>
@@ -364,8 +364,8 @@ export function AISection() {
                   <div>
                     <CardTitle className="text-base md:text-lg">AtentAI</CardTitle>
                     <CardDescription className="flex items-center gap-1 text-xs md:text-sm">
-                      <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-                      Online - Demonstração gratuita
+                      <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
+                      Demonstração • Assine para IA completa
                     </CardDescription>
                   </div>
                 </div>
@@ -442,7 +442,7 @@ export function AISection() {
                     </Button>
                   </form>
                   <p className="text-[10px] md:text-xs text-muted-foreground text-center mt-2">
-                    Demonstração com respostas pré-definidas. Faça login para IA completa.
+                    Demonstração com respostas pré-definidas. <button onClick={() => navigate('/pricing')} className="text-primary underline hover:no-underline">Assine para IA completa</button>.
                   </p>
                 </div>
               </CardContent>

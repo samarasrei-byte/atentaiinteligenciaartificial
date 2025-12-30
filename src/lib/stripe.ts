@@ -120,8 +120,8 @@ export const PLATFORM_COMMISSION = 0.15; // 15%
 
 export type ServiceType = keyof typeof SUBSCRIBER_DISCOUNTS;
 
-// Daily question limits by tier
-export const DAILY_QUESTION_LIMIT = 10; // Free/basic users
+// Daily question limits by tier - NO FREE ACCESS
+export const DAILY_QUESTION_LIMIT = 0; // Users without subscription cannot use AI
 export const PREMIUM_DAILY_LIMIT = 50; // Premium users
 export const CONTADOR_DAILY_LIMIT = Infinity; // Contador users (unlimited)
 
