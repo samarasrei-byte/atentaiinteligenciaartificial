@@ -51,7 +51,11 @@ const AIChat = () => {
     if (!authLoading && !user) {
       navigate('/auth');
     }
-  }, [user, authLoading, navigate]);
+    // Redirect non-subscribers to pricing page
+    if (!authLoading && user && !subscription.subscribed) {
+      navigate('/pricing');
+    }
+  }, [user, authLoading, navigate, subscription.subscribed]);
 
   useEffect(() => {
     // Check if speech synthesis is supported
