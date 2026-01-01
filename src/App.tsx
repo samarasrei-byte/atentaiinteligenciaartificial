@@ -54,6 +54,7 @@ import TimelineReforma from "./pages/TimelineReforma";
 import LimpaNomePage from "./pages/LimpaNomePage";
 import LimpaNomeStatusPage from "./pages/LimpaNomeStatusPage";
 import MinhasSolicitacoesPage from "./pages/MinhasSolicitacoesPage";
+import InvestorPresentation from "./pages/InvestorPresentation";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -93,6 +94,7 @@ const App = () => (
               <Route path="/ir" element={<IRPage />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
+              <Route path="/investor" element={<InvestorPresentation />} />
               <Route path="/limpa-nome" element={<LimpaNomePage />} />
               <Route path="/limpa-nome/status/:id" element={
                 <ProtectedRoute>
