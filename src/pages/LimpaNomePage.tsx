@@ -61,7 +61,7 @@ const testimonials = [
   {
     name: 'Carlos M.',
     role: 'Empresário',
-    text: 'Tinha mais de R$ 50.000 em dívidas. Em 25 dias estava com o nome limpo!',
+    text: 'Tinha mais de R$ 50.000 em pendências. Em 25 dias estava com o nome limpo!',
     rating: 5
   },
   {
@@ -72,8 +72,8 @@ const testimonials = [
   },
   {
     name: 'Roberto F.',
-    role: 'Empresário',
-    text: 'Consegui renegociar com 70% de desconto. Valeu cada centavo!',
+    role: 'Empresário MEI',
+    text: 'Limparam meu CPF e CNPJ ao mesmo tempo. Serviço completo e profissional!',
     rating: 5
   },
 ];
@@ -217,12 +217,12 @@ const LimpaNomePage = () => {
 
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
                 Limpa Nome
-                <span className="block text-primary-glow mt-2">Completo</span>
+                <span className="block text-primary-glow mt-2">CPF e CNPJ</span>
               </h1>
 
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-                Regularize seu CPF em todos os bureaus de crédito.
-                Chat direto com especialista para resolver suas pendências.
+                Regularize seu CPF ou CNPJ em todos os bureaus de crédito.
+                Chat direto com IA + especialista para resolver suas pendências.
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -313,12 +313,12 @@ const LimpaNomePage = () => {
                           />
                         </div>
                         <div className="space-y-2">
-                          <Label htmlFor="cpf">CPF *</Label>
+                          <Label htmlFor="cpf">CPF ou CNPJ *</Label>
                           <Input
                             id="cpf"
                             value={formData.cpf}
                             onChange={(e) => setFormData({...formData, cpf: e.target.value})}
-                            placeholder="000.000.000-00"
+                            placeholder="CPF: 000.000.000-00 ou CNPJ: 00.000.000/0001-00"
                             required
                           />
                         </div>

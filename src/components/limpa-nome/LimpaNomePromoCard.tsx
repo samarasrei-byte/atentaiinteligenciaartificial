@@ -14,6 +14,11 @@ import {
   Zap,
   Bot,
   MessageCircle,
+  Building2,
+  User,
+  Star,
+  Clock,
+  Award,
 } from 'lucide-react';
 
 interface LimpaNomePromoCardProps {
@@ -41,11 +46,11 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
   };
 
   const features = [
-    'Análise completa do seu CPF',
-    'Negociação com todos os bureaus',
-    'Chat com IA + Especialista',
-    'Acompanhamento em tempo real',
-    'SPC, Serasa, SCPC, Boa Vista',
+    'Análise completa CPF ou CNPJ',
+    'Todos os bureaus: SPC, Serasa, SCPC, Boa Vista',
+    'Chat 24h com IA + Especialista',
+    'Acompanhamento por 90 dias',
+    'Garantia de resultado',
   ];
 
   const bureaus = ['SPC', 'Serasa', 'SCPC', 'Boa Vista'];
@@ -65,11 +70,11 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
                   <h3 className="font-bold text-foreground">Limpa Nome</h3>
                   <Badge className="bg-rose-500/20 text-rose-600 border-rose-500/30 text-xs">
                     <Sparkles className="h-3 w-3 mr-1" />
-                    NOVO
+                    CPF & CNPJ
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Limpe seu CPF em todos os bureaus com IA + Especialista
+                  Regularize seu CPF ou CNPJ com IA + Especialista • Resultado em 30 dias
                 </p>
               </div>
             </div>
@@ -77,7 +82,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
               <div className="text-right">
                 {isSubscribed ? (
                   <>
-                    <span className="text-xl font-bold text-success">{formatPrice(discountedPrice)}</span>
+                    <span className="text-xl font-bold text-green-600">{formatPrice(discountedPrice)}</span>
                     <span className="text-sm text-muted-foreground line-through ml-2">{formatPrice(basePrice)}</span>
                   </>
                 ) : (
@@ -109,10 +114,10 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold text-foreground">Limpa Nome</h3>
-                <Badge className="bg-rose-500/20 text-rose-600 border-rose-500/30 text-xs">NOVO</Badge>
+                <Badge className="bg-rose-500/20 text-rose-600 border-rose-500/30 text-xs">CPF & CNPJ</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                Limpe seu CPF com IA + Especialista
+                IA + Especialista • Resultado garantido
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-rose-500 transition-colors" />
@@ -127,29 +132,47 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
     <Card className="bg-card border-rose-500/30 hover:border-rose-500/50 transition-all overflow-hidden relative">
       <div className="absolute top-0 right-0 w-40 h-40 bg-rose-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
       
+      {/* Popular Badge */}
+      <div className="absolute top-4 right-4">
+        <Badge className="bg-rose-500 text-white border-0 text-xs">
+          <Award className="h-3 w-3 mr-1" />
+          PREMIUM
+        </Badge>
+      </div>
+      
       <CardHeader className="pb-3 relative">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg">
-              <ShieldCheck className="h-6 w-6 text-white" />
-            </div>
-            <div>
-              <CardTitle className="text-lg text-foreground flex items-center gap-2">
-                Limpa Nome
-                <Badge className="bg-rose-500/20 text-rose-600 border-rose-500/30 text-xs">
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  NOVO SERVIÇO
-                </Badge>
-              </CardTitle>
-              <CardDescription className="text-muted-foreground text-sm">
-                Limpe seu CPF em todos os bureaus de crédito
-              </CardDescription>
-            </div>
+        <div className="flex items-start gap-3">
+          <div className="p-3 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg">
+            <ShieldCheck className="h-6 w-6 text-white" />
+          </div>
+          <div>
+            <CardTitle className="text-lg text-foreground flex items-center gap-2">
+              Limpa Nome
+            </CardTitle>
+            <CardDescription className="text-muted-foreground text-sm">
+              CPF ou CNPJ • Todos os bureaus
+            </CardDescription>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4 relative">
+        {/* Target badges */}
+        <div className="flex flex-wrap gap-2">
+          <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/30 text-xs">
+            <User className="h-3 w-3 mr-1" />
+            Pessoa Física
+          </Badge>
+          <Badge variant="outline" className="bg-violet-500/10 text-violet-600 border-violet-500/30 text-xs">
+            <Building2 className="h-3 w-3 mr-1" />
+            Autônomos
+          </Badge>
+          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 text-xs">
+            <Building2 className="h-3 w-3 mr-1" />
+            Empresas
+          </Badge>
+        </div>
+
         {/* AI Feature Highlight */}
         {showAIFeature && (
           <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/10 to-violet-500/10 border border-primary/20">
@@ -157,33 +180,30 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
               <Bot className="h-5 w-5 text-primary" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">Chat Inteligente com IA</p>
+              <p className="text-sm font-medium text-foreground">Chat com IA + Especialista</p>
               <p className="text-xs text-muted-foreground">
-                Atendimento 24h com IA + especialista humano
+                Atendimento 24h • Resultado em 30 dias
               </p>
             </div>
-            <Zap className="h-4 w-4 text-accent" />
+            <Zap className="h-4 w-4 text-amber-500" />
           </div>
         )}
 
-        {/* Bureaus */}
-        <div className="flex flex-wrap gap-2">
-          {bureaus.map((bureau) => (
-            <Badge 
-              key={bureau} 
-              variant="outline" 
-              className="bg-muted/50 text-muted-foreground border-border"
-            >
-              {bureau}
-            </Badge>
-          ))}
+        {/* Rating */}
+        <div className="flex items-center gap-2">
+          <div className="flex">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+            ))}
+          </div>
+          <span className="text-xs text-muted-foreground">4.9/5 • 500+ atendidos</span>
         </div>
 
         {/* Features */}
         <div className="space-y-2">
           {features.slice(0, 4).map((feature, index) => (
             <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
-              <CheckCircle2 className="h-3.5 w-3.5 text-rose-500 shrink-0" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
               <span>{feature}</span>
             </div>
           ))}
@@ -193,26 +213,27 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
         <div className="space-y-2 pt-2 border-t border-border">
           {isSubscribed ? (
             <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-success">{formatPrice(discountedPrice)}</span>
+              <span className="text-2xl font-bold text-green-600">{formatPrice(discountedPrice)}</span>
               <span className="text-sm text-muted-foreground line-through">{formatPrice(basePrice)}</span>
             </div>
           ) : (
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-foreground">{formatPrice(basePrice)}</span>
+              <span className="text-xs text-muted-foreground">ou 12x R$ 83,25</span>
             </div>
           )}
           {isSubscribed ? (
             <div className="flex items-center gap-1.5">
-              <Percent className="h-3.5 w-3.5 text-success" />
-              <span className="text-xs text-success font-medium">
-                {discountPercent}% de desconto para assinantes
+              <Percent className="h-3.5 w-3.5 text-green-600" />
+              <span className="text-xs text-green-600 font-medium">
+                {discountPercent}% de desconto aplicado
               </span>
             </div>
           ) : (
             <div className="flex items-center gap-1.5">
-              <Crown className="h-3.5 w-3.5 text-accent" />
-              <span className="text-xs text-accent font-medium">
-                Assine e ganhe {discountPercent}% de desconto
+              <Crown className="h-3.5 w-3.5 text-amber-500" />
+              <span className="text-xs text-amber-600 font-medium">
+                Assine e ganhe {discountPercent}% OFF
               </span>
             </div>
           )}
@@ -226,6 +247,10 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
           Limpar Meu Nome
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
+
+        <p className="text-center text-xs text-muted-foreground">
+          🔒 Garantia de resultado ou dinheiro de volta
+        </p>
       </CardContent>
     </Card>
   );
