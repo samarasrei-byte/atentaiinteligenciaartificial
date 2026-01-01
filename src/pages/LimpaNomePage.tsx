@@ -32,28 +32,32 @@ const bureaus = [
   { id: 'serasa', name: 'Serasa Experian', description: 'Maior bureau de crédito do país' },
   { id: 'scpc', name: 'SCPC', description: 'Serviço Central de Proteção ao Crédito' },
   { id: 'boa_vista', name: 'Boa Vista SCPC', description: 'Cadastro Positivo e Score' },
+  { id: 'quod', name: 'Quod', description: 'Bureau digital dos bancos' },
+  { id: 'cenprot', name: 'Cenprot', description: 'Central de Protestos' },
+  { id: 'bacen', name: 'Registrato', description: 'Sistema do Banco Central' },
+  { id: 'cadin', name: 'CADIN', description: 'Cadastro de inadimplentes federais' },
 ];
 
 const benefits = [
   {
     icon: MessageCircle,
-    title: 'Chat Direto com Especialista',
-    description: 'Converse em tempo real com contador especializado em regularização'
+    title: 'Chat 24h IA + Contador',
+    description: 'Atendimento inteligente com IA e especialista humano dedicado'
   },
   {
     icon: Shield,
-    title: 'Análise Completa',
-    description: 'Verificamos todas as pendências em SPC, Serasa, SCPC e Boa Vista'
+    title: 'Análise em 8 Plataformas',
+    description: 'Verificação completa: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot e mais'
   },
   {
     icon: Clock,
     title: 'Resultado em até 30 dias',
-    description: 'Processo ágil com acompanhamento em tempo real'
+    description: 'Processo ágil com acompanhamento em tempo real via WhatsApp'
   },
   {
     icon: BadgeCheck,
     title: 'Garantia de Resultado',
-    description: 'Se não conseguirmos resolver, devolvemos seu dinheiro'
+    description: 'Se não conseguirmos resolver, devolvemos 100% do seu dinheiro'
   },
 ];
 
@@ -249,6 +253,9 @@ const LimpaNomePage = () => {
                     {formatCurrency(finalPrice)}
                   </span>
                 </div>
+                <p className="text-white/80 mt-2 text-lg">
+                  ou <span className="font-bold text-primary-glow">4x de {formatCurrency(Math.round(finalPrice / 4))}</span> sem juros
+                </p>
                 {isSubscribed && (
                   <Badge className="mt-2 bg-success text-success-foreground">
                     <TrendingDown className="h-3 w-3 mr-1" />
@@ -419,10 +426,13 @@ const LimpaNomePage = () => {
                         ) : (
                           <>
                             <Shield className="h-5 w-5 mr-2" />
-                            Iniciar Limpa Nome - {formatCurrency(finalPrice)}
+                            Limpar Nome - 4x de {formatCurrency(Math.round(finalPrice / 4))}
                           </>
                         )}
                       </Button>
+                      <p className="text-center text-sm text-muted-foreground mt-2">
+                        ou {formatCurrency(finalPrice)} à vista
+                      </p>
                     </form>
                   </CardContent>
                 </Card>
@@ -438,9 +448,9 @@ const LimpaNomePage = () => {
                   <CardContent className="space-y-4">
                     {[
                       { step: 1, title: 'Envie seus dados', desc: 'Preencha o formulário com suas informações' },
-                      { step: 2, title: 'Análise inicial', desc: 'Verificamos todas as pendências nos bureaus' },
-                      { step: 3, title: 'Chat com especialista', desc: 'Converse em tempo real com nosso contador' },
-                      { step: 4, title: 'Nome limpo!', desc: 'Receba a confirmação de regularização' },
+                      { step: 2, title: 'Análise em 8 bureaus', desc: 'Verificamos SPC, Serasa, Quod, Cenprot e mais' },
+                      { step: 3, title: 'Chat IA + Contador', desc: 'Atendimento 24h com especialista dedicado' },
+                      { step: 4, title: 'Nome limpo!', desc: 'Carta de quitação digital + relatório final' },
                     ].map((item, index) => (
                       <div key={index} className="flex gap-4">
                         <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
@@ -451,6 +461,32 @@ const LimpaNomePage = () => {
                           <p className="text-sm text-muted-foreground">{item.desc}</p>
                         </div>
                       </div>
+                    ))}
+                  </CardContent>
+                </Card>
+
+                {/* Premium Features */}
+                <Card className="border-primary/30 bg-gradient-to-br from-primary/5 to-violet-500/5">
+                  <CardHeader>
+                    <CardTitle className="text-lg flex items-center gap-2">
+                      <Sparkles className="h-5 w-5 text-primary" />
+                      O que está incluso
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {[
+                      '✓ Análise completa em 8 plataformas',
+                      '✓ Chat 24h IA + Contador especializado',
+                      '✓ Verificação CPF e CNPJ simultânea',
+                      '✓ Consulta Registrato (Banco Central)',
+                      '✓ Análise de protestos (Cenprot)',
+                      '✓ Carta de quitação digital',
+                      '✓ Relatório completo de regularização',
+                      '✓ Acompanhamento por 90 dias',
+                      '✓ Suporte prioritário WhatsApp',
+                      '✓ Orientação para score positivo',
+                    ].map((item, index) => (
+                      <p key={index} className="text-sm text-muted-foreground">{item}</p>
                     ))}
                   </CardContent>
                 </Card>

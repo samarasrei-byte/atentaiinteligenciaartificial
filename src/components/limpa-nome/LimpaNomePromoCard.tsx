@@ -46,14 +46,15 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
   };
 
   const features = [
-    'Análise completa CPF ou CNPJ',
-    'Todos os bureaus: SPC, Serasa, SCPC, Boa Vista',
-    'Chat 24h com IA + Especialista',
+    'Análise em 8 plataformas (SPC, Serasa, Quod, Cenprot...)',
+    'Consulta Registrato (Banco Central)',
+    'Chat 24h com IA + Contador dedicado',
+    'Carta de quitação + relatório completo',
     'Acompanhamento por 90 dias',
     'Garantia de resultado',
   ];
 
-  const bureaus = ['SPC', 'Serasa', 'SCPC', 'Boa Vista'];
+  const bureaus = ['SPC', 'Serasa', 'SCPC', 'Boa Vista', 'Quod', 'Cenprot', 'Registrato', 'CADIN'];
 
   if (variant === 'banner') {
     return (
@@ -219,9 +220,11 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
           ) : (
             <div className="flex items-baseline gap-2">
               <span className="text-2xl font-bold text-foreground">{formatPrice(basePrice)}</span>
-              <span className="text-xs text-muted-foreground">ou 12x R$ 83,25</span>
             </div>
           )}
+          <p className="text-sm font-semibold text-rose-500">
+            ou 4x de {formatPrice(Math.round((isSubscribed ? discountedPrice : basePrice) / 4))} sem juros
+          </p>
           {isSubscribed ? (
             <div className="flex items-center gap-1.5">
               <Percent className="h-3.5 w-3.5 text-green-600" />
