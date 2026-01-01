@@ -114,12 +114,14 @@ export const PROFESSIONAL_CATEGORIES: ProfessionalCategory[] = [
 // =============================================================================
 
 // MEI - Microempreendedor Individual
+// Valores DAS MEI 2025 (a partir de janeiro/2025)
+// Base: Salário Mínimo R$ 1.518,00 x 5% (INSS) = R$ 75,90 + impostos
 export const MEI_MONTHLY_LIMIT = 81000 / 12; // R$ 6.750/mês
 export const MEI_ANNUAL_LIMIT = 81000; // R$ 81.000/ano
-export const MEI_MONTHLY_TAX = 75.90; // DAS MEI médio 2025 (INSS + ICMS/ISS)
-export const MEI_MONTHLY_TAX_SERVICES = 75.90; // DAS MEI serviços 2025
-export const MEI_MONTHLY_TAX_COMMERCE = 76.90; // DAS MEI comércio/indústria 2025
-export const MEI_MONTHLY_TAX_BOTH = 77.90; // DAS MEI ambos 2025
+export const MEI_MONTHLY_TAX = 76.90; // DAS MEI médio 2025 (INSS + ICMS/ISS)
+export const MEI_MONTHLY_TAX_SERVICES = 76.90; // DAS MEI serviços 2025 (INSS 75,90 + ISS 1,00)
+export const MEI_MONTHLY_TAX_COMMERCE = 77.90; // DAS MEI comércio/indústria 2025 (INSS 75,90 + ICMS 2,00)
+export const MEI_MONTHLY_TAX_BOTH = 78.90; // DAS MEI ambos 2025 (INSS 75,90 + ISS 1,00 + ICMS 2,00)
 
 // Simples Nacional (ME)
 export const SIMPLES_ANNUAL_LIMIT = 4800000;
@@ -141,11 +143,14 @@ export const IRPF_BRACKETS = [
   { limit: Infinity, rate: 27.5, deduction: 896.00 },
 ];
 
-// INSS Autônomo (sobre 1 salário mínimo)
+// INSS Autônomo 2025
+// Contribuinte Individual: 20% sobre rendimento (mín. salário mínimo, máx. teto INSS)
+// Plano Simplificado: 11% sobre salário mínimo (sem aposentadoria por tempo de contribuição)
 export const INSS_AUTONOMO_RATE = 20; // 20% sobre rendimento
-export const INSS_AUTONOMO_MIN = 1518 * 0.11; // 11% sobre salário mínimo (contribuinte individual baixa renda)
+export const INSS_AUTONOMO_SIMPLIFIED_RATE = 11; // 11% plano simplificado
+export const INSS_AUTONOMO_MIN = 1518 * 0.11; // 11% sobre salário mínimo = R$ 166,98
 export const INSS_AUTONOMO_TETO = 8157.41; // Teto INSS 2025
-export const SALARIO_MINIMO = 1518; // 2025
+export const SALARIO_MINIMO = 1518; // Salário Mínimo 2025 (a partir de janeiro)
 
 // ISS (Serviços) - varia por município
 export const ISS_MIN_RATE = 2;
