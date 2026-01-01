@@ -6,8 +6,8 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
-import { TrendingUp, Users, DollarSign, Clock, CheckCircle, AlertCircle, Loader2, CalendarIcon, Download, FileText, FileSpreadsheet } from 'lucide-react';
-import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays } from 'date-fns';
+import { TrendingUp, Users, DollarSign, Clock, CheckCircle, AlertCircle, Loader2, CalendarIcon, Download, FileText, FileSpreadsheet, Timer } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays, differenceInDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { exportCreditRepairToExcel, exportCreditRepairToPdf, CreditRepairReportData } from '@/lib/exportCreditRepairReports';
@@ -116,6 +116,43 @@ export function CreditRepairMetrics() {
   const totalRevenue = paidRequests.reduce((sum, r) => sum + r.final_price_cents, 0);
   const conversionRate = totalRequests > 0 ? ((completedRequests / totalRequests) * 100) : 0;
   const avgTicket = paidRequests.length > 0 ? totalRevenue / paidRequests.length : 0;
+
+  // Calcular tempo médio de conclusão
+  const completedWithDates = filteredRequests.filter(r => r.status === 'completed' && r.completed_at);
+  const avgCompletionDays = completedWithDates.length > 0
+    ? completedWithDates.reduce((sum, r) => {
+        const created = new Date(r.created_at);
+        const completed = new Date(r.completed_at!);
+        return sum + differenceInDays(completed, created);
+      }, 0) / completedWithDates.length
+    : 0;
+
+  // Dados para gráfico de tempo de conclusão por mês
+  const completionTimeData = Array.from({ length: 6 }, (_, i) => {
+    const date = subMonths(new Date(), 5 - i);
+    const start = startOfMonth(date);
+    const end = endOfMonth(date);
+    
+    const monthCompleted = filteredRequests.filter(r => {
+      if (r.status !== 'completed' || !r.completed_at) return false;
+      const completedAt = new Date(r.completed_at);
+      return completedAt >= start && completedAt <= end;
+    });
+
+    const avgDays = monthCompleted.length > 0
+      ? monthCompleted.reduce((sum, r) => {
+          const created = new Date(r.created_at);
+          const completed = new Date(r.completed_at!);
+          return sum + differenceInDays(completed, created);
+        }, 0) / monthCompleted.length
+      : 0;
+
+    return {
+      month: format(date, 'MMM', { locale: ptBR }),
+      dias: Math.round(avgDays * 10) / 10,
+      concluidos: monthCompleted.length
+    };
+  });
 
   // Exportar relatórios
   const handleExportExcel = () => {
@@ -278,7 +315,7 @@ export function CreditRepairMetrics() {
       </Card>
 
       {/* Cards de resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
@@ -323,6 +360,18 @@ export function CreditRepairMetrics() {
                 <p className="text-3xl font-bold text-emerald-600">{conversionRate.toFixed(1)}%</p>
               </div>
               <TrendingUp className="h-10 w-10 text-emerald-500/60" />
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-amber-500/10 to-amber-500/5 border-amber-500/20">
+          <CardContent className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">Tempo Médio</p>
+                <p className="text-3xl font-bold text-amber-600">{avgCompletionDays.toFixed(0)} dias</p>
+              </div>
+              <Timer className="h-10 w-10 text-amber-500/60" />
             </div>
           </CardContent>
         </Card>
@@ -466,6 +515,37 @@ export function CreditRepairMetrics() {
                 Nenhum pagamento encontrado
               </div>
             )}
+          </CardContent>
+        </Card>
+
+        {/* Gráfico Tempo Médio de Conclusão */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Timer className="h-5 w-5 text-amber-500" />
+              Tempo Médio de Conclusão
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ChartContainer config={chartConfig} className="h-[300px]">
+              <BarChart data={completionTimeData}>
+                <XAxis dataKey="month" tickLine={false} axisLine={false} />
+                <YAxis tickLine={false} axisLine={false} tickFormatter={(value) => `${value}d`} />
+                <ChartTooltip 
+                  content={<ChartTooltipContent />}
+                  formatter={(value, name) => [
+                    name === 'dias' ? `${value} dias` : value, 
+                    name === 'dias' ? 'Tempo Médio' : 'Concluídos'
+                  ]}
+                />
+                <Bar 
+                  dataKey="dias" 
+                  fill="hsl(var(--chart-4))" 
+                  radius={[4, 4, 0, 0]}
+                  name="Tempo Médio (dias)"
+                />
+              </BarChart>
+            </ChartContainer>
           </CardContent>
         </Card>
       </div>
