@@ -83,28 +83,28 @@ export function PricingSection() {
   };
 
   return (
-    <section id="pricing" className="py-24 bg-muted/30">
+    <section id="pricing" className="py-16 md:py-24 bg-muted/30">
       <div className="container mx-auto px-4">
-        <div className="text-center mb-16">
-          <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
+        <div className="text-center mb-10 md:mb-16">
+          <Badge variant="outline" className="mb-3 md:mb-4 border-primary/30 text-primary text-xs">
             Planos
           </Badge>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Desbloqueie agora o potencial do AtentAI
+          <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4 px-2">
+            Desbloqueie o AtentAI
           </h2>
-          <p className="text-lg text-muted-foreground max-w-xl mx-auto">
-            Lei Complementar 214/2025 • Vigência 2026 — Todas as ferramentas para dominar a Reforma Tributária
+          <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto px-4">
+            Todas as ferramentas para dominar a Reforma Tributária
           </p>
           
           {subscription.subscribed && subscription.plan && (
-            <div className="mt-6 inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
-              <Crown className="h-5 w-5" />
-              <span>Você está no plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
+            <div className="mt-4 md:mt-6 inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm">
+              <Crown className="h-4 w-4 md:h-5 md:w-5" />
+              <span>Plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-7xl mx-auto">
           {orderedPlans.map((key) => {
             const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
@@ -115,51 +115,51 @@ export function PricingSection() {
             return (
               <Card 
                 key={key}
-                className={`relative bg-card border transition-all hover:shadow-xl hover:scale-[1.02] ${
-                  isHighlight ? 'ring-2 ring-accent scale-105 z-10' : 
+                className={`relative bg-card border transition-all hover:shadow-xl ${
+                  isHighlight ? 'ring-2 ring-accent lg:scale-105 z-10' : 
                   isPlanPopular ? 'ring-2 ring-primary' : 'border-border'
                 } ${isCurrentPlan ? 'ring-2 ring-green-500' : ''}`}
               >
                 {isHighlight && !isCurrentPlan && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground">
-                    <Star className="h-3 w-3 mr-1" />
+                  <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] md:text-xs">
+                    <Star className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
                     Mais Completo
                   </Badge>
                 )}
                 {isPlanPopular && !isCurrentPlan && !isHighlight && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground">
-                    <Sparkles className="h-3 w-3 mr-1" />
-                    Mais Popular
+                  <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] md:text-xs">
+                    <Sparkles className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                    Popular
                   </Badge>
                 )}
                 {isCurrentPlan && (
-                  <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-green-500">
-                    <Check className="h-3 w-3 mr-1" />
-                    Seu Plano
+                  <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-green-500 text-[10px] md:text-xs">
+                    <Check className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
+                    Atual
                   </Badge>
                 )}
-                <CardHeader className="text-center pt-8">
-                  <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-br ${getGradient(key)}`}>
-                    <Icon className="h-8 w-8 text-white" />
+                <CardHeader className="text-center pt-6 md:pt-8 px-4">
+                  <div className={`w-12 h-12 md:w-16 md:h-16 rounded-xl md:rounded-2xl flex items-center justify-center mx-auto mb-3 md:mb-4 bg-gradient-to-br ${getGradient(key)}`}>
+                    <Icon className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
-                  <CardTitle className="text-2xl text-foreground">{plan.name}</CardTitle>
+                  <CardTitle className="text-lg md:text-2xl text-foreground">{plan.name}</CardTitle>
                   {'description' in plan && (
-                    <CardDescription className="text-muted-foreground mt-2">
+                    <CardDescription className="text-muted-foreground mt-1 md:mt-2 text-xs md:text-sm">
                       {plan.description}
                     </CardDescription>
                   )}
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4 md:space-y-6 px-4 pb-6">
                   <div className="text-center">
-                    <span className="text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
-                    <span className="text-muted-foreground">/mês</span>
+                    <span className="text-2xl md:text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
+                    <span className="text-muted-foreground text-sm">/mês</span>
                   </div>
 
-                  <ul className="space-y-3">
+                  <ul className="space-y-2 md:space-y-3">
                     {plan.features.map((feature, index) => (
-                      <li key={index} className="flex items-center gap-2 text-foreground">
-                        <Check className="h-5 w-5 text-primary flex-shrink-0" />
-                        <span className="text-sm">{feature}</span>
+                      <li key={index} className="flex items-start gap-2 text-foreground">
+                        <Check className="h-4 w-4 md:h-5 md:w-5 text-primary flex-shrink-0 mt-0.5" />
+                        <span className="text-xs md:text-sm">{feature}</span>
                       </li>
                     ))}
                   </ul>
