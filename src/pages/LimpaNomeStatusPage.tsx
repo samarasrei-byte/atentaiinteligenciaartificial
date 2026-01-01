@@ -7,7 +7,7 @@ import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
+import { CreditRepairAIChat } from '@/components/limpa-nome/CreditRepairAIChat';
 import {
   ArrowLeft,
   Shield,
@@ -302,41 +302,30 @@ const LimpaNomeStatusPage = () => {
 
           {/* Chat Sidebar */}
           <div className="lg:col-span-1">
-            {request.contador_id && contadorInfo ? (
-              <Card className="sticky top-4">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <MessageCircle className="h-5 w-5 text-primary" />
-                    Chat com Especialista
-                  </CardTitle>
-                  <CardDescription>
-                    {contadorInfo.full_name}
-                    {contadorInfo.specialty && ` • ${contadorInfo.specialty}`}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-0">
-                  <div className="h-[500px]">
-                    <CreditRepairChat
-                      requestId={request.id}
-                      otherUserId={request.contador_id}
-                      otherUserName={contadorInfo.full_name || 'Especialista'}
-                      isAdmin={false}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-                  <h3 className="font-semibold mb-2">Chat em Breve</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Um especialista será atribuído à sua solicitação em breve. 
-                    O chat ficará disponível assim que isso acontecer.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+            <Card className="sticky top-4">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <MessageCircle className="h-5 w-5 text-primary" />
+                  Chat Limpa Nome
+                </CardTitle>
+                <CardDescription>
+                  {request.contador_id && contadorInfo 
+                    ? `${contadorInfo.full_name}${contadorInfo.specialty ? ` • ${contadorInfo.specialty}` : ''}`
+                    : 'IA + Especialista Humano'
+                  }
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="h-[500px]">
+                  <CreditRepairAIChat
+                    requestId={request.id}
+                    otherUserId={request.contador_id || 'admin-limpa-nome'}
+                    otherUserName={contadorInfo?.full_name || 'Limpa Nome'}
+                    isAdmin={false}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </main>

@@ -80,6 +80,7 @@ import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulati
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
+import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 
 const EmbeddedAIAgent = () => {
   return (
