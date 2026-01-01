@@ -41,8 +41,8 @@ const bureaus = [
 const benefits = [
   {
     icon: MessageCircle,
-    title: 'Chat 24h IA + Contador',
-    description: 'Atendimento inteligente com IA e especialista humano dedicado'
+    title: 'Contador Humano Dedicado',
+    description: 'Atendimento real com contador especializado, não é apenas IA'
   },
   {
     icon: Shield,
@@ -99,7 +99,7 @@ const LimpaNomePage = () => {
     creditors: '',
   });
 
-  const basePrice = 99900; // R$ 999,00
+  const basePrice = 97000; // R$ 970,00
   const subscriberDiscount = 0.15; // 15% discount
   const finalPrice = isSubscribed ? basePrice * (1 - subscriberDiscount) : basePrice;
 
@@ -225,8 +225,8 @@ const LimpaNomePage = () => {
               </h1>
 
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-                Regularize seu CPF ou CNPJ em todos os bureaus de crédito.
-                Chat direto com IA + especialista para resolver suas pendências.
+                Regularize seu CPF ou CNPJ com atendimento <strong className="text-white">100% humano</strong>.
+                Contador especializado dedicado ao seu caso, do início ao fim.
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 mb-8">
@@ -476,7 +476,7 @@ const LimpaNomePage = () => {
                   <CardContent className="space-y-3">
                     {[
                       '✓ Análise completa em 8 plataformas',
-                      '✓ Chat 24h IA + Contador especializado',
+                      '✓ Contador humano dedicado ao seu caso',
                       '✓ Verificação CPF e CNPJ simultânea',
                       '✓ Consulta Registrato (Banco Central)',
                       '✓ Análise de protestos (Cenprot)',
