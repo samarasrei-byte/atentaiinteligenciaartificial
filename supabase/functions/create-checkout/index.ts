@@ -12,10 +12,49 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CHECKOUT] ${step}${detailsStr}`);
 };
 
+// Rate limiting function
+async function checkRateLimit(
+  supabaseClient: any,
+  identifier: string,
+  endpoint: string,
+  maxRequests: number = 10,
+  windowSeconds: number = 60
+): Promise<{ allowed: boolean; remaining: number; retryAfter?: number }> {
+  try {
+    const { data, error } = await supabaseClient.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_endpoint: endpoint,
+      p_max_requests: maxRequests,
+      p_window_seconds: windowSeconds,
+    });
+
+    if (error) {
+      logStep('Rate limit check error', { error: error.message });
+      return { allowed: true, remaining: maxRequests };
+    }
+
+    const result = data as { allowed: boolean; remaining: number; retry_after?: number };
+    return {
+      allowed: result.allowed,
+      remaining: result.remaining,
+      retryAfter: result.retry_after,
+    };
+  } catch (error) {
+    logStep('Rate limit exception', { error: String(error) });
+    return { allowed: true, remaining: maxRequests };
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
+
+  const serviceClient = createClient(
+    Deno.env.get("SUPABASE_URL") ?? "",
+    Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
+    { auth: { persistSession: false } }
+  );
 
   const supabaseClient = createClient(
     Deno.env.get("SUPABASE_URL") ?? "",
@@ -36,50 +75,50 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
+    // Check rate limit (10 checkout attempts per minute)
+    const rateLimit = await checkRateLimit(serviceClient, user.id, 'create-checkout', 10, 60);
+    
+    if (!rateLimit.allowed) {
+      logStep('Rate limit exceeded', { userId: user.id, retryAfter: rateLimit.retryAfter });
+      return new Response(JSON.stringify({ 
+        error: 'Muitas tentativas. Aguarde antes de tentar novamente.',
+        retryAfter: rateLimit.retryAfter
+      }), {
+        status: 429,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
       apiVersion: "2025-08-27.basil",
     });
 
-    // Check if customer exists
     const customers = await stripe.customers.list({ email: user.email, limit: 1 });
     let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
       logStep("Existing customer found", { customerId });
-    } else {
-      logStep("No existing customer, will create new");
     }
 
     const origin = req.headers.get("origin") || "https://lovable.dev";
     
-    // Build session options
     const sessionOptions: any = {
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
-      line_items: [
-        {
-          price: priceId,
-          quantity: 1,
-        },
-      ],
+      line_items: [{ price: priceId, quantity: 1 }],
       mode: "subscription",
       success_url: `${origin}/payment-success`,
       cancel_url: `${origin}/pricing?checkout=canceled`,
-      metadata: {
-        user_id: user.id,
-      },
-      allow_promotion_codes: !couponId, // Allow manual entry if no coupon provided
+      metadata: { user_id: user.id },
+      allow_promotion_codes: !couponId,
     };
 
-    // Apply coupon if provided
     if (couponId) {
       sessionOptions.discounts = [{ coupon: couponId }];
-      logStep("Applying coupon", { couponId });
     }
 
     const session = await stripe.checkout.sessions.create(sessionOptions);
-
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created", { sessionId: session.id });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },

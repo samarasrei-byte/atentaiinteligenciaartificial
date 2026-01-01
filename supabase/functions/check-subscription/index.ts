@@ -12,6 +12,39 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CHECK-SUBSCRIPTION] ${step}${detailsStr}`);
 };
 
+// Rate limiting function
+async function checkRateLimit(
+  supabaseClient: any,
+  identifier: string,
+  endpoint: string,
+  maxRequests: number = 60,
+  windowSeconds: number = 60
+): Promise<{ allowed: boolean; remaining: number; retryAfter?: number }> {
+  try {
+    const { data, error } = await supabaseClient.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_endpoint: endpoint,
+      p_max_requests: maxRequests,
+      p_window_seconds: windowSeconds,
+    });
+
+    if (error) {
+      logStep('Rate limit check error', { error: error.message });
+      return { allowed: true, remaining: maxRequests };
+    }
+
+    const result = data as { allowed: boolean; remaining: number; retry_after?: number };
+    return {
+      allowed: result.allowed,
+      remaining: result.remaining,
+      retryAfter: result.retry_after,
+    };
+  } catch (error) {
+    logStep('Rate limit exception', { error: String(error) });
+    return { allowed: true, remaining: maxRequests };
+  }
+}
+
 // Product ID to plan name mapping
 const PRODUCT_PLANS: Record<string, string> = {
   "prod_TeJKjnfkaw0JfV": "simulator",
@@ -84,6 +117,25 @@ serve(async (req) => {
       userId = user.id;
       userEmail = user.email;
       logStep("User authenticated via getUser", { userId, email: userEmail });
+    }
+
+    // Check rate limit (120 requests per minute - this endpoint is called frequently)
+    const rateLimit = await checkRateLimit(supabaseClient, userId, 'check-subscription', 120, 60);
+    
+    if (!rateLimit.allowed) {
+      logStep('Rate limit exceeded', { userId, retryAfter: rateLimit.retryAfter });
+      return new Response(JSON.stringify({ 
+        error: 'Rate limit exceeded. Please try again later.',
+        retryAfter: rateLimit.retryAfter
+      }), {
+        status: 429,
+        headers: { 
+          ...corsHeaders, 
+          "Content-Type": "application/json",
+          'Retry-After': String(rateLimit.retryAfter || 60),
+          'X-RateLimit-Remaining': '0'
+        },
+      });
     }
 
     const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });

@@ -6,6 +6,44 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+const logStep = (step: string, details?: Record<string, unknown>) => {
+  console.log(`[AI-CHAT] ${step}${details ? ` - ${JSON.stringify(details)}` : ''}`);
+};
+
+// Rate limiting function
+async function checkRateLimit(
+  supabaseClient: any,
+  identifier: string,
+  endpoint: string,
+  maxRequests: number = 30,
+  windowSeconds: number = 60
+): Promise<{ allowed: boolean; remaining: number; retryAfter?: number }> {
+  try {
+    const { data, error } = await supabaseClient.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_endpoint: endpoint,
+      p_max_requests: maxRequests,
+      p_window_seconds: windowSeconds,
+    });
+
+    if (error) {
+      logStep('Rate limit check error', { error: error.message });
+      // On error, allow the request (fail open)
+      return { allowed: true, remaining: maxRequests };
+    }
+
+    const result = data as { allowed: boolean; remaining: number; retry_after?: number };
+    return {
+      allowed: result.allowed,
+      remaining: result.remaining,
+      retryAfter: result.retry_after,
+    };
+  } catch (error) {
+    logStep('Rate limit exception', { error: String(error) });
+    return { allowed: true, remaining: maxRequests };
+  }
+}
+
 const SYSTEM_PROMPT = `Você é o AtentAI, assistente de legislação tributária brasileira focado na Reforma Tributária 2026.
 
 CONHECIMENTO PRINCIPAL:
@@ -32,7 +70,16 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Create service role client for rate limiting
+  const serviceClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    { auth: { persistSession: false } }
+  );
+
   try {
+    logStep('Request started');
+
     const authHeader = req.headers.get('Authorization');
     if (!authHeader) {
       return new Response(JSON.stringify({ error: 'Não autorizado' }), {
@@ -55,25 +102,26 @@ serve(async (req) => {
       });
     }
 
-    // TEMPORARY: Skip subscription check for testing
-    // Check if user has active AI subscription
-    // const { data: subscription } = await supabaseClient
-    //   .from('subscriptions')
-    //   .select('*')
-    //   .eq('user_id', user.id)
-    //   .eq('status', 'active')
-    //   .in('plan_type', ['ai', 'premium'])
-    //   .single();
+    logStep('User authenticated', { userId: user.id });
 
-    // if (!subscription) {
-    //   return new Response(JSON.stringify({ 
-    //     error: 'Assinatura necessária',
-    //     message: 'Você precisa de uma assinatura ativa para usar o chat com IA.'
-    //   }), {
-    //     status: 403,
-    //     headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    //   });
-    // }
+    // Check rate limit (30 requests per minute for AI chat)
+    const rateLimit = await checkRateLimit(serviceClient, user.id, 'ai-chat', 30, 60);
+    
+    if (!rateLimit.allowed) {
+      logStep('Rate limit exceeded', { userId: user.id, retryAfter: rateLimit.retryAfter });
+      return new Response(JSON.stringify({ 
+        error: 'Limite de requisições excedido. Tente novamente em alguns segundos.',
+        retryAfter: rateLimit.retryAfter
+      }), {
+        status: 429,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Retry-After': String(rateLimit.retryAfter || 60),
+          'X-RateLimit-Remaining': '0'
+        },
+      });
+    }
 
     const { messages } = await req.json();
 
@@ -122,7 +170,11 @@ serve(async (req) => {
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'text/event-stream',
+        'X-RateLimit-Remaining': String(rateLimit.remaining)
+      },
     });
   } catch (error: unknown) {
     console.error('Error in ai-chat function:', error);
