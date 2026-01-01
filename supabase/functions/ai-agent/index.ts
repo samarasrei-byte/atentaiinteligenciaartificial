@@ -19,6 +19,46 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(JSON.stringify(logEntry));
 };
 
+// Rate limiting function
+async function checkRateLimit(
+  supabaseClient: any,
+  identifier: string,
+  endpoint: string,
+  maxRequests: number = 60,
+  windowSeconds: number = 60
+): Promise<{ allowed: boolean; remaining: number; retryAfter?: number }> {
+  try {
+    const { data, error } = await supabaseClient.rpc('check_rate_limit', {
+      p_identifier: identifier,
+      p_endpoint: endpoint,
+      p_max_requests: maxRequests,
+      p_window_seconds: windowSeconds,
+    });
+
+    if (error) {
+      logStep('rate-limit-check-error', { error: error.message });
+      return { allowed: true, remaining: maxRequests };
+    }
+
+    const result = data as { allowed: boolean; remaining: number; retry_after?: number };
+    return {
+      allowed: result.allowed,
+      remaining: result.remaining,
+      retryAfter: result.retry_after,
+    };
+  } catch (error) {
+    logStep('rate-limit-exception', { error: String(error) });
+    return { allowed: true, remaining: maxRequests };
+  }
+}
+
+// Get client IP for rate limiting anonymous users
+function getClientIP(req: Request): string {
+  return req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+         req.headers.get('x-real-ip') ||
+         'unknown';
+}
+
 const BASE_SYSTEM_PROMPT = `Você é o AtentAI, assistente de IA especializado na Reforma Tributária Brasileira (LC 214/2025).
 
 CONHECIMENTO TRIBUTÁRIO ATUALIZADO:
@@ -172,12 +212,20 @@ serve(async (req) => {
     return new Response(null, { headers: corsHeaders });
   }
 
+  // Create service role client for rate limiting
+  const serviceClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? '',
+    { auth: { persistSession: false } }
+  );
+
   try {
     logStep('ai-agent-request-started');
 
     // Check for authentication (optional for landing page context)
     const authHeader = req.headers.get('Authorization');
     let userId = 'anonymous';
+    let rateLimitIdentifier: string;
     
     if (authHeader) {
       const supabaseClient = createClient(
@@ -189,10 +237,35 @@ serve(async (req) => {
       const { data: { user } } = await supabaseClient.auth.getUser();
       if (user) {
         userId = user.id;
+        rateLimitIdentifier = `user:${user.id}`;
+      } else {
+        rateLimitIdentifier = `ip:${getClientIP(req)}`;
       }
+    } else {
+      rateLimitIdentifier = `ip:${getClientIP(req)}`;
     }
 
-    logStep('ai-agent-user-identified', { userId });
+    logStep('ai-agent-user-identified', { userId, rateLimitIdentifier });
+
+    // Rate limit: 20 requests per minute for anonymous, 60 for authenticated
+    const maxRequests = userId === 'anonymous' ? 20 : 60;
+    const rateLimit = await checkRateLimit(serviceClient, rateLimitIdentifier, 'ai-agent', maxRequests, 60);
+    
+    if (!rateLimit.allowed) {
+      logStep('ai-agent-rate-limit-exceeded', { identifier: rateLimitIdentifier, retryAfter: rateLimit.retryAfter });
+      return new Response(JSON.stringify({ 
+        error: 'Limite de requisições excedido. Tente novamente em alguns segundos.',
+        retryAfter: rateLimit.retryAfter
+      }), {
+        status: 429,
+        headers: { 
+          ...corsHeaders, 
+          'Content-Type': 'application/json',
+          'Retry-After': String(rateLimit.retryAfter || 60),
+          'X-RateLimit-Remaining': '0'
+        },
+      });
+    }
 
     const { messages, context, customContext } = await req.json();
 
@@ -245,7 +318,11 @@ serve(async (req) => {
     }
 
     return new Response(response.body, {
-      headers: { ...corsHeaders, 'Content-Type': 'text/event-stream' },
+      headers: { 
+        ...corsHeaders, 
+        'Content-Type': 'text/event-stream',
+        'X-RateLimit-Remaining': String(rateLimit.remaining)
+      },
     });
   } catch (error: unknown) {
     console.error('Error in ai-agent function:', error);
