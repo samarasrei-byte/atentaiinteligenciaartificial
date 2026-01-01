@@ -13,12 +13,13 @@ import {
   Volume2, 
   VolumeX,
   Trash2,
-  Clock
+  Clock,
+  ShieldCheck
 } from "lucide-react";
 
 interface RealtimeEvent {
   id: string;
-  type: "new_user" | "new_subscription" | "subscription_update";
+  type: "new_user" | "new_subscription" | "subscription_update" | "new_credit_repair" | "credit_repair_update";
   title: string;
   description: string;
   timestamp: Date;
@@ -124,9 +125,60 @@ export function RealtimeNotifications() {
       )
       .subscribe();
 
+    // Subscribe to credit_repair_requests (Limpa Nome)
+    const creditRepairChannel = supabase
+      .channel("realtime-credit-repair")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "credit_repair_requests" },
+        (payload) => {
+          const request = payload.new as any;
+          addEvent({
+            type: "new_credit_repair",
+            title: "🛡️ Nova Solicitação Limpa Nome!",
+            description: `${request.full_name || 'Cliente'} - Dívida: R$ ${((request.debt_amount_cents || 0) / 100).toFixed(2)}`,
+            data: request,
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "credit_repair_requests" },
+        (payload) => {
+          const request = payload.new as any;
+          const oldRequest = payload.old as any;
+          
+          if (oldRequest.status !== request.status) {
+            const statusLabels: Record<string, string> = {
+              pending: 'Pendente',
+              in_progress: 'Em Andamento',
+              completed: 'Concluído',
+              cancelled: 'Cancelado'
+            };
+            addEvent({
+              type: "credit_repair_update",
+              title: "🔄 Limpa Nome Atualizado",
+              description: `${request.full_name}: ${statusLabels[request.status] || request.status}`,
+              data: request,
+            });
+          }
+          
+          if (oldRequest.payment_status !== request.payment_status && request.payment_status === 'paid') {
+            addEvent({
+              type: "credit_repair_update",
+              title: "💰 Pagamento Limpa Nome Recebido!",
+              description: `${request.full_name} - R$ ${(request.final_price_cents / 100).toFixed(2)}`,
+              data: request,
+            });
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(subscriptionsChannel);
+      supabase.removeChannel(creditRepairChannel);
     };
   }, [soundEnabled]);
 
@@ -135,9 +187,13 @@ export function RealtimeNotifications() {
       case "new_user":
         return <UserPlus className="h-4 w-4 text-primary" />;
       case "new_subscription":
-        return <CreditCard className="h-4 w-4 text-success" />;
+        return <CreditCard className="h-4 w-4 text-green-500" />;
       case "subscription_update":
-        return <Activity className="h-4 w-4 text-info" />;
+        return <Activity className="h-4 w-4 text-blue-500" />;
+      case "new_credit_repair":
+        return <ShieldCheck className="h-4 w-4 text-emerald-500" />;
+      case "credit_repair_update":
+        return <Activity className="h-4 w-4 text-amber-500" />;
       default:
         return <Bell className="h-4 w-4 text-muted-foreground" />;
     }
@@ -148,9 +204,13 @@ export function RealtimeNotifications() {
       case "new_user":
         return "bg-primary/10 border-primary/20";
       case "new_subscription":
-        return "bg-success/10 border-success/20";
+        return "bg-green-500/10 border-green-500/20";
       case "subscription_update":
-        return "bg-info/10 border-info/20";
+        return "bg-blue-500/10 border-blue-500/20";
+      case "new_credit_repair":
+        return "bg-emerald-500/10 border-emerald-500/20";
+      case "credit_repair_update":
+        return "bg-amber-500/10 border-amber-500/20";
       default:
         return "bg-muted/50";
     }
@@ -204,7 +264,7 @@ export function RealtimeNotifications() {
           </div>
         </div>
         <CardDescription>
-          Receba alertas instantâneos sobre novos usuários e assinaturas
+          Receba alertas instantâneos sobre usuários, assinaturas e Limpa Nome
         </CardDescription>
       </CardHeader>
       <CardContent>

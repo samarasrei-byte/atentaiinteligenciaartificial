@@ -1,17 +1,25 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar, Legend } from 'recharts';
 import { supabase } from '@/integrations/supabase/client';
-import { TrendingUp, Users, DollarSign, Clock, CheckCircle, AlertCircle, Loader2 } from 'lucide-react';
-import { format, subMonths, startOfMonth, endOfMonth } from 'date-fns';
+import { TrendingUp, Users, DollarSign, Clock, CheckCircle, AlertCircle, Loader2, CalendarIcon, Download, FileText, FileSpreadsheet } from 'lucide-react';
+import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+import { exportCreditRepairToExcel, exportCreditRepairToPdf, CreditRepairReportData } from '@/lib/exportCreditRepairReports';
+import { useToast } from '@/hooks/use-toast';
 
 interface CreditRepairRequest {
   id: string;
+  full_name: string;
   status: string;
   payment_status: string;
   final_price_cents: number;
+  debt_amount_cents: number;
   created_at: string;
   completed_at: string | null;
 }
@@ -36,9 +44,27 @@ const chartConfig = {
   },
 };
 
+type DateRange = {
+  from: Date;
+  to: Date;
+};
+
+const quickFilters = [
+  { label: 'Últimos 7 dias', days: 7 },
+  { label: 'Últimos 30 dias', days: 30 },
+  { label: 'Últimos 90 dias', days: 90 },
+  { label: 'Este ano', days: 365 },
+];
+
 export function CreditRepairMetrics() {
   const [requests, setRequests] = useState<CreditRepairRequest[]>([]);
   const [loading, setLoading] = useState(true);
+  const [dateRange, setDateRange] = useState<DateRange>({
+    from: subDays(new Date(), 30),
+    to: new Date(),
+  });
+  const [activeQuickFilter, setActiveQuickFilter] = useState<number>(30);
+  const { toast } = useToast();
 
   useEffect(() => {
     fetchRequests();
@@ -48,7 +74,7 @@ export function CreditRepairMetrics() {
     try {
       const { data, error } = await supabase
         .from('credit_repair_requests')
-        .select('id, status, payment_status, final_price_cents, created_at, completed_at')
+        .select('id, full_name, status, payment_status, final_price_cents, debt_amount_cents, created_at, completed_at')
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -60,6 +86,20 @@ export function CreditRepairMetrics() {
     }
   };
 
+  // Filtrar por período
+  const filteredRequests = requests.filter(r => {
+    const createdAt = new Date(r.created_at);
+    return isWithinInterval(createdAt, { start: dateRange.from, end: dateRange.to });
+  });
+
+  const applyQuickFilter = (days: number) => {
+    setActiveQuickFilter(days);
+    setDateRange({
+      from: subDays(new Date(), days),
+      to: new Date(),
+    });
+  };
+
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
@@ -67,14 +107,60 @@ export function CreditRepairMetrics() {
     }).format(cents / 100);
   };
 
-  // Calcular métricas
-  const totalRequests = requests.length;
-  const completedRequests = requests.filter(r => r.status === 'completed').length;
-  const inProgressRequests = requests.filter(r => r.status === 'in_progress').length;
-  const pendingRequests = requests.filter(r => r.status === 'pending').length;
-  const paidRequests = requests.filter(r => r.payment_status === 'paid');
+  // Calcular métricas com dados filtrados
+  const totalRequests = filteredRequests.length;
+  const completedRequests = filteredRequests.filter(r => r.status === 'completed').length;
+  const inProgressRequests = filteredRequests.filter(r => r.status === 'in_progress').length;
+  const pendingRequests = filteredRequests.filter(r => r.status === 'pending').length;
+  const paidRequests = filteredRequests.filter(r => r.payment_status === 'paid');
   const totalRevenue = paidRequests.reduce((sum, r) => sum + r.final_price_cents, 0);
-  const conversionRate = totalRequests > 0 ? ((completedRequests / totalRequests) * 100).toFixed(1) : '0';
+  const conversionRate = totalRequests > 0 ? ((completedRequests / totalRequests) * 100) : 0;
+  const avgTicket = paidRequests.length > 0 ? totalRevenue / paidRequests.length : 0;
+
+  // Exportar relatórios
+  const handleExportExcel = () => {
+    const reportData: CreditRepairReportData = {
+      requests: filteredRequests,
+      dateRange: { start: dateRange.from, end: dateRange.to },
+      stats: {
+        total: totalRequests,
+        pending: pendingRequests,
+        inProgress: inProgressRequests,
+        completed: completedRequests,
+        totalRevenue,
+        paidCount: paidRequests.length,
+        avgTicket,
+        conversionRate,
+      },
+    };
+    exportCreditRepairToExcel(reportData);
+    toast({
+      title: 'Exportação Concluída',
+      description: 'Relatório Excel baixado com sucesso!',
+    });
+  };
+
+  const handleExportPdf = () => {
+    const reportData: CreditRepairReportData = {
+      requests: filteredRequests,
+      dateRange: { start: dateRange.from, end: dateRange.to },
+      stats: {
+        total: totalRequests,
+        pending: pendingRequests,
+        inProgress: inProgressRequests,
+        completed: completedRequests,
+        totalRevenue,
+        paidCount: paidRequests.length,
+        avgTicket,
+        conversionRate,
+      },
+    };
+    exportCreditRepairToPdf(reportData);
+    toast({
+      title: 'Exportação Concluída',
+      description: 'Relatório PDF baixado com sucesso!',
+    });
+  };
 
   // Dados para gráfico de pizza (status)
   const statusData = [
@@ -89,7 +175,7 @@ export function CreditRepairMetrics() {
     const start = startOfMonth(date);
     const end = endOfMonth(date);
     
-    const monthRequests = requests.filter(r => {
+    const monthRequests = filteredRequests.filter(r => {
       const createdAt = new Date(r.created_at);
       return createdAt >= start && createdAt <= end;
     });
@@ -108,7 +194,7 @@ export function CreditRepairMetrics() {
   // Dados para gráfico de pagamentos
   const paymentData = [
     { name: 'Pagos', value: paidRequests.length, color: 'hsl(var(--primary))' },
-    { name: 'Pendentes', value: requests.filter(r => r.payment_status === 'pending').length, color: 'hsl(var(--chart-4))' },
+    { name: 'Pendentes', value: filteredRequests.filter(r => r.payment_status === 'pending').length, color: 'hsl(var(--chart-4))' },
   ].filter(d => d.value > 0);
 
   if (loading) {
@@ -121,6 +207,76 @@ export function CreditRepairMetrics() {
 
   return (
     <div className="space-y-6">
+      {/* Filtros de Data e Exportação */}
+      <Card>
+        <CardContent className="p-4">
+          <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+            {/* Quick Filters */}
+            <div className="flex flex-wrap gap-2">
+              {quickFilters.map((filter) => (
+                <Button
+                  key={filter.days}
+                  variant={activeQuickFilter === filter.days ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => applyQuickFilter(filter.days)}
+                >
+                  {filter.label}
+                </Button>
+              ))}
+            </div>
+
+            {/* Date Pickers */}
+            <div className="flex flex-wrap gap-2 items-center">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    {format(dateRange.from, 'dd/MM/yyyy', { locale: ptBR })}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.from}
+                    onSelect={(date) => date && setDateRange(prev => ({ ...prev, from: date }))}
+                    locale={ptBR}
+                  />
+                </PopoverContent>
+              </Popover>
+              <span className="text-muted-foreground">até</span>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="gap-2">
+                    <CalendarIcon className="h-4 w-4" />
+                    {format(dateRange.to, 'dd/MM/yyyy', { locale: ptBR })}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="end">
+                  <Calendar
+                    mode="single"
+                    selected={dateRange.to}
+                    onSelect={(date) => date && setDateRange(prev => ({ ...prev, to: date }))}
+                    locale={ptBR}
+                  />
+                </PopoverContent>
+              </Popover>
+
+              {/* Export Buttons */}
+              <div className="flex gap-2 ml-4">
+                <Button variant="outline" size="sm" onClick={handleExportExcel} className="gap-2">
+                  <FileSpreadsheet className="h-4 w-4" />
+                  Excel
+                </Button>
+                <Button variant="outline" size="sm" onClick={handleExportPdf} className="gap-2">
+                  <FileText className="h-4 w-4" />
+                  PDF
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Cards de resumo */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
@@ -164,7 +320,7 @@ export function CreditRepairMetrics() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-muted-foreground">Taxa de Conclusão</p>
-                <p className="text-3xl font-bold text-emerald-600">{conversionRate}%</p>
+                <p className="text-3xl font-bold text-emerald-600">{conversionRate.toFixed(1)}%</p>
               </div>
               <TrendingUp className="h-10 w-10 text-emerald-500/60" />
             </div>
@@ -321,7 +477,7 @@ export function CreditRepairMetrics() {
             <p className="text-sm text-muted-foreground mb-2">Ticket Médio</p>
             <p className="text-2xl font-bold text-primary">
               {paidRequests.length > 0 
-                ? formatCurrency(totalRevenue / paidRequests.length)
+                ? formatCurrency(avgTicket)
                 : 'R$ 0,00'
               }
             </p>
