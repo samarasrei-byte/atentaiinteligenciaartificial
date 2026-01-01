@@ -8,6 +8,7 @@ import { ProfilesSection } from "@/components/sections/ProfilesSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
+import { LimpaNomeSection } from "@/components/sections/LimpaNomeSection";
 import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
 
 const Index = () => {
@@ -38,6 +39,9 @@ const Index = () => {
         <HeroSection onNavigate={scrollToSection} />
         <FeaturesSection />
         <StatsSection />
+        <div id="limpa-nome">
+          <LimpaNomeSection />
+        </div>
         <SimulatorSection />
         <AISection />
         <ProfilesSection />
