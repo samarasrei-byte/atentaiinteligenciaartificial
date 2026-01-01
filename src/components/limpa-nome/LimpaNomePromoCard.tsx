@@ -34,7 +34,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
   const { subscription } = useAuth();
   
   const isSubscribed = subscription?.subscribed || false;
-  const basePrice = 99900; // R$ 999,00
+  const basePrice = 97000; // R$ 970,00
   const discountPercent = 15;
   const discountedPrice = Math.round(basePrice * (1 - discountPercent / 100));
 
@@ -47,8 +47,8 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
 
   const features = [
     'Análise em 8 plataformas (SPC, Serasa, Quod, Cenprot...)',
-    'Consulta Registrato (Banco Central)',
-    'Chat 24h com IA + Contador dedicado',
+    'Contador humano dedicado ao seu caso',
+    'Atendimento personalizado via WhatsApp',
     'Carta de quitação + relatório completo',
     'Acompanhamento por 90 dias',
     'Garantia de resultado',
@@ -174,16 +174,16 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
           </Badge>
         </div>
 
-        {/* AI Feature Highlight */}
+        {/* Human Feature Highlight */}
         {showAIFeature && (
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-primary/10 to-violet-500/10 border border-primary/20">
-            <div className="p-2 rounded-lg bg-primary/20">
-              <Bot className="h-5 w-5 text-primary" />
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/20">
+            <div className="p-2 rounded-lg bg-emerald-500/20">
+              <User className="h-5 w-5 text-emerald-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">Chat com IA + Especialista</p>
+              <p className="text-sm font-medium text-foreground">Contador Humano Dedicado</p>
               <p className="text-xs text-muted-foreground">
-                Atendimento 24h • Resultado em 30 dias
+                Atendimento 100% humano • Resultado em 30 dias
               </p>
             </div>
             <Zap className="h-4 w-4 text-amber-500" />

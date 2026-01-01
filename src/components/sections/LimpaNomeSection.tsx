@@ -34,7 +34,7 @@ const bureaus = [
 ];
 
 const benefits = [
-  { icon: Bot, title: 'IA + Contador 24h', desc: 'Atendimento inteligente com IA e contador especializado dedicado' },
+  { icon: Bot, title: 'Contador Humano Dedicado', desc: 'Atendimento real com contador especializado, não é apenas IA' },
   { icon: Clock, title: 'Resultado em até 30 dias', desc: 'Processo ágil com acompanhamento em tempo real via WhatsApp' },
   { icon: FileCheck, title: 'Carta de Quitação Digital', desc: 'Documento oficial + relatório completo de regularização' },
   { icon: Shield, title: 'Garantia de Resultado', desc: 'Seu dinheiro de volta se não limparmos seu nome' },
@@ -42,10 +42,10 @@ const benefits = [
 
 const included = [
   'Análise completa CPF ou CNPJ em 8 bureaus',
-  'Chat ilimitado 24h com IA + Contador',
+  'Contador humano dedicado ao seu caso',
+  'Atendimento personalizado via chat e WhatsApp',
   'Consulta Registrato (Banco Central)',
   'Verificação protestos (Cenprot)',
-  'Orientação personalizada por contador',
   'Carta de quitação digital',
   'Acompanhamento por 90 dias',
   'Suporte prioritário WhatsApp',
@@ -60,8 +60,8 @@ export function LimpaNomeSection() {
   const isSubscribed = subscription.subscribed;
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
 
-  const basePrice = 999;
-  const discountedPrice = isSubscribed ? 849 : 999;
+  const basePrice = 970;
+  const discountedPrice = isSubscribed ? 824 : 970;
 
   return (
     <section 
@@ -87,8 +87,8 @@ export function LimpaNomeSection() {
             <span className="block mt-2 text-foreground">Para CPF e CNPJ</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Regularize seu CPF ou CNPJ em todos os bureaus de crédito do Brasil. 
-            Atendimento exclusivo com inteligência artificial e contador especializado.
+            Regularize seu CPF ou CNPJ com atendimento <strong className="text-foreground">100% humano</strong>. 
+            Contador especializado dedicado ao seu caso, do início ao fim.
           </p>
           
           {/* Target Audience Tags */}
