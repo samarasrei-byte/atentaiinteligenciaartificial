@@ -21,6 +21,7 @@ import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
 import { AdminWithdrawalPanel } from '@/components/support/AdminWithdrawalPanel';
 import { RealtimeNotifications } from '@/components/admin/RealtimeNotifications';
 import { ContadoresManagement } from '@/components/admin/ContadoresManagement';
+import { CreditRepairManagement } from '@/components/admin/CreditRepairManagement';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
@@ -398,6 +399,7 @@ const AdminPanel = () => {
 
           {activeTab === 'withdrawals' && <AdminWithdrawalPanel />}
           {activeTab === 'support' && <AdminSupportPanel />}
+          {activeTab === 'limpa-nome' && <CreditRepairManagement />}
           {activeTab === 'settings' && (
             <Card className="bg-card border-border shadow-soft">
               <CardHeader><CardTitle>Configurações</CardTitle><CardDescription>Ajustes do sistema</CardDescription></CardHeader>
