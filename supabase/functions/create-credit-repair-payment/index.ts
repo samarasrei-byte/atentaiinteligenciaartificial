@@ -71,7 +71,7 @@ serve(async (req) => {
       logStep("Found existing Stripe customer", { customerId });
     }
 
-    // Create checkout session
+    // Create checkout session with 4x installments
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -81,7 +81,7 @@ serve(async (req) => {
             currency: "brl",
             product_data: {
               name: "Limpa Nome Completo",
-              description: `Regularização de crédito em ${request.bureaus_selected?.length || 4} bureaus`,
+              description: `Regularização em ${request.bureaus_selected?.length || 8} plataformas: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot, Registrato, CADIN`,
               metadata: {
                 request_id: requestId,
               },
@@ -92,6 +92,14 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
+      payment_method_types: ["card"],
+      payment_method_options: {
+        card: {
+          installments: {
+            enabled: true,
+          },
+        },
+      },
       success_url: `${req.headers.get("origin")}/payment-success?type=credit-repair&request_id=${requestId}`,
       cancel_url: `${req.headers.get("origin")}/limpa-nome?cancelled=true`,
       metadata: {

@@ -27,24 +27,31 @@ const bureaus = [
   { name: 'Serasa', color: 'bg-red-500' },
   { name: 'SCPC', color: 'bg-green-500' },
   { name: 'Boa Vista', color: 'bg-purple-500' },
+  { name: 'Quod', color: 'bg-amber-500' },
+  { name: 'Cenprot', color: 'bg-cyan-500' },
+  { name: 'Registrato', color: 'bg-indigo-500' },
+  { name: 'CADIN', color: 'bg-pink-500' },
 ];
 
 const benefits = [
-  { icon: Bot, title: 'IA + Especialista Humano', desc: 'Atendimento 24h com inteligência artificial e contador especializado' },
-  { icon: Clock, title: 'Resultado em até 30 dias', desc: 'Processo ágil e acompanhamento em tempo real' },
-  { icon: FileCheck, title: 'Carta de Quitação Digital', desc: 'Documento oficial que comprova a regularização' },
-  { icon: Shield, title: 'Garantia de Satisfação', desc: 'Seu dinheiro de volta se não limparmos seu nome' },
+  { icon: Bot, title: 'IA + Contador 24h', desc: 'Atendimento inteligente com IA e contador especializado dedicado' },
+  { icon: Clock, title: 'Resultado em até 30 dias', desc: 'Processo ágil com acompanhamento em tempo real via WhatsApp' },
+  { icon: FileCheck, title: 'Carta de Quitação Digital', desc: 'Documento oficial + relatório completo de regularização' },
+  { icon: Shield, title: 'Garantia de Resultado', desc: 'Seu dinheiro de volta se não limparmos seu nome' },
 ];
 
 const included = [
-  'Análise completa CPF ou CNPJ em 4 bureaus',
-  'Chat ilimitado com IA + Especialista',
+  'Análise completa CPF ou CNPJ em 8 bureaus',
+  'Chat ilimitado 24h com IA + Contador',
+  'Consulta Registrato (Banco Central)',
+  'Verificação protestos (Cenprot)',
   'Orientação personalizada por contador',
-  'Documentação e carta de quitação',
+  'Carta de quitação digital',
   'Acompanhamento por 90 dias',
   'Suporte prioritário WhatsApp',
   'Relatório final detalhado',
-  'Garantia de resultado'
+  'Orientação para melhoria de score',
+  'Garantia de resultado',
 ];
 
 export function LimpaNomeSection() {
@@ -198,6 +205,9 @@ export function LimpaNomeSection() {
                       R$ {discountedPrice}
                     </span>
                   </div>
+                  <p className="text-lg text-foreground font-semibold mt-2">
+                    ou <span className="text-rose-500">4x de R$ {Math.round(discountedPrice / 4)}</span> sem juros
+                  </p>
                   {isSubscribed ? (
                     <Badge className="mt-2 bg-green-500/10 text-green-600 border-green-500/30">
                       <TrendingDown className="h-3 w-3 mr-1" />
@@ -205,7 +215,7 @@ export function LimpaNomeSection() {
                     </Badge>
                   ) : (
                     <p className="text-sm text-muted-foreground mt-2">
-                      ou até <span className="font-semibold text-foreground">12x de R$ 83,25</span>
+                      ou até <span className="font-semibold text-foreground">12x de R$ {Math.round(discountedPrice / 12)}</span>
                     </p>
                   )}
                 </div>
