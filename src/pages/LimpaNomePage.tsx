@@ -10,6 +10,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
+import { MaskedInput } from '@/components/ui/masked-input';
+import { cleanDocument } from '@/lib/documentValidation';
 import { 
   ArrowLeft, 
   Shield, 
@@ -98,6 +100,9 @@ const LimpaNomePage = () => {
     debtDescription: '',
     creditors: '',
   });
+  
+  const [cpfValid, setCpfValid] = useState(false);
+  const [phoneValid, setPhoneValid] = useState(false);
 
   const basePrice = 97000; // R$ 970,00
   const subscriberDiscount = 0.15; // 15% discount
@@ -321,11 +326,14 @@ const LimpaNomePage = () => {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="cpf">CPF ou CNPJ *</Label>
-                          <Input
+                          <MaskedInput
                             id="cpf"
+                            mask="cpf-cnpj"
                             value={formData.cpf}
-                            onChange={(e) => setFormData({...formData, cpf: e.target.value})}
-                            placeholder="CPF: 000.000.000-00 ou CNPJ: 00.000.000/0001-00"
+                            onChange={(value, isValid) => {
+                              setFormData({...formData, cpf: value});
+                              setCpfValid(isValid);
+                            }}
                             required
                           />
                         </div>
@@ -344,11 +352,14 @@ const LimpaNomePage = () => {
                         </div>
                         <div className="space-y-2">
                           <Label htmlFor="phone">Telefone *</Label>
-                          <Input
+                          <MaskedInput
                             id="phone"
+                            mask="phone"
                             value={formData.phone}
-                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                            placeholder="(00) 00000-0000"
+                            onChange={(value, isValid) => {
+                              setFormData({...formData, phone: value});
+                              setPhoneValid(isValid);
+                            }}
                             required
                           />
                         </div>

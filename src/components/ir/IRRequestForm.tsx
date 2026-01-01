@@ -9,8 +9,10 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
+import { MaskedInput } from '@/components/ui/masked-input';
 import { useToast } from '@/hooks/use-toast';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
+import { cleanDocument } from '@/lib/documentValidation';
 import { 
   FileText, 
   FileSpreadsheet, 
@@ -46,6 +48,9 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
     incomeSourcesCount: 1,
     notes: '',
   });
+  
+  const [cpfValid, setCpfValid] = useState(false);
+  const [phoneValid, setPhoneValid] = useState(false);
 
   const isSubscriber = subscription.subscribed;
   const serviceKey = irType === 'simples' ? 'ir_simples' : 'ir_completo';
@@ -273,12 +278,16 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cpf">CPF</Label>
-                <Input
+                <Label htmlFor="cpf">CPF *</Label>
+                <MaskedInput
                   id="cpf"
+                  mask="cpf"
                   value={formData.cpf}
-                  onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
-                  placeholder="000.000.000-00"
+                  onChange={(value, isValid) => {
+                    setFormData({ ...formData, cpf: value });
+                    setCpfValid(isValid);
+                  }}
+                  required
                 />
               </div>
             </div>
@@ -296,11 +305,14 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
               </div>
               <div className="space-y-2">
                 <Label htmlFor="phone">Telefone</Label>
-                <Input
+                <MaskedInput
                   id="phone"
+                  mask="phone"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  placeholder="(11) 99999-9999"
+                  onChange={(value, isValid) => {
+                    setFormData({ ...formData, phone: value });
+                    setPhoneValid(isValid);
+                  }}
                 />
               </div>
             </div>
