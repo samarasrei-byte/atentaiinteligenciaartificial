@@ -10,6 +10,7 @@ import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
 import { LimpaNomeSection } from "@/components/sections/LimpaNomeSection";
 import { FAQSection } from "@/components/sections/FAQSection";
+import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
 import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
 
 const Index = () => {
@@ -40,6 +41,7 @@ const Index = () => {
         <HeroSection onNavigate={scrollToSection} />
         <FeaturesSection />
         <StatsSection />
+        <SuccessCasesSection />
         <div id="limpa-nome">
           <LimpaNomeSection />
         </div>
