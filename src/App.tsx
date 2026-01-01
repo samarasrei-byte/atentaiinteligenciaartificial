@@ -51,6 +51,7 @@ import ServicosPage from "./pages/ServicosPage";
 import IRPage from "./pages/IRPage";
 import FerramentasLC214 from "./pages/FerramentasLC214";
 import TimelineReforma from "./pages/TimelineReforma";
+import LimpaNomePage from "./pages/LimpaNomePage";
 
 const queryClient = new QueryClient();
 
@@ -91,6 +92,7 @@ const App = () => (
               <Route path="/ir" element={<IRPage />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
+              <Route path="/limpa-nome" element={<LimpaNomePage />} />
               {/* Protected routes - require authentication */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>

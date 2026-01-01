@@ -653,6 +653,84 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_repair_requests: {
+        Row: {
+          bureaus_selected: string[] | null
+          completed_at: string | null
+          contador_id: string | null
+          contador_notes: string | null
+          cpf: string | null
+          created_at: string
+          creditors: string[] | null
+          debt_amount_cents: number
+          debt_description: string | null
+          discount_applied: boolean | null
+          document_url: string | null
+          email: string | null
+          final_price_cents: number
+          full_name: string
+          id: string
+          notes: string | null
+          payment_status: string
+          phone: string | null
+          service_price_cents: number
+          status: string
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          bureaus_selected?: string[] | null
+          completed_at?: string | null
+          contador_id?: string | null
+          contador_notes?: string | null
+          cpf?: string | null
+          created_at?: string
+          creditors?: string[] | null
+          debt_amount_cents?: number
+          debt_description?: string | null
+          discount_applied?: boolean | null
+          document_url?: string | null
+          email?: string | null
+          final_price_cents?: number
+          full_name: string
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          phone?: string | null
+          service_price_cents?: number
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          bureaus_selected?: string[] | null
+          completed_at?: string | null
+          contador_id?: string | null
+          contador_notes?: string | null
+          cpf?: string | null
+          created_at?: string
+          creditors?: string[] | null
+          debt_amount_cents?: number
+          debt_description?: string | null
+          discount_applied?: boolean | null
+          document_url?: string | null
+          email?: string | null
+          final_price_cents?: number
+          full_name?: string
+          id?: string
+          notes?: string | null
+          payment_status?: string
+          phone?: string | null
+          service_price_cents?: number
+          status?: string
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       daily_question_usage: {
         Row: {
           created_at: string
