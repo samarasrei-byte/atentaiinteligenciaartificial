@@ -8,8 +8,10 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
+import { CreditRepairMetrics } from './CreditRepairMetrics';
 import {
   Search,
   Loader2,
@@ -26,7 +28,8 @@ import {
   FileText,
   CreditCard,
   Building,
-  RefreshCw
+  RefreshCw,
+  BarChart3
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -208,7 +211,23 @@ export function CreditRepairManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="requests" className="space-y-6">
+      <TabsList className="grid w-full max-w-md grid-cols-2">
+        <TabsTrigger value="requests" className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          Solicitações
+        </TabsTrigger>
+        <TabsTrigger value="metrics" className="flex items-center gap-2">
+          <BarChart3 className="h-4 w-4" />
+          Métricas
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="metrics">
+        <CreditRepairMetrics />
+      </TabsContent>
+
+      <TabsContent value="requests" className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="bg-card">
@@ -524,6 +543,7 @@ export function CreditRepairManagement() {
           )}
         </DialogContent>
       </Dialog>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }
