@@ -15,6 +15,7 @@ import {
   CheckCircle2,
   Sparkles,
 } from 'lucide-react';
+import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
 
 interface ServiceCardProps {
@@ -189,6 +190,9 @@ export const ServicesHub: React.FC = () => {
           ? ' e aproveite seus descontos exclusivos de assinante!' 
           : '. Assinantes têm descontos em todos os serviços.'}
       </p>
+
+      {/* Limpa Nome Banner - Novo Serviço */}
+      <LimpaNomePromoCard variant="banner" />
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {services.map((service) => (

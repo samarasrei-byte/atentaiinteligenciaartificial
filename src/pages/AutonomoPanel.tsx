@@ -75,6 +75,7 @@ import CompanyOpeningStatus from '@/components/abertura/CompanyOpeningStatus';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
+import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 
 interface AutonomoProfile {
   id: string;
@@ -363,6 +364,9 @@ const AutonomoPanel: React.FC = () => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Limpa Nome Card - Novidade */}
+      <LimpaNomePromoCard variant="full" showAIFeature={true} />
 
       {/* Company Opening Status Card */}
       <Card className="border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-transparent">
