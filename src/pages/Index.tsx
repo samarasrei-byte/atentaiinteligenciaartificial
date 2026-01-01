@@ -9,6 +9,7 @@ import { PricingSection } from "@/components/sections/PricingSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
 import { LimpaNomeSection } from "@/components/sections/LimpaNomeSection";
+import { FAQSection } from "@/components/sections/FAQSection";
 import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
 
 const Index = () => {
@@ -46,6 +47,7 @@ const Index = () => {
         <AISection />
         <ProfilesSection />
         <PricingSection />
+        <FAQSection />
         <TestimonialsSection />
       </main>
 

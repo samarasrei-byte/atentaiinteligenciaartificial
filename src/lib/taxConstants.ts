@@ -74,7 +74,7 @@ export const IRPJ_ADDITIONAL_LIMIT = 20000;
 export const CSLL_RATE = 9;
 
 // =============================================================================
-// LIMITES DE ENQUADRAMENTO
+// LIMITES DE ENQUADRAMENTO (Valores 2025)
 // =============================================================================
 
 /** Limite anual do Simples Nacional */
@@ -85,6 +85,15 @@ export const LUCRO_PRESUMIDO_ANNUAL_LIMIT = 78000000;
 
 /** Limite anual do MEI */
 export const MEI_ANNUAL_LIMIT = 81000;
+
+/** Limite mensal do MEI */
+export const MEI_MONTHLY_LIMIT = 6750;
+
+/** Salário Mínimo 2025 */
+export const SALARIO_MINIMO_2025 = 1518;
+
+/** Teto INSS 2025 */
+export const TETO_INSS_2025 = 8157.41;
 
 // =============================================================================
 // FAIXAS DO SIMPLES NACIONAL (Anexo III - Serviços)
