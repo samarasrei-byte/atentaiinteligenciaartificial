@@ -213,6 +213,20 @@ serve(async (req) => {
       requestId = request.id;
       
     } else if (serviceType === 'credit_repair') {
+      // Find active partner to assign the request
+      let partnerId: string | null = null;
+      const { data: activePartner } = await supabaseAdmin
+        .from('credit_repair_partners')
+        .select('id')
+        .eq('is_active', true)
+        .limit(1)
+        .single();
+      
+      if (activePartner) {
+        partnerId = activePartner.id;
+        logStep("Active partner found", { partnerId });
+      }
+
       const { data: request, error } = await supabaseAdmin
         .from('credit_repair_requests')
         .insert({
@@ -229,12 +243,14 @@ serve(async (req) => {
           final_price_cents: finalPriceCents,
           discount_applied: isSubscriber,
           payment_status: 'pending',
+          partner_id: partnerId, // Auto-assign to active partner
         })
         .select()
         .single();
 
       if (error) throw error;
       requestId = request.id;
+      logStep("Credit repair request created", { requestId, partnerId });
       
     } else if (serviceType === 'certificate') {
       const { data: request, error } = await supabaseAdmin

@@ -43,8 +43,8 @@ const bureaus = [
 const benefits = [
   {
     icon: MessageCircle,
-    title: 'Contador Humano Dedicado',
-    description: 'Atendimento real com contador especializado, não é apenas IA'
+    title: 'Empresa Especializada Dedicada',
+    description: 'Atendimento 100% humano com especialistas em recuperação de crédito'
   },
   {
     icon: Shield,
@@ -73,7 +73,7 @@ const testimonials = [
   {
     name: 'Ana Paula S.',
     role: 'Autônoma',
-    text: 'Atendimento excelente. O contador me orientou em cada etapa do processo.',
+    text: 'Atendimento excelente. O especialista me orientou em cada etapa do processo.',
     rating: 5
   },
   {
@@ -217,7 +217,7 @@ const LimpaNomePage = () => {
 
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
                 Regularize seu CPF ou CNPJ com atendimento <strong className="text-white">100% humano</strong>.
-                Contador especializado dedicado ao seu caso, do início ao fim.
+                Empresa especializada dedicada ao seu caso, do início ao fim.
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 mb-8">
