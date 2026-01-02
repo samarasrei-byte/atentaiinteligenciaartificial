@@ -629,7 +629,7 @@ const EmpresaPanel = () => {
             )}
 
             {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4" data-tour="stats">
               <Card className="bg-card border-border shadow-soft">
                 <CardContent className="p-5">
                   <div className="flex items-center justify-between">
@@ -677,7 +677,7 @@ const EmpresaPanel = () => {
             </div>
 
             {/* Economy Calculator & Plan Upgrade */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6" data-tour="economy-calculator">
               <div className="lg:col-span-2">
                 <EconomyCalculator />
               </div>
@@ -688,7 +688,7 @@ const EmpresaPanel = () => {
             </div>
 
             {/* Quick Actions */}
-            <div>
+            <div data-tour="quick-actions">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-foreground">Ações Rápidas</h2>
               </div>

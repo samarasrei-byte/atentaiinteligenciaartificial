@@ -2,7 +2,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
@@ -10,6 +10,7 @@ import { BottomNavigation } from "@/components/pwa/BottomNavigation";
 import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { PWATour } from "@/components/tour/PWATour";
+import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -70,7 +71,8 @@ const App = () => (
           <Sonner />
           <OfflineIndicator />
           <div className="pb-20 md:pb-0">
-            <Routes>
+            <AnimatedRoutes>
+              <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/comecar" element={<UserTypeSelection />} />
@@ -218,7 +220,8 @@ const App = () => (
               } />
               
               <Route path="*" element={<NotFound />} />
-            </Routes>
+              </Routes>
+            </AnimatedRoutes>
           </div>
           <BottomNavigation />
           <InstallPWAPrompt />
