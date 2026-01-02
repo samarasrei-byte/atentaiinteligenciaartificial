@@ -22,16 +22,22 @@ const DashboardRouter = () => {
       return;
     }
 
-    // Priority-based routing: admin > contador > autonomo > empresa
+    // Check if user has any specific role
+    const hasAnySpecificRole = hasRole('admin') || hasRole('contador') || hasRole('autonomo');
+    
+    // If user only has 'user' role (default), send to welcome page to choose profile
+    if (!hasAnySpecificRole) {
+      navigate('/bem-vindo', { replace: true });
+      return;
+    }
+
+    // Priority-based routing: admin > contador > autonomo
     if (hasRole('admin')) {
       navigate('/admin', { replace: true });
     } else if (hasRole('contador')) {
       navigate('/contador', { replace: true });
     } else if (hasRole('autonomo')) {
       navigate('/autonomo', { replace: true });
-    } else {
-      // Default to empresa panel for regular users
-      navigate('/empresa', { replace: true });
     }
   }, [user, loading, hasRole, roles, navigate]);
 
