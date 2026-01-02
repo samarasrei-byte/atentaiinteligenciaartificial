@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
 import { BottomNavigation } from "@/components/pwa/BottomNavigation";
 import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
@@ -114,9 +115,9 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/empresa" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="user">
                   <EmpresaPanel />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/perfil" element={
                 <ProtectedRoute>
@@ -158,46 +159,46 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Role-based routes */}
+              {/* Role-based protected routes */}
               <Route path="/autonomo" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="autonomo">
                   <AutonomoPanel />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/autonomo/onboarding" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="autonomo">
                   <AutonomoOnboardingPage />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/contador" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="contador">
                   <ContadorPanel />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/contador/onboarding" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="contador">
                   <ContadorOnboarding />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/admin" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="admin">
                   <AdminPanel />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/admin/roles" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="admin">
                   <RoleManagement />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/admin/reports" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="admin">
                   <AdminReports />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/admin/metrics" element={
-                <ProtectedRoute>
+                <RoleProtectedRoute requiredRole="admin">
                   <MetricsDashboard />
-                </ProtectedRoute>
+                </RoleProtectedRoute>
               } />
               <Route path="/chat/:consultationId" element={
                 <ProtectedRoute>
