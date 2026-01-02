@@ -17,7 +17,7 @@ import {
   Building, DollarSign, Users, Clock, CheckCircle, XCircle, AlertCircle,
   TrendingUp, Loader2, Search, RefreshCw, Phone, Mail, User, FileText,
   Percent, BarChart3, PieChart as PieChartIcon, Wallet, MessageCircle,
-  CreditCard
+  CreditCard, Bell, BellRing
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -77,11 +77,60 @@ export default function PartnerPanel() {
   const [selectedRequest, setSelectedRequest] = useState<CreditRepairRequest | null>(null);
   const [showChatDialog, setShowChatDialog] = useState(false);
 
+  // Realtime notifications for new requests
+  const [newRequestsCount, setNewRequestsCount] = useState(0);
+  const [showNewRequestBadge, setShowNewRequestBadge] = useState(false);
+
   useEffect(() => {
     if (!authLoading && user) {
       fetchPartnerData();
     }
   }, [user, authLoading]);
+
+  // Setup realtime subscription for new requests
+  useEffect(() => {
+    if (!partner?.id) return;
+
+    const channel = supabase
+      .channel(`partner-requests-${partner.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'credit_repair_requests',
+          filter: `partner_id=eq.${partner.id}`
+        },
+        (payload) => {
+          // New request came in
+          setNewRequestsCount(prev => prev + 1);
+          setShowNewRequestBadge(true);
+          toast({
+            title: '🎉 Nova solicitação recebida!',
+            description: `${(payload.new as any).full_name} solicitou o serviço Limpa Nome`,
+          });
+          // Refresh data
+          fetchPartnerData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'credit_repair_requests',
+          filter: `partner_id=eq.${partner.id}`
+        },
+        () => {
+          fetchPartnerData();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [partner?.id]);
 
   const fetchPartnerData = async () => {
     if (!user) return;
@@ -130,6 +179,11 @@ export default function PartnerPanel() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleClearNewRequests = () => {
+    setNewRequestsCount(0);
+    setShowNewRequestBadge(false);
   };
 
   const formatCurrency = (cents: number) =>
@@ -252,6 +306,18 @@ export default function PartnerPanel() {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {/* New Requests Notification */}
+              {showNewRequestBadge && newRequestsCount > 0 && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={handleClearNewRequests}
+                  className="relative border-success/30 bg-success/10 text-success hover:bg-success/20 animate-pulse"
+                >
+                  <BellRing className="h-4 w-4 mr-2" />
+                  {newRequestsCount} nova{newRequestsCount > 1 ? 's' : ''} solicitaç{newRequestsCount > 1 ? 'ões' : 'ão'}
+                </Button>
+              )}
               {partner.is_active ? (
                 <Badge className="bg-success/10 text-success border-success/20">
                   <CheckCircle className="h-3 w-3 mr-1" />Ativo

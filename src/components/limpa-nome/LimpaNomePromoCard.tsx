@@ -47,7 +47,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
 
   const features = [
     'Análise em 8 plataformas (SPC, Serasa, Quod, Cenprot...)',
-    'Contador humano dedicado ao seu caso',
+    'Especialista dedicado ao seu caso',
     'Atendimento personalizado via WhatsApp',
     'Carta de quitação + relatório completo',
     'Acompanhamento por 90 dias',
@@ -178,10 +178,10 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
         {showAIFeature && (
           <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/20">
             <div className="p-2 rounded-lg bg-emerald-500/20">
-              <User className="h-5 w-5 text-emerald-600" />
+              <Building2 className="h-5 w-5 text-emerald-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">Contador Humano Dedicado</p>
+              <p className="text-sm font-medium text-foreground">Empresa Especializada Dedicada</p>
               <p className="text-xs text-muted-foreground">
                 Atendimento 100% humano • Resultado em 30 dias
               </p>

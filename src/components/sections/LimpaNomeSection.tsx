@@ -36,7 +36,7 @@ const bureaus = [
 ];
 
 const benefits = [
-  { icon: Bot, title: 'Contador Humano Dedicado', desc: 'Atendimento real com contador especializado, não é apenas IA' },
+  { icon: Building2, title: 'Empresa Especializada Dedicada', desc: 'Atendimento 100% humano com especialistas em recuperação de crédito' },
   { icon: Clock, title: 'Resultado em até 30 dias', desc: 'Processo ágil com acompanhamento em tempo real via WhatsApp' },
   { icon: FileCheck, title: 'Carta de Quitação Digital', desc: 'Documento oficial + relatório completo de regularização' },
   { icon: Shield, title: 'Garantia de Resultado', desc: 'Seu dinheiro de volta se não limparmos seu nome' },
@@ -44,7 +44,7 @@ const benefits = [
 
 const included = [
   'Análise completa CPF ou CNPJ em 8 bureaus',
-  'Contador humano dedicado ao seu caso',
+  'Especialista dedicado ao seu caso',
   'Atendimento personalizado via chat e WhatsApp',
   'Consulta Registrato (Banco Central)',
   'Verificação protestos (Cenprot)',
@@ -129,7 +129,7 @@ export function LimpaNomeSection() {
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
             Regularize seu CPF ou CNPJ com atendimento <strong className="text-foreground">100% humano</strong>. 
-            Contador especializado dedicado ao seu caso, do início ao fim.
+            Empresa especializada dedicada ao seu caso, do início ao fim.
           </p>
           
           {/* Client Type Selection - Interactive Cards */}
