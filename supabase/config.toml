@@ -56,3 +56,9 @@ verify_jwt = false
 
 [functions.check-expiring-cashback]
 verify_jwt = false
+
+[functions.create-guest-service-payment]
+verify_jwt = false
+
+[functions.process-guest-payment]
+verify_jwt = false
