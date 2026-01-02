@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,8 @@ import {
   Users,
   Zap,
   Building2,
-  User
+  User,
+  Briefcase
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useAuth } from "@/contexts/AuthContext";
@@ -54,14 +56,53 @@ const included = [
   'Garantia de resultado',
 ];
 
+const clientTypes = [
+  { 
+    id: 'pf', 
+    icon: User, 
+    title: 'Pessoa Física (CPF)', 
+    color: 'blue',
+    bgColor: 'bg-blue-500/10 hover:bg-blue-500/20',
+    borderColor: 'border-blue-500/30 hover:border-blue-500/50',
+    iconColor: 'text-blue-500'
+  },
+  { 
+    id: 'autonomo', 
+    icon: Building2, 
+    title: 'Autônomos (CPF/CNPJ)', 
+    color: 'violet',
+    bgColor: 'bg-violet-500/10 hover:bg-violet-500/20',
+    borderColor: 'border-violet-500/30 hover:border-violet-500/50',
+    iconColor: 'text-violet-500'
+  },
+  { 
+    id: 'empresa', 
+    icon: Building2, 
+    title: 'Empresas (CNPJ)', 
+    color: 'emerald',
+    bgColor: 'bg-emerald-500/10 hover:bg-emerald-500/20',
+    borderColor: 'border-emerald-500/30 hover:border-emerald-500/50',
+    iconColor: 'text-emerald-500'
+  },
+];
+
 export function LimpaNomeSection() {
   const navigate = useNavigate();
   const { subscription } = useAuth();
   const isSubscribed = subscription.subscribed;
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
+  const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const basePrice = 970;
   const discountedPrice = isSubscribed ? 824 : 970;
+
+  const handleSelectType = (typeId: string) => {
+    setSelectedType(typeId);
+    // Scroll suave para o card de preço
+    setTimeout(() => {
+      document.getElementById('limpa-nome-price-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 100);
+  };
 
   return (
     <section 
@@ -77,13 +118,13 @@ export function LimpaNomeSection() {
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-12">
           <Badge className="mb-6 bg-rose-500/20 text-rose-600 border-rose-500/30 px-6 py-2">
             <Sparkles className="h-4 w-4 mr-2" />
-            SERVIÇO PREMIUM • RESULTADO GARANTIDO
+            EMPRESA ESPECIALIZADA • RESULTADO GARANTIDO
           </Badge>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent">Limpa Nome</span>
+            <span className="bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent italic">Limpa Nome</span>
             <span className="block mt-2 text-foreground">Para CPF e CNPJ</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
@@ -91,21 +132,36 @@ export function LimpaNomeSection() {
             Contador especializado dedicado ao seu caso, do início ao fim.
           </p>
           
-          {/* Target Audience Tags */}
-          <div className="flex flex-wrap justify-center gap-4 mt-8">
-            <Badge variant="outline" className="px-4 py-2 text-base border-2 border-blue-500/30 bg-blue-500/10">
-              <User className="h-4 w-4 mr-2 text-blue-500" />
-              Pessoa Física (CPF)
-            </Badge>
-            <Badge variant="outline" className="px-4 py-2 text-base border-2 border-violet-500/30 bg-violet-500/10">
-              <Building2 className="h-4 w-4 mr-2 text-violet-500" />
-              Autônomos (CPF/CNPJ)
-            </Badge>
-            <Badge variant="outline" className="px-4 py-2 text-base border-2 border-emerald-500/30 bg-emerald-500/10">
-              <Building2 className="h-4 w-4 mr-2 text-emerald-500" />
-              Empresas (CNPJ)
-            </Badge>
+          {/* Client Type Selection - Interactive Cards */}
+          <div className="flex flex-wrap justify-center gap-4 mt-10">
+            {clientTypes.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => handleSelectType(type.id)}
+                className={`
+                  group px-6 py-4 rounded-full border-2 transition-all duration-300 cursor-pointer
+                  ${type.bgColor} ${type.borderColor}
+                  ${selectedType === type.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-105' : ''}
+                  hover:scale-105 hover:shadow-lg
+                `}
+              >
+                <div className="flex items-center gap-3">
+                  <type.icon className={`h-5 w-5 ${type.iconColor} group-hover:scale-110 transition-transform`} />
+                  <span className="font-medium text-foreground">{type.title}</span>
+                </div>
+              </button>
+            ))}
           </div>
+
+          {/* Selected Type Indicator */}
+          {selectedType && (
+            <div className="mt-6 animate-fade-in">
+              <Badge className="bg-green-500/20 text-green-600 border-green-500/30 px-4 py-2">
+                <CheckCircle className="h-4 w-4 mr-2" />
+                {clientTypes.find(t => t.id === selectedType)?.title} selecionado - Role para continuar!
+              </Badge>
+            </div>
+          )}
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12 items-start">
@@ -164,9 +220,12 @@ export function LimpaNomeSection() {
           </div>
 
           {/* Right Card - Pricing */}
-          <div className={`transition-all duration-700 delay-200 ${
-            isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
-          }`}>
+          <div 
+            id="limpa-nome-price-card"
+            className={`transition-all duration-700 delay-200 ${
+              isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'
+            }`}
+          >
             <Card className="relative overflow-hidden border-2 border-rose-500/30 shadow-2xl">
               {/* Decorative Top */}
               <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500" />
@@ -175,7 +234,7 @@ export function LimpaNomeSection() {
               <div className="absolute top-4 right-4">
                 <Badge className="bg-rose-500 text-white border-0">
                   <Award className="h-3 w-3 mr-1" />
-                  MAIS VENDIDO
+                  EMPRESA ESPECIALIZADA
                 </Badge>
               </div>
               
@@ -247,6 +306,22 @@ export function LimpaNomeSection() {
                   <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
 
+                {/* Empresa Especializada Info */}
+                <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-primary/10 to-violet-500/10 border border-primary/20">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 rounded-lg bg-primary/20">
+                      <Briefcase className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-sm text-foreground">Empresa Especializada</p>
+                      <p className="text-xs text-muted-foreground">Parceiro oficial em recuperação de crédito</p>
+                    </div>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Contamos com parceiros especializados em negociação de dívidas, com mais de 10 anos de experiência no mercado brasileiro.
+                  </p>
+                </div>
+
                 {/* Trust Badge */}
                 <div className="mt-6 pt-6 border-t border-border">
                   <div className="flex items-center justify-center gap-4 text-sm text-muted-foreground">
@@ -257,7 +332,7 @@ export function LimpaNomeSection() {
                     <div className="w-1 h-1 rounded-full bg-border" />
                     <div className="flex items-center gap-1">
                       <Users className="h-4 w-4 text-blue-500" />
-                      Suporte especializado
+                      Empresa Especializada
                     </div>
                   </div>
                   <p className="text-center text-xs text-muted-foreground mt-3">
