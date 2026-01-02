@@ -42,6 +42,7 @@ import AutonomoPanel from "./pages/AutonomoPanel";
 import PlanoAutonomo from "./pages/PlanoAutonomo";
 import AutonomoOnboardingPage from "./pages/AutonomoOnboarding";
 import UserTypeSelection from "./pages/UserTypeSelection";
+import WelcomePage from "./pages/WelcomePage";
 import InstallApp from "./pages/InstallApp";
 import TransitionSimulator from "./pages/TransitionSimulator";
 import CertificatesPage from "./pages/CertificatesPage";
@@ -109,6 +110,11 @@ const App = () => (
                 </ProtectedRoute>
               } />
               {/* Protected routes - require authentication */}
+              <Route path="/bem-vindo" element={
+                <ProtectedRoute>
+                  <WelcomePage />
+                </ProtectedRoute>
+              } />
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <DashboardRouter />
