@@ -77,6 +77,7 @@ import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
+import { CashbackHistoryCard } from '@/components/calculator/CashbackHistoryCard';
 
 interface AutonomoProfile {
   id: string;
@@ -414,6 +415,9 @@ const AutonomoPanel: React.FC = () => {
 
       {/* Cashback Card */}
       <CashbackCard />
+
+      {/* Cashback History */}
+      <CashbackHistoryCard />
 
       {/* Services Hub */}
       <ServicesHub />

@@ -82,6 +82,7 @@ import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
+import { CashbackHistoryCard } from '@/components/calculator/CashbackHistoryCard';
 
 const EmbeddedAIAgent = () => {
   return (
@@ -730,6 +731,9 @@ const EmpresaPanel = () => {
 
             {/* Cashback Card */}
             <CashbackCard />
+
+            {/* Cashback History */}
+            <CashbackHistoryCard />
 
             {/* Services Hub */}
             <ServicesHub />

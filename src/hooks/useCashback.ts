@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -37,6 +37,7 @@ export function useCashback() {
   const [serviceUsage, setServiceUsage] = useState<ServiceUsage | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const previousPercentRef = useRef<number>(0);
 
   const getCurrentMonthYear = () => {
     const now = new Date();
@@ -50,6 +51,29 @@ export function useCashback() {
       }
     }
     return 0;
+  };
+
+  // Send notification when cashback level changes
+  const sendLevelNotification = async (
+    userId: string, 
+    type: 'new_level' | 'level_change', 
+    percent: number, 
+    amountCents: number
+  ) => {
+    try {
+      await supabase.functions.invoke('send-cashback-notification', {
+        body: {
+          type,
+          userId,
+          cashbackData: {
+            percent,
+            amount_cents: amountCents,
+          },
+        },
+      });
+    } catch (err) {
+      console.error('Error sending cashback notification:', err);
+    }
   };
 
   const fetchServiceUsage = useCallback(async () => {
@@ -165,6 +189,7 @@ export function useCashback() {
 
       if (existing) {
         setCashback(existing as CashbackData);
+        previousPercentRef.current = existing.cashback_percent;
       }
 
       // Calculate current service usage
@@ -200,6 +225,12 @@ export function useCashback() {
 
         if (updated) {
           setCashback(updated as CashbackData);
+          
+          // Check if level changed and send notification
+          if (cashbackPercent > previousPercentRef.current && previousPercentRef.current > 0) {
+            sendLevelNotification(user.id, 'level_change', cashbackPercent, cashbackAmount);
+          }
+          previousPercentRef.current = cashbackPercent;
         }
       } else if (servicesUsed >= 2) {
         // Create new cashback record if eligible
@@ -222,6 +253,10 @@ export function useCashback() {
 
         if (created) {
           setCashback(created as CashbackData);
+          previousPercentRef.current = cashbackPercent;
+          
+          // Send new level notification
+          sendLevelNotification(user.id, 'new_level', cashbackPercent, cashbackAmount);
         }
       }
     } catch (err) {
