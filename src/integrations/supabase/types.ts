@@ -1445,6 +1445,51 @@ export type Database = {
         }
         Relationships: []
       }
+      user_cashback: {
+        Row: {
+          cashback_amount_cents: number
+          cashback_percent: number
+          claimed_at: string | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_claimed: boolean
+          month_year: string
+          services_used: number
+          total_spent_cents: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cashback_amount_cents?: number
+          cashback_percent?: number
+          claimed_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_claimed?: boolean
+          month_year: string
+          services_used?: number
+          total_spent_cents?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cashback_amount_cents?: number
+          cashback_percent?: number
+          claimed_at?: string | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_claimed?: boolean
+          month_year?: string
+          services_used?: number
+          total_spent_cents?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string

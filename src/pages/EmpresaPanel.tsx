@@ -81,6 +81,7 @@ import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
+import { CashbackCard } from '@/components/calculator/CashbackCard';
 
 const EmbeddedAIAgent = () => {
   return (
@@ -726,6 +727,9 @@ const EmpresaPanel = () => {
                 })}
               </div>
             </div>
+
+            {/* Cashback Card */}
+            <CashbackCard />
 
             {/* Services Hub */}
             <ServicesHub />
