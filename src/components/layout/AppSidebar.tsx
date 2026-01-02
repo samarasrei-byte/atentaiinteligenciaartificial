@@ -94,6 +94,7 @@ const adminItems: SidebarItem[] = [
   { icon: Users, label: 'Usuários', tabId: 'users' },
   { icon: UserCheck, label: 'Contadores', tabId: 'contadores', badge: 'NEW', badgeColor: 'text-primary' },
   { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome', badge: 'NEW', badgeColor: 'text-emerald-400' },
+  { icon: Star, label: 'Cashback', tabId: 'cashback', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
   { icon: Wallet, label: 'Saques', tabId: 'withdrawals', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
