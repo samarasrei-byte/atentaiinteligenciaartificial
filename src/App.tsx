@@ -13,7 +13,8 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PublicOnboarding from "./pages/PublicOnboarding";
-import Dashboard from "./pages/Dashboard";
+import DashboardRouter from "./pages/DashboardRouter";
+import EmpresaPanel from "./pages/EmpresaPanel";
 import AIChat from "./pages/AIChat";
 import Pricing from "./pages/Pricing";
 import Simulator from "./pages/Simulator";
@@ -109,7 +110,12 @@ const App = () => (
               {/* Protected routes - require authentication */}
               <Route path="/dashboard" element={
                 <ProtectedRoute>
-                  <Dashboard />
+                  <DashboardRouter />
+                </ProtectedRoute>
+              } />
+              <Route path="/empresa" element={
+                <ProtectedRoute>
+                  <EmpresaPanel />
                 </ProtectedRoute>
               } />
               <Route path="/perfil" element={
