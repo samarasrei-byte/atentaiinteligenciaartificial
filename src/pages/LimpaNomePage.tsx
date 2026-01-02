@@ -118,10 +118,9 @@ const LimpaNomePage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
-      toast.error('Você precisa estar logado para solicitar este serviço');
-      navigate('/auth');
+
+    if (!formData.fullName || !formData.email) {
+      toast.error('Preencha nome e email para continuar');
       return;
     }
 
@@ -133,51 +132,38 @@ const LimpaNomePage = () => {
     setIsSubmitting(true);
 
     try {
-      // Parse debt amount to cents
       const debtAmountCents = Math.round(
         parseFloat(formData.debtAmount.replace(/[^\d,]/g, '').replace(',', '.')) * 100
       ) || 0;
 
-      // Parse creditors to array
       const creditorsArray = formData.creditors
         .split(',')
         .map(c => c.trim())
         .filter(c => c.length > 0);
 
-      const { data, error } = await supabase
-        .from('credit_repair_requests')
-        .insert({
-          user_id: user.id,
-          full_name: formData.fullName,
-          cpf: formData.cpf,
-          email: formData.email || user.email,
-          phone: formData.phone,
-          debt_amount_cents: debtAmountCents,
-          debt_description: formData.debtDescription,
-          creditors: creditorsArray,
-          bureaus_selected: selectedBureaus,
-          service_price_cents: basePrice,
-          discount_applied: isSubscribed,
-          final_price_cents: Math.round(finalPrice),
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      // Create payment session
+      // Use guest checkout endpoint
       const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
-        'create-credit-repair-payment',
+        'create-guest-service-payment',
         {
-          body: { requestId: data.id }
+          body: {
+            serviceType: 'credit_repair',
+            email: formData.email || user?.email,
+            fullName: formData.fullName,
+            cpf: formData.cpf,
+            phone: formData.phone,
+            debtAmountCents,
+            debtDescription: formData.debtDescription,
+            creditors: creditorsArray,
+            bureausSelected: selectedBureaus,
+          }
         }
       );
 
       if (paymentError) throw paymentError;
 
       if (paymentData?.url) {
+        toast.success(user ? 'Redirecionando para pagamento...' : 'Após o pagamento, sua conta será criada automaticamente!');
         window.open(paymentData.url, '_blank');
-        toast.success('Redirecionando para pagamento...');
       }
 
     } catch (error: any) {

@@ -21,7 +21,9 @@ import {
   TrendingUp,
   Home,
   Globe,
-  Users
+  Users,
+  Lock,
+  Sparkles
 } from 'lucide-react';
 
 interface IRRequestFormProps {
@@ -39,7 +41,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   const [formData, setFormData] = useState({
     fullName: '',
     cpf: '',
-    email: '',
+    email: user?.email || '',
     phone: '',
     fiscalYear: new Date().getFullYear() - 1,
     hasInvestments: false,
@@ -60,51 +62,46 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!user) {
+
+    // Validate required fields
+    if (!formData.fullName || !formData.email) {
       toast({
         variant: 'destructive',
-        title: 'Autenticação necessária',
-        description: 'Faça login para solicitar a declaração de IR.',
+        title: 'Campos obrigatórios',
+        description: 'Preencha nome e email para continuar.',
       });
-      navigate('/auth');
+      return;
+    }
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      toast({
+        variant: 'destructive',
+        title: 'Email inválido',
+        description: 'Informe um email válido.',
+      });
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Create IR request
-      const { data: irRequest, error: insertError } = await supabase
-        .from('ir_requests')
-        .insert({
-          user_id: user.id,
-          ir_type: irType,
-          fiscal_year: formData.fiscalYear,
-          full_name: formData.fullName,
-          cpf: formData.cpf,
-          email: formData.email || user.email,
-          phone: formData.phone,
-          has_investments: formData.hasInvestments,
-          has_rental_income: formData.hasRentalIncome,
-          has_foreign_income: formData.hasForeignIncome,
-          income_sources_count: formData.incomeSourcesCount,
-          notes: formData.notes,
-          base_price_cents: service.basePrice,
-          final_price_cents: finalPrice,
-          discount_applied: isSubscriber,
-        })
-        .select()
-        .single();
-
-      if (insertError) throw insertError;
-
-      // Create payment session
-      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-ir-payment', {
+      // Use guest checkout endpoint (works for both logged and guest users)
+      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-guest-service-payment', {
         body: {
-          requestId: irRequest.id,
+          serviceType: 'ir',
           irType,
-          priceCents: finalPrice,
+          email: formData.email,
+          fullName: formData.fullName,
+          cpf: formData.cpf,
+          phone: formData.phone,
+          fiscalYear: formData.fiscalYear,
+          hasInvestments: formData.hasInvestments,
+          hasRentalIncome: formData.hasRentalIncome,
+          hasForeignIncome: formData.hasForeignIncome,
+          incomeSourcesCount: formData.incomeSourcesCount,
+          notes: formData.notes,
         },
       });
 
@@ -115,7 +112,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
           title: 'Redirecionando para pagamento',
           description: isSubscriber 
             ? `Desconto de ${discountPercent}% aplicado!`
-            : 'Assine para obter 20% de desconto!',
+            : !user ? 'Após o pagamento, sua conta será criada automaticamente.' : 'Assine para obter 20% de desconto!',
         });
         window.open(paymentData.url, '_blank');
         onSuccess?.();
