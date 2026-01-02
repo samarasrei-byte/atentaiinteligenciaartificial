@@ -46,6 +46,18 @@ const SERVICE_CONFIGS = {
     basePriceCents: 8000,
     discountPercent: 10,
   },
+  company_opening_mei: {
+    name: 'Abertura de MEI',
+    description: 'Abertura de Microempreendedor Individual com acompanhamento completo',
+    basePriceCents: 15000,
+    discountPercent: 15,
+  },
+  company_opening_me: {
+    name: 'Abertura de ME/LTDA',
+    description: 'Abertura de Microempresa ou LTDA com análise tributária',
+    basePriceCents: 49900,
+    discountPercent: 15,
+  },
 };
 
 serve(async (req) => {
@@ -82,6 +94,18 @@ serve(async (req) => {
       bureausSelected,
       certificateType,
       notes,
+      // Company opening fields
+      companyType, // mei, me, ltda
+      profession,
+      annualRevenue,
+      monthlyExpenses,
+      hasEmployees,
+      wantsPartner,
+      currentSituation,
+      recommendedRegime,
+      recommendationReasons,
+      city,
+      state,
     } = body;
 
     logStep("Request data", { serviceType, email, fullName });
@@ -111,7 +135,14 @@ serve(async (req) => {
     }
 
     // Get service config
-    const serviceKey = serviceType === 'ir' ? (irType === 'simples' ? 'ir_simples' : 'ir_completo') : serviceType;
+    let serviceKey: string;
+    if (serviceType === 'ir') {
+      serviceKey = irType === 'simples' ? 'ir_simples' : 'ir_completo';
+    } else if (serviceType === 'company_opening') {
+      serviceKey = companyType === 'mei' ? 'company_opening_mei' : 'company_opening_me';
+    } else {
+      serviceKey = serviceType;
+    }
     const serviceConfig = SERVICE_CONFIGS[serviceKey as keyof typeof SERVICE_CONFIGS];
     
     if (!serviceConfig) {
@@ -220,6 +251,35 @@ serve(async (req) => {
 
       if (error) throw error;
       requestId = request.id;
+    } else if (serviceType === 'company_opening') {
+      const { data: request, error } = await supabaseAdmin
+        .from('company_opening_requests')
+        .insert({
+          user_id: userId || '00000000-0000-0000-0000-000000000000',
+          full_name: fullName,
+          cpf: cpf,
+          email: email,
+          phone: phone,
+          profession: profession,
+          annual_revenue_cents: Math.round((annualRevenue || 0) * 100),
+          monthly_expenses_cents: Math.round((monthlyExpenses || 0) * 100),
+          has_employees: hasEmployees === true || hasEmployees === 'yes',
+          wants_partner: wantsPartner === true || wantsPartner === 'yes',
+          current_situation: currentSituation,
+          city: city,
+          state: state,
+          recommended_regime: recommendedRegime || companyType,
+          recommendation_reasons: recommendationReasons || [],
+          service_price_cents: finalPriceCents,
+          payment_status: 'pending',
+          status: 'pending',
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      requestId = request.id;
+      logStep("Company opening request created", { requestId, companyType });
     } else {
       throw new Error("Tipo de serviço não suportado");
     }
@@ -248,7 +308,12 @@ serve(async (req) => {
       mode: "payment",
       payment_method_types: ["card"],
       success_url: `${origin}/payment-success?type=${serviceType}&request_id=${requestId}&guest=true`,
-      cancel_url: `${origin}/${serviceType === 'ir' ? 'ir' : serviceType === 'credit_repair' ? 'limpa-nome' : 'certidoes'}?cancelled=true`,
+      cancel_url: `${origin}/${
+        serviceType === 'ir' ? 'ir' 
+        : serviceType === 'credit_repair' ? 'limpa-nome' 
+        : serviceType === 'company_opening' ? 'abertura-empresa'
+        : 'certidoes'
+      }?cancelled=true`,
       metadata: {
         request_id: requestId,
         service_type: serviceType,
@@ -258,20 +323,29 @@ serve(async (req) => {
         phone: phone || '',
         is_guest: (!isExistingUser).toString(),
         user_id: userId || '',
+        company_type: companyType || '',
       },
     });
 
     logStep("Checkout session created", { sessionId: session.id });
 
-    // Update request with session ID
-    const tableName = serviceType === 'ir' ? 'ir_requests' 
-      : serviceType === 'credit_repair' ? 'credit_repair_requests' 
-      : 'certificate_requests';
+    // Update request with session ID - company_opening doesn't have stripe_session_id column by default
+    if (serviceType !== 'company_opening') {
+      const tableName = serviceType === 'ir' ? 'ir_requests' 
+        : serviceType === 'credit_repair' ? 'credit_repair_requests' 
+        : 'certificate_requests';
 
-    await supabaseAdmin
-      .from(tableName)
-      .update({ stripe_session_id: session.id })
-      .eq('id', requestId);
+      await supabaseAdmin
+        .from(tableName)
+        .update({ stripe_session_id: session.id })
+        .eq('id', requestId);
+    } else {
+      // Update company_opening_requests payment_status
+      await supabaseAdmin
+        .from('company_opening_requests')
+        .update({ payment_status: 'processing' })
+        .eq('id', requestId);
+    }
 
     return new Response(JSON.stringify({ 
       url: session.url,
