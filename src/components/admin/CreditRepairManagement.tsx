@@ -16,6 +16,7 @@ import { PartnerManagement } from './PartnerManagement';
 import { CreditRepairPartnerMetrics } from './CreditRepairPartnerMetrics';
 import { PartnerUserManagement } from './PartnerUserManagement';
 import { PartnerWithdrawalPanel } from './PartnerWithdrawalPanel';
+import { PartnerFinancialDashboard } from './PartnerFinancialDashboard';
 import {
   Search,
   Loader2,
@@ -219,7 +220,7 @@ export function CreditRepairManagement() {
 
   return (
     <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-4xl grid-cols-6">
+      <TabsList className="grid w-full max-w-5xl grid-cols-7">
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
@@ -235,6 +236,10 @@ export function CreditRepairManagement() {
         <TabsTrigger value="withdrawals" className="flex items-center gap-2">
           <Wallet className="h-4 w-4" />
           Saques
+        </TabsTrigger>
+        <TabsTrigger value="financial" className="flex items-center gap-2">
+          <DollarSign className="h-4 w-4" />
+          Financeiro
         </TabsTrigger>
         <TabsTrigger value="partner-metrics" className="flex items-center gap-2">
           <Users className="h-4 w-4" />
@@ -256,6 +261,10 @@ export function CreditRepairManagement() {
 
       <TabsContent value="withdrawals">
         <PartnerWithdrawalPanel />
+      </TabsContent>
+
+      <TabsContent value="financial">
+        <PartnerFinancialDashboard />
       </TabsContent>
 
       <TabsContent value="partner-metrics">
