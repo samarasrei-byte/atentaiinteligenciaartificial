@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,6 +19,48 @@ const securityHeaders = {
 const logStep = (step: string, details?: any) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[GUEST-SERVICE-PAYMENT] ${step}${detailsStr}`);
+};
+
+// Input validation schema
+const requestSchema = z.object({
+  serviceType: z.enum(['ir', 'credit_repair', 'certificate', 'company_opening']),
+  email: z.string().email("Email inválido").max(255, "Email muito longo"),
+  fullName: z.string().min(2, "Nome muito curto").max(200, "Nome muito longo"),
+  cpf: z.string().regex(/^\d{11}$/, "CPF deve ter 11 dígitos").optional().nullable(),
+  phone: z.string().regex(/^\d{10,11}$/, "Telefone deve ter 10 ou 11 dígitos").optional().nullable(),
+  // IR-specific fields
+  irType: z.enum(['simples', 'completo']).optional(),
+  fiscalYear: z.number().min(2000).max(2100).optional(),
+  hasInvestments: z.boolean().optional(),
+  hasRentalIncome: z.boolean().optional(),
+  hasForeignIncome: z.boolean().optional(),
+  incomeSourcesCount: z.number().min(0).max(100).optional(),
+  // Credit repair fields
+  debtAmountCents: z.number().min(0).max(1000000000).optional(), // Max R$ 10M
+  debtDescription: z.string().max(500, "Descrição muito longa").optional().nullable(),
+  creditors: z.array(z.string().max(100)).max(50).optional(),
+  bureausSelected: z.array(z.string().max(50)).max(10).optional(),
+  // Certificate fields
+  certificateType: z.string().max(100).optional(),
+  notes: z.string().max(1000, "Notas muito longas").optional().nullable(),
+  // Company opening fields
+  companyType: z.enum(['mei', 'me', 'ltda']).optional(),
+  profession: z.string().max(100, "Profissão muito longa").optional().nullable(),
+  annualRevenue: z.number().min(0).max(10000000).optional(), // Max R$ 10M
+  monthlyExpenses: z.number().min(0).max(1000000).optional(), // Max R$ 1M
+  hasEmployees: z.union([z.boolean(), z.literal('yes'), z.literal('no')]).optional(),
+  wantsPartner: z.union([z.boolean(), z.literal('yes'), z.literal('no')]).optional(),
+  currentSituation: z.string().max(200).optional().nullable(),
+  recommendedRegime: z.string().max(50).optional().nullable(),
+  recommendationReasons: z.array(z.string().max(200)).max(20).optional(),
+  city: z.string().max(100).optional().nullable(),
+  state: z.string().max(2).optional().nullable(),
+});
+
+// Helper to sanitize string inputs
+const sanitizeString = (str: string | null | undefined): string | null => {
+  if (!str) return null;
+  return str.trim().slice(0, 1000); // Extra safety limit
 };
 
 // Service configurations
@@ -75,13 +118,25 @@ serve(async (req) => {
     logStep("Function started");
 
     const body = await req.json();
+    // Validate and parse input
+    let validatedData;
+    try {
+      validatedData = requestSchema.parse(body);
+    } catch (validationError) {
+      if (validationError instanceof z.ZodError) {
+        const errors = validationError.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
+        logStep("Validation failed", { errors });
+        throw new Error(`Dados inválidos: ${errors}`);
+      }
+      throw validationError;
+    }
+
     const { 
       serviceType, 
       email, 
       fullName, 
       cpf, 
       phone,
-      // Service-specific fields
       irType,
       fiscalYear,
       hasInvestments,
@@ -94,8 +149,7 @@ serve(async (req) => {
       bureausSelected,
       certificateType,
       notes,
-      // Company opening fields
-      companyType, // mei, me, ltda
+      companyType,
       profession,
       annualRevenue,
       monthlyExpenses,
@@ -106,20 +160,9 @@ serve(async (req) => {
       recommendationReasons,
       city,
       state,
-    } = body;
+    } = validatedData;
 
-    logStep("Request data", { serviceType, email, fullName });
-
-    // Validate required fields
-    if (!serviceType || !email || !fullName) {
-      throw new Error("Campos obrigatórios: serviceType, email, fullName");
-    }
-
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      throw new Error("Email inválido");
-    }
+    logStep("Request validated", { serviceType, email: email.substring(0, 3) + '***' });
 
     // Check if user already exists
     let userId: string | null = null;
