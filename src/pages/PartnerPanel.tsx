@@ -16,13 +16,15 @@ import { motion } from 'framer-motion';
 import {
   Building, DollarSign, Users, Clock, CheckCircle, XCircle, AlertCircle,
   TrendingUp, Loader2, Search, RefreshCw, Phone, Mail, User, FileText,
-  Percent, BarChart3, PieChart as PieChartIcon, Wallet, MessageCircle
+  Percent, BarChart3, PieChart as PieChartIcon, Wallet, MessageCircle,
+  CreditCard
 } from 'lucide-react';
 import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PartnerWithdrawalSystem } from '@/components/partner/PartnerWithdrawalSystem';
+import { PartnerStripeConnectSetup } from '@/components/partner/PartnerStripeConnectSetup';
 
 interface Partner {
   id: string;
@@ -575,6 +577,9 @@ export default function PartnerPanel() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Stripe Connect Setup */}
+          <PartnerStripeConnectSetup />
 
           {/* Withdrawal System */}
           <PartnerWithdrawalSystem 
