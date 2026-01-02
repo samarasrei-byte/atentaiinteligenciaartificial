@@ -45,11 +45,12 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 flex items-center justify-center p-4 md:p-8">
-      <div className="w-full max-w-2xl">
+      <div className="w-full max-w-2xl animate-in fade-in slide-in-from-bottom-6 duration-700">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8 animate-in fade-in duration-500">
           <div className={cn(
             "mx-auto mb-6 w-20 h-20 rounded-3xl bg-gradient-to-br flex items-center justify-center shadow-xl",
+            "transition-all duration-500 hover:scale-105",
             iconColor
           )}>
             <Icon className="h-10 w-10 text-primary-foreground" />
@@ -59,7 +60,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
         </div>
 
         {/* Stepper */}
-        <div className="mb-8">
+        <div className="mb-8 animate-in fade-in slide-in-from-bottom-4 duration-500" style={{ animationDelay: '100ms' }}>
           <div className="flex items-center justify-center gap-2 md:gap-3">
             {steps.map((step, index) => {
               const StepIcon = step.icon;
@@ -106,9 +107,12 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
         </div>
 
         {/* Content Card */}
-        <Card className="border-border/50 bg-card/80 backdrop-blur-sm shadow-2xl">
+        <Card 
+          className="border-border/50 bg-card/80 backdrop-blur-sm shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500"
+          style={{ animationDelay: '200ms' }}
+        >
           <CardContent className="p-6 md:p-8">
-            <div className="animate-in fade-in slide-in-from-bottom-4 duration-300">
+            <div className="animate-in fade-in slide-in-from-bottom-4 duration-400" key={currentStep}>
               {children}
             </div>
 
