@@ -18,27 +18,30 @@ import {
   ArrowRight,
   Shield,
   Clock,
-  TrendingUp
+  TrendingUp,
+  CreditCard
 } from 'lucide-react';
 import MEIFlow from '@/components/abertura/MEIFlow';
 import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
+import GuestCompanyOpeningForm from '@/components/abertura/GuestCompanyOpeningForm';
 
 const AberturaEmpresa: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
-  const [selectedFlow, setSelectedFlow] = useState<'selection' | 'mei' | 'autonomo-me'>('selection');
+  const [selectedFlow, setSelectedFlow] = useState<'selection' | 'mei' | 'autonomo-me' | 'guest'>('selection');
 
-  if (!user) {
-    navigate('/auth');
-    return null;
-  }
-
-  if (selectedFlow === 'mei') {
+  // If user is logged in, show normal flows. If not, show guest checkout option
+  if (selectedFlow === 'mei' && user) {
     return <MEIFlow onBack={() => setSelectedFlow('selection')} />;
   }
 
-  if (selectedFlow === 'autonomo-me') {
+  if (selectedFlow === 'autonomo-me' && user) {
     return <AutonomoMEFlow onBack={() => setSelectedFlow('selection')} />;
+  }
+
+  // Guest checkout flow (works without login)
+  if (selectedFlow === 'guest' || (selectedFlow !== 'selection' && !user)) {
+    return <GuestCompanyOpeningForm onBack={() => setSelectedFlow('selection')} />;
   }
 
   return (
@@ -88,10 +91,55 @@ const AberturaEmpresa: React.FC = () => {
 
         {/* Flow Selection */}
         <div className="grid md:grid-cols-2 gap-6 mb-8">
+          {/* Guest Checkout Card - Show prominently if not logged in */}
+          {!user && (
+            <Card 
+              className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 to-primary/10 border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer group relative overflow-hidden"
+              onClick={() => setSelectedFlow('guest')}
+            >
+              <CardHeader className="relative">
+                <div className="flex items-start justify-between">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-primary flex items-center justify-center mb-4">
+                    <CreditCard className="h-7 w-7 text-white" />
+                  </div>
+                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                    Sem Login
+                  </Badge>
+                </div>
+                <CardTitle className="text-xl text-white">
+                  Abertura Rápida
+                </CardTitle>
+                <CardDescription className="text-white/60">
+                  Comece agora sem precisar criar conta
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="relative">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2 text-sm text-white/70">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <span>Diagnóstico IA do melhor regime</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-white/70">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <span>Conta criada automaticamente</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-white/70">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <span>Acompanhamento completo</span>
+                  </div>
+                </div>
+                <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
+                  Começar Agora
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* MEI Flow Card */}
           <Card 
             className="bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 transition-all cursor-pointer group relative overflow-hidden"
-            onClick={() => setSelectedFlow('mei')}
+            onClick={() => user ? setSelectedFlow('mei') : setSelectedFlow('guest')}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="relative">
@@ -124,10 +172,6 @@ const AberturaEmpresa: React.FC = () => {
                   <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
                   <span>Sem necessidade de contador</span>
                 </div>
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>Emissão de NFS-e integrada</span>
-                </div>
               </div>
 
               <div className="pt-4 border-t border-slate-700/50">
@@ -148,7 +192,7 @@ const AberturaEmpresa: React.FC = () => {
           {/* Autônomo / ME Flow Card */}
           <Card 
             className="bg-slate-800/50 border-slate-700/50 hover:border-primary/50 transition-all cursor-pointer group relative overflow-hidden"
-            onClick={() => setSelectedFlow('autonomo-me')}
+            onClick={() => user ? setSelectedFlow('autonomo-me') : setSelectedFlow('guest')}
           >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
             <CardHeader className="relative">
