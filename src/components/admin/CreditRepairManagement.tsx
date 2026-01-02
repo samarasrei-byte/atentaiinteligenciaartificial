@@ -14,6 +14,8 @@ import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import { CreditRepairMetrics } from './CreditRepairMetrics';
 import { PartnerManagement } from './PartnerManagement';
 import { CreditRepairPartnerMetrics } from './CreditRepairPartnerMetrics';
+import { PartnerUserManagement } from './PartnerUserManagement';
+import { PartnerWithdrawalPanel } from './PartnerWithdrawalPanel';
 import {
   Search,
   Loader2,
@@ -32,7 +34,9 @@ import {
   Building,
   RefreshCw,
   BarChart3,
-  Users
+  Users,
+  Wallet,
+  UserPlus
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -215,7 +219,7 @@ export function CreditRepairManagement() {
 
   return (
     <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-2xl grid-cols-4">
+      <TabsList className="grid w-full max-w-4xl grid-cols-6">
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
@@ -223,6 +227,14 @@ export function CreditRepairManagement() {
         <TabsTrigger value="partners" className="flex items-center gap-2">
           <Building className="h-4 w-4" />
           Parceiros
+        </TabsTrigger>
+        <TabsTrigger value="partner-users" className="flex items-center gap-2">
+          <UserPlus className="h-4 w-4" />
+          Usuários
+        </TabsTrigger>
+        <TabsTrigger value="withdrawals" className="flex items-center gap-2">
+          <Wallet className="h-4 w-4" />
+          Saques
         </TabsTrigger>
         <TabsTrigger value="partner-metrics" className="flex items-center gap-2">
           <Users className="h-4 w-4" />
@@ -236,6 +248,14 @@ export function CreditRepairManagement() {
 
       <TabsContent value="partners">
         <PartnerManagement />
+      </TabsContent>
+
+      <TabsContent value="partner-users">
+        <PartnerUserManagement />
+      </TabsContent>
+
+      <TabsContent value="withdrawals">
+        <PartnerWithdrawalPanel />
       </TabsContent>
 
       <TabsContent value="partner-metrics">
