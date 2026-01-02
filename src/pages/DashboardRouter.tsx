@@ -31,13 +31,16 @@ const DashboardRouter = () => {
       return;
     }
 
-    // Priority-based routing: admin > contador > autonomo
+    // Priority-based routing: admin > contador > autonomo > empresa
     if (hasRole('admin')) {
       navigate('/admin', { replace: true });
     } else if (hasRole('contador')) {
       navigate('/contador', { replace: true });
     } else if (hasRole('autonomo')) {
       navigate('/autonomo', { replace: true });
+    } else {
+      // Default user goes to empresa panel
+      navigate('/empresa', { replace: true });
     }
   }, [user, loading, hasRole, roles, navigate]);
 

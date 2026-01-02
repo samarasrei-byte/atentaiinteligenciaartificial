@@ -153,10 +153,10 @@ const ServicosPage = () => {
                         </div>
                       </div>
 
-                      <Button className="w-full" asChild>
-                        <Link to={service.key.startsWith('ir_') ? '/ir' : '/auth'}>
+                      <Button className="w-full group" asChild>
+                        <Link to={service.key.startsWith('ir_') ? '/ir' : service.key === 'credit_repair' ? '/limpa-nome' : `/certidoes`}>
                           Solicitar
-                          <ArrowRight className="h-4 w-4 ml-2" />
+                          <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>
                       </Button>
                     </CardContent>
