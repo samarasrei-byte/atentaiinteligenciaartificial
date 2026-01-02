@@ -167,6 +167,37 @@ export const ServicesHub: React.FC = () => {
       gradient: 'from-violet-500 to-purple-500',
       onClick: () => navigate('/certificates'),
     },
+    {
+      title: 'Declaração IR Simples',
+      description: 'Para CLT com poucos rendimentos e sem investimentos',
+      icon: FileText,
+      basePrice: SUBSCRIBER_DISCOUNTS.ir_simples.basePrice,
+      discountedPrice: SUBSCRIBER_DISCOUNTS.ir_simples.discountedPrice,
+      discountPercent: Math.round(SUBSCRIBER_DISCOUNTS.ir_simples.discount * 100),
+      features: [
+        'Contadores especializados',
+        'Envio ao sistema da Receita',
+        'Comprovante de entrega',
+      ],
+      gradient: 'from-amber-500 to-orange-500',
+      onClick: () => navigate('/ir'),
+    },
+    {
+      title: 'Declaração IR Completo',
+      description: 'Para autônomos, investidores ou múltiplas fontes',
+      icon: FileText,
+      basePrice: SUBSCRIBER_DISCOUNTS.ir_completo.basePrice,
+      discountedPrice: SUBSCRIBER_DISCOUNTS.ir_completo.discountedPrice,
+      discountPercent: Math.round(SUBSCRIBER_DISCOUNTS.ir_completo.discount * 100),
+      features: [
+        'Análise completa de rendimentos',
+        'Otimização fiscal',
+        'Acompanhamento pós-envio',
+      ],
+      gradient: 'from-rose-500 to-pink-500',
+      onClick: () => navigate('/ir'),
+      badge: 'Completo',
+    },
   ];
 
   return (
@@ -194,7 +225,7 @@ export const ServicesHub: React.FC = () => {
       {/* Limpa Nome Banner - Novo Serviço */}
       <LimpaNomePromoCard variant="banner" />
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
         {services.map((service) => (
           <ServiceCard
             key={service.title}
