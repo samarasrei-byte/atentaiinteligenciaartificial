@@ -700,6 +700,107 @@ export type Database = {
           },
         ]
       }
+      credit_repair_partner_users: {
+        Row: {
+          created_at: string
+          id: string
+          is_primary: boolean
+          partner_id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          partner_id: string
+          role?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_primary?: boolean
+          partner_id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_repair_partner_users_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      credit_repair_partners: {
+        Row: {
+          address: string | null
+          city: string | null
+          cnpj: string | null
+          commission_percent: number
+          company_name: string
+          contact_person: string
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          notes: string | null
+          phone: string | null
+          state: string | null
+          status: string
+          stripe_account_id: string | null
+          total_requests: number
+          total_revenue_cents: number
+          trade_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          city?: string | null
+          cnpj?: string | null
+          commission_percent?: number
+          company_name: string
+          contact_person: string
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          phone?: string | null
+          state?: string | null
+          status?: string
+          stripe_account_id?: string | null
+          total_requests?: number
+          total_revenue_cents?: number
+          trade_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          city?: string | null
+          cnpj?: string | null
+          commission_percent?: number
+          company_name?: string
+          contact_person?: string
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          phone?: string | null
+          state?: string | null
+          status?: string
+          stripe_account_id?: string | null
+          total_requests?: number
+          total_revenue_cents?: number
+          trade_name?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       credit_repair_requests: {
         Row: {
           bureaus_selected: string[] | null
@@ -718,6 +819,7 @@ export type Database = {
           full_name: string
           id: string
           notes: string | null
+          partner_id: string | null
           payment_status: string
           phone: string | null
           service_price_cents: number
@@ -743,6 +845,7 @@ export type Database = {
           full_name: string
           id?: string
           notes?: string | null
+          partner_id?: string | null
           payment_status?: string
           phone?: string | null
           service_price_cents?: number
@@ -768,6 +871,7 @@ export type Database = {
           full_name?: string
           id?: string
           notes?: string | null
+          partner_id?: string | null
           payment_status?: string
           phone?: string | null
           service_price_cents?: number
@@ -776,7 +880,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "credit_repair_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       daily_question_usage: {
         Row: {

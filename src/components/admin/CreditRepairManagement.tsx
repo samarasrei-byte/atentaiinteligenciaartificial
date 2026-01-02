@@ -12,6 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import { CreditRepairMetrics } from './CreditRepairMetrics';
+import { PartnerManagement } from './PartnerManagement';
 import {
   Search,
   Loader2,
@@ -29,7 +30,8 @@ import {
   CreditCard,
   Building,
   RefreshCw,
-  BarChart3
+  BarChart3,
+  Users
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -212,16 +214,24 @@ export function CreditRepairManagement() {
 
   return (
     <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-md grid-cols-2">
+      <TabsList className="grid w-full max-w-lg grid-cols-3">
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
+        </TabsTrigger>
+        <TabsTrigger value="partners" className="flex items-center gap-2">
+          <Building className="h-4 w-4" />
+          Parceiros
         </TabsTrigger>
         <TabsTrigger value="metrics" className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4" />
           Métricas
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="partners">
+        <PartnerManagement />
+      </TabsContent>
 
       <TabsContent value="metrics">
         <CreditRepairMetrics />
