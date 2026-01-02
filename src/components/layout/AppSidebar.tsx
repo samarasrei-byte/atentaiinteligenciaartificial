@@ -53,10 +53,25 @@ interface SidebarItem {
 interface AppSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
-  variant?: 'user' | 'admin' | 'contador' | 'autonomo';
+  variant?: 'user' | 'admin' | 'contador' | 'autonomo' | 'empresa';
   activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
+
+const empresaItems: SidebarItem[] = [
+  { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+  { icon: Zap, label: 'Piloto Automático', tabId: 'autopilot', badge: 'NEW', badgeColor: 'text-amber-400' },
+  { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: '●', badgeColor: 'text-emerald-400' },
+  { icon: BarChart3, label: 'Métricas', tabId: 'metrics', badge: 'PRO', badgeColor: 'text-primary' },
+  { icon: Target, label: 'PF ou PJ?', tabId: 'pf-pj-decision' },
+  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
+  { icon: MessagesSquare, label: 'Falar com Contador', tabId: 'chat-contador' },
+  { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
+  { icon: BookOpen, label: 'Glossário', tabId: 'glossary' },
+  { icon: History, label: 'Histórico', tabId: 'history' },
+  { icon: User, label: 'Perfil', tabId: 'profile' },
+  { icon: Headphones, label: 'Suporte', tabId: 'support' },
+];
 
 const userItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
@@ -137,7 +152,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       ? contadorItems 
       : variant === 'autonomo' 
         ? autonomoItems 
-        : userItems;
+        : variant === 'empresa'
+          ? empresaItems
+          : userItems;
 
   const handleSignOut = async () => {
     await signOut();
@@ -238,8 +255,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           ))}
         </nav>
 
-        {/* Role Switchers */}
-        {(hasRole('admin') || hasRole('contador')) && variant === 'user' && (
+        {/* Role Switchers - Only show on empresa panel */}
+        {(hasRole('admin') || hasRole('contador') || hasRole('autonomo')) && variant === 'empresa' && (
           <div className="px-2 py-2 border-t border-white/5 space-y-0.5">
             {hasRole('admin') && (
               <Tooltip delayDuration={0}>
@@ -254,12 +271,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     )}
                   >
                     <Shield className="h-5 w-5" />
-                    {!collapsed && <span className="text-sm">Admin</span>}
+                    {!collapsed && <span className="text-sm">Painel Admin</span>}
                   </button>
                 </TooltipTrigger>
                 {collapsed && (
                   <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
-                    Admin
+                    Painel Admin
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -277,12 +294,35 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                     )}
                   >
                     <FileText className="h-5 w-5" />
-                    {!collapsed && <span className="text-sm">Contador</span>}
+                    {!collapsed && <span className="text-sm">Painel Contador</span>}
                   </button>
                 </TooltipTrigger>
                 {collapsed && (
                   <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
-                    Contador
+                    Painel Contador
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            )}
+            {hasRole('autonomo') && (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => navigate('/autonomo')}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                      'text-white/60 hover:bg-emerald-500/10 hover:text-emerald-400 active:bg-emerald-500/20',
+                      'touch-manipulation active:scale-[0.98]',
+                      collapsed && 'justify-center'
+                    )}
+                  >
+                    <User className="h-5 w-5" />
+                    {!collapsed && <span className="text-sm">Painel Autônomo</span>}
+                  </button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                    Painel Autônomo
                   </TooltipContent>
                 )}
               </Tooltip>
@@ -290,13 +330,116 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
         )}
 
-        {/* Back to Dashboard for Admin/Contador/Autonomo */}
-        {(variant === 'admin' || variant === 'contador' || variant === 'autonomo') && (
-          <div className="px-2 py-2 border-t border-white/5">
+        {/* Switch to other panels from non-empresa panels */}
+        {variant !== 'empresa' && variant !== 'user' && (
+          <div className="px-2 py-2 border-t border-white/5 space-y-0.5">
+            {/* Admin can switch to other roles they have */}
+            {variant === 'admin' && (
+              <>
+                {hasRole('contador') && (
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => navigate('/contador')}
+                        className={cn(
+                          'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                          'text-white/60 hover:bg-blue-500/10 hover:text-blue-400 active:bg-blue-500/20',
+                          'touch-manipulation active:scale-[0.98]',
+                          collapsed && 'justify-center'
+                        )}
+                      >
+                        <FileText className="h-5 w-5" />
+                        {!collapsed && <span className="text-sm">Painel Contador</span>}
+                      </button>
+                    </TooltipTrigger>
+                    {collapsed && (
+                      <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                        Painel Contador
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                )}
+                {hasRole('autonomo') && (
+                  <Tooltip delayDuration={0}>
+                    <TooltipTrigger asChild>
+                      <button
+                        onClick={() => navigate('/autonomo')}
+                        className={cn(
+                          'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                          'text-white/60 hover:bg-emerald-500/10 hover:text-emerald-400 active:bg-emerald-500/20',
+                          'touch-manipulation active:scale-[0.98]',
+                          collapsed && 'justify-center'
+                        )}
+                      >
+                        <User className="h-5 w-5" />
+                        {!collapsed && <span className="text-sm">Painel Autônomo</span>}
+                      </button>
+                    </TooltipTrigger>
+                    {collapsed && (
+                      <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                        Painel Autônomo
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                )}
+              </>
+            )}
+            
+            {/* Contador can switch to admin if they have admin role */}
+            {variant === 'contador' && hasRole('admin') && (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                      'text-white/60 hover:bg-red-500/10 hover:text-red-400 active:bg-red-500/20',
+                      'touch-manipulation active:scale-[0.98]',
+                      collapsed && 'justify-center'
+                    )}
+                  >
+                    <Shield className="h-5 w-5" />
+                    {!collapsed && <span className="text-sm">Painel Admin</span>}
+                  </button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                    Painel Admin
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            )}
+
+            {/* Autonomo can switch to admin if they have admin role */}
+            {variant === 'autonomo' && hasRole('admin') && (
+              <Tooltip delayDuration={0}>
+                <TooltipTrigger asChild>
+                  <button
+                    onClick={() => navigate('/admin')}
+                    className={cn(
+                      'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
+                      'text-white/60 hover:bg-red-500/10 hover:text-red-400 active:bg-red-500/20',
+                      'touch-manipulation active:scale-[0.98]',
+                      collapsed && 'justify-center'
+                    )}
+                  >
+                    <Shield className="h-5 w-5" />
+                    {!collapsed && <span className="text-sm">Painel Admin</span>}
+                  </button>
+                </TooltipTrigger>
+                {collapsed && (
+                  <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+                    Painel Admin
+                  </TooltipContent>
+                )}
+              </Tooltip>
+            )}
+
+            {/* Back to Empresa panel */}
             <Tooltip delayDuration={0}>
               <TooltipTrigger asChild>
                 <button
-                  onClick={() => navigate('/dashboard')}
+                  onClick={() => navigate('/empresa')}
                   className={cn(
                     'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
                     'text-white/60 hover:bg-primary/10 hover:text-primary active:bg-primary/20',
@@ -305,12 +448,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                   )}
                 >
                   <Home className="h-5 w-5" />
-                  {!collapsed && <span className="text-sm">Dashboard</span>}
+                  {!collapsed && <span className="text-sm">Painel Empresa</span>}
                 </button>
               </TooltipTrigger>
               {collapsed && (
                 <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
-                  Dashboard
+                  Painel Empresa
                 </TooltipContent>
               )}
             </Tooltip>

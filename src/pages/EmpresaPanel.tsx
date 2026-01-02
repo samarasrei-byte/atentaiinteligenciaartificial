@@ -265,7 +265,7 @@ const EmbeddedProfile = ({ profile, user, onUpdate }: { profile: any; user: any;
   );
 };
 
-const Dashboard = () => {
+const EmpresaPanel = () => {
   const navigate = useNavigate();
   const { user, profile, roles, signOut, loading, hasRole } = useAuth();
   const { toast } = useToast();
@@ -749,7 +749,7 @@ const Dashboard = () => {
         <AppSidebar 
           collapsed={sidebarCollapsed} 
           onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-          variant="user"
+          variant="empresa"
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
@@ -763,7 +763,7 @@ const Dashboard = () => {
         <AppSidebar 
           collapsed={false} 
           onToggle={() => setMobileMenuOpen(false)} 
-          variant="user"
+          variant="empresa"
           activeTab={activeTab}
           onTabChange={handleTabChange}
         />
@@ -851,4 +851,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default EmpresaPanel;
