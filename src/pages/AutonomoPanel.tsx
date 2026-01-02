@@ -76,6 +76,7 @@ import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
+import { CashbackCard } from '@/components/calculator/CashbackCard';
 
 interface AutonomoProfile {
   id: string;
@@ -410,6 +411,9 @@ const AutonomoPanel: React.FC = () => {
 
       {/* Company Opening Status */}
       <CompanyOpeningStatus onStartNew={() => handleTabChange('abertura-empresa')} />
+
+      {/* Cashback Card */}
+      <CashbackCard />
 
       {/* Services Hub */}
       <ServicesHub />
