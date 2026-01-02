@@ -17,7 +17,7 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.png", "logo.png", "logo-atentai.png"],
       manifest: {
-        name: "AtentAI - O Waze dos Impostos",
+        name: "AtentAI - Reforma Tributária",
         short_name: "AtentAI",
         description: "Simule impostos, tire dúvidas com IA e conecte-se com contadores especializados.",
         theme_color: "#0d9488",

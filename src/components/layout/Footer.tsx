@@ -41,7 +41,7 @@ export function Footer({ onNavigate }: FooterProps) {
               />
             </div>
             <p className="text-secondary-foreground/70 text-sm mb-6 leading-relaxed">
-              O Waze dos Impostos Brasileiros. Simplificamos a Reforma Tributária de 2026 
+              Simplificamos a Reforma Tributária de 2026 
               para cidadãos, empresas e profissionais.
             </p>
             <div className="flex gap-4">

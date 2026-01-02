@@ -118,7 +118,7 @@ export default function InstallApp() {
             <img src="/logo-atentai.png" alt="AtentAI" className="w-12 h-12" />
           </div>
           <h2 className="text-2xl font-bold mb-2">AtentAI</h2>
-          <p className="text-muted-foreground">O Waze dos Impostos Brasileiros</p>
+          <p className="text-muted-foreground">Seu Guia da Reforma Tributária</p>
         </div>
 
         {/* Benefits */}
