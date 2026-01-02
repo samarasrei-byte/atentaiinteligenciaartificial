@@ -50,3 +50,6 @@ verify_jwt = false
 
 [functions.create-ir-payment]
 verify_jwt = false
+
+[functions.send-cashback-notification]
+verify_jwt = false
