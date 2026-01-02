@@ -45,7 +45,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
           {/* Urgency Badge */}
           <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 py-2 sm:py-3 rounded-full bg-gradient-to-r from-destructive/40 to-orange-500/40 backdrop-blur-sm border border-destructive/50 text-white text-[11px] sm:text-sm mb-5 sm:mb-6 animate-pulse shadow-lg shadow-destructive/30">
             <Clock className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />
-            <span className="font-bold tracking-wide">Prepare-se para Janeiro 2026!</span>
+            <span className="font-bold tracking-wide">🚨 COMEÇOU! Prepare-se para não ser prejudicado!</span>
           </div>
 
           {/* Badge */}
