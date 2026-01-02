@@ -13,6 +13,7 @@ import { useToast } from '@/hooks/use-toast';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import { CreditRepairMetrics } from './CreditRepairMetrics';
 import { PartnerManagement } from './PartnerManagement';
+import { CreditRepairPartnerMetrics } from './CreditRepairPartnerMetrics';
 import {
   Search,
   Loader2,
@@ -214,7 +215,7 @@ export function CreditRepairManagement() {
 
   return (
     <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-lg grid-cols-3">
+      <TabsList className="grid w-full max-w-2xl grid-cols-4">
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
@@ -222,6 +223,10 @@ export function CreditRepairManagement() {
         <TabsTrigger value="partners" className="flex items-center gap-2">
           <Building className="h-4 w-4" />
           Parceiros
+        </TabsTrigger>
+        <TabsTrigger value="partner-metrics" className="flex items-center gap-2">
+          <Users className="h-4 w-4" />
+          Por Parceiro
         </TabsTrigger>
         <TabsTrigger value="metrics" className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4" />
@@ -231,6 +236,10 @@ export function CreditRepairManagement() {
 
       <TabsContent value="partners">
         <PartnerManagement />
+      </TabsContent>
+
+      <TabsContent value="partner-metrics">
+        <CreditRepairPartnerMetrics />
       </TabsContent>
 
       <TabsContent value="metrics">
