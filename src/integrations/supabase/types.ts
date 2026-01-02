@@ -1004,6 +1004,65 @@ export type Database = {
         }
         Relationships: []
       }
+      partner_withdrawal_requests: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          notes: string | null
+          partner_id: string
+          pix_key: string
+          pix_key_type: string
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
+          requested_at: string
+          requested_by: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          partner_id: string
+          pix_key: string
+          pix_key_type: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          requested_at?: string
+          requested_by: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          partner_id?: string
+          pix_key?: string
+          pix_key_type?: string
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          requested_at?: string
+          requested_by?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "partner_withdrawal_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount_cents: number

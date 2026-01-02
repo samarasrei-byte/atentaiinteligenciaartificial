@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, PieChart, Pie, Cell, BarChart, Bar, Legend, ResponsiveContainer } from 'recharts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
 import {
@@ -21,6 +22,7 @@ import { format, subMonths, startOfMonth, endOfMonth, isWithinInterval, subDays 
 import { ptBR } from 'date-fns/locale';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { PartnerWithdrawalSystem } from '@/components/partner/PartnerWithdrawalSystem';
 
 interface Partner {
   id: string;
@@ -573,6 +575,13 @@ export default function PartnerPanel() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Withdrawal System */}
+          <PartnerWithdrawalSystem 
+            partnerId={partner.id} 
+            availableBalance={commissionAmount}
+            onWithdrawalCreated={fetchPartnerData}
+          />
         </div>
       </main>
 
