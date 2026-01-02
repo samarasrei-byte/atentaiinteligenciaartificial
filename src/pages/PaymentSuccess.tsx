@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import PostPaymentOnboarding from '@/components/onboarding/PostPaymentOnboarding';
 import { 
   CheckCircle2, 
   ArrowRight, 
@@ -87,6 +88,7 @@ export default function PaymentSuccess() {
   const [searchParams] = useSearchParams();
   const { subscription, checkSubscription, user } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [guestPaymentResult, setGuestPaymentResult] = useState<{
     success: boolean;
     accountCreated: boolean;
@@ -97,6 +99,7 @@ export default function PaymentSuccess() {
   const requestId = searchParams.get('request_id');
   const isGuest = searchParams.get('guest') === 'true';
   const sessionId = searchParams.get('session_id');
+  const needsOnboarding = searchParams.get('onboarding') === 'true';
 
   const isServicePayment = paymentType && ['ir', 'credit_repair', 'certificate'].includes(paymentType);
 
@@ -113,6 +116,10 @@ export default function PaymentSuccess() {
 
           if (!error && data) {
             setGuestPaymentResult(data);
+            // Check if user needs onboarding
+            if (data.accountCreated || needsOnboarding) {
+              setShowOnboarding(true);
+            }
           }
         } catch (err) {
           console.error('Error processing guest payment:', err);
@@ -125,7 +132,7 @@ export default function PaymentSuccess() {
     };
     
     processPayment();
-  }, [checkSubscription, isServicePayment, isGuest, sessionId]);
+  }, [checkSubscription, isServicePayment, isGuest, sessionId, needsOnboarding]);
 
   if (isLoading) {
     return (
@@ -134,6 +141,19 @@ export default function PaymentSuccess() {
           <Loader2 className="h-12 w-12 animate-spin text-primary mx-auto" />
           <p className="text-muted-foreground">Confirmando seu pagamento...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show onboarding for new users
+  if (showOnboarding && user && isServicePayment && paymentType && requestId) {
+    return (
+      <div className="min-h-screen bg-background py-12 px-4">
+        <PostPaymentOnboarding 
+          serviceType={paymentType}
+          requestId={requestId}
+          onComplete={() => setShowOnboarding(false)}
+        />
       </div>
     );
   }
