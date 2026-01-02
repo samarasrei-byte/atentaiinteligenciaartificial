@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Building2, Calculator, Briefcase, ArrowLeft, ArrowRight, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Building2, Calculator, Briefcase, ArrowLeft, ArrowRight, Sparkles, Rocket, Star, Shield, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import OnboardingParticles from '@/components/onboarding/OnboardingParticles';
 
 type UserType = 'empresa' | 'autonomo' | 'contador';
 
@@ -15,6 +17,7 @@ interface UserTypeOption {
   route: string;
   gradient: string;
   iconBg: string;
+  accentColor: string;
 }
 
 const userTypeOptions: UserTypeOption[] = [
@@ -26,7 +29,8 @@ const userTypeOptions: UserTypeOption[] = [
     icon: Building2,
     route: '/onboarding',
     gradient: 'from-blue-500 to-cyan-500',
-    iconBg: 'bg-blue-500/10 text-blue-500',
+    iconBg: 'bg-gradient-to-br from-blue-500 to-cyan-500',
+    accentColor: 'blue',
   },
   {
     type: 'autonomo',
@@ -36,7 +40,8 @@ const userTypeOptions: UserTypeOption[] = [
     icon: Briefcase,
     route: '/autonomo-onboarding',
     gradient: 'from-purple-500 to-pink-500',
-    iconBg: 'bg-purple-500/10 text-purple-500',
+    iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
+    accentColor: 'purple',
   },
   {
     type: 'contador',
@@ -46,7 +51,8 @@ const userTypeOptions: UserTypeOption[] = [
     icon: Calculator,
     route: '/contador-onboarding',
     gradient: 'from-teal-500 to-emerald-500',
-    iconBg: 'bg-teal-500/10 text-teal-500',
+    iconBg: 'bg-gradient-to-br from-teal-500 to-emerald-500',
+    accentColor: 'teal',
   },
 ];
 
@@ -54,6 +60,29 @@ const UserTypeSelection = () => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<UserType | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [hoveredType, setHoveredType] = useState<UserType | null>(null);
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Enter' && selectedType && !isAnimating) {
+        handleContinue();
+      }
+      // Arrow key navigation
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        const currentIndex = selectedType ? userTypeOptions.findIndex(o => o.type === selectedType) : -1;
+        const nextIndex = (currentIndex + 1) % userTypeOptions.length;
+        setSelectedType(userTypeOptions[nextIndex].type);
+      }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        const currentIndex = selectedType ? userTypeOptions.findIndex(o => o.type === selectedType) : 0;
+        const prevIndex = currentIndex <= 0 ? userTypeOptions.length - 1 : currentIndex - 1;
+        setSelectedType(userTypeOptions[prevIndex].type);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedType, isAnimating]);
 
   const handleSelectType = (option: UserTypeOption) => {
     if (isAnimating) return;
@@ -66,133 +95,297 @@ const UserTypeSelection = () => {
       setIsAnimating(true);
       sessionStorage.setItem('selectedUserType', option.type);
       
-      // Small delay for animation before navigating
       setTimeout(() => {
         navigate(option.route);
-      }, 300);
+      }, 500);
     }
   };
 
   return (
     <div className={cn(
-      "min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30",
-      "transition-opacity duration-500",
-      isAnimating && "opacity-0"
+      "min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden",
+      "transition-all duration-700",
+      isAnimating && "opacity-0 scale-95"
     )}>
+      {/* Animated background */}
+      <OnboardingParticles />
+
+      {/* Ambient glows */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px]"
+          animate={{
+            x: [0, 50, 0],
+            y: [0, 30, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div
+          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]"
+          animate={{
+            x: [0, -30, 0],
+            y: [0, -50, 0],
+            scale: [1, 1.3, 1],
+          }}
+          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
+
       {/* Header */}
-      <div className="p-4 md:p-6 animate-in fade-in slide-in-from-top-4 duration-500">
+      <motion.div 
+        className="relative z-10 p-4 md:p-6"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
         <Button
           variant="ghost"
           size="sm"
-          className="text-muted-foreground hover:text-foreground transition-colors"
+          className="text-muted-foreground hover:text-foreground transition-all hover:scale-105"
           onClick={() => navigate('/')}
         >
           <ArrowLeft className="h-4 w-4 mr-2" />
           Voltar
         </Button>
-      </div>
+      </motion.div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-4xl">
+      <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10">
+        <div className="w-full max-w-5xl">
           {/* Title Section */}
-          <div className="text-center mb-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6 animate-pulse">
+          <motion.div 
+            className="text-center mb-12"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+          >
+            {/* Animated badge */}
+            <motion.div 
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary text-sm font-semibold mb-8 border border-primary/30"
+              animate={{
+                boxShadow: [
+                  "0 0 20px rgba(var(--primary), 0.2)",
+                  "0 0 40px rgba(var(--primary), 0.4)",
+                  "0 0 20px rgba(var(--primary), 0.2)",
+                ],
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Rocket className="h-4 w-4" />
+              Começar é simples e rápido
               <Sparkles className="h-4 w-4" />
-              Começar é simples
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              Qual é o seu perfil?
-            </h1>
-            <p className="text-muted-foreground text-lg max-w-xl mx-auto">
+            </motion.div>
+
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-5"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2, duration: 0.6 }}
+            >
+              Qual é o seu{' '}
+              <span className="bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent">
+                perfil
+              </span>
+              ?
+            </motion.h1>
+            
+            <motion.p 
+              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.6 }}
+            >
               Selecione a opção que melhor descreve você para personalizarmos sua experiência
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
           {/* Options Grid */}
-          <div className="grid md:grid-cols-3 gap-4 md:gap-6 mb-8">
+          <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-10">
             {userTypeOptions.map((option, index) => {
               const Icon = option.icon;
               const isSelected = selectedType === option.type;
+              const isHovered = hoveredType === option.type;
               
               return (
-                <button
+                <motion.button
                   key={option.type}
                   onClick={() => handleSelectType(option)}
+                  onMouseEnter={() => setHoveredType(option.type)}
+                  onMouseLeave={() => setHoveredType(null)}
                   disabled={isAnimating}
-                  style={{ animationDelay: `${index * 100}ms` }}
+                  initial={{ opacity: 0, y: 40, scale: 0.9 }}
+                  animate={{ 
+                    opacity: 1, 
+                    y: 0, 
+                    scale: isSelected ? 1.02 : 1,
+                    rotateY: isHovered ? 5 : 0,
+                  }}
+                  transition={{ 
+                    delay: index * 0.15,
+                    duration: 0.5,
+                    type: "spring",
+                    stiffness: 200,
+                  }}
+                  whileHover={{ 
+                    scale: 1.03,
+                    y: -8,
+                  }}
+                  whileTap={{ scale: 0.98 }}
                   className={cn(
-                    "relative text-left p-6 rounded-2xl border-2 transition-all duration-300",
-                    "hover:shadow-lg hover:-translate-y-1 active:scale-[0.98]",
-                    "animate-in fade-in slide-in-from-bottom-8",
+                    "relative text-left p-8 rounded-3xl border-2 transition-all duration-500",
+                    "backdrop-blur-xl overflow-hidden group",
                     "disabled:pointer-events-none",
+                    "transform-gpu perspective-1000",
                     isSelected
-                      ? "border-primary bg-primary/5 shadow-xl shadow-primary/20 scale-[1.02]"
-                      : "border-border bg-card hover:border-muted-foreground/30"
+                      ? "border-primary bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 shadow-2xl shadow-primary/30"
+                      : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card/80"
                   )}
+                  style={{ transformStyle: "preserve-3d" }}
                 >
-                  {/* Selection Indicator */}
-                  <div className={cn(
-                    "absolute top-4 right-4 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300",
-                    isSelected
-                      ? "border-primary bg-primary scale-110"
-                      : "border-muted-foreground/30"
-                  )}>
+                  {/* Background gradient */}
+                  <motion.div
+                    className={cn(
+                      "absolute inset-0 bg-gradient-to-br opacity-0 transition-opacity duration-500",
+                      `from-${option.accentColor}-500/20 to-transparent`
+                    )}
+                    animate={{ opacity: isSelected || isHovered ? 0.5 : 0 }}
+                  />
+
+                  {/* Shine effect */}
+                  <motion.div
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -skew-x-12 opacity-0 group-hover:opacity-100"
+                    initial={{ x: "-100%" }}
+                    whileHover={{ x: "200%" }}
+                    transition={{ duration: 0.8 }}
+                  />
+
+                  {/* Selection ring */}
+                  <AnimatePresence>
                     {isSelected && (
-                      <svg 
-                        className="w-3 h-3 text-primary-foreground animate-in zoom-in duration-200" 
+                      <motion.div
+                        className="absolute inset-0 rounded-3xl border-2 border-primary"
+                        initial={{ scale: 1.1, opacity: 0 }}
+                        animate={{ 
+                          scale: [1, 1.05, 1],
+                          opacity: [0.5, 1, 0.5],
+                        }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    )}
+                  </AnimatePresence>
+
+                  {/* Selection checkmark */}
+                  <motion.div 
+                    className={cn(
+                      "absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+                      isSelected
+                        ? "bg-primary shadow-lg shadow-primary/50"
+                        : "border-2 border-muted-foreground/30 bg-transparent"
+                    )}
+                    animate={{ 
+                      scale: isSelected ? 1 : 0.9,
+                      rotate: isSelected ? 360 : 0,
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    {isSelected && (
+                      <motion.svg 
+                        className="w-4 h-4 text-primary-foreground" 
                         fill="currentColor" 
                         viewBox="0 0 12 12"
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 400 }}
                       >
                         <path d="M10.28 2.28L3.989 8.575 1.695 6.28A1 1 0 00.28 7.695l3 3a1 1 0 001.414 0l7-7A1 1 0 0010.28 2.28z" />
-                      </svg>
+                      </motion.svg>
                     )}
-                  </div>
+                  </motion.div>
 
                   {/* Icon */}
-                  <div className={cn(
-                    "w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-all duration-300",
-                    option.iconBg,
-                    isSelected && "scale-110"
-                  )}>
-                    <Icon className="h-7 w-7" />
-                  </div>
+                  <motion.div 
+                    className={cn(
+                      "w-20 h-20 rounded-2xl flex items-center justify-center mb-6",
+                      "shadow-xl transition-all duration-300",
+                      option.iconBg
+                    )}
+                    animate={{
+                      scale: isSelected ? 1.1 : 1,
+                      rotate: isSelected ? [0, 5, -5, 0] : 0,
+                    }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <Icon className="h-10 w-10 text-white" />
+                    
+                    {/* Icon sparkle */}
+                    {isSelected && (
+                      <motion.div
+                        className="absolute -top-1 -right-1"
+                        animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
+                        transition={{ duration: 3, repeat: Infinity }}
+                      >
+                        <Sparkles className="h-5 w-5 text-yellow-400" />
+                      </motion.div>
+                    )}
+                  </motion.div>
 
                   {/* Content */}
-                  <h3 className="text-xl font-semibold text-foreground mb-2">
+                  <h3 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
                     {option.title}
+                    {isSelected && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                      >
+                        <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                      </motion.span>
+                    )}
                   </h3>
-                  <p className="text-muted-foreground text-sm mb-4">
+                  <p className="text-muted-foreground mb-5">
                     {option.description}
                   </p>
 
                   {/* Features */}
-                  <ul className="space-y-2">
+                  <ul className="space-y-3">
                     {option.features.map((feature, idx) => (
-                      <li 
+                      <motion.li 
                         key={idx} 
                         className={cn(
-                          "flex items-center gap-2 text-sm transition-colors duration-300",
+                          "flex items-center gap-3 text-sm transition-all duration-300",
                           isSelected ? "text-foreground" : "text-muted-foreground"
                         )}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.1 * idx }}
                       >
-                        <div className={cn(
-                          "w-1.5 h-1.5 rounded-full transition-all duration-300",
-                          isSelected ? "bg-primary scale-125" : "bg-muted-foreground/50"
-                        )} />
+                        <motion.div 
+                          className={cn(
+                            "w-5 h-5 rounded-full flex items-center justify-center transition-all duration-300",
+                            isSelected ? "bg-primary/20" : "bg-muted"
+                          )}
+                          animate={{ scale: isSelected ? 1.1 : 1 }}
+                        >
+                          <Zap className={cn(
+                            "h-3 w-3 transition-colors",
+                            isSelected ? "text-primary" : "text-muted-foreground"
+                          )} />
+                        </motion.div>
                         {feature}
-                      </li>
+                      </motion.li>
                     ))}
                   </ul>
-                </button>
+                </motion.button>
               );
             })}
           </div>
 
           {/* Action Buttons */}
-          <div 
-            className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-in fade-in slide-in-from-bottom-6 duration-700"
-            style={{ animationDelay: '300ms' }}
+          <motion.div 
+            className="flex flex-col items-center justify-center gap-5"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
           >
             <div className="relative">
               <Button
@@ -200,42 +393,100 @@ const UserTypeSelection = () => {
                 disabled={!selectedType || isAnimating}
                 onClick={handleContinue}
                 className={cn(
-                  "w-full sm:w-auto min-w-[200px] h-12 text-base transition-all duration-300",
-                  selectedType && "shadow-lg shadow-primary/30 hover:shadow-primary/50"
+                  "min-w-[280px] h-14 text-lg font-semibold relative overflow-hidden",
+                  "bg-gradient-to-r from-primary to-primary/90",
+                  "transition-all duration-300",
+                  selectedType && "shadow-2xl shadow-primary/40 hover:shadow-primary/60 hover:scale-105"
                 )}
               >
-                {isAnimating ? (
-                  <span className="animate-pulse">Preparando...</span>
-                ) : (
-                  <>
-                    Continuar
-                    <ArrowRight className={cn(
-                      "h-4 w-4 ml-2 transition-transform duration-300",
-                      selectedType && "translate-x-1"
-                    )} />
-                  </>
-                )}
+                {/* Button shine */}
+                <motion.div
+                  className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
+                  animate={selectedType ? { x: ["-100%", "200%"] } : {}}
+                  transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                />
+
+                <span className="relative z-10 flex items-center">
+                  {isAnimating ? (
+                    <motion.span
+                      className="flex items-center"
+                      animate={{ opacity: [1, 0.5, 1] }}
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                    >
+                      <Rocket className="h-5 w-5 mr-2 animate-bounce" />
+                      Preparando...
+                    </motion.span>
+                  ) : (
+                    <>
+                      Continuar
+                      <motion.span
+                        className="ml-2"
+                        animate={selectedType ? { x: [0, 5, 0] } : {}}
+                        transition={{ duration: 1, repeat: Infinity }}
+                      >
+                        <ArrowRight className="h-5 w-5" />
+                      </motion.span>
+                    </>
+                  )}
+                </span>
               </Button>
-              {!selectedType && (
-                <p className="absolute -bottom-6 left-0 right-0 text-center text-xs text-muted-foreground animate-pulse">
-                  Selecione um perfil acima
-                </p>
-              )}
+              
+              <AnimatePresence>
+                {!selectedType && (
+                  <motion.p 
+                    className="absolute -bottom-7 left-0 right-0 text-center text-xs text-muted-foreground"
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 5 }}
+                  >
+                    <motion.span
+                      animate={{ opacity: [0.5, 1, 0.5] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      👆 Selecione um perfil acima
+                    </motion.span>
+                  </motion.p>
+                )}
+              </AnimatePresence>
             </div>
+
             <Button
               variant="ghost"
-              className="text-muted-foreground mt-4 sm:mt-0 hover:text-foreground transition-colors"
+              className="text-muted-foreground hover:text-foreground transition-all hover:scale-105"
               onClick={() => navigate('/auth')}
               disabled={isAnimating}
             >
               Já tenho uma conta
             </Button>
-          </div>
+          </motion.div>
+          
+          {/* Trust indicators */}
+          <motion.div 
+            className="mt-14 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+          >
+            <span className="flex items-center gap-2">
+              <Shield className="h-4 w-4 text-green-500" />
+              100% Seguro
+            </span>
+            <span className="flex items-center gap-2">
+              <Zap className="h-4 w-4 text-yellow-500" />
+              Configuração em 2 minutos
+            </span>
+            <span className="flex items-center gap-2">
+              <Star className="h-4 w-4 text-purple-500" />
+              +10.000 usuários
+            </span>
+          </motion.div>
           
           {/* Quick links */}
-          <div 
-            className="mt-12 pt-6 border-t border-border/50 text-center animate-in fade-in duration-700"
-            style={{ animationDelay: '400ms' }}
+          <motion.div 
+            className="mt-8 pt-6 border-t border-border/50 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.9 }}
           >
             <p className="text-sm text-muted-foreground mb-3">Quer conhecer mais antes de começar?</p>
             <div className="flex flex-wrap justify-center gap-3">
@@ -264,7 +515,7 @@ const UserTypeSelection = () => {
                 Nossos serviços
               </Button>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
