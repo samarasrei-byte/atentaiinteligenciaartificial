@@ -33,24 +33,36 @@ serve(async (req) => {
 
     const body = await req.text();
     const signature = req.headers.get("stripe-signature");
-    
-    // For testing without webhook secret, parse directly
-    // In production, you should verify the signature
-    let event: Stripe.Event;
-    
     const webhookSecret = Deno.env.get("STRIPE_CONNECT_WEBHOOK_SECRET");
     
-    if (webhookSecret && signature) {
-      try {
-        event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
-        logStep("Webhook signature verified");
-      } catch (err) {
-        logStep("Webhook signature verification failed, parsing raw body");
-        event = JSON.parse(body);
-      }
-    } else {
-      event = JSON.parse(body);
-      logStep("No webhook secret configured, parsing raw body");
+    // Security: Require webhook secret and signature verification
+    if (!webhookSecret) {
+      logStep("ERROR: Webhook secret not configured");
+      return new Response(JSON.stringify({ error: "Webhook secret not configured" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      });
+    }
+    
+    if (!signature) {
+      logStep("ERROR: Missing webhook signature");
+      return new Response(JSON.stringify({ error: "Missing webhook signature" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+    
+    let event: Stripe.Event;
+    try {
+      event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+      logStep("Webhook signature verified");
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : "Signature verification failed";
+      logStep("ERROR: Webhook signature verification failed", { error: errorMessage });
+      return new Response(JSON.stringify({ error: "Invalid webhook signature" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
     }
 
     logStep("Event received", { type: event.type, id: event.id });
