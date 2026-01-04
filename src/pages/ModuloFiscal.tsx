@@ -204,6 +204,164 @@ export default function ModuloFiscal() {
         </div>
       </section>
 
+      {/* PAIN SECTION - A Dor das Empresas */}
+      <section className="bg-red-950/20 border-y border-red-500/20 py-16">
+        <div className="container max-w-7xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Badge variant="outline" className="mb-4 border-red-500/50 text-red-400 bg-red-500/10">
+              <AlertTriangle className="h-4 w-4 mr-2" />
+              A Realidade que Ninguém Conta
+            </Badge>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+              Enquanto você lê isso, empresas estão{" "}
+              <span className="text-red-500">perdendo dinheiro</span>
+            </h2>
+            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+              Milhares de empresas brasileiras pagam impostos a mais todos os meses sem saber. 
+              A falta de análise fiscal técnica custa <strong className="text-red-400">bilhões por ano</strong> ao empresariado.
+            </p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+            {/* Lado da DOR */}
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <Card className="border-red-500/30 bg-gradient-to-br from-red-950/30 to-red-900/10 h-full">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
+                      <Ban className="h-6 w-6 text-red-500" />
+                    </div>
+                    <CardTitle className="text-red-400">Sem Análise Fiscal</CardTitle>
+                  </div>
+                  <CardDescription className="text-red-300/70">
+                    O que acontece com empresas que não fazem auditoria
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
+                    <p className="text-sm text-red-300/80 mb-1">Perda média anual por empresa</p>
+                    <p className="text-4xl font-bold text-red-500">R$ 47.000</p>
+                    <p className="text-xs text-red-400/60 mt-1">em impostos pagos indevidamente</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-red-300/80">
+                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                      <span>78% das empresas pagam impostos a mais</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-red-300/80">
+                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                      <span>Créditos tributários expiram sem serem usados</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-red-300/80">
+                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                      <span>Risco de malha fina por inconsistências</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-red-300/80">
+                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
+                      <span>Lucro reduzido por carga tributária errada</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-red-500/5 rounded-lg border border-red-500/10 mt-4">
+                    <p className="text-sm text-center text-red-400">
+                      <strong>Nos últimos 5 anos:</strong> empresas brasileiras perderam mais de{" "}
+                      <span className="text-red-500 font-bold">R$ 89 bilhões</span> em impostos pagos indevidamente
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* Lado da SOLUÇÃO */}
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+            >
+              <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 h-full">
+                <CardHeader>
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                      <CheckCircle2 className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-primary">Com AtentAI</CardTitle>
+                  </div>
+                  <CardDescription>
+                    Resultados reais das 2.847 empresas atendidas
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
+                    <p className="text-sm text-muted-foreground mb-1">Total recuperado para clientes</p>
+                    <p className="text-4xl font-bold text-primary">R$ 153M+</p>
+                    <p className="text-xs text-primary/60 mt-1">média de R$ 53.700 por empresa</p>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-3 text-foreground">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span>100% de conformidade legal garantida</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span>Zero casos em malha fina</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span>Pagamento apenas no êxito (50%)</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground">
+                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
+                      <span>Relatório 100% auditável</span>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 mt-4">
+                    <p className="text-sm text-center">
+                      <strong>Resultado:</strong> Em média, cada empresa recuperou{" "}
+                      <span className="text-primary font-bold">14x mais</span> do que pagou pelo serviço
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* CTA da Dor */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center"
+          >
+            <p className="text-lg text-muted-foreground mb-6">
+              <strong className="text-red-400">Você está perdendo dinheiro agora.</strong>{" "}
+              Descubra quanto sua empresa pode recuperar.
+            </p>
+            <Button 
+              size="lg" 
+              onClick={() => setShowForm(true)}
+              className="text-lg px-8 py-6 shadow-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
+            >
+              <Zap className="h-5 w-5 mr-2" />
+              Descobrir Minha Economia Agora
+              <ArrowRight className="h-5 w-5 ml-2" />
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Social Proof Banner */}
       <section className="bg-primary/5 border-y border-primary/10 py-6">
         <div className="container max-w-7xl mx-auto px-4">
