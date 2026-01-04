@@ -1,11 +1,52 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ArrowLeft, Shield, Lock, FileCheck, TrendingUp, AlertTriangle, CheckCircle2, FileText, Building2, Scale, Eye, Ban, Zap, Star, Users, Award, BadgeCheck, ArrowRight, Play, Quote } from "lucide-react";
 import { FiscalAnalysisForm } from "@/components/fiscal/FiscalAnalysisForm";
-import { motion } from "framer-motion";
+import { motion, useInView } from "framer-motion";
+
+// Hook para animar números
+const useCountUp = (end: number, duration: number = 2000, start: number = 0, inView: boolean = true) => {
+  const [count, setCount] = useState(start);
+  
+  useEffect(() => {
+    if (!inView) return;
+    
+    let startTime: number | null = null;
+    const animate = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const progress = Math.min((currentTime - startTime) / duration, 1);
+      const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+      setCount(Math.floor(start + (end - start) * easeOutQuart));
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+    requestAnimationFrame(animate);
+  }, [end, duration, start, inView]);
+
+  return count;
+};
+
+// Componente de contador animado
+const AnimatedCounter = ({ value, prefix = "", suffix = "", className = "" }: { 
+  value: number; 
+  prefix?: string; 
+  suffix?: string; 
+  className?: string;
+}) => {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true });
+  const count = useCountUp(value, 2500, 0, isInView);
+  
+  return (
+    <span ref={ref} className={className}>
+      {prefix}{count.toLocaleString('pt-BR')}{suffix}
+    </span>
+  );
+};
 
 export default function ModuloFiscal() {
   const navigate = useNavigate();
@@ -204,133 +245,174 @@ export default function ModuloFiscal() {
         </div>
       </section>
 
-      {/* PAIN SECTION - A Dor das Empresas */}
-      <section className="bg-red-950/20 border-y border-red-500/20 py-16">
-        <div className="container max-w-7xl mx-auto px-4">
+      {/* PAIN SECTION - A Dor das Empresas - Design Melhorado */}
+      <section className="relative py-20 overflow-hidden">
+        {/* Background gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-red-950/5 to-background" />
+        
+        <div className="container max-w-7xl mx-auto px-4 relative">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16"
           >
-            <Badge variant="outline" className="mb-4 border-red-500/50 text-red-400 bg-red-500/10">
-              <AlertTriangle className="h-4 w-4 mr-2" />
+            <Badge variant="outline" className="mb-4 border-red-500/50 text-red-500 bg-red-500/10 px-4 py-2">
+              <AlertTriangle className="h-4 w-4 mr-2 animate-pulse" />
               A Realidade que Ninguém Conta
             </Badge>
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            <h2 className="text-3xl md:text-5xl font-bold mb-4">
               Enquanto você lê isso, empresas estão{" "}
               <span className="text-red-500">perdendo dinheiro</span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
               Milhares de empresas brasileiras pagam impostos a mais todos os meses sem saber. 
               A falta de análise fiscal técnica custa <strong className="text-red-400">bilhões por ano</strong> ao empresariado.
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
-            {/* Lado da DOR */}
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-16">
+            {/* Lado da DOR - Design Premium */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <Card className="border-red-500/30 bg-gradient-to-br from-red-950/30 to-red-900/10 h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center">
-                      <Ban className="h-6 w-6 text-red-500" />
+              <Card className="relative border-2 border-red-500/40 bg-gradient-to-br from-red-950/40 via-red-900/20 to-red-950/30 h-full shadow-2xl shadow-red-500/10 overflow-hidden">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-red-500/5 to-transparent" />
+                
+                <CardHeader className="relative pb-2">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-red-500/30 to-red-600/20 flex items-center justify-center border border-red-500/30">
+                      <Ban className="h-7 w-7 text-red-500" />
                     </div>
-                    <CardTitle className="text-red-400">Sem Análise Fiscal</CardTitle>
+                    <div>
+                      <CardTitle className="text-2xl text-red-400">Sem Análise Fiscal</CardTitle>
+                      <CardDescription className="text-red-300/60">
+                        O que acontece com empresas que não fazem auditoria
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription className="text-red-300/70">
-                    O que acontece com empresas que não fazem auditoria
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 bg-red-500/10 rounded-lg border border-red-500/20">
-                    <p className="text-sm text-red-300/80 mb-1">Perda média anual por empresa</p>
-                    <p className="text-4xl font-bold text-red-500">R$ 47.000</p>
-                    <p className="text-xs text-red-400/60 mt-1">em impostos pagos indevidamente</p>
+                
+                <CardContent className="relative space-y-5">
+                  {/* Número Principal Animado */}
+                  <div className="p-6 bg-gradient-to-br from-red-500/20 to-red-600/10 rounded-2xl border border-red-500/30 text-center">
+                    <p className="text-sm text-red-300/80 mb-2 uppercase tracking-wide">Perda média anual por empresa</p>
+                    <p className="text-5xl md:text-6xl font-black text-red-500 drop-shadow-lg">
+                      R$ <AnimatedCounter value={47000} className="tabular-nums" />
+                    </p>
+                    <p className="text-sm text-red-400/70 mt-2">em impostos pagos indevidamente</p>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-red-300/80">
-                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                      <span>78% das empresas pagam impostos a mais</span>
+                  {/* Lista de Problemas */}
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-red-500/10 border border-red-500/20">
+                      <AlertTriangle className="h-6 w-6 text-red-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold text-red-400 text-lg">
+                          <AnimatedCounter value={78} suffix="%" /> das empresas
+                        </span>
+                        <p className="text-red-300/70 text-sm">pagam impostos a mais</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-red-300/80">
-                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                      <span>Créditos tributários expiram sem serem usados</span>
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+                      <AlertTriangle className="h-5 w-5 text-red-500/80 flex-shrink-0 mt-0.5" />
+                      <span className="text-red-300/80">Créditos tributários expiram sem serem usados</span>
                     </div>
-                    <div className="flex items-center gap-3 text-red-300/80">
-                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                      <span>Risco de malha fina por inconsistências</span>
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+                      <AlertTriangle className="h-5 w-5 text-red-500/80 flex-shrink-0 mt-0.5" />
+                      <span className="text-red-300/80">Risco de malha fina por inconsistências</span>
                     </div>
-                    <div className="flex items-center gap-3 text-red-300/80">
-                      <AlertTriangle className="h-5 w-5 text-red-500 flex-shrink-0" />
-                      <span>Lucro reduzido por carga tributária errada</span>
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-red-500/5 border border-red-500/10">
+                      <AlertTriangle className="h-5 w-5 text-red-500/80 flex-shrink-0 mt-0.5" />
+                      <span className="text-red-300/80">Lucro reduzido por carga tributária errada</span>
                     </div>
                   </div>
 
-                  <div className="p-3 bg-red-500/5 rounded-lg border border-red-500/10 mt-4">
-                    <p className="text-sm text-center text-red-400">
-                      <strong>Nos últimos 5 anos:</strong> empresas brasileiras perderam mais de{" "}
-                      <span className="text-red-500 font-bold">R$ 89 bilhões</span> em impostos pagos indevidamente
+                  {/* Estatística Impactante */}
+                  <div className="p-5 bg-gradient-to-r from-red-500/20 to-red-600/10 rounded-2xl border border-red-500/30">
+                    <p className="text-center">
+                      <span className="text-sm text-red-300/70 block mb-2">Nos últimos 5 anos:</span>
+                      <span className="text-red-300 font-medium">empresas brasileiras perderam mais de</span>
+                      <span className="block text-3xl font-black text-red-500 my-2">
+                        R$ <AnimatedCounter value={89} /> bilhões
+                      </span>
+                      <span className="text-red-400/70 text-sm">em impostos pagos indevidamente</span>
                     </p>
                   </div>
                 </CardContent>
               </Card>
             </motion.div>
 
-            {/* Lado da SOLUÇÃO */}
+            {/* Lado da SOLUÇÃO - Design Premium */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 h-full">
-                <CardHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
-                      <CheckCircle2 className="h-6 w-6 text-primary" />
+              <Card className="relative border-2 border-emerald-500/40 bg-gradient-to-br from-emerald-950/40 via-emerald-900/20 to-emerald-950/30 h-full shadow-2xl shadow-emerald-500/10 overflow-hidden">
+                {/* Glow effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent" />
+                
+                <CardHeader className="relative pb-2">
+                  <div className="flex items-center gap-4 mb-3">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 flex items-center justify-center border border-emerald-500/30">
+                      <CheckCircle2 className="h-7 w-7 text-emerald-500" />
                     </div>
-                    <CardTitle className="text-primary">Com AtentAI</CardTitle>
+                    <div>
+                      <CardTitle className="text-2xl text-emerald-400">Com AtentAI</CardTitle>
+                      <CardDescription className="text-emerald-300/60">
+                        Resultados reais das 2.847 empresas atendidas
+                      </CardDescription>
+                    </div>
                   </div>
-                  <CardDescription>
-                    Resultados reais das 2.847 empresas atendidas
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
-                    <p className="text-sm text-muted-foreground mb-1">Total recuperado para clientes</p>
-                    <p className="text-4xl font-bold text-primary">R$ 153M+</p>
-                    <p className="text-xs text-primary/60 mt-1">média de R$ 53.700 por empresa</p>
+                
+                <CardContent className="relative space-y-5">
+                  {/* Número Principal Animado */}
+                  <div className="p-6 bg-gradient-to-br from-emerald-500/20 to-emerald-600/10 rounded-2xl border border-emerald-500/30 text-center">
+                    <p className="text-sm text-emerald-300/80 mb-2 uppercase tracking-wide">Total recuperado para clientes</p>
+                    <p className="text-5xl md:text-6xl font-black text-emerald-500 drop-shadow-lg">
+                      R$ <AnimatedCounter value={153} />M+
+                    </p>
+                    <p className="text-sm text-emerald-400/70 mt-2">média de R$ 53.700 por empresa</p>
                   </div>
                   
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-3 text-foreground">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span>100% de conformidade legal garantida</span>
+                  {/* Lista de Benefícios */}
+                  <div className="space-y-4">
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                      <CheckCircle2 className="h-6 w-6 text-emerald-500 flex-shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-bold text-emerald-400 text-lg">100% de conformidade legal</span>
+                        <p className="text-emerald-300/70 text-sm">garantida em todos os processos</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 text-foreground">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span>Zero casos em malha fina</span>
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500/80 flex-shrink-0 mt-0.5" />
+                      <span className="text-emerald-300/80">Zero casos em malha fina</span>
                     </div>
-                    <div className="flex items-center gap-3 text-foreground">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span>Pagamento apenas no êxito (50%)</span>
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500/80 flex-shrink-0 mt-0.5" />
+                      <span className="text-emerald-300/80">Pagamento apenas no êxito (50%)</span>
                     </div>
-                    <div className="flex items-center gap-3 text-foreground">
-                      <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0" />
-                      <span>Relatório 100% auditável</span>
+                    <div className="flex items-start gap-4 p-3 rounded-xl bg-emerald-500/5 border border-emerald-500/10">
+                      <CheckCircle2 className="h-5 w-5 text-emerald-500/80 flex-shrink-0 mt-0.5" />
+                      <span className="text-emerald-300/80">Relatório 100% auditável</span>
                     </div>
                   </div>
 
-                  <div className="p-3 bg-primary/10 rounded-lg border border-primary/20 mt-4">
-                    <p className="text-sm text-center">
-                      <strong>Resultado:</strong> Em média, cada empresa recuperou{" "}
-                      <span className="text-primary font-bold">14x mais</span> do que pagou pelo serviço
+                  {/* Estatística de Sucesso */}
+                  <div className="p-5 bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 rounded-2xl border border-emerald-500/30">
+                    <p className="text-center">
+                      <span className="text-sm text-emerald-300/70 block mb-2">Resultado:</span>
+                      <span className="text-emerald-300 font-medium">Em média, cada empresa recuperou</span>
+                      <span className="block text-3xl font-black text-emerald-500 my-2">
+                        <AnimatedCounter value={14} />x mais
+                      </span>
+                      <span className="text-emerald-400/70 text-sm">do que pagou pelo serviço</span>
                     </p>
                   </div>
                 </CardContent>
@@ -338,26 +420,30 @@ export default function ModuloFiscal() {
             </motion.div>
           </div>
 
-          {/* CTA da Dor */}
+          {/* CTA da Dor - Mais Impactante */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center"
+            className="text-center max-w-3xl mx-auto"
           >
-            <p className="text-lg text-muted-foreground mb-6">
-              <strong className="text-red-400">Você está perdendo dinheiro agora.</strong>{" "}
-              Descubra quanto sua empresa pode recuperar.
-            </p>
-            <Button 
-              size="lg" 
-              onClick={() => setShowForm(true)}
-              className="text-lg px-8 py-6 shadow-lg bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70"
-            >
-              <Zap className="h-5 w-5 mr-2" />
-              Descobrir Minha Economia Agora
-              <ArrowRight className="h-5 w-5 ml-2" />
-            </Button>
+            <div className="p-8 rounded-3xl bg-gradient-to-r from-red-500/10 via-transparent to-emerald-500/10 border border-primary/20">
+              <p className="text-2xl font-bold mb-2">
+                <span className="text-red-400">Você está perdendo dinheiro agora.</span>
+              </p>
+              <p className="text-lg text-muted-foreground mb-6">
+                Descubra quanto sua empresa pode recuperar com uma análise gratuita.
+              </p>
+              <Button 
+                size="lg" 
+                onClick={() => setShowForm(true)}
+                className="text-lg px-10 py-7 shadow-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white group"
+              >
+                <Zap className="h-6 w-6 mr-2" />
+                Descobrir Minha Economia Agora
+                <ArrowRight className="h-6 w-6 ml-2 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
