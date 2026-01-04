@@ -50,20 +50,20 @@ const Index = () => {
         <StatsSection />
         
         {/* 4. Módulo Fiscal - Serviço premium de alta conversão */}
-        <div id="fiscal">
+        <section id="fiscal">
           <FiscalModuleSection />
-        </div>
+        </section>
         
         {/* 5. Depoimentos do Módulo Fiscal */}
         <FiscalTestimonialsSection />
         
-        {/* 6. Cases de Sucesso - Prova social */}
-        <SuccessCasesSection />
-        
-        {/* 7. Limpa Nome - Serviço secundário */}
-        <div id="limpa-nome">
+        {/* 6. Limpa Nome - Serviço secundário */}
+        <section id="limpa-nome">
           <LimpaNomeSection />
-        </div>
+        </section>
+        
+        {/* 7. Cases de Sucesso - Prova social */}
+        <SuccessCasesSection />
         
         {/* 8. Simulador - Engajamento interativo */}
         <SimulatorSection />
