@@ -61,6 +61,7 @@ import MinhasSolicitacoesPage from "./pages/MinhasSolicitacoesPage";
 import InvestorPresentation from "./pages/InvestorPresentation";
 import PartnerPanel from "./pages/PartnerPanel";
 import AberturaEmpresa from "./pages/AberturaEmpresa";
+import ModuloFiscal from "./pages/ModuloFiscal";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -104,6 +105,7 @@ const App = () => (
               <Route path="/investor" element={<InvestorPresentation />} />
               <Route path="/limpa-nome" element={<LimpaNomePage />} />
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
+              <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
               <Route path="/parceiro" element={
                 <ProtectedRoute>
                   <PartnerPanel />

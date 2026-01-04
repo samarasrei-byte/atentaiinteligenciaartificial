@@ -917,6 +917,119 @@ export type Database = {
         }
         Relationships: []
       }
+      fiscal_analysis_requests: {
+        Row: {
+          analysis_period_end: string | null
+          analysis_period_start: string | null
+          annual_revenue_cents: number | null
+          cnae_code: string | null
+          cnpj: string
+          company_name: string
+          cpf: string | null
+          created_at: string
+          email: string
+          full_name: string
+          guide_document_url: string | null
+          guide_type: string | null
+          guide_value_cents: number | null
+          id: string
+          identified_value_cents: number | null
+          new_guide_url: string | null
+          notes: string | null
+          paid_at: string | null
+          partner_id: string | null
+          payment_status: string | null
+          phone: string | null
+          processed_at: string | null
+          processed_by: string | null
+          report_url: string | null
+          risk_description: string | null
+          risk_detected: boolean | null
+          service_fee_cents: number | null
+          status: string
+          stripe_session_id: string | null
+          tax_regime: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          analysis_period_end?: string | null
+          analysis_period_start?: string | null
+          annual_revenue_cents?: number | null
+          cnae_code?: string | null
+          cnpj: string
+          company_name: string
+          cpf?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          guide_document_url?: string | null
+          guide_type?: string | null
+          guide_value_cents?: number | null
+          id?: string
+          identified_value_cents?: number | null
+          new_guide_url?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          partner_id?: string | null
+          payment_status?: string | null
+          phone?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          report_url?: string | null
+          risk_description?: string | null
+          risk_detected?: boolean | null
+          service_fee_cents?: number | null
+          status?: string
+          stripe_session_id?: string | null
+          tax_regime: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          analysis_period_end?: string | null
+          analysis_period_start?: string | null
+          annual_revenue_cents?: number | null
+          cnae_code?: string | null
+          cnpj?: string
+          company_name?: string
+          cpf?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          guide_document_url?: string | null
+          guide_type?: string | null
+          guide_value_cents?: number | null
+          id?: string
+          identified_value_cents?: number | null
+          new_guide_url?: string | null
+          notes?: string | null
+          paid_at?: string | null
+          partner_id?: string | null
+          payment_status?: string | null
+          phone?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          report_url?: string | null
+          risk_description?: string | null
+          risk_detected?: boolean | null
+          service_fee_cents?: number | null
+          status?: string
+          stripe_session_id?: string | null
+          tax_regime?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "fiscal_analysis_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ir_requests: {
         Row: {
           base_price_cents: number
