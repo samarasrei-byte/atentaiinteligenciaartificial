@@ -256,16 +256,17 @@ export function FiscalModuleSection() {
                   <span className="text-emerald-400 font-semibold">técnica, rastreabilidade e segurança</span>."
                 </blockquote>
 
-                {/* Success Fee Highlight - Design Vibrante */}
-                <div className="p-6 bg-gradient-to-r from-emerald-500/30 via-green-500/25 to-teal-500/30 rounded-2xl border-2 border-emerald-400/50 text-center mb-8 shadow-lg shadow-emerald-500/10">
-                  <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-emerald-400/40 to-green-300/40 flex items-center justify-center">
-                    <BadgePercent className="h-8 w-8 text-emerald-300" />
+                {/* Success Fee Highlight - Card Branco Premium */}
+                <div className="p-8 bg-white rounded-2xl border-2 border-emerald-500/40 text-center mb-8 shadow-xl shadow-emerald-500/20">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                    <BadgePercent className="h-9 w-9 text-white" />
                   </div>
-                  <p className="text-slate-300 mb-2 font-medium">Modelo de Pagamento</p>
-                  <p className="text-4xl font-bold text-white mb-1">
-                    50% <span className="text-emerald-400">no Êxito</span>
+                  <p className="text-slate-500 mb-2 font-semibold uppercase tracking-wide text-sm">Modelo de Pagamento</p>
+                  <p className="text-5xl font-bold mb-2">
+                    <span className="text-emerald-600">50%</span>{" "}
+                    <span className="text-emerald-500">no Êxito</span>
                   </p>
-                  <p className="text-slate-400 text-sm">do valor identificado no processo</p>
+                  <p className="text-slate-600 text-base font-medium">do valor identificado no processo</p>
                 </div>
 
                 {/* Guarantees */}
