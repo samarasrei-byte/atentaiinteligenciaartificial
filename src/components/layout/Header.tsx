@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, MessageCircle, Users, User, LogIn, Download } from "lucide-react";
+import { Menu, X, Calculator, MessageCircle, Users, User, LogIn, Download, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPWAButton } from "@/components/pwa/InstallPWAPrompt";
 
@@ -13,10 +13,10 @@ export function Header({ onNavigate }: HeaderProps) {
 
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
+    { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
     { label: "Contadores", icon: Users, href: "/contadores-publico" },
     { label: "Autônomos", icon: User, href: "/plano/autonomo" },
-    { label: "Serviços", icon: Calculator, href: "/servicos" },
   ];
 
   return (
