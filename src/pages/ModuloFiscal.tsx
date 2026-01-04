@@ -245,207 +245,328 @@ export default function ModuloFiscal() {
         </div>
       </section>
 
-      {/* PAIN SECTION - A Dor das Empresas - Design Premium com Alto Contraste */}
+      {/* PAIN SECTION - A Dor das Empresas - Design Ultra Premium */}
       <section className="relative py-24 overflow-hidden bg-slate-950">
-        {/* Background decorations */}
+        {/* Animated background */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-0 w-full h-1/2 bg-gradient-to-b from-red-950/20 to-transparent" />
-          <div className="absolute bottom-0 right-0 w-full h-1/2 bg-gradient-to-t from-emerald-950/20 to-transparent" />
+          <div className="absolute top-0 left-0 w-96 h-96 bg-red-500/10 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-emerald-500/10 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-transparent via-slate-950/50 to-slate-950" />
         </div>
         
         <div className="container max-w-7xl mx-auto px-4 relative">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-20"
           >
-            <Badge className="mb-6 bg-red-500/20 text-red-400 border-red-500/50 px-5 py-2.5 text-sm">
-              <AlertTriangle className="h-4 w-4 mr-2 animate-pulse" />
-              A Realidade que Ninguém Conta
-            </Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
-              Enquanto você lê isso, empresas estão{" "}
-              <span className="text-red-400">perdendo dinheiro</span>
-            </h2>
-            <p className="text-xl text-slate-300 max-w-3xl mx-auto">
-              Milhares de empresas brasileiras pagam impostos a mais todos os meses sem saber. 
-              A falta de análise fiscal técnica custa <strong className="text-red-400">bilhões por ano</strong> ao empresariado.
-            </p>
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+            >
+              <Badge className="mb-6 bg-red-500/20 text-red-400 border-red-500/50 px-6 py-3 text-base font-semibold">
+                <AlertTriangle className="h-5 w-5 mr-2 animate-pulse" />
+                ⚠️ ALERTA: A Realidade que Ninguém Conta
+              </Badge>
+            </motion.div>
+            
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-4xl md:text-6xl font-black mb-6 text-white leading-tight"
+            >
+              Enquanto você lê isso, sua empresa pode estar{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-red-500 to-orange-500">
+                perdendo R$ 47.000/ano
+              </span>
+            </motion.h2>
+            
+            <motion.p 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-xl md:text-2xl text-slate-300 max-w-4xl mx-auto"
+            >
+              <span className="text-red-400 font-bold">78% das empresas</span> pagam impostos a mais sem saber. 
+              A falta de análise fiscal técnica custa <span className="text-red-400 font-bold">bilhões por ano</span> ao empresariado brasileiro.
+            </motion.p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12 max-w-6xl mx-auto mb-16">
-            {/* Lado da DOR - Design Premium Alto Contraste */}
+          <div className="grid md:grid-cols-2 gap-10 lg:gap-16 max-w-6xl mx-auto mb-20">
+            {/* Lado da DOR - Ultra Premium */}
             <motion.div
-              initial={{ opacity: 0, x: -30 }}
+              initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
+              transition={{ duration: 0.6 }}
             >
-              <Card className="relative border border-red-500/30 bg-slate-900/90 h-full shadow-2xl shadow-red-500/20 overflow-hidden backdrop-blur-sm">
-                {/* Top accent bar */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-red-500 via-red-400 to-red-600" />
+              <Card className="relative border-2 border-red-500/40 bg-gradient-to-br from-slate-900 via-slate-900 to-red-950/30 h-full shadow-2xl shadow-red-500/20 overflow-hidden">
+                {/* Glowing top bar */}
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-red-600 via-red-400 to-orange-500" />
+                <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-red-500/20 to-transparent" />
                 
-                <CardHeader className="pb-4 pt-6">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-red-500/20 flex items-center justify-center border border-red-500/40">
-                      <Ban className="h-7 w-7 text-red-400" />
+                <CardHeader className="pb-4 pt-8">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.3, type: "spring" }}
+                    className="flex items-center gap-4 mb-2"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-red-500/30 to-red-600/10 flex items-center justify-center border border-red-500/50 shadow-lg shadow-red-500/20">
+                      <Ban className="h-8 w-8 text-red-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl text-white">Sem Análise Fiscal</CardTitle>
-                      <CardDescription className="text-slate-400">
-                        O custo da falta de auditoria
+                      <CardTitle className="text-2xl md:text-3xl text-white font-black">Sem Análise Fiscal</CardTitle>
+                      <CardDescription className="text-slate-400 text-base">
+                        O custo invisível da falta de auditoria
                       </CardDescription>
                     </div>
-                  </div>
+                  </motion.div>
                 </CardHeader>
                 
-                <CardContent className="space-y-5">
+                <CardContent className="space-y-6">
                   {/* Número Principal Animado */}
-                  <div className="p-6 bg-slate-800/80 rounded-2xl border border-red-500/20 text-center">
-                    <p className="text-sm text-slate-400 mb-2 uppercase tracking-wider font-medium">Perda média anual por empresa</p>
-                    <p className="text-5xl md:text-6xl font-black text-red-400">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4 }}
+                    className="p-8 bg-gradient-to-br from-red-500/10 to-red-600/5 rounded-3xl border border-red-500/30 text-center relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-500/10 to-transparent" />
+                    <p className="text-sm text-slate-400 mb-3 uppercase tracking-widest font-bold relative">💸 Perda média anual por empresa</p>
+                    <p className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 relative">
                       R$ <AnimatedCounter value={47000} className="tabular-nums" />
                     </p>
-                    <p className="text-sm text-slate-500 mt-2">em impostos pagos indevidamente</p>
-                  </div>
+                    <p className="text-slate-500 mt-3 relative">em impostos pagos indevidamente</p>
+                  </motion.div>
                   
-                  {/* Lista de Problemas */}
+                  {/* Lista de Problemas com animação escalonada */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-4 p-4 rounded-xl bg-red-500/10 border border-red-500/20">
-                      <AlertTriangle className="h-6 w-6 text-red-400 flex-shrink-0" />
-                      <div>
-                        <span className="font-bold text-white text-lg">
-                          <AnimatedCounter value={78} suffix="%" /> das empresas
-                        </span>
-                        <p className="text-slate-400 text-sm">pagam impostos a mais</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                      <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0" />
-                      <span className="text-slate-300">Créditos tributários expiram sem serem usados</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                      <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0" />
-                      <span className="text-slate-300">Risco de malha fina por inconsistências</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                      <AlertTriangle className="h-5 w-5 text-red-400 flex-shrink-0" />
-                      <span className="text-slate-300">Lucro reduzido por carga tributária errada</span>
-                    </div>
+                    {[
+                      { text: "78% das empresas", sub: "pagam impostos a mais", highlight: true },
+                      { text: "Créditos tributários expiram sem serem usados" },
+                      { text: "Risco de malha fina por inconsistências" },
+                      { text: "Lucro reduzido por carga tributária errada" },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: -30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.5 + i * 0.1 }}
+                        className={`flex items-center gap-4 p-4 rounded-xl ${
+                          item.highlight 
+                            ? 'bg-red-500/15 border-2 border-red-500/30' 
+                            : 'bg-slate-800/60 border border-slate-700/50'
+                        }`}
+                      >
+                        <AlertTriangle className={`h-6 w-6 ${item.highlight ? 'text-red-400' : 'text-red-500/70'} flex-shrink-0`} />
+                        <div>
+                          <span className={`font-bold text-lg ${item.highlight ? 'text-white' : 'text-slate-200'}`}>
+                            {item.text}
+                          </span>
+                          {item.sub && <p className="text-slate-400 text-sm">{item.sub}</p>}
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
 
                   {/* Estatística Impactante */}
-                  <div className="p-5 bg-gradient-to-r from-red-500/15 to-red-600/10 rounded-2xl border border-red-500/30">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.9 }}
+                    className="p-6 bg-gradient-to-r from-red-950/80 to-red-900/40 rounded-2xl border border-red-500/40"
+                  >
                     <p className="text-center">
-                      <span className="text-sm text-slate-400 block mb-2">Nos últimos 5 anos:</span>
-                      <span className="text-slate-300 font-medium">empresas brasileiras perderam mais de</span>
-                      <span className="block text-4xl font-black text-red-400 my-2">
+                      <span className="text-sm text-slate-400 block mb-2 uppercase tracking-wide">⏰ Nos últimos 5 anos:</span>
+                      <span className="text-slate-200 font-medium text-lg">empresas brasileiras perderam mais de</span>
+                      <span className="block text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-orange-400 my-3">
                         R$ <AnimatedCounter value={89} /> bilhões
                       </span>
-                      <span className="text-slate-500 text-sm">em impostos pagos indevidamente</span>
+                      <span className="text-slate-500">em impostos pagos indevidamente</span>
                     </p>
-                  </div>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
 
-            {/* Lado da SOLUÇÃO - Design Premium Alto Contraste */}
+            {/* Lado da SOLUÇÃO - Ultra Premium */}
             <motion.div
-              initial={{ opacity: 0, x: 30 }}
+              initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <Card className="relative border border-emerald-500/30 bg-slate-900/90 h-full shadow-2xl shadow-emerald-500/20 overflow-hidden backdrop-blur-sm">
-                {/* Top accent bar */}
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-emerald-400 to-emerald-600" />
+              <Card className="relative border-2 border-emerald-500/40 bg-gradient-to-br from-slate-900 via-slate-900 to-emerald-950/30 h-full shadow-2xl shadow-emerald-500/20 overflow-hidden">
+                {/* Glowing top bar */}
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-emerald-600 via-emerald-400 to-teal-500" />
+                <div className="absolute top-0 left-0 right-0 h-8 bg-gradient-to-b from-emerald-500/20 to-transparent" />
                 
-                <CardHeader className="pb-4 pt-6">
-                  <div className="flex items-center gap-4 mb-2">
-                    <div className="w-14 h-14 rounded-2xl bg-emerald-500/20 flex items-center justify-center border border-emerald-500/40">
-                      <CheckCircle2 className="h-7 w-7 text-emerald-400" />
+                <CardHeader className="pb-4 pt-8">
+                  <motion.div 
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.4, type: "spring" }}
+                    className="flex items-center gap-4 mb-2"
+                  >
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500/30 to-emerald-600/10 flex items-center justify-center border border-emerald-500/50 shadow-lg shadow-emerald-500/20">
+                      <CheckCircle2 className="h-8 w-8 text-emerald-400" />
                     </div>
                     <div>
-                      <CardTitle className="text-2xl text-white">Com AtentAI</CardTitle>
-                      <CardDescription className="text-slate-400">
-                        Resultados reais das 2.847 empresas atendidas
+                      <CardTitle className="text-2xl md:text-3xl text-white font-black">Com AtentAI</CardTitle>
+                      <CardDescription className="text-slate-400 text-base">
+                        Resultados reais de 2.847 empresas
                       </CardDescription>
                     </div>
-                  </div>
+                  </motion.div>
                 </CardHeader>
                 
-                <CardContent className="space-y-5">
+                <CardContent className="space-y-6">
                   {/* Número Principal Animado */}
-                  <div className="p-6 bg-slate-800/80 rounded-2xl border border-emerald-500/20 text-center">
-                    <p className="text-sm text-slate-400 mb-2 uppercase tracking-wider font-medium">Total recuperado para clientes</p>
-                    <p className="text-5xl md:text-6xl font-black text-emerald-400">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 0.5 }}
+                    className="p-8 bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 rounded-3xl border border-emerald-500/30 text-center relative overflow-hidden"
+                  >
+                    <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-emerald-500/10 to-transparent" />
+                    <p className="text-sm text-slate-400 mb-3 uppercase tracking-widest font-bold relative">💰 Total recuperado para clientes</p>
+                    <p className="text-6xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 relative">
                       R$ <AnimatedCounter value={153} />M+
                     </p>
-                    <p className="text-sm text-slate-500 mt-2">média de R$ 53.700 por empresa</p>
-                  </div>
+                    <p className="text-slate-500 mt-3 relative">média de R$ 53.700 por empresa</p>
+                  </motion.div>
                   
-                  {/* Lista de Benefícios */}
+                  {/* Lista de Benefícios com animação escalonada */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-4 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                      <CheckCircle2 className="h-6 w-6 text-emerald-400 flex-shrink-0" />
-                      <div>
-                        <span className="font-bold text-white text-lg">100% de conformidade legal</span>
-                        <p className="text-slate-400 text-sm">garantida em todos os processos</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                      <span className="text-slate-300">Zero casos em malha fina</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                      <span className="text-slate-300">Pagamento apenas no êxito (50%)</span>
-                    </div>
-                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                      <CheckCircle2 className="h-5 w-5 text-emerald-400 flex-shrink-0" />
-                      <span className="text-slate-300">Relatório 100% auditável</span>
-                    </div>
+                    {[
+                      { text: "100% de conformidade legal", sub: "garantida em todos os processos", highlight: true },
+                      { text: "Zero casos em malha fina" },
+                      { text: "Pagamento apenas no êxito (50%)" },
+                      { text: "Relatório 100% auditável" },
+                    ].map((item, i) => (
+                      <motion.div
+                        key={i}
+                        initial={{ opacity: 0, x: 30 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: 0.6 + i * 0.1 }}
+                        className={`flex items-center gap-4 p-4 rounded-xl ${
+                          item.highlight 
+                            ? 'bg-emerald-500/15 border-2 border-emerald-500/30' 
+                            : 'bg-slate-800/60 border border-slate-700/50'
+                        }`}
+                      >
+                        <CheckCircle2 className={`h-6 w-6 ${item.highlight ? 'text-emerald-400' : 'text-emerald-500/70'} flex-shrink-0`} />
+                        <div>
+                          <span className={`font-bold text-lg ${item.highlight ? 'text-white' : 'text-slate-200'}`}>
+                            {item.text}
+                          </span>
+                          {item.sub && <p className="text-slate-400 text-sm">{item.sub}</p>}
+                        </div>
+                      </motion.div>
+                    ))}
                   </div>
 
                   {/* Estatística de Sucesso */}
-                  <div className="p-5 bg-gradient-to-r from-emerald-500/15 to-emerald-600/10 rounded-2xl border border-emerald-500/30">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: 1 }}
+                    className="p-6 bg-gradient-to-r from-emerald-950/80 to-emerald-900/40 rounded-2xl border border-emerald-500/40"
+                  >
                     <p className="text-center">
-                      <span className="text-sm text-slate-400 block mb-2">Resultado:</span>
-                      <span className="text-slate-300 font-medium">Em média, cada empresa recuperou</span>
-                      <span className="block text-4xl font-black text-emerald-400 my-2">
+                      <span className="text-sm text-slate-400 block mb-2 uppercase tracking-wide">🎯 Resultado Comprovado:</span>
+                      <span className="text-slate-200 font-medium text-lg">Em média, cada empresa recuperou</span>
+                      <span className="block text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400 my-3">
                         <AnimatedCounter value={14} />x mais
                       </span>
-                      <span className="text-slate-500 text-sm">do que pagou pelo serviço</span>
+                      <span className="text-slate-500">do que pagou pelo serviço</span>
                     </p>
-                  </div>
+                  </motion.div>
                 </CardContent>
               </Card>
             </motion.div>
           </div>
 
-          {/* CTA da Dor - Mais Impactante */}
+          {/* CTA Ultra Impactante */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
+            initial={{ opacity: 0, y: 30, scale: 0.95 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
             viewport={{ once: true }}
-            className="text-center max-w-3xl mx-auto"
+            transition={{ delay: 0.2 }}
+            className="text-center max-w-4xl mx-auto"
           >
-            <div className="p-8 rounded-3xl bg-slate-800/50 border border-slate-700/50 backdrop-blur-sm">
-              <p className="text-2xl font-bold mb-2">
-                <span className="text-red-400">Você está perdendo dinheiro agora.</span>
-              </p>
-              <p className="text-lg text-slate-400 mb-6">
-                Descubra quanto sua empresa pode recuperar com uma análise gratuita.
-              </p>
-              <Button 
-                size="lg" 
-                onClick={() => setShowForm(true)}
-                className="text-lg px-10 py-7 shadow-xl bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white group"
+            <div className="p-10 rounded-3xl bg-gradient-to-br from-slate-800/80 via-slate-900/90 to-slate-800/80 border-2 border-primary/30 relative overflow-hidden">
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/5 via-transparent to-emerald-500/5" />
+              
+              <motion.p 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.3 }}
+                className="text-3xl md:text-4xl font-black mb-4 relative"
               >
-                <Zap className="h-6 w-6 mr-2" />
-                Descobrir Minha Economia Agora
-                <ArrowRight className="h-6 w-6 ml-2 group-hover:translate-x-1 transition-transform" />
-              </Button>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-500">Você está perdendo dinheiro</span>
+                <span className="text-white"> agora.</span>
+              </motion.p>
+              
+              <motion.p 
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4 }}
+                className="text-xl text-slate-300 mb-8 relative"
+              >
+                Descubra <span className="text-emerald-400 font-bold">quanto sua empresa pode recuperar</span> com uma análise 100% gratuita.
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.5 }}
+                className="relative"
+              >
+                <Button 
+                  size="lg" 
+                  onClick={() => setShowForm(true)}
+                  className="text-xl px-12 py-8 shadow-2xl bg-gradient-to-r from-emerald-600 via-emerald-500 to-teal-500 hover:from-emerald-500 hover:via-emerald-400 hover:to-teal-400 text-white group font-bold border-0 transition-all duration-300 hover:scale-105 hover:shadow-emerald-500/30"
+                >
+                  <Zap className="h-7 w-7 mr-3" />
+                  Descobrir Minha Economia Agora
+                  <ArrowRight className="h-7 w-7 ml-3 group-hover:translate-x-2 transition-transform" />
+                </Button>
+                
+                <div className="flex items-center justify-center gap-6 mt-6 text-sm text-slate-400">
+                  <span className="flex items-center gap-2">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    Análise 100% gratuita
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-emerald-500" />
+                    Sem compromisso
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-emerald-500" />
+                    Dados seguros
+                  </span>
+                </div>
+              </motion.div>
             </div>
           </motion.div>
         </div>
