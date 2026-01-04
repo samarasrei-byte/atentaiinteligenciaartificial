@@ -215,7 +215,7 @@ export default function ModuloFiscal() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
             >
-              <Card className="border-primary/20 bg-gradient-to-br from-card to-muted/50 shadow-2xl">
+              <Card className="border-primary/30 bg-gradient-to-br from-white to-slate-50 shadow-2xl">
                 <CardContent className="p-8">
                   <div className="grid grid-cols-2 gap-6">
                     {stats.map((stat, i) => (
@@ -224,19 +224,19 @@ export default function ModuloFiscal() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 + i * 0.1 }}
-                        className="text-center p-4 rounded-xl bg-background/50"
+                        className="text-center p-4 rounded-xl bg-gradient-to-br from-slate-100 to-slate-50 border border-slate-200"
                       >
                         <stat.icon className="h-8 w-8 text-primary mx-auto mb-2" />
                         <p className="text-3xl font-bold text-primary">{stat.value}</p>
-                        <p className="text-sm text-muted-foreground">{stat.label}</p>
+                        <p className="text-sm text-slate-600">{stat.label}</p>
                       </motion.div>
                     ))}
                   </div>
                   
-                  <div className="mt-8 p-4 bg-primary/10 rounded-xl text-center">
-                    <p className="text-sm text-muted-foreground mb-1">Modelo de Pagamento</p>
+                  <div className="mt-8 p-5 bg-gradient-to-r from-primary/20 via-emerald-100 to-teal-100 rounded-xl text-center border border-primary/30">
+                    <p className="text-sm text-slate-700 mb-1 font-medium">Modelo de Pagamento</p>
                     <p className="text-3xl font-bold text-primary">50% no Êxito</p>
-                    <p className="text-sm text-muted-foreground">do valor identificado</p>
+                    <p className="text-sm text-slate-600">do valor identificado</p>
                   </div>
                 </CardContent>
               </Card>
