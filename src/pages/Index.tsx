@@ -39,21 +39,44 @@ const Index = () => {
       <Header onNavigate={scrollToSection} />
       
       <main className="animate-page-enter">
+        {/* 1. Hero - Primeira impressão */}
         <HeroSection onNavigate={scrollToSection} />
+        
+        {/* 2. Features - O que oferecemos */}
         <FeaturesSection />
+        
+        {/* 3. Stats - Prova social com números */}
         <StatsSection />
-        <SuccessCasesSection />
-        <div id="limpa-nome">
-          <LimpaNomeSection />
-        </div>
+        
+        {/* 4. Módulo Fiscal - Serviço premium de alta conversão */}
         <div id="modulo-fiscal">
           <FiscalModuleSection />
         </div>
+        
+        {/* 5. Cases de Sucesso - Prova social */}
+        <SuccessCasesSection />
+        
+        {/* 6. Limpa Nome - Serviço secundário */}
+        <div id="limpa-nome">
+          <LimpaNomeSection />
+        </div>
+        
+        {/* 7. Simulador - Engajamento interativo */}
         <SimulatorSection />
+        
+        {/* 8. IA - Diferencial tecnológico */}
         <AISection />
+        
+        {/* 9. Perfis - Segmentação */}
         <ProfilesSection />
+        
+        {/* 10. Pricing - Conversão */}
         <PricingSection />
+        
+        {/* 11. FAQ - Objeções */}
         <FAQSection />
+        
+        {/* 12. Depoimentos - Prova social final */}
         <TestimonialsSection />
       </main>
 
