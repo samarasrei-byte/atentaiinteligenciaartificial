@@ -12,8 +12,8 @@ export default function ModuloFiscal() {
   const [showForm, setShowForm] = useState(false);
 
   const stats = [
-    { value: "R$ 12M+", label: "Recuperados para clientes", icon: TrendingUp },
-    { value: "847", label: "Empresas atendidas", icon: Building2 },
+    { value: "R$ 153M+", label: "Recuperados para clientes", icon: TrendingUp },
+    { value: "2.847", label: "Empresas atendidas", icon: Building2 },
     { value: "100%", label: "Conformidade legal", icon: Shield },
     { value: "0", label: "Casos em malha fina", icon: CheckCircle2 },
   ];
@@ -121,7 +121,7 @@ export default function ModuloFiscal() {
               
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 leading-tight">
                 Empresas já economizaram{" "}
-                <span className="text-primary">mais de R$ 12 milhões</span>{" "}
+                <span className="text-primary">mais de R$ 153 milhões</span>{" "}
                 com nossa inteligência fiscal
               </h1>
               
@@ -158,7 +158,7 @@ export default function ModuloFiscal() {
                     </div>
                   ))}
                 </div>
-                <span>+847 empresas atendidas</span>
+                <span>+2.847 empresas atendidas</span>
                 <div className="flex items-center gap-1">
                   {[1, 2, 3, 4, 5].map((i) => (
                     <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -218,11 +218,11 @@ export default function ModuloFiscal() {
             </div>
             <div className="flex items-center gap-2">
               <Users className="h-6 w-6 text-primary" />
-              <span className="font-semibold">847+ Empresas</span>
+              <span className="font-semibold">2.847+ Empresas</span>
             </div>
             <div className="flex items-center gap-2">
               <TrendingUp className="h-6 w-6 text-primary" />
-              <span className="font-semibold">R$ 12M+ Recuperados</span>
+              <span className="font-semibold">R$ 153M+ Recuperados</span>
             </div>
           </div>
         </div>
