@@ -37,16 +37,32 @@ export function FiscalModuleSection() {
   const navigate = useNavigate();
   const sectionRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
+  const [urgencyMinutes, setUrgencyMinutes] = useState(14);
+  const [urgencySeconds, setUrgencySeconds] = useState(59);
+  
+  // Timer de urgência
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setUrgencySeconds(prev => {
+        if (prev === 0) {
+          setUrgencyMinutes(m => m === 0 ? 14 : m - 1);
+          return 59;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
   
   const savedAmount = useCountUp(47000, 2500, isInView);
   const companiesPercent = useCountUp(78, 2000, isInView);
   const successRate = useCountUp(94, 2200, isInView);
 
   const benefits = [
-    { icon: Lock, text: "Não alteramos faturamento", desc: "Transparência total" },
-    { icon: Shield, text: "Bloqueio em risco", desc: "Proteção automática" },
-    { icon: FileCheck, text: "Relatório completo", desc: "Documentação fiscal" },
-    { icon: TrendingUp, text: "Pagamento no êxito", desc: "Só paga se ganhar" },
+    { icon: Lock, text: "Não alteramos faturamento", desc: "Transparência total", color: "from-blue-500 to-indigo-600", bgColor: "bg-blue-500/20" },
+    { icon: Shield, text: "Bloqueio em risco", desc: "Proteção automática", color: "from-purple-500 to-pink-600", bgColor: "bg-purple-500/20" },
+    { icon: FileCheck, text: "Relatório completo", desc: "Documentação fiscal", color: "from-amber-500 to-orange-600", bgColor: "bg-amber-500/20" },
+    { icon: TrendingUp, text: "Pagamento no êxito", desc: "Só paga se ganhar", color: "from-emerald-500 to-teal-600", bgColor: "bg-emerald-500/20" },
   ];
 
   const painPoints = [
@@ -66,6 +82,22 @@ export function FiscalModuleSection() {
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.5 } }
+  };
+
+  const pulseVariants = {
+    pulse: {
+      scale: [1, 1.02, 1],
+      boxShadow: [
+        "0 0 0 0 rgba(16, 185, 129, 0.4)",
+        "0 0 0 20px rgba(16, 185, 129, 0)",
+        "0 0 0 0 rgba(16, 185, 129, 0)"
+      ],
+      transition: {
+        duration: 2,
+        repeat: Infinity,
+        ease: "easeInOut" as const
+      }
+    }
   };
 
   return (
@@ -196,7 +228,7 @@ export function FiscalModuleSection() {
               </div>
             </div>
 
-            {/* Benefits Grid */}
+            {/* Benefits Grid - Design Vibrante com Ícones Coloridos */}
             <div className="grid grid-cols-2 gap-4 mb-8">
               {benefits.map((benefit, i) => (
                 <motion.div
@@ -204,36 +236,51 @@ export function FiscalModuleSection() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={isInView ? { opacity: 1, y: 0 } : {}}
                   transition={{ delay: 0.5 + i * 0.1 }}
-                  className="p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 hover:border-emerald-500/30 transition-all duration-300 group"
+                  whileHover={{ scale: 1.05, y: -5 }}
+                  className="p-5 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/20 hover:border-white/40 transition-all duration-300 group cursor-pointer backdrop-blur-sm shadow-lg hover:shadow-xl"
                 >
-                  <div className="p-2 rounded-lg bg-emerald-500/20 w-fit mb-3 group-hover:bg-emerald-500/30 transition-colors">
-                    <benefit.icon className="h-5 w-5 text-emerald-400" />
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${benefit.color} w-fit mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                    <benefit.icon className="h-6 w-6 text-white" />
                   </div>
-                  <p className="font-semibold text-white text-sm">{benefit.text}</p>
-                  <p className="text-slate-400 text-xs mt-1">{benefit.desc}</p>
+                  <p className="font-bold text-white text-base mb-1">{benefit.text}</p>
+                  <p className="text-slate-300 text-sm">{benefit.desc}</p>
                 </motion.div>
               ))}
             </div>
 
-            {/* CTA Button */}
+            {/* CTA Button com Timer de Urgência */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ delay: 0.8 }}
+              className="space-y-4"
             >
+              {/* Timer de Urgência */}
+              <div className="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-400/30 w-fit">
+                <div className="flex items-center gap-1 text-orange-400">
+                  <Clock className="h-5 w-5 animate-pulse" />
+                  <span className="font-bold text-lg">
+                    {String(urgencyMinutes).padStart(2, '0')}:{String(urgencySeconds).padStart(2, '0')}
+                  </span>
+                </div>
+                <span className="text-orange-300 text-sm font-medium">
+                  para garantir análise prioritária
+                </span>
+              </div>
+
               <Button 
                 size="lg" 
                 onClick={() => navigate('/modulo-fiscal')}
-                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 group"
+                className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-lg px-8 py-6 rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 group animate-pulse"
               >
                 <Zap className="h-5 w-5 mr-2" />
                 Solicitar Análise Fiscal Gratuita
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
               
-              <p className="text-slate-400 text-sm mt-4 flex items-center gap-2">
-                <Clock className="h-4 w-4" />
-                Análise em até 48h úteis
+              <p className="text-slate-400 text-sm flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                Análise em até 48h úteis • Sem compromisso
               </p>
             </motion.div>
           </motion.div>
@@ -244,20 +291,21 @@ export function FiscalModuleSection() {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Card className="border-2 border-emerald-400/50 bg-gradient-to-br from-slate-800/90 via-emerald-900/30 to-slate-900/90 backdrop-blur-sm overflow-hidden relative shadow-2xl shadow-emerald-500/10">
-              {/* Glow effect */}
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-400/30 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-primary/30 rounded-full blur-3xl" />
-              
+            {/* Card Principal com Fundo Branco */}
+            <Card className="border-0 bg-white overflow-hidden relative shadow-2xl">
               <CardContent className="p-8 relative z-10">
-                {/* Quote */}
-                <blockquote className="text-xl italic text-slate-300 border-l-4 border-emerald-500 pl-6 mb-8">
+                {/* Quote - Fundo Branco com Texto Preto */}
+                <blockquote className="text-xl italic text-slate-700 border-l-4 border-emerald-500 pl-6 mb-8">
                   "Não prometemos milagres fiscais. Entregamos{" "}
-                  <span className="text-emerald-400 font-semibold">técnica, rastreabilidade e segurança</span>."
+                  <span className="text-emerald-600 font-bold">técnica, rastreabilidade e segurança</span>."
                 </blockquote>
 
-                {/* Success Fee Highlight - Design Premium Vibrante */}
-                <div className="relative p-8 rounded-3xl overflow-hidden mb-8 group hover:scale-[1.02] transition-all duration-500">
+                {/* Success Fee Highlight - Com Animação Pulse/Glow */}
+                <motion.div 
+                  variants={pulseVariants}
+                  animate="pulse"
+                  className="relative p-8 rounded-3xl overflow-hidden mb-8 group hover:scale-[1.02] transition-all duration-500"
+                >
                   {/* Background Gradient */}
                   <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500" />
                   <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/50 to-transparent" />
@@ -269,9 +317,13 @@ export function FiscalModuleSection() {
                   
                   {/* Content */}
                   <div className="relative z-10 text-center">
-                    <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl border border-white/30 group-hover:scale-110 transition-transform duration-300">
+                    <motion.div 
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                      className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl border border-white/30"
+                    >
                       <BadgePercent className="h-10 w-10 text-white drop-shadow-lg" />
-                    </div>
+                    </motion.div>
                     
                     <p className="text-white/90 mb-3 font-bold uppercase tracking-widest text-xs">
                       Modelo de Pagamento
@@ -299,45 +351,45 @@ export function FiscalModuleSection() {
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
-                {/* Guarantees */}
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="space-y-3">
-                    <p className="text-red-400 font-semibold text-sm flex items-center gap-2">
-                      <AlertTriangle className="h-4 w-4" />
+                {/* Guarantees - Fundo Branco com Texto Preto */}
+                <div className="grid grid-cols-2 gap-6 mb-6 p-6 bg-slate-50 rounded-2xl">
+                  <div className="space-y-4">
+                    <p className="text-red-600 font-bold text-base flex items-center gap-2">
+                      <AlertTriangle className="h-5 w-5" />
                       Não fazemos
                     </p>
                     {["Atalhos fiscais", "Alterar dados", "Executar com risco"].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2 text-slate-400 text-sm">
-                        <div className="w-1.5 h-1.5 rounded-full bg-red-400" />
+                      <div key={i} className="flex items-center gap-3 text-slate-700 text-sm font-medium">
+                        <div className="w-2 h-2 rounded-full bg-red-500" />
                         {item}
                       </div>
                     ))}
                   </div>
-                  <div className="space-y-3">
-                    <p className="text-emerald-400 font-semibold text-sm flex items-center gap-2">
-                      <CheckCircle2 className="h-4 w-4" />
+                  <div className="space-y-4">
+                    <p className="text-emerald-600 font-bold text-base flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5" />
                       Garantimos
                     </p>
                     {["Técnica avançada", "Rastreabilidade", "Governança total"].map((item, i) => (
-                      <div key={i} className="flex items-center gap-2 text-slate-300 text-sm">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                      <div key={i} className="flex items-center gap-3 text-slate-700 text-sm font-medium">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500" />
                         {item}
                       </div>
                     ))}
                   </div>
                 </div>
 
-                {/* Regimes */}
-                <div className="flex flex-wrap gap-2">
-                  <Badge variant="outline" className="border-emerald-500/50 text-emerald-300 bg-emerald-500/10">
+                {/* Regimes - Fundo Branco */}
+                <div className="flex flex-wrap gap-3">
+                  <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 px-4 py-2 text-sm font-semibold">
                     Simples Nacional
                   </Badge>
-                  <Badge variant="outline" className="border-emerald-500/50 text-emerald-300 bg-emerald-500/10">
+                  <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 px-4 py-2 text-sm font-semibold">
                     Lucro Presumido
                   </Badge>
-                  <Badge variant="outline" className="border-emerald-500/50 text-emerald-300 bg-emerald-500/10">
+                  <Badge className="bg-emerald-100 text-emerald-700 border-emerald-300 hover:bg-emerald-200 px-4 py-2 text-sm font-semibold">
                     Lucro Real
                   </Badge>
                 </div>
