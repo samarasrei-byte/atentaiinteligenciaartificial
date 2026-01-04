@@ -10,6 +10,7 @@ import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { StatsSection } from "@/components/sections/StatsSection";
 import { LimpaNomeSection } from "@/components/sections/LimpaNomeSection";
 import { FiscalModuleSection } from "@/components/sections/FiscalModuleSection";
+import { FiscalTestimonialsSection } from "@/components/sections/FiscalTestimonialsSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
 import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
@@ -49,34 +50,37 @@ const Index = () => {
         <StatsSection />
         
         {/* 4. Módulo Fiscal - Serviço premium de alta conversão */}
-        <div id="modulo-fiscal">
+        <div id="fiscal">
           <FiscalModuleSection />
         </div>
         
-        {/* 5. Cases de Sucesso - Prova social */}
+        {/* 5. Depoimentos do Módulo Fiscal */}
+        <FiscalTestimonialsSection />
+        
+        {/* 6. Cases de Sucesso - Prova social */}
         <SuccessCasesSection />
         
-        {/* 6. Limpa Nome - Serviço secundário */}
+        {/* 7. Limpa Nome - Serviço secundário */}
         <div id="limpa-nome">
           <LimpaNomeSection />
         </div>
         
-        {/* 7. Simulador - Engajamento interativo */}
+        {/* 8. Simulador - Engajamento interativo */}
         <SimulatorSection />
         
-        {/* 8. IA - Diferencial tecnológico */}
+        {/* 9. IA - Diferencial tecnológico */}
         <AISection />
         
-        {/* 9. Perfis - Segmentação */}
+        {/* 10. Perfis - Segmentação */}
         <ProfilesSection />
         
-        {/* 10. Pricing - Conversão */}
+        {/* 11. Pricing - Conversão */}
         <PricingSection />
         
-        {/* 11. FAQ - Objeções */}
+        {/* 12. FAQ - Objeções */}
         <FAQSection />
         
-        {/* 12. Depoimentos - Prova social final */}
+        {/* 13. Depoimentos - Prova social final */}
         <TestimonialsSection />
       </main>
 
