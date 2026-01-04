@@ -256,17 +256,49 @@ export function FiscalModuleSection() {
                   <span className="text-emerald-400 font-semibold">técnica, rastreabilidade e segurança</span>."
                 </blockquote>
 
-                {/* Success Fee Highlight - Card Branco Premium */}
-                <div className="p-8 bg-white rounded-2xl border-2 border-emerald-500/40 text-center mb-8 shadow-xl shadow-emerald-500/20">
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-500 flex items-center justify-center shadow-lg shadow-emerald-500/30">
-                    <BadgePercent className="h-9 w-9 text-white" />
+                {/* Success Fee Highlight - Design Premium Vibrante */}
+                <div className="relative p-8 rounded-3xl overflow-hidden mb-8 group hover:scale-[1.02] transition-all duration-500">
+                  {/* Background Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-emerald-600/50 to-transparent" />
+                  
+                  {/* Decorative Elements */}
+                  <div className="absolute top-0 right-0 w-40 h-40 bg-white/20 rounded-full blur-3xl" />
+                  <div className="absolute bottom-0 left-0 w-32 h-32 bg-teal-300/30 rounded-full blur-2xl" />
+                  <div className="absolute top-4 left-4 w-20 h-20 bg-green-300/20 rounded-full blur-xl" />
+                  
+                  {/* Content */}
+                  <div className="relative z-10 text-center">
+                    <div className="w-20 h-20 mx-auto mb-5 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center shadow-2xl border border-white/30 group-hover:scale-110 transition-transform duration-300">
+                      <BadgePercent className="h-10 w-10 text-white drop-shadow-lg" />
+                    </div>
+                    
+                    <p className="text-white/90 mb-3 font-bold uppercase tracking-widest text-xs">
+                      Modelo de Pagamento
+                    </p>
+                    
+                    <div className="mb-3">
+                      <span className="text-6xl md:text-7xl font-black text-white drop-shadow-lg">50%</span>
+                    </div>
+                    
+                    <p className="text-2xl md:text-3xl font-bold text-white/95 mb-3">
+                      no Êxito
+                    </p>
+                    
+                    <div className="inline-block px-5 py-2 bg-white/20 backdrop-blur-sm rounded-full border border-white/30">
+                      <p className="text-white font-semibold text-sm">
+                        do valor identificado no processo
+                      </p>
+                    </div>
+                    
+                    {/* Zero Risk Badge */}
+                    <div className="mt-5 flex justify-center">
+                      <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg">
+                        <Shield className="h-4 w-4 text-emerald-600" />
+                        <span className="text-emerald-700 font-bold text-sm">Risco Zero</span>
+                      </div>
+                    </div>
                   </div>
-                  <p className="text-slate-500 mb-2 font-semibold uppercase tracking-wide text-sm">Modelo de Pagamento</p>
-                  <p className="text-5xl font-bold mb-2">
-                    <span className="text-emerald-600">50%</span>{" "}
-                    <span className="text-emerald-500">no Êxito</span>
-                  </p>
-                  <p className="text-slate-600 text-base font-medium">do valor identificado no processo</p>
                 </div>
 
                 {/* Guarantees */}
