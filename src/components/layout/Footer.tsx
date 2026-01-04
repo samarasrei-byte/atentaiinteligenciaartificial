@@ -40,7 +40,7 @@ export function Footer({ onNavigate }: FooterProps) {
                 className="h-16 w-auto object-contain brightness-0 invert"
               />
             </div>
-            <p className="text-secondary-foreground/70 text-sm mb-6 leading-relaxed">
+            <p className="text-secondary-foreground text-sm mb-6 leading-relaxed opacity-90">
               Simplificamos a Reforma Tributária de 2026 
               para cidadãos, empresas e profissionais.
             </p>
@@ -72,13 +72,13 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Navigation */}
           <div>
-            <h4 className="font-bold mb-4">Navegação</h4>
+            <h4 className="font-bold mb-4 text-secondary-foreground">Navegação</h4>
             <ul className="space-y-3">
               {navigation.map((item) => (
                 <li key={item.section}>
                   <button 
                     onClick={() => onNavigate(item.section)}
-                    className="flex items-center gap-2 text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
+                    className="flex items-center gap-2 text-secondary-foreground opacity-90 hover:text-primary hover:opacity-100 transition-colors text-sm"
                   >
                     <item.icon className="w-4 h-4" />
                     {item.label}
@@ -90,21 +90,21 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Resources */}
           <div>
-            <h4 className="font-bold mb-4">Recursos</h4>
+            <h4 className="font-bold mb-4 text-secondary-foreground">Recursos</h4>
             <ul className="space-y-3">
               {resources.map((item) => (
                 <li key={item.label}>
                   {'to' in item ? (
                     <Link 
                       to={item.to}
-                      className="text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
+                      className="text-secondary-foreground opacity-90 hover:text-primary hover:opacity-100 transition-colors text-sm"
                     >
                       {item.label}
                     </Link>
                   ) : (
                     <a 
                       href={item.href}
-                      className="text-secondary-foreground/70 hover:text-primary transition-colors text-sm"
+                      className="text-secondary-foreground opacity-90 hover:text-primary hover:opacity-100 transition-colors text-sm"
                     >
                       {item.label}
                     </a>
@@ -116,13 +116,13 @@ export function Footer({ onNavigate }: FooterProps) {
 
           {/* Contact */}
           <div>
-            <h4 className="font-bold mb-4">Contato</h4>
+            <h4 className="font-bold mb-4 text-secondary-foreground">Contato</h4>
             <ul className="space-y-3">
-              <li className="flex items-center gap-3 text-sm text-secondary-foreground/70">
+              <li className="flex items-center gap-3 text-sm text-secondary-foreground opacity-90">
                 <Mail className="w-4 h-4" />
                 contato@atentai.com.br
               </li>
-              <li className="flex items-start gap-3 text-sm text-secondary-foreground/70">
+              <li className="flex items-start gap-3 text-sm text-secondary-foreground opacity-90">
                 <MapPin className="w-4 h-4 mt-0.5" />
                 São Paulo, Vila Lobos
               </li>
@@ -132,18 +132,18 @@ export function Footer({ onNavigate }: FooterProps) {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-secondary-foreground/10">
+      <div className="border-t border-secondary-foreground/20">
         <div className="container mx-auto px-4 py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-sm text-secondary-foreground/60">
+            <p className="text-sm text-secondary-foreground opacity-80">
               © {currentYear} AtentAI. Todos os direitos reservados.
             </p>
-            <div className="flex items-center gap-6 text-sm text-secondary-foreground/60">
+            <div className="flex items-center gap-6 text-sm text-secondary-foreground opacity-80">
               {legal.map((item) => (
                 <Link 
                   key={item.to} 
                   to={item.to} 
-                  className="hover:text-primary transition-colors"
+                  className="hover:text-primary hover:opacity-100 transition-colors"
                 >
                   {item.label}
                 </Link>
