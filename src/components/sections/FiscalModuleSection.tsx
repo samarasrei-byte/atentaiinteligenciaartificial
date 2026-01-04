@@ -114,47 +114,53 @@ export function FiscalModuleSection() {
           animate={isInView ? "visible" : "hidden"}
           className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16"
         >
-          {/* Card 1 - Valor Perdido */}
+          {/* Card 1 - Valor Perdido - Design Vibrante */}
           <motion.div variants={itemVariants}>
-            <Card className="bg-gradient-to-br from-red-500/20 to-red-900/20 border-red-500/30 backdrop-blur-sm overflow-hidden group hover:border-red-400/50 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-rose-200 via-pink-100 to-rose-100 border-rose-300/50 backdrop-blur-sm overflow-hidden group hover:border-rose-400 hover:shadow-xl hover:shadow-rose-500/20 transition-all duration-300">
               <CardContent className="p-8 text-center relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/10 rounded-full blur-3xl" />
-                <AlertTriangle className="h-10 w-10 text-red-400 mx-auto mb-4" />
-                <div className="text-5xl md:text-6xl font-bold text-white mb-2">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-rose-300/30 rounded-full blur-3xl" />
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-rose-400/30 to-red-300/30 flex items-center justify-center">
+                  <AlertTriangle className="h-8 w-8 text-red-500" />
+                </div>
+                <div className="text-5xl md:text-6xl font-bold text-slate-800 mb-2">
                   R$ {savedAmount.toLocaleString('pt-BR')}
                 </div>
-                <p className="text-red-300 font-medium">Perdidos por ano/empresa</p>
-                <p className="text-slate-400 text-sm mt-2">Média de impostos pagos a mais</p>
+                <p className="text-red-600 font-semibold text-lg">Perdidos por ano/empresa</p>
+                <p className="text-slate-600 text-sm mt-2">Média de impostos pagos a mais</p>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Card 2 - Empresas */}
+          {/* Card 2 - Empresas - Design Vibrante */}
           <motion.div variants={itemVariants}>
-            <Card className="bg-gradient-to-br from-amber-500/20 to-amber-900/20 border-amber-500/30 backdrop-blur-sm overflow-hidden group hover:border-amber-400/50 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-amber-100 via-yellow-50 to-orange-50 border-amber-300/50 backdrop-blur-sm overflow-hidden group hover:border-amber-400 hover:shadow-xl hover:shadow-amber-500/20 transition-all duration-300">
               <CardContent className="p-8 text-center relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/10 rounded-full blur-3xl" />
-                <Building2 className="h-10 w-10 text-amber-400 mx-auto mb-4" />
-                <div className="text-5xl md:text-6xl font-bold text-white mb-2">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-amber-200/40 rounded-full blur-3xl" />
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-amber-400/40 to-yellow-300/40 flex items-center justify-center">
+                  <Building2 className="h-8 w-8 text-amber-600" />
+                </div>
+                <div className="text-5xl md:text-6xl font-bold text-slate-800 mb-2">
                   {companiesPercent}%
                 </div>
-                <p className="text-amber-300 font-medium">Das empresas pagam a mais</p>
-                <p className="text-slate-400 text-sm mt-2">Sem saber que poderiam economizar</p>
+                <p className="text-amber-700 font-semibold text-lg">Das empresas pagam a mais</p>
+                <p className="text-slate-600 text-sm mt-2">Sem saber que poderiam economizar</p>
               </CardContent>
             </Card>
           </motion.div>
 
-          {/* Card 3 - Taxa de Sucesso */}
+          {/* Card 3 - Taxa de Sucesso - Design Vibrante */}
           <motion.div variants={itemVariants}>
-            <Card className="bg-gradient-to-br from-emerald-500/20 to-emerald-900/20 border-emerald-500/30 backdrop-blur-sm overflow-hidden group hover:border-emerald-400/50 transition-all duration-300">
+            <Card className="bg-gradient-to-br from-teal-100 via-emerald-50 to-green-50 border-emerald-300/50 backdrop-blur-sm overflow-hidden group hover:border-emerald-400 hover:shadow-xl hover:shadow-emerald-500/20 transition-all duration-300">
               <CardContent className="p-8 text-center relative">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-3xl" />
-                <CheckCircle2 className="h-10 w-10 text-emerald-400 mx-auto mb-4" />
-                <div className="text-5xl md:text-6xl font-bold text-white mb-2">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-200/40 rounded-full blur-3xl" />
+                <div className="w-14 h-14 mx-auto mb-4 rounded-xl bg-gradient-to-br from-emerald-400/40 to-green-300/40 flex items-center justify-center">
+                  <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+                </div>
+                <div className="text-5xl md:text-6xl font-bold text-slate-800 mb-2">
                   {successRate}%
                 </div>
-                <p className="text-emerald-300 font-medium">Taxa de êxito</p>
-                <p className="text-slate-400 text-sm mt-2">Em recuperação de valores</p>
+                <p className="text-emerald-700 font-semibold text-lg">Taxa de êxito</p>
+                <p className="text-slate-600 text-sm mt-2">Em recuperação de valores</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -238,10 +244,10 @@ export function FiscalModuleSection() {
             animate={isInView ? { opacity: 1, x: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.4 }}
           >
-            <Card className="border-2 border-emerald-500/30 bg-gradient-to-br from-slate-900/80 to-emerald-900/20 backdrop-blur-sm overflow-hidden relative">
+            <Card className="border-2 border-emerald-400/50 bg-gradient-to-br from-slate-800/90 via-emerald-900/30 to-slate-900/90 backdrop-blur-sm overflow-hidden relative shadow-2xl shadow-emerald-500/10">
               {/* Glow effect */}
-              <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-500/20 rounded-full blur-3xl" />
-              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-primary/20 rounded-full blur-3xl" />
+              <div className="absolute -top-20 -right-20 w-40 h-40 bg-emerald-400/30 rounded-full blur-3xl" />
+              <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-primary/30 rounded-full blur-3xl" />
               
               <CardContent className="p-8 relative z-10">
                 {/* Quote */}
@@ -250,10 +256,12 @@ export function FiscalModuleSection() {
                   <span className="text-emerald-400 font-semibold">técnica, rastreabilidade e segurança</span>."
                 </blockquote>
 
-                {/* Success Fee Highlight */}
-                <div className="p-6 bg-gradient-to-r from-emerald-500/20 to-green-500/20 rounded-2xl border border-emerald-500/30 text-center mb-8">
-                  <BadgePercent className="h-12 w-12 text-emerald-400 mx-auto mb-3" />
-                  <p className="text-slate-300 mb-2">Modelo de Pagamento</p>
+                {/* Success Fee Highlight - Design Vibrante */}
+                <div className="p-6 bg-gradient-to-r from-emerald-500/30 via-green-500/25 to-teal-500/30 rounded-2xl border-2 border-emerald-400/50 text-center mb-8 shadow-lg shadow-emerald-500/10">
+                  <div className="w-14 h-14 mx-auto mb-3 rounded-xl bg-gradient-to-br from-emerald-400/40 to-green-300/40 flex items-center justify-center">
+                    <BadgePercent className="h-8 w-8 text-emerald-300" />
+                  </div>
+                  <p className="text-slate-300 mb-2 font-medium">Modelo de Pagamento</p>
                   <p className="text-4xl font-bold text-white mb-1">
                     50% <span className="text-emerald-400">no Êxito</span>
                   </p>
