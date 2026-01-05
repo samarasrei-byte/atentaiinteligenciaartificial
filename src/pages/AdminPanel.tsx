@@ -29,8 +29,10 @@ import { ChurnAnalytics } from '@/components/admin/ChurnAnalytics';
 import { CohortAnalysis } from '@/components/admin/CohortAnalysis';
 import { MassMessaging } from '@/components/admin/MassMessaging';
 import { AdminRealtimeDashboard } from '@/components/admin/AdminRealtimeDashboard';
+import { SaaSMetricsDashboard } from '@/components/admin/SaaSMetricsDashboard';
 import { RevenueForecastDashboard } from '@/components/admin/RevenueForecastDashboard';
 import { ChurnNotificationSystem } from '@/components/admin/ChurnNotificationSystem';
+import { PartnerManagement } from '@/components/admin/PartnerManagement';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -434,6 +436,8 @@ const AdminPanel = () => {
           {activeTab === 'churn-notifications' && <ChurnNotificationSystem />}
           {activeTab === 'cohort' && <CohortAnalysis />}
           {activeTab === 'mass-messages' && <MassMessaging />}
+          {activeTab === 'saas-metrics' && <SaaSMetricsDashboard />}
+          {activeTab === 'partners' && <PartnerManagement />}
           {activeTab === 'settings' && (
             <Card className="bg-card border-border shadow-soft">
               <CardHeader><CardTitle>Configurações</CardTitle><CardDescription>Ajustes do sistema</CardDescription></CardHeader>
