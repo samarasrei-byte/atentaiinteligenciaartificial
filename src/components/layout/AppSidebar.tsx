@@ -91,11 +91,13 @@ const userItems: SidebarItem[] = [
 const adminItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: Activity, label: 'Tempo Real', tabId: 'realtime', badge: 'LIVE', badgeColor: 'text-emerald-400' },
+  { icon: Sparkles, label: 'Métricas SaaS', tabId: 'saas-metrics', badge: 'CEO', badgeColor: 'text-amber-400' },
   { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast', badge: 'NEW', badgeColor: 'text-success' },
   { icon: TrendingUp, label: 'Churn & Retenção', tabId: 'churn', badge: 'NEW', badgeColor: 'text-destructive' },
   { icon: Zap, label: 'Notificações Churn', tabId: 'churn-notifications', badge: 'AUTO', badgeColor: 'text-warning' },
   { icon: Target, label: 'Análise Cohort', tabId: 'cohort', badge: 'NEW', badgeColor: 'text-primary' },
   { icon: MessagesSquare, label: 'Mensagens Massa', tabId: 'mass-messages', badge: 'NEW', badgeColor: 'text-amber-400' },
+  { icon: Building2, label: 'Parceiros', tabId: 'partners', badge: 'NEW', badgeColor: 'text-success' },
   { icon: Users, label: 'Usuários', tabId: 'users' },
   { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
   { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
