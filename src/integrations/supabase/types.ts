@@ -1117,6 +1117,42 @@ export type Database = {
         }
         Relationships: []
       }
+      mass_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          message_type: string
+          recipient_count: number | null
+          sent_at: string
+          sent_by: string
+          target_audience: string
+          title: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          recipient_count?: number | null
+          sent_at?: string
+          sent_by: string
+          target_audience?: string
+          title: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          message_type?: string
+          recipient_count?: number | null
+          sent_at?: string
+          sent_by?: string
+          target_audience?: string
+          title?: string
+        }
+        Relationships: []
+      }
       partner_invitations: {
         Row: {
           accepted_at: string | null
@@ -1607,6 +1643,41 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_broadcast_messages: {
+        Row: {
+          created_at: string
+          id: string
+          is_read: boolean
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_broadcast_messages_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "mass_messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_cashback: {
         Row: {
