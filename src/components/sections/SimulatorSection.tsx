@@ -9,6 +9,7 @@ import { Calculator, TrendingUp, TrendingDown, Minus, RefreshCw, Download, MapPi
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { motion, useScroll, useTransform } from "framer-motion";
 import {
   sectors,
   companyTypes,
@@ -28,6 +29,7 @@ export function SimulatorSection() {
   const { subscription, user } = useAuth();
   const { toast } = useToast();
   const resultRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [revenue, setRevenue] = useState("");
   const [revenueType, setRevenueType] = useState<"monthly" | "annual">("monthly");
   const [sector, setSector] = useState("");
@@ -36,6 +38,15 @@ export function SimulatorSection() {
   const [result, setResult] = useState<SimulationResult | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+
+  // Parallax scroll effects
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const y1 = useTransform(scrollYProgress, [0, 1], [60, -60]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [40, -40]);
 
   // Verifica se tem plano ativo
   const hasAccess = subscription.subscribed;
@@ -120,10 +131,25 @@ export function SimulatorSection() {
   };
 
   return (
-    <section id="simulator" className="py-20 md:py-32 bg-muted/30">
-      <div className="container mx-auto px-4">
-        <div className="max-w-4xl mx-auto">
-          {/* Section Header */}
+    <section ref={containerRef} id="simulator" className="py-20 md:py-32 bg-muted/30 relative overflow-hidden">
+      {/* Parallax Background Elements */}
+      <motion.div 
+        className="absolute top-10 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl pointer-events-none"
+        style={{ y: y1 }}
+      />
+      <motion.div 
+        className="absolute bottom-10 right-10 w-64 h-64 bg-accent/5 rounded-full blur-3xl pointer-events-none"
+        style={{ y: y2 }}
+      />
+      
+      <div className="container mx-auto px-4 relative z-10">
+        <motion.div 
+          className="max-w-4xl mx-auto"
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               <Calculator className="w-4 h-4" />
@@ -503,7 +529,7 @@ export function SimulatorSection() {
               </div>
             </CardContent>
           </Card>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
