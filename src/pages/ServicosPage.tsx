@@ -36,6 +36,9 @@ const iconMap: Record<string, React.ElementType> = {
   FileCheck,
   FileText,
   FileSpreadsheet,
+  BarChart: FileBarChart,
+  Briefcase,
+  CreditCard,
 };
 
 // Categories for services
@@ -55,6 +58,8 @@ const serviceCategoryMap: Record<string, string> = {
   ir_simples: 'declaracoes',
   ir_completo: 'declaracoes',
   credit_repair: 'documentos',
+  fiscal_analysis: 'empresarial',
+  business_consulting: 'consultoria',
 };
 
 // Free tools available
@@ -383,7 +388,14 @@ const ServicosPage = () => {
                       </div>
 
                       <Button className="w-full group" asChild>
-                        <Link to={service.key.startsWith('ir_') ? '/ir' : service.key === 'company_opening' ? '/abertura-empresa' : `/certidoes`}>
+                        <Link to={
+                          service.key.startsWith('ir_') ? '/ir' : 
+                          service.key === 'company_opening' ? '/abertura-empresa' : 
+                          service.key === 'credit_repair' ? '/limpa-nome' :
+                          service.key === 'fiscal_analysis' ? '/modulo-fiscal' :
+                          service.key === 'business_consulting' ? '/contadores-publico' :
+                          `/certidoes`
+                        }>
                           Solicitar
                           <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                         </Link>

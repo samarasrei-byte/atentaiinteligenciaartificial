@@ -39,8 +39,10 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Check if user has the required role
-  if (!hasRole(requiredRole)) {
+  // Check if user has the required role OR is admin (admins can access all panels)
+  const hasAccess = hasRole(requiredRole) || hasRole('admin');
+  
+  if (!hasAccess) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
         <Card className="max-w-md w-full">

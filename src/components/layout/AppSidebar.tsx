@@ -102,6 +102,9 @@ const adminItems: SidebarItem[] = [
   { icon: DollarSign, label: 'Receitas', tabId: 'revenue' },
   { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
+  { icon: Building2, label: 'Painel Empresa', tabId: 'panel-empresa', badge: 'VIEW', badgeColor: 'text-purple-400' },
+  { icon: User, label: 'Painel Autônomo', tabId: 'panel-autonomo', badge: 'VIEW', badgeColor: 'text-emerald-400' },
+  { icon: Scale, label: 'Painel Contador', tabId: 'panel-contador', badge: 'VIEW', badgeColor: 'text-blue-400' },
   { icon: Headphones, label: 'Suporte', tabId: 'support' },
   { icon: Settings, label: 'Config', tabId: 'settings' },
 ];

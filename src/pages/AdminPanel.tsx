@@ -223,6 +223,18 @@ const AdminPanel = () => {
       navigate('/admin/metrics');
       return;
     }
+    if (tab === 'panel-empresa') {
+      navigate('/empresa');
+      return;
+    }
+    if (tab === 'panel-autonomo') {
+      navigate('/autonomo');
+      return;
+    }
+    if (tab === 'panel-contador') {
+      navigate('/contador');
+      return;
+    }
     setActiveTab(tab); 
     setSearchParams({ tab }); 
     setMobileMenuOpen(false); 
