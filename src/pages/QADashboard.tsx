@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { isQAUser, getQAFlags, systemRoutes, getAllRoutes } from '@/lib/qaMode';
@@ -16,20 +16,37 @@ import {
   Settings,
   LogOut,
   RefreshCw,
-  Eye
+  Eye,
+  Play,
+  Loader2,
+  RotateCcw
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
+
+type RouteTestStatus = 'pending' | 'testing' | 'ok' | 'error' | 'redirect';
+
+interface RouteTestResult {
+  path: string;
+  status: RouteTestStatus;
+  statusCode?: number;
+  error?: string;
+  redirectedTo?: string;
+  duration?: number;
+}
 
 const QADashboard = () => {
   const navigate = useNavigate();
   const { user, roles, subscription, signOut, refreshUserData, checkSubscription } = useAuth();
-  const [routeStatus, setRouteStatus] = useState<Record<string, 'ok' | 'error' | 'unknown'>>({});
+  const [routeResults, setRouteResults] = useState<Record<string, RouteTestResult>>({});
   const [testing, setTesting] = useState(false);
+  const [testProgress, setTestProgress] = useState(0);
+  const [isTestingRoutes, setIsTestingRoutes] = useState(false);
 
   // Security check - only QA user can access
   useEffect(() => {
@@ -46,6 +63,112 @@ const QADashboard = () => {
   }, [user, navigate]);
 
   const qaFlags = getQAFlags(user?.email);
+  const allRoutes = getAllRoutes();
+
+  const testSingleRoute = async (path: string): Promise<RouteTestResult> => {
+    const startTime = Date.now();
+    
+    try {
+      const baseUrl = window.location.origin;
+      const response = await fetch(`${baseUrl}${path}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Accept': 'text/html',
+        },
+      });
+      
+      const duration = Date.now() - startTime;
+      
+      if (response.redirected) {
+        const redirectedTo = new URL(response.url).pathname;
+        return {
+          path,
+          status: 'redirect',
+          statusCode: response.status,
+          redirectedTo,
+          duration,
+        };
+      }
+      
+      if (response.ok) {
+        return {
+          path,
+          status: 'ok',
+          statusCode: response.status,
+          duration,
+        };
+      }
+      
+      return {
+        path,
+        status: 'error',
+        statusCode: response.status,
+        error: `HTTP ${response.status}`,
+        duration,
+      };
+    } catch (error) {
+      const duration = Date.now() - startTime;
+      return {
+        path,
+        status: 'error',
+        error: error instanceof Error ? error.message : 'Unknown error',
+        duration,
+      };
+    }
+  };
+
+  const runAllRouteTests = useCallback(async () => {
+    setIsTestingRoutes(true);
+    setTestProgress(0);
+    setRouteResults({});
+    
+    const results: Record<string, RouteTestResult> = {};
+    const totalRoutes = allRoutes.length;
+    
+    for (let i = 0; i < allRoutes.length; i++) {
+      const route = allRoutes[i];
+      
+      // Mark as testing
+      setRouteResults(prev => ({
+        ...prev,
+        [route.path]: { path: route.path, status: 'testing' }
+      }));
+      
+      // Test the route
+      const result = await testSingleRoute(route.path);
+      results[route.path] = result;
+      
+      // Update results
+      setRouteResults(prev => ({
+        ...prev,
+        [route.path]: result
+      }));
+      
+      // Update progress
+      setTestProgress(((i + 1) / totalRoutes) * 100);
+      
+      // Small delay to prevent overwhelming
+      await new Promise(r => setTimeout(r, 50));
+    }
+    
+    setIsTestingRoutes(false);
+    
+    // Summary
+    const okCount = Object.values(results).filter(r => r.status === 'ok').length;
+    const errorCount = Object.values(results).filter(r => r.status === 'error').length;
+    const redirectCount = Object.values(results).filter(r => r.status === 'redirect').length;
+    
+    toast.success(
+      `Testes concluídos: ${okCount} OK, ${redirectCount} Redirecionamentos, ${errorCount} Erros`,
+      { duration: 5000 }
+    );
+  }, [allRoutes]);
+
+  const resetTests = () => {
+    setRouteResults({});
+    setTestProgress(0);
+  };
 
   const handleRefreshData = async () => {
     setTesting(true);
@@ -65,13 +188,65 @@ const QADashboard = () => {
     navigate('/');
   };
 
+  const getStatusIcon = (status: RouteTestStatus) => {
+    switch (status) {
+      case 'ok':
+        return <CheckCircle2 className="w-4 h-4 text-green-500" />;
+      case 'error':
+        return <XCircle className="w-4 h-4 text-red-500" />;
+      case 'redirect':
+        return <AlertTriangle className="w-4 h-4 text-amber-500" />;
+      case 'testing':
+        return <Loader2 className="w-4 h-4 text-blue-500 animate-spin" />;
+      default:
+        return <div className="w-4 h-4 rounded-full bg-muted border" />;
+    }
+  };
+
+  const getStatusBadge = (result?: RouteTestResult) => {
+    if (!result || result.status === 'pending') {
+      return <Badge variant="outline" className="text-xs">Pendente</Badge>;
+    }
+    
+    switch (result.status) {
+      case 'ok':
+        return (
+          <Badge className="bg-green-500 text-xs">
+            OK {result.duration && `(${result.duration}ms)`}
+          </Badge>
+        );
+      case 'error':
+        return (
+          <Badge variant="destructive" className="text-xs">
+            {result.error || 'Erro'}
+          </Badge>
+        );
+      case 'redirect':
+        return (
+          <Badge className="bg-amber-500 text-xs">
+            → {result.redirectedTo}
+          </Badge>
+        );
+      case 'testing':
+        return (
+          <Badge className="bg-blue-500 text-xs">
+            Testando...
+          </Badge>
+        );
+      default:
+        return <Badge variant="outline" className="text-xs">Pendente</Badge>;
+    }
+  };
+
   const RouteCard = ({ route, category }: { route: any; category: string }) => {
-    const status = routeStatus[route.path] || 'unknown';
+    const result = routeResults[route.path];
+    const status = result?.status || 'pending';
     
     return (
       <div className="flex items-center justify-between p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
+            {getStatusIcon(status)}
             <span className="font-medium text-sm truncate">{route.name}</span>
             {route.role && (
               <Badge variant="outline" className="text-xs">
@@ -79,12 +254,10 @@ const QADashboard = () => {
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground truncate">{route.path}</p>
+          <p className="text-xs text-muted-foreground truncate ml-6">{route.path}</p>
         </div>
         <div className="flex items-center gap-2">
-          {status === 'ok' && <CheckCircle2 className="w-4 h-4 text-green-500" />}
-          {status === 'error' && <XCircle className="w-4 h-4 text-red-500" />}
-          {status === 'unknown' && <AlertTriangle className="w-4 h-4 text-yellow-500" />}
+          {getStatusBadge(result)}
           <Button
             size="sm"
             variant="ghost"
@@ -98,6 +271,15 @@ const QADashboard = () => {
     );
   };
 
+  // Stats
+  const stats = {
+    ok: Object.values(routeResults).filter(r => r.status === 'ok').length,
+    error: Object.values(routeResults).filter(r => r.status === 'error').length,
+    redirect: Object.values(routeResults).filter(r => r.status === 'redirect').length,
+    pending: allRoutes.length - Object.keys(routeResults).length,
+    total: allRoutes.length,
+  };
+
   if (!user || !isQAUser(user.email)) {
     return null;
   }
@@ -108,8 +290,8 @@ const QADashboard = () => {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container flex items-center justify-between h-16 px-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
-              <Shield className="w-5 h-5 text-primary" />
+            <div className="w-10 h-10 bg-amber-500/10 rounded-full flex items-center justify-center">
+              <Shield className="w-5 h-5 text-amber-500" />
             </div>
             <div>
               <h1 className="font-bold">QA Dashboard</h1>
@@ -135,6 +317,87 @@ const QADashboard = () => {
       </header>
 
       <main className="container px-4 py-6 space-y-6">
+        {/* Test All Routes Section */}
+        <Card className="border-amber-500/50 bg-gradient-to-r from-amber-500/5 to-orange-500/5">
+          <CardHeader className="pb-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <Play className="w-5 h-5 text-amber-500" />
+                  Teste Automático de Rotas
+                </CardTitle>
+                <CardDescription>
+                  Testa todas as {allRoutes.length} rotas do sistema
+                </CardDescription>
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={resetTests}
+                  disabled={isTestingRoutes}
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Resetar
+                </Button>
+                <Button
+                  onClick={runAllRouteTests}
+                  disabled={isTestingRoutes}
+                  className="bg-amber-500 hover:bg-amber-600"
+                >
+                  {isTestingRoutes ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Testando... ({Math.round(testProgress)}%)
+                    </>
+                  ) : (
+                    <>
+                      <Play className="w-4 h-4 mr-2" />
+                      Testar Todas
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Progress Bar */}
+            {(isTestingRoutes || testProgress > 0) && (
+              <div className="space-y-2">
+                <Progress value={testProgress} className="h-2" />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>{Math.round(testProgress)}% completo</span>
+                  <span>{stats.ok + stats.error + stats.redirect} / {stats.total} rotas</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Stats Grid */}
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <div className="text-center p-3 rounded-lg bg-green-500/10">
+                <div className="text-2xl font-bold text-green-500">{stats.ok}</div>
+                <div className="text-xs text-muted-foreground">OK</div>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-red-500/10">
+                <div className="text-2xl font-bold text-red-500">{stats.error}</div>
+                <div className="text-xs text-muted-foreground">Erros</div>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-amber-500/10">
+                <div className="text-2xl font-bold text-amber-500">{stats.redirect}</div>
+                <div className="text-xs text-muted-foreground">Redirect</div>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-muted">
+                <div className="text-2xl font-bold text-muted-foreground">{stats.pending}</div>
+                <div className="text-xs text-muted-foreground">Pendentes</div>
+              </div>
+              <div className="text-center p-3 rounded-lg bg-primary/10">
+                <div className="text-2xl font-bold text-primary">{stats.total}</div>
+                <div className="text-xs text-muted-foreground">Total</div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {/* User Info */}
@@ -216,7 +479,7 @@ const QADashboard = () => {
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-medium flex items-center gap-2">
                 <FileText className="w-4 h-4" />
-                Rotas
+                Rotas por Categoria
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -356,7 +619,7 @@ const QADashboard = () => {
             <div className="flex items-start gap-4">
               <AlertTriangle className="w-6 h-6 text-amber-500 flex-shrink-0" />
               <div className="space-y-2">
-                <h3 className="font-semibold text-amber-700">Aviso de Segurança</h3>
+                <h3 className="font-semibold text-amber-700 dark:text-amber-400">Aviso de Segurança</h3>
                 <ul className="text-sm text-muted-foreground space-y-1">
                   <li>• Esta página é exclusiva para testes e não é indexada</li>
                   <li>• O usuário QA não conta para métricas de negócio</li>

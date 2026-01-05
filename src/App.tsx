@@ -12,6 +12,7 @@ import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { PWATour } from "@/components/tour/PWATour";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import QaModeIndicator from "@/components/qa/QaModeIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import PublicOnboarding from "./pages/PublicOnboarding";
@@ -243,6 +244,7 @@ const App = () => (
           <BottomNavigation />
           <InstallPWAPrompt />
           <PWATour />
+          <QaModeIndicator />
         </AuthProvider>
       </TooltipProvider>
     </BrowserRouter>
