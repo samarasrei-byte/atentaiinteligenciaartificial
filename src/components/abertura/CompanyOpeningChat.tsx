@@ -199,12 +199,18 @@ export function CompanyOpeningChat({
       return null;
     }
 
-    const { data } = supabase.storage
+    // Use signed URL for private bucket (24 hour expiry)
+    const { data, error: signedUrlError } = await supabase.storage
       .from('chat-attachments')
-      .getPublicUrl(fileName);
+      .createSignedUrl(fileName, 86400);
+
+    if (signedUrlError || !data?.signedUrl) {
+      console.error('Signed URL error:', signedUrlError);
+      return null;
+    }
 
     return {
-      url: data.publicUrl,
+      url: data.signedUrl,
       type: file.type.startsWith('image/') ? 'image' : 'file',
       name: file.name,
     };
