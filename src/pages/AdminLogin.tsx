@@ -41,23 +41,38 @@ const AdminLogin = () => {
       if (error) {
         setAttempts(prev => prev + 1);
         toast.error('Credenciais inválidas');
+        setIsLoading(false);
         return;
       }
 
-      // Check if user has admin role after login
-      // The role check happens in useEffect after auth state updates
-      toast.success('Verificando permissões...');
+      toast.success('Login realizado! Verificando permissões...');
       
-      // Wait for auth context to update, then check role
-      setTimeout(() => {
-        navigate('/admin');
-      }, 1000);
+      // Wait for auth context to update and roles to be fetched
+      // Poll for admin role with timeout
+      let attempts = 0;
+      const maxAttempts = 10;
+      const checkInterval = setInterval(async () => {
+        attempts++;
+        
+        // Check if user now has admin role
+        if (hasRole('admin')) {
+          clearInterval(checkInterval);
+          toast.success('Acesso autorizado!');
+          navigate('/admin');
+          return;
+        }
+        
+        if (attempts >= maxAttempts) {
+          clearInterval(checkInterval);
+          toast.error('Você não tem permissão de administrador');
+          setIsLoading(false);
+        }
+      }, 500);
       
     } catch (error) {
       console.error('Login error:', error);
       toast.error('Erro ao fazer login');
       setAttempts(prev => prev + 1);
-    } finally {
       setIsLoading(false);
     }
   };

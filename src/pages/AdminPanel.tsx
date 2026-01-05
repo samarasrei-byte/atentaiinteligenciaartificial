@@ -29,6 +29,8 @@ import { ChurnAnalytics } from '@/components/admin/ChurnAnalytics';
 import { CohortAnalysis } from '@/components/admin/CohortAnalysis';
 import { MassMessaging } from '@/components/admin/MassMessaging';
 import { AdminRealtimeDashboard } from '@/components/admin/AdminRealtimeDashboard';
+import { RevenueForecastDashboard } from '@/components/admin/RevenueForecastDashboard';
+import { ChurnNotificationSystem } from '@/components/admin/ChurnNotificationSystem';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -427,7 +429,9 @@ const AdminPanel = () => {
           {activeTab === 'cashback' && <CashbackMetricsDashboard />}
           {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
           {activeTab === 'realtime' && <AdminRealtimeDashboard />}
+          {activeTab === 'revenue-forecast' && <RevenueForecastDashboard />}
           {activeTab === 'churn' && <ChurnAnalytics />}
+          {activeTab === 'churn-notifications' && <ChurnNotificationSystem />}
           {activeTab === 'cohort' && <CohortAnalysis />}
           {activeTab === 'mass-messages' && <MassMessaging />}
           {activeTab === 'settings' && (

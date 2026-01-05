@@ -91,7 +91,9 @@ const userItems: SidebarItem[] = [
 const adminItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
   { icon: Activity, label: 'Tempo Real', tabId: 'realtime', badge: 'LIVE', badgeColor: 'text-emerald-400' },
+  { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast', badge: 'NEW', badgeColor: 'text-success' },
   { icon: TrendingUp, label: 'Churn & Retenção', tabId: 'churn', badge: 'NEW', badgeColor: 'text-destructive' },
+  { icon: Zap, label: 'Notificações Churn', tabId: 'churn-notifications', badge: 'AUTO', badgeColor: 'text-warning' },
   { icon: Target, label: 'Análise Cohort', tabId: 'cohort', badge: 'NEW', badgeColor: 'text-primary' },
   { icon: MessagesSquare, label: 'Mensagens Massa', tabId: 'mass-messages', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: Users, label: 'Usuários', tabId: 'users' },
@@ -102,7 +104,6 @@ const adminItems: SidebarItem[] = [
   { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
   { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
   { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
-  { icon: DollarSign, label: 'Receitas', tabId: 'revenue' },
   { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: Building2, label: 'Painel Empresa', tabId: 'panel-empresa', badge: 'VIEW', badgeColor: 'text-purple-400' },
