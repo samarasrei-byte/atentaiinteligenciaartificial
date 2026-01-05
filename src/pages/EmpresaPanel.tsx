@@ -47,6 +47,7 @@ import { TourTriggerButton } from '@/components/tour/TourTriggerButton';
 import { HelpTooltip } from '@/components/ui/help-tooltip';
 import { dashboardTourSteps, featureHelp } from '@/components/tour/tourSteps';
 import { DashboardSkeleton } from '@/components/ui/skeleton-loaders';
+import { PastDueAlert } from '@/components/subscription/PastDueAlert';
 
 interface Company {
   id: string;
@@ -834,6 +835,7 @@ const EmpresaPanel = () => {
         </header>
 
         <div className="p-4 lg:p-6 space-y-6">
+          <PastDueAlert />
           {renderContent()}
         </div>
       </main>

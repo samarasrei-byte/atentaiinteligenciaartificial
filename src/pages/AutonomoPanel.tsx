@@ -73,6 +73,7 @@ import AppSidebar from '@/components/layout/AppSidebar';
 import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
 import CompanyOpeningStatus from '@/components/abertura/CompanyOpeningStatus';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
+import { PastDueAlert } from '@/components/subscription/PastDueAlert';
 import { ServicesHub } from '@/components/dashboard/ServicesHub';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
@@ -688,6 +689,7 @@ const AutonomoPanel: React.FC = () => {
         </header>
 
         <div className="p-4 lg:p-6 space-y-6">
+          <PastDueAlert />
           {isLoadingProfile ? (
             <div className="space-y-4">
               <Skeleton className="h-8 w-64" />
