@@ -64,6 +64,8 @@ import AberturaEmpresa from "./pages/AberturaEmpresa";
 import ModuloFiscal from "./pages/ModuloFiscal";
 import AdminLogin from "./pages/AdminLogin";
 import PartnerInvite from "./pages/PartnerInvite";
+import TestLogin from "./pages/TestLogin";
+import QADashboard from "./pages/QADashboard";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -110,6 +112,12 @@ const App = () => (
               <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
+              <Route path="/test-login" element={<TestLogin />} />
+              <Route path="/qa-dashboard" element={
+                <ProtectedRoute>
+                  <QADashboard />
+                </ProtectedRoute>
+              } />
               <Route path="/parceiro" element={
                 <ProtectedRoute>
                   <PartnerPanel />

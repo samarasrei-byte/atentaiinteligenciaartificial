@@ -18,7 +18,7 @@ export function ProtectedRoute({
   requiredPlan,
   requireAuth = true 
 }: ProtectedRouteProps) {
-  const { user, loading } = useAuth();
+  const { user, loading, isQAMode, qaFlags } = useAuth();
   const { hasPlan, currentPlan } = useFeatureAccess();
   const location = useLocation();
 
@@ -33,6 +33,11 @@ export function ProtectedRoute({
   // Check authentication
   if (requireAuth && !user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
+  }
+
+  // QA Mode: bypass paywall if enabled
+  if (isQAMode && qaFlags.BYPASS_PAYWALL && requiredPlan) {
+    return <>{children}</>;
   }
 
   // Check plan access

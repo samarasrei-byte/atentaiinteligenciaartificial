@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanType } from '@/lib/stripe';
+import { isQAUser, getQAFlags, QAFlags } from '@/lib/qaMode';
 
 type AppRole = 'admin' | 'contador' | 'user' | 'autonomo';
 
@@ -19,6 +20,8 @@ interface AuthContextType {
   roles: AppRole[];
   profile: any | null;
   subscription: SubscriptionInfo;
+  isQAMode: boolean;
+  qaFlags: QAFlags;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
@@ -240,6 +243,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const hasRole = (role: AppRole) => roles.includes(role);
 
+  // QA Mode detection
+  const isQAMode = isQAUser(user?.email);
+  const qaFlags = getQAFlags(user?.email);
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -248,6 +255,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       roles,
       profile,
       subscription,
+      isQAMode,
+      qaFlags,
       signUp,
       signIn,
       signOut,
