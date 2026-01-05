@@ -29,6 +29,7 @@ import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
   CreditCard, Clock, CheckCircle, AlertCircle, XCircle, RefreshCw, Menu, Headphones,
+  Building2, User, Scale,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -223,18 +224,7 @@ const AdminPanel = () => {
       navigate('/admin/metrics');
       return;
     }
-    if (tab === 'panel-empresa') {
-      navigate('/empresa');
-      return;
-    }
-    if (tab === 'panel-autonomo') {
-      navigate('/autonomo');
-      return;
-    }
-    if (tab === 'panel-contador') {
-      navigate('/contador');
-      return;
-    }
+    // Painéis externos agora são tabs embutidas no admin (não mais navegação externa)
     setActiveTab(tab); 
     setSearchParams({ tab }); 
     setMobileMenuOpen(false); 
@@ -440,6 +430,81 @@ const AdminPanel = () => {
             <Card className="bg-card border-border shadow-soft">
               <CardHeader><CardTitle>Configurações</CardTitle><CardDescription>Ajustes do sistema</CardDescription></CardHeader>
               <CardContent><p className="text-muted-foreground">Configurações do sistema em desenvolvimento.</p></CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'panel-empresa' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-purple-500" />
+                    Visualizando Painel Empresa
+                  </CardTitle>
+                  <CardDescription>Modo de visualização admin - sem edição</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('overview')}>
+                  Voltar ao Admin
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="p-6 bg-muted/30 rounded-lg border-2 border-dashed border-purple-500/30 text-center">
+                  <p className="text-muted-foreground mb-4">Preview do painel de empresas está disponível.</p>
+                  <Button onClick={() => window.open('/empresa', '_blank')}>
+                    Abrir em nova aba
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'panel-autonomo' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-emerald-500" />
+                    Visualizando Painel Autônomo
+                  </CardTitle>
+                  <CardDescription>Modo de visualização admin - sem edição</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('overview')}>
+                  Voltar ao Admin
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="p-6 bg-muted/30 rounded-lg border-2 border-dashed border-emerald-500/30 text-center">
+                  <p className="text-muted-foreground mb-4">Preview do painel de autônomos está disponível.</p>
+                  <Button onClick={() => window.open('/autonomo', '_blank')}>
+                    Abrir em nova aba
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'panel-contador' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Scale className="h-5 w-5 text-blue-500" />
+                    Visualizando Painel Contador
+                  </CardTitle>
+                  <CardDescription>Modo de visualização admin - sem edição</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('overview')}>
+                  Voltar ao Admin
+                </Button>
+              </CardHeader>
+              <CardContent>
+                <div className="p-6 bg-muted/30 rounded-lg border-2 border-dashed border-blue-500/30 text-center">
+                  <p className="text-muted-foreground mb-4">Preview do painel de contadores está disponível.</p>
+                  <Button onClick={() => window.open('/contador', '_blank')}>
+                    Abrir em nova aba
+                  </Button>
+                </div>
+              </CardContent>
             </Card>
           )}
         </div>
