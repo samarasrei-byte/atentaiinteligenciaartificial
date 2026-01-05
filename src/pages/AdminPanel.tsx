@@ -98,6 +98,7 @@ const AdminPanel = () => {
   const [users, setUsers] = useState<UserWithRoles[]>([]);
   const [subscriptions, setSubscriptions] = useState<Subscription[]>([]);
   const [consultations, setConsultations] = useState<Consultation[]>([]);
+  const [revenueChartData, setRevenueChartData] = useState<{ month: string; receita: number; assinaturas: number }[]>([]);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [stats, setStats] = useState<StatsData>({
@@ -170,6 +171,33 @@ const AdminPanel = () => {
       setSubscriptions(allSubs.data || []);
       setConsultations(allConsult.data || []);
 
+      // Fetch real monthly revenue data for chart
+      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+      const revenueData: { month: string; receita: number; assinaturas: number }[] = [];
+      
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const monthStart = new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
+        const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString();
+        
+        const [paymentsMonth, subsMonth] = await Promise.all([
+          supabase.from('payments').select('amount_cents').eq('status', 'completed')
+            .gte('created_at', monthStart).lt('created_at', monthEnd),
+          supabase.from('subscriptions').select('id', { count: 'exact', head: true })
+            .gte('created_at', monthStart).lt('created_at', monthEnd),
+        ]);
+        
+        const monthRevenue = (paymentsMonth.data || []).reduce((sum, p) => sum + p.amount_cents, 0);
+        
+        revenueData.push({
+          month: monthNames[date.getMonth()],
+          receita: monthRevenue,
+          assinaturas: subsMonth.count || 0,
+        });
+      }
+      setRevenueChartData(revenueData);
+
       const { data: profilesData } = await supabase.from('profiles').select('user_id, full_name, email, created_at').order('created_at', { ascending: false }).limit(100);
       const { data: rolesData } = await supabase.from('user_roles').select('user_id, role');
       const { data: userSubs } = await supabase.from('subscriptions').select('user_id, plan_type, status').eq('status', 'active');
@@ -222,14 +250,6 @@ const AdminPanel = () => {
   };
 
   const filteredUsers = users.filter((u) => u.email.toLowerCase().includes(searchTerm.toLowerCase()) || u.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()));
-  const revenueChartData = [
-    { month: 'Jul', receita: stats.monthlyRevenue * 0.6, assinaturas: stats.totalSubscriptions * 50 },
-    { month: 'Ago', receita: stats.monthlyRevenue * 0.7, assinaturas: stats.totalSubscriptions * 60 },
-    { month: 'Set', receita: stats.monthlyRevenue * 0.8, assinaturas: stats.totalSubscriptions * 70 },
-    { month: 'Out', receita: stats.monthlyRevenue * 0.85, assinaturas: stats.totalSubscriptions * 80 },
-    { month: 'Nov', receita: stats.monthlyRevenue * 0.9, assinaturas: stats.totalSubscriptions * 90 },
-    { month: 'Dez', receita: stats.monthlyRevenue, assinaturas: stats.totalSubscriptions * 100 },
-  ];
 
   if (authLoading || isLoading) {
     return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;

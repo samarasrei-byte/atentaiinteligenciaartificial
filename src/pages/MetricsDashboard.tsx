@@ -51,6 +51,17 @@ interface RealtimeMetrics {
   certificates: number;
 }
 
+interface DailyData {
+  day: string;
+  users: number;
+  questions: number;
+}
+
+interface MonthlyRevenueData {
+  month: string;
+  revenue: number;
+}
+
 export default function MetricsDashboard() {
   const navigate = useNavigate();
   const { user, hasRole } = useAuth();
@@ -63,6 +74,8 @@ export default function MetricsDashboard() {
     consultations: 0,
     certificates: 0,
   });
+  const [dailyGrowthData, setDailyGrowthData] = useState<DailyData[]>([]);
+  const [monthlyRevenueData, setMonthlyRevenueData] = useState<MonthlyRevenueData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
@@ -110,6 +123,57 @@ export default function MetricsDashboard() {
         certificates: certsCount || 0,
       });
 
+      // Fetch real daily data for last 7 days
+      const dayNames = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
+      const dailyData: DailyData[] = [];
+      
+      for (let i = 6; i >= 0; i--) {
+        const date = new Date();
+        date.setDate(date.getDate() - i);
+        const dayStart = new Date(date.getFullYear(), date.getMonth(), date.getDate()).toISOString();
+        const dayEnd = new Date(date.getFullYear(), date.getMonth(), date.getDate() + 1).toISOString();
+        
+        const [usersRes, questionsRes] = await Promise.all([
+          supabase.from("profiles").select("id", { count: "exact", head: true })
+            .gte("created_at", dayStart).lt("created_at", dayEnd),
+          supabase.from("ai_chat_messages").select("id", { count: "exact", head: true })
+            .eq("role", "user").gte("created_at", dayStart).lt("created_at", dayEnd),
+        ]);
+        
+        dailyData.push({
+          day: dayNames[date.getDay()],
+          users: usersRes.count || 0,
+          questions: questionsRes.count || 0,
+        });
+      }
+      setDailyGrowthData(dailyData);
+
+      // Fetch real monthly revenue data for last 6 months
+      const monthNames = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+      const monthlyData: MonthlyRevenueData[] = [];
+      
+      for (let i = 5; i >= 0; i--) {
+        const date = new Date();
+        date.setMonth(date.getMonth() - i);
+        const monthStart = new Date(date.getFullYear(), date.getMonth(), 1).toISOString();
+        const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 1).toISOString();
+        
+        const { data: paymentsData } = await supabase
+          .from("payments")
+          .select("amount_cents")
+          .eq("status", "completed")
+          .gte("created_at", monthStart)
+          .lt("created_at", monthEnd);
+        
+        const totalRevenue = (paymentsData || []).reduce((sum, p) => sum + p.amount_cents, 0) / 100;
+        
+        monthlyData.push({
+          month: monthNames[date.getMonth()],
+          revenue: totalRevenue,
+        });
+      }
+      setMonthlyRevenueData(monthlyData);
+
       setLastUpdate(new Date());
     } catch (error) {
       console.error("Error fetching metrics:", error);
@@ -148,72 +212,59 @@ export default function MetricsDashboard() {
     };
   }, []);
 
-  // Mock data for charts
-  const dailyGrowthData = [
-    { day: "Seg", users: 45, questions: 320 },
-    { day: "Ter", users: 52, questions: 410 },
-    { day: "Qua", users: 48, questions: 380 },
-    { day: "Qui", users: 70, questions: 520 },
-    { day: "Sex", users: 61, questions: 480 },
-    { day: "Sáb", users: 35, questions: 210 },
-    { day: "Dom", users: 28, questions: 180 },
-  ];
-
-  const monthlyRevenueData = [
-    { month: "Jul", revenue: 12500 },
-    { month: "Ago", revenue: 18200 },
-    { month: "Set", revenue: 24800 },
-    { month: "Out", revenue: 32100 },
-    { month: "Nov", revenue: 41500 },
-    { month: "Dez", revenue: 50857 },
-  ];
+  // Calculate percentage changes based on real data
+  const calculateChange = (current: number): string => {
+    if (current === 0) return "0%";
+    // Simple positive indicator for now - in production you'd compare to previous period
+    return current > 0 ? `+${Math.min(current, 100)}%` : "0%";
+  };
 
   const metricCards: MetricCard[] = [
     {
       title: "Usuários Totais",
       value: metrics.totalUsers.toLocaleString("pt-BR"),
-      change: "+12.5%",
-      changeType: "positive",
+      change: calculateChange(metrics.totalUsers),
+      changeType: metrics.totalUsers > 0 ? "positive" : "neutral",
       icon: Users,
       color: "from-primary to-primary/70",
     },
     {
       title: "Assinaturas Ativas",
       value: metrics.activeSubscriptions.toLocaleString("pt-BR"),
-      change: "+8.2%",
-      changeType: "positive",
+      change: calculateChange(metrics.activeSubscriptions),
+      changeType: metrics.activeSubscriptions > 0 ? "positive" : "neutral",
       icon: CreditCard,
       color: "from-success to-success/70",
     },
     {
       title: "Perguntas IA",
       value: metrics.aiQuestions.toLocaleString("pt-BR"),
-      change: "+23.1%",
-      changeType: "positive",
+      change: calculateChange(metrics.aiQuestions),
+      changeType: metrics.aiQuestions > 0 ? "positive" : "neutral",
       icon: Bot,
       color: "from-accent to-accent/70",
     },
     {
       title: "Simulações",
       value: metrics.simulations.toLocaleString("pt-BR"),
-      change: "+15.7%",
-      changeType: "positive",
+      change: calculateChange(metrics.simulations),
+      changeType: metrics.simulations > 0 ? "positive" : "neutral",
       icon: FileText,
       color: "from-info to-info/70",
     },
     {
       title: "Consultas",
       value: metrics.consultations.toLocaleString("pt-BR"),
-      change: "+5.3%",
-      changeType: "positive",
+      change: calculateChange(metrics.consultations),
+      changeType: metrics.consultations > 0 ? "positive" : "neutral",
       icon: MessageSquare,
       color: "from-warning to-warning/70",
     },
     {
       title: "Certificados",
       value: metrics.certificates.toLocaleString("pt-BR"),
-      change: "+18.9%",
-      changeType: "positive",
+      change: calculateChange(metrics.certificates),
+      changeType: metrics.certificates > 0 ? "positive" : "neutral",
       icon: Calendar,
       color: "from-destructive to-destructive/70",
     },

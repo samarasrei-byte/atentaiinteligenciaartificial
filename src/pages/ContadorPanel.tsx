@@ -69,32 +69,8 @@ interface ClientInfo {
 }
 
 // Mock data for simulation (test@atentai.com.br)
-const mockConsultations: Consultation[] = [
-  { id: '1', user_id: 'user-1', status: 'completed', scheduled_at: '2024-12-20T10:00:00Z', price_cents: 15000, platform_fee_cents: 1500, notes: 'Consulta sobre Simples Nacional', rating: 5, created_at: '2024-12-18T08:00:00Z', completed_at: '2024-12-20T11:00:00Z' },
-  { id: '2', user_id: 'user-2', status: 'completed', scheduled_at: '2024-12-19T14:00:00Z', price_cents: 15000, platform_fee_cents: 1500, notes: 'Dúvidas sobre IBS e CBS', rating: 5, created_at: '2024-12-17T09:00:00Z', completed_at: '2024-12-19T15:00:00Z' },
-  { id: '3', user_id: 'user-3', status: 'scheduled', scheduled_at: '2024-12-24T10:00:00Z', price_cents: 15000, platform_fee_cents: 1500, notes: 'Reforma tributária', rating: null, created_at: '2024-12-21T10:00:00Z', completed_at: null },
-  { id: '4', user_id: 'user-1', status: 'completed', scheduled_at: '2024-12-15T16:00:00Z', price_cents: 15000, platform_fee_cents: 1500, notes: 'Lucro Presumido', rating: 4, created_at: '2024-12-13T11:00:00Z', completed_at: '2024-12-15T17:00:00Z' },
-  { id: '5', user_id: 'user-4', status: 'pending', scheduled_at: null, price_cents: 15000, platform_fee_cents: 1500, notes: null, rating: null, created_at: '2024-12-22T08:00:00Z', completed_at: null },
-  { id: '6', user_id: 'user-2', status: 'completed', scheduled_at: '2024-12-10T09:00:00Z', price_cents: 15000, platform_fee_cents: 1500, notes: 'MEI para ME', rating: 5, created_at: '2024-12-08T14:00:00Z', completed_at: '2024-12-10T10:00:00Z' },
-];
-
-const mockClients: ClientInfo[] = [
-  { user_id: 'user-1', email: 'maria@empresa.com', full_name: 'Maria Silva', consultations_count: 2, total_spent: 30000, last_consultation: '2024-12-20T11:00:00Z' },
-  { user_id: 'user-2', email: 'joao@tech.com', full_name: 'João Santos', consultations_count: 2, total_spent: 30000, last_consultation: '2024-12-19T15:00:00Z' },
-  { user_id: 'user-3', email: 'ana@startup.com', full_name: 'Ana Costa', consultations_count: 1, total_spent: 15000, last_consultation: '2024-12-21T10:00:00Z' },
-  { user_id: 'user-4', email: 'pedro@comercio.com', full_name: 'Pedro Oliveira', consultations_count: 1, total_spent: 15000, last_consultation: '2024-12-22T08:00:00Z' },
-];
-
-const mockProfile: ContadorProfile = {
-  id: 'profile-1',
-  crc_number: '12345/O-SP',
-  specialty: 'Reforma Tributária, Simples Nacional',
-  bio: 'Contador especializado em Reforma Tributária com 15 anos de experiência.',
-  hourly_rate_cents: 15000,
-  rating: 4.9,
-  total_consultations: 6,
-  available: true,
-};
+// Note: Test simulation mode is only activated for teste@atentai.com.br
+// In production, all data comes from Supabase database
 
 const ContadorPanel = () => {
   const navigate = useNavigate();
@@ -137,20 +113,9 @@ const ContadorPanel = () => {
 
   const fetchContadorData = async () => {
     try {
-      // Use mock data for simulation mode
+      // Test mode indicator (no mock data - all data from real database)
       if (user?.email === 'teste@atentai.com.br') {
         setIsSimulation(true);
-        setContadorProfile(mockProfile);
-        setConsultations(mockConsultations);
-        setClients(mockClients);
-        setCrcNumber(mockProfile.crc_number);
-        setSpecialty(mockProfile.specialty);
-        setBio(mockProfile.bio);
-        setHourlyRate((mockProfile.hourly_rate_cents / 100).toString());
-        setIsAvailable(mockProfile.available);
-        setIsLoading(false);
-        setIsRefreshing(false);
-        return;
       }
 
       // First check if user has admin role - they can access everything
@@ -321,14 +286,28 @@ const ContadorPanel = () => {
   const totalEarnings = completedConsultations.reduce((sum, c) => sum + c.price_cents - c.platform_fee_cents, 0);
   const totalPlatformFees = completedConsultations.reduce((sum, c) => sum + c.platform_fee_cents, 0);
 
-  const earningsData = [
-    { month: 'Jul', ganhos: totalEarnings * 0.5 },
-    { month: 'Ago', ganhos: totalEarnings * 0.6 },
-    { month: 'Set', ganhos: totalEarnings * 0.7 },
-    { month: 'Out', ganhos: totalEarnings * 0.8 },
-    { month: 'Nov', ganhos: totalEarnings * 0.9 },
-    { month: 'Dez', ganhos: totalEarnings },
-  ];
+  // Build real earnings data grouped by month from consultations
+  const buildEarningsData = () => {
+    const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+    const now = new Date();
+    const last6Months: { month: string; ganhos: number }[] = [];
+    
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+      const monthLabel = monthNames[d.getMonth()];
+      
+      const monthEarnings = completedConsultations
+        .filter(c => c.completed_at && c.completed_at.startsWith(monthKey))
+        .reduce((sum, c) => sum + c.price_cents - c.platform_fee_cents, 0);
+      
+      last6Months.push({ month: monthLabel, ganhos: monthEarnings });
+    }
+    
+    return last6Months;
+  };
+  
+  const earningsData = buildEarningsData();
 
   const activities = consultations.slice(0, 5).map(c => ({
     id: c.id,
