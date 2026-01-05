@@ -113,6 +113,30 @@ export const SUBSCRIBER_DISCOUNTS = {
     discountedPrice: 28000, // cents (R$280,00)
     icon: 'FileSpreadsheet',
   },
+  fiscal_analysis: {
+    name: 'Análise Fiscal',
+    description: 'Análise completa da situação fiscal da sua empresa com identificação de riscos e oportunidades',
+    basePrice: 29700, // cents (R$297,00)
+    discount: 0.15, // 15% off for subscribers
+    discountedPrice: 25245, // cents (R$252,45)
+    icon: 'BarChart',
+  },
+  business_consulting: {
+    name: 'Consultoria Empresarial',
+    description: 'Consultoria estratégica para planejamento tributário e otimização fiscal da sua empresa',
+    basePrice: 45000, // cents (R$450,00)
+    discount: 0.20, // 20% off for subscribers
+    discountedPrice: 36000, // cents (R$360,00)
+    icon: 'Briefcase',
+  },
+  credit_repair: {
+    name: 'Limpa Nome',
+    description: 'Regularize sua situação cadastral e limpe restrições do CPF/CNPJ',
+    basePrice: 9700, // cents (R$97,00)
+    discount: 0.10, // 10% off for subscribers
+    discountedPrice: 8730, // cents (R$87,30)
+    icon: 'CreditCard',
+  },
 } as const;
 
 // Platform commission on marketplace services
