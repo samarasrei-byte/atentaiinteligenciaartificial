@@ -1,6 +1,8 @@
 import { Badge } from "@/components/ui/badge";
 import { useScrollAnimation, useCountUp } from "@/hooks/useScrollAnimation";
 import { Users, MessageSquare, TrendingUp, Building2 } from "lucide-react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef } from "react";
 
 const stats = [
   {
@@ -59,18 +61,33 @@ function StatCard({ stat, isVisible, index }: {
   const Icon = stat.icon;
 
   return (
-    <div 
-      className={`relative p-8 rounded-2xl bg-gradient-to-br from-card to-card/50 border border-border/50 text-center transition-all duration-700 hover:shadow-xl hover:scale-105 group ${
-        isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-      }`}
-      style={{ transitionDelay: `${index * 150}ms` }}
+    <motion.div 
+      initial={{ opacity: 0, y: 50, scale: 0.95 }}
+      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ 
+        duration: 0.7, 
+        delay: index * 0.15,
+        ease: [0.25, 0.46, 0.45, 0.94]
+      }}
+      whileHover={{ scale: 1.05, y: -5 }}
+      className="relative p-8 rounded-2xl bg-gradient-to-br from-card to-card/50 border border-border/50 text-center group"
     >
-      <div className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity`} />
+      <motion.div 
+        className={`absolute inset-0 bg-gradient-to-br ${stat.bgGradient} rounded-2xl opacity-50 group-hover:opacity-100 transition-opacity`}
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 0.5 }}
+        whileHover={{ opacity: 1 }}
+      />
       
       <div className="relative z-10">
-        <div className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+        <motion.div 
+          className={`w-16 h-16 mx-auto mb-6 rounded-2xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg`}
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          transition={{ type: "spring", stiffness: 400 }}
+        >
           <Icon className={`h-8 w-8 ${stat.iconColor}`} />
-        </div>
+        </motion.div>
         
         <div className="text-4xl md:text-5xl font-bold text-foreground mb-2 tabular-nums">
           {stat.prefix && <span className={stat.accentColor}>{stat.prefix}</span>}
@@ -86,25 +103,46 @@ function StatCard({ stat, isVisible, index }: {
           {stat.description}
         </p>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 export function StatsSection() {
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.2 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  
+  const y1 = useTransform(scrollYProgress, [0, 1], [80, -80]);
+  const y2 = useTransform(scrollYProgress, [0, 1], [40, -40]);
+  const scale = useTransform(scrollYProgress, [0, 0.5, 1], [0.95, 1, 0.95]);
 
   return (
     <section ref={ref} className="py-24 bg-muted/30 relative overflow-hidden">
-      {/* Background decoration */}
+      {/* Parallax Background decoration */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]" />
-        <div className="absolute bottom-1/2 right-1/4 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px]" />
+        <motion.div 
+          className="absolute top-1/2 left-1/4 w-[400px] h-[400px] bg-primary/5 rounded-full blur-[100px]"
+          style={{ y: y1 }}
+        />
+        <motion.div 
+          className="absolute bottom-1/2 right-1/4 w-[300px] h-[300px] bg-accent/5 rounded-full blur-[80px]"
+          style={{ y: y2 }}
+        />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
-        <div className={`text-center mb-16 transition-all duration-700 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
+      <div ref={containerRef} className="container mx-auto px-4 relative z-10">
+        <motion.div 
+          className="text-center mb-16"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          style={{ scale }}
+        >
           <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
             Estatísticas
           </Badge>
@@ -114,7 +152,7 @@ export function StatsSection() {
           <p className="text-lg text-muted-foreground max-w-xl mx-auto">
             Veja o impacto do AtentAI na preparação para a reforma tributária
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
