@@ -63,6 +63,7 @@ import PartnerPanel from "./pages/PartnerPanel";
 import AberturaEmpresa from "./pages/AberturaEmpresa";
 import ModuloFiscal from "./pages/ModuloFiscal";
 import AdminLogin from "./pages/AdminLogin";
+import PartnerInvite from "./pages/PartnerInvite";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -108,6 +109,7 @@ const App = () => (
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/parceiro" element={
                 <ProtectedRoute>
                   <PartnerPanel />

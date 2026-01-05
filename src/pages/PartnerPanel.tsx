@@ -54,6 +54,23 @@ interface CreditRepairRequest {
   partner_id: string | null;
 }
 
+interface FiscalRequest {
+  id: string;
+  user_id: string | null;
+  full_name: string;
+  email: string;
+  phone: string | null;
+  company_name: string;
+  cnpj: string;
+  tax_regime: string;
+  status: string;
+  payment_status: string | null;
+  service_fee_cents: number | null;
+  identified_value_cents: number | null;
+  created_at: string;
+  partner_id: string | null;
+}
+
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))'];
 
 const chartConfig = {
@@ -69,9 +86,11 @@ export default function PartnerPanel() {
   
   const [collapsed, setCollapsed] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
+  const [serviceTab, setServiceTab] = useState<'limpa-nome' | 'fiscal'>('limpa-nome');
   const [isLoading, setIsLoading] = useState(true);
   const [partner, setPartner] = useState<Partner | null>(null);
   const [requests, setRequests] = useState<CreditRepairRequest[]>([]);
+  const [fiscalRequests, setFiscalRequests] = useState<FiscalRequest[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState<CreditRepairRequest | null>(null);
@@ -164,7 +183,7 @@ export default function PartnerPanel() {
 
       setPartner(partnerData);
 
-      // Fetch requests for this partner
+      // Fetch credit repair requests for this partner
       const { data: requestsData, error: requestsError } = await supabase
         .from('credit_repair_requests')
         .select('*')
@@ -173,6 +192,17 @@ export default function PartnerPanel() {
 
       if (!requestsError) {
         setRequests(requestsData || []);
+      }
+
+      // Fetch fiscal analysis requests for this partner
+      const { data: fiscalData, error: fiscalError } = await supabase
+        .from('fiscal_analysis_requests')
+        .select('*')
+        .eq('partner_id', partnerUser.partner_id)
+        .order('created_at', { ascending: false });
+
+      if (!fiscalError) {
+        setFiscalRequests(fiscalData || []);
       }
     } catch (error) {
       console.error('Error fetching partner data:', error);
@@ -214,14 +244,28 @@ export default function PartnerPanel() {
     return matchesSearch && matchesStatus;
   });
 
-  // Calculate stats
+  const filteredFiscalRequests = fiscalRequests.filter(r => {
+    const matchesSearch = r.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      r.company_name.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
+
+  // Calculate stats (combined)
+  const fiscalRevenue = fiscalRequests
+    .filter(r => r.payment_status === 'paid')
+    .reduce((sum, r) => sum + (r.service_fee_cents || 0), 0);
+
   const stats = {
-    total: requests.length,
-    pending: requests.filter(r => r.status === 'pending').length,
-    inProgress: requests.filter(r => r.status === 'in_progress' || r.status === 'negotiating').length,
-    completed: requests.filter(r => r.status === 'completed').length,
+    total: requests.length + fiscalRequests.length,
+    pending: requests.filter(r => r.status === 'pending').length + fiscalRequests.filter(r => r.status === 'pending').length,
+    inProgress: requests.filter(r => r.status === 'in_progress' || r.status === 'negotiating').length + fiscalRequests.filter(r => r.status === 'in_progress' || r.status === 'analyzing').length,
+    completed: requests.filter(r => r.status === 'completed').length + fiscalRequests.filter(r => r.status === 'completed').length,
     paidRequests: requests.filter(r => r.payment_status === 'paid'),
-    totalRevenue: requests.filter(r => r.payment_status === 'paid').reduce((sum, r) => sum + r.final_price_cents, 0),
+    totalRevenue: requests.filter(r => r.payment_status === 'paid').reduce((sum, r) => sum + r.final_price_cents, 0) + fiscalRevenue,
+    limpaNomeCount: requests.length,
+    fiscalCount: fiscalRequests.length,
   };
 
   const commissionAmount = partner ? (stats.totalRevenue * partner.commission_percent / 100) : 0;
@@ -523,122 +567,212 @@ export default function PartnerPanel() {
           {/* Requests List */}
           <Card className="bg-slate-900/50 border-white/5">
             <CardHeader>
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div>
-                  <CardTitle className="text-white flex items-center gap-2">
-                    <FileText className="h-5 w-5 text-success" />
-                    Suas Solicitações
-                  </CardTitle>
-                  <CardDescription className="text-white/60">{filteredRequests.length} solicitações</CardDescription>
-                </div>
-                <div className="flex items-center gap-3 flex-wrap">
-                  <div className="relative w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
-                    <Input
-                      placeholder="Buscar..."
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      className="pl-10 bg-slate-800 border-white/10 text-white"
-                    />
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <FileText className="h-5 w-5 text-success" />
+                      Suas Solicitações
+                    </CardTitle>
+                    <CardDescription className="text-white/60">
+                      {serviceTab === 'limpa-nome' ? filteredRequests.length : filteredFiscalRequests.length} solicitações
+                    </CardDescription>
                   </div>
-                  <Select value={statusFilter} onValueChange={setStatusFilter}>
-                    <SelectTrigger className="w-[150px] bg-slate-800 border-white/10 text-white">
-                      <SelectValue placeholder="Status" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
-                      <SelectItem value="pending">Pendente</SelectItem>
-                      <SelectItem value="in_progress">Em Andamento</SelectItem>
-                      <SelectItem value="negotiating">Negociando</SelectItem>
-                      <SelectItem value="completed">Concluído</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex items-center gap-3 flex-wrap">
+                    <div className="relative w-64">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                      <Input
+                        placeholder="Buscar..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 bg-slate-800 border-white/10 text-white"
+                      />
+                    </div>
+                    <Select value={statusFilter} onValueChange={setStatusFilter}>
+                      <SelectTrigger className="w-[150px] bg-slate-800 border-white/10 text-white">
+                        <SelectValue placeholder="Status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">Todos</SelectItem>
+                        <SelectItem value="pending">Pendente</SelectItem>
+                        <SelectItem value="in_progress">Em Andamento</SelectItem>
+                        {serviceTab === 'limpa-nome' && <SelectItem value="negotiating">Negociando</SelectItem>}
+                        {serviceTab === 'fiscal' && <SelectItem value="analyzing">Analisando</SelectItem>}
+                        <SelectItem value="completed">Concluído</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                
+                {/* Service Tab Selector */}
+                <div className="flex gap-2">
+                  <Button
+                    variant={serviceTab === 'limpa-nome' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setServiceTab('limpa-nome')}
+                    className={serviceTab === 'limpa-nome' ? 'bg-success hover:bg-success/90' : 'border-white/10 text-white hover:bg-white/5'}
+                  >
+                    <CreditCard className="h-4 w-4 mr-2" />
+                    Limpa Nome ({requests.length})
+                  </Button>
+                  <Button
+                    variant={serviceTab === 'fiscal' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => setServiceTab('fiscal')}
+                    className={serviceTab === 'fiscal' ? 'bg-primary hover:bg-primary/90' : 'border-white/10 text-white hover:bg-white/5'}
+                  >
+                    <BarChart3 className="h-4 w-4 mr-2" />
+                    Módulo Fiscal ({fiscalRequests.length})
+                  </Button>
                 </div>
               </div>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {filteredRequests.length === 0 ? (
-                  <div className="text-center py-12 text-white/40">
-                    <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Nenhuma solicitação encontrada</p>
-                  </div>
-                ) : (
-                  filteredRequests.map((request, index) => (
-                    <motion.div
-                      key={request.id}
-                      initial={{ opacity: 0, y: 20 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: index * 0.03 }}
-                      className="p-4 bg-slate-800/50 rounded-xl border border-white/5 hover:border-primary/30 transition-all"
-                    >
-                      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                        <div className="flex items-start gap-4">
-                          <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
-                            <User className="h-6 w-6 text-success" />
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-2 flex-wrap">
-                              <h3 className="font-semibold text-white">{request.full_name}</h3>
-                              {getStatusBadge(request.status)}
-                              {getPaymentBadge(request.payment_status)}
+                {serviceTab === 'limpa-nome' ? (
+                  // Limpa Nome Requests
+                  filteredRequests.length === 0 ? (
+                    <div className="text-center py-12 text-white/40">
+                      <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Nenhuma solicitação Limpa Nome encontrada</p>
+                    </div>
+                  ) : (
+                    filteredRequests.map((request, index) => (
+                      <motion.div
+                        key={request.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        className="p-4 bg-slate-800/50 rounded-xl border border-white/5 hover:border-success/30 transition-all"
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          <div className="flex items-start gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center shrink-0">
+                              <User className="h-6 w-6 text-success" />
                             </div>
-                            <div className="flex items-center gap-4 text-sm text-white/60 flex-wrap">
-                              {request.email && (
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-semibold text-white">{request.full_name}</h3>
+                                {getStatusBadge(request.status)}
+                                {getPaymentBadge(request.payment_status)}
+                              </div>
+                              <div className="flex items-center gap-4 text-sm text-white/60 flex-wrap">
+                                {request.email && (
+                                  <span className="flex items-center gap-1">
+                                    <Mail className="h-3 w-3" />{request.email}
+                                  </span>
+                                )}
+                                {request.phone && (
+                                  <span className="flex items-center gap-1">
+                                    <Phone className="h-3 w-3" />{request.phone}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-6">
+                            <div className="grid grid-cols-3 gap-4 text-center">
+                              <div>
+                                <p className="text-lg font-bold text-destructive">{formatCurrency(request.debt_amount_cents)}</p>
+                                <p className="text-xs text-white/40">Dívida</p>
+                              </div>
+                              <div>
+                                <p className="text-lg font-bold text-success">{formatCurrency(request.final_price_cents)}</p>
+                                <p className="text-xs text-white/40">Serviço</p>
+                              </div>
+                              <div>
+                                <p className="text-lg font-bold text-primary">
+                                  {formatCurrency(request.final_price_cents * partner.commission_percent / 100)}
+                                </p>
+                                <p className="text-xs text-white/40">Comissão</p>
+                              </div>
+                            </div>
+
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                setSelectedRequest(request);
+                                setShowChatDialog(true);
+                              }}
+                              className="border-white/10 text-white hover:bg-white/5"
+                            >
+                              <MessageCircle className="h-4 w-4 mr-1" />
+                              Chat
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-sm text-white/40">
+                          <span>Criado em {format(new Date(request.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                          {request.completed_at && (
+                            <span>Concluído em {format(new Date(request.completed_at), "dd/MM/yyyy", { locale: ptBR })}</span>
+                          )}
+                        </div>
+                      </motion.div>
+                    ))
+                  )
+                ) : (
+                  // Fiscal Requests
+                  filteredFiscalRequests.length === 0 ? (
+                    <div className="text-center py-12 text-white/40">
+                      <BarChart3 className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                      <p>Nenhuma solicitação de Módulo Fiscal encontrada</p>
+                    </div>
+                  ) : (
+                    filteredFiscalRequests.map((request, index) => (
+                      <motion.div
+                        key={request.id}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: index * 0.03 }}
+                        className="p-4 bg-slate-800/50 rounded-xl border border-white/5 hover:border-primary/30 transition-all"
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                          <div className="flex items-start gap-4">
+                            <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                              <Building className="h-6 w-6 text-primary" />
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-2 flex-wrap">
+                                <h3 className="font-semibold text-white">{request.company_name}</h3>
+                                {getStatusBadge(request.status)}
+                                {getPaymentBadge(request.payment_status || 'pending')}
+                              </div>
+                              <p className="text-sm text-white/60">{request.full_name}</p>
+                              <div className="flex items-center gap-4 text-sm text-white/60 flex-wrap">
                                 <span className="flex items-center gap-1">
                                   <Mail className="h-3 w-3" />{request.email}
                                 </span>
-                              )}
-                              {request.phone && (
-                                <span className="flex items-center gap-1">
-                                  <Phone className="h-3 w-3" />{request.phone}
-                                </span>
-                              )}
+                                <span className="text-primary/80 font-mono text-xs">{request.cnpj}</span>
+                                <Badge variant="outline" className="text-xs">{request.tax_regime}</Badge>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-6">
+                            <div className="grid grid-cols-2 gap-4 text-center">
+                              <div>
+                                <p className="text-lg font-bold text-success">{formatCurrency(request.identified_value_cents || 0)}</p>
+                                <p className="text-xs text-white/40">Valor Identificado</p>
+                              </div>
+                              <div>
+                                <p className="text-lg font-bold text-primary">
+                                  {formatCurrency((request.service_fee_cents || 0) * partner.commission_percent / 100)}
+                                </p>
+                                <p className="text-xs text-white/40">Comissão</p>
+                              </div>
                             </div>
                           </div>
                         </div>
 
-                        <div className="flex items-center gap-6">
-                          <div className="grid grid-cols-3 gap-4 text-center">
-                            <div>
-                              <p className="text-lg font-bold text-destructive">{formatCurrency(request.debt_amount_cents)}</p>
-                              <p className="text-xs text-white/40">Dívida</p>
-                            </div>
-                            <div>
-                              <p className="text-lg font-bold text-success">{formatCurrency(request.final_price_cents)}</p>
-                              <p className="text-xs text-white/40">Serviço</p>
-                            </div>
-                            <div>
-                              <p className="text-lg font-bold text-primary">
-                                {formatCurrency(request.final_price_cents * partner.commission_percent / 100)}
-                              </p>
-                              <p className="text-xs text-white/40">Comissão</p>
-                            </div>
-                          </div>
-
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedRequest(request);
-                              setShowChatDialog(true);
-                            }}
-                            className="border-white/10 text-white hover:bg-white/5"
-                          >
-                            <MessageCircle className="h-4 w-4 mr-1" />
-                            Chat
-                          </Button>
+                        <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-sm text-white/40">
+                          <span>Criado em {format(new Date(request.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
                         </div>
-                      </div>
-
-                      <div className="mt-3 pt-3 border-t border-white/5 flex items-center justify-between text-sm text-white/40">
-                        <span>Criado em {format(new Date(request.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
-                        {request.completed_at && (
-                          <span>Concluído em {format(new Date(request.completed_at), "dd/MM/yyyy", { locale: ptBR })}</span>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))
+                      </motion.div>
+                    ))
+                  )
                 )}
               </div>
             </CardContent>

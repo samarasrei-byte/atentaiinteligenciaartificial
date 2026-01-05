@@ -13,10 +13,11 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Search, Loader2, Building, Plus, Users, Mail, Phone, MapPin,
   CheckCircle, XCircle, Clock, Percent, DollarSign, RefreshCw,
-  Edit, Trash2, UserPlus, Eye
+  Edit, Trash2, UserPlus, Eye, Send
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { PartnerInviteButton } from './PartnerInviteButton';
 
 interface Partner {
   id: string;
@@ -440,6 +441,10 @@ export function PartnerManagement() {
                         </div>
 
                         <div className="flex items-center gap-2">
+                          <PartnerInviteButton 
+                            partnerId={partner.id} 
+                            partnerName={partner.trade_name || partner.company_name} 
+                          />
                           <Button variant="outline" size="sm" onClick={() => openDetails(partner)}>
                             <Eye className="h-4 w-4 mr-1" />
                             Detalhes
