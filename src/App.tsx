@@ -146,11 +146,6 @@ const App = () => (
                   <Profile />
                 </ProtectedRoute>
               } />
-              <Route path="/profile" element={
-                <ProtectedRoute>
-                  <Profile />
-                </ProtectedRoute>
-              } />
               
               {/* Simulator plan features */}
               <Route path="/simulator" element={
