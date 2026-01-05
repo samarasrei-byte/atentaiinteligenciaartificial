@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, Quote, TrendingUp, Building2, BadgeCheck } from "lucide-react";
+import { Star, Quote, TrendingUp, Building2, BadgeCheck, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 
 const testimonials = [
@@ -69,12 +69,14 @@ export function FiscalTestimonialsSection() {
   const totalRecovered = testimonials.reduce((acc, t) => acc + t.recovered, 0);
 
   return (
-    <section className="py-20 sm:py-28 bg-gradient-to-b from-background via-muted/30 to-background relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-emerald-500/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-primary/5 rounded-full blur-3xl" />
-      </div>
+    <section className="py-16 sm:py-20 lg:py-28 relative overflow-hidden">
+      {/* Background - Matching the hero gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-slate-900 to-emerald-950" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-emerald-500/10 via-transparent to-transparent" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
+      
+      {/* Grid pattern overlay */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:50px_50px]" />
 
       <div className="container mx-auto px-4 relative z-10">
         {/* Header */}
@@ -83,21 +85,21 @@ export function FiscalTestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-12 sm:mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 mb-6">
-            <BadgeCheck className="w-5 h-5 text-emerald-400" />
-            <span className="text-sm font-medium text-emerald-400">Resultados Comprovados</span>
+          <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-emerald-500/20 border border-emerald-500/30 mb-4 sm:mb-6">
+            <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 text-emerald-400" />
+            <span className="text-xs sm:text-sm font-medium text-emerald-400">Resultados Comprovados</span>
           </div>
           
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
-            <span className="text-foreground">Empresas que </span>
-            <span className="bg-gradient-to-r from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold mb-4 sm:mb-6 leading-tight px-2">
+            <span className="text-white">Empresas que </span>
+            <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
               Recuperaram Milhares
             </span>
           </h2>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
             Veja histórias reais de empresas que identificaram valores perdidos através do nosso Módulo Fiscal
           </p>
 
@@ -107,12 +109,12 @@ export function FiscalTestimonialsSection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3, duration: 0.5 }}
-            className="inline-flex items-center gap-4 px-8 py-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border border-emerald-500/30"
+            className="inline-flex flex-col sm:flex-row items-center gap-3 sm:gap-4 px-6 sm:px-8 py-4 sm:py-5 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-emerald-600/20 border border-emerald-500/30"
           >
-            <TrendingUp className="w-8 h-8 text-emerald-400" />
-            <div className="text-left">
-              <p className="text-sm text-emerald-300/80">Total recuperado por estes clientes</p>
-              <p className="text-3xl font-bold text-emerald-400">
+            <TrendingUp className="w-6 sm:w-8 h-6 sm:h-8 text-emerald-400" />
+            <div className="text-center sm:text-left">
+              <p className="text-xs sm:text-sm text-emerald-300/80">Total recuperado por estes clientes</p>
+              <p className="text-2xl sm:text-3xl font-bold text-emerald-400">
                 R$ {(totalRecovered / 1000).toFixed(0)}mil+
               </p>
             </div>
@@ -125,44 +127,44 @@ export function FiscalTestimonialsSection() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-100px" }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8"
+          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 lg:gap-8"
         >
           {testimonials.map((testimonial, index) => (
             <motion.div key={index} variants={itemVariants}>
-              <Card className="p-6 lg:p-8 bg-card/50 backdrop-blur-sm border-border/50 hover:border-emerald-500/30 transition-all duration-300 h-full group">
+              <Card className="p-5 sm:p-6 lg:p-8 bg-white/5 backdrop-blur-sm border-white/10 hover:border-emerald-500/30 transition-all duration-300 h-full group">
                 {/* Quote Icon */}
-                <Quote className="w-10 h-10 text-emerald-500/20 mb-4 group-hover:text-emerald-500/40 transition-colors" />
+                <Quote className="w-8 sm:w-10 h-8 sm:h-10 text-emerald-500/30 mb-3 sm:mb-4 group-hover:text-emerald-500/50 transition-colors" />
                 
                 {/* Testimonial Text */}
-                <p className="text-foreground/90 text-lg leading-relaxed mb-6">
+                <p className="text-white/90 text-base sm:text-lg leading-relaxed mb-4 sm:mb-6">
                   "{testimonial.text}"
                 </p>
 
                 {/* Recovered Amount */}
-                <div className="flex items-center gap-3 mb-6 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-                  <div className="w-12 h-12 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-emerald-400" />
+                <div className="flex items-center gap-3 mb-4 sm:mb-6 p-3 sm:p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                  <div className="w-10 sm:w-12 h-10 sm:h-12 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                    <TrendingUp className="w-5 sm:w-6 h-5 sm:h-6 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-sm text-muted-foreground">Valor Recuperado</p>
-                    <p className="text-2xl font-bold text-emerald-400">
+                    <p className="text-xs sm:text-sm text-slate-400">Valor Recuperado</p>
+                    <p className="text-xl sm:text-2xl font-bold text-emerald-400">
                       R$ {testimonial.recovered.toLocaleString('pt-BR')}
                     </p>
                   </div>
                 </div>
 
                 {/* Author Info */}
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0">
+                  <div className="flex items-center gap-3 sm:gap-4">
                     <img
                       src={testimonial.photo}
                       alt={testimonial.name}
-                      className="w-14 h-14 rounded-full object-cover border-2 border-emerald-500/30"
+                      className="w-12 sm:w-14 h-12 sm:h-14 rounded-full object-cover border-2 border-emerald-500/30"
                     />
                     <div>
-                      <h4 className="font-semibold text-foreground">{testimonial.name}</h4>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Building2 className="w-4 h-4" />
+                      <h4 className="font-semibold text-white text-sm sm:text-base">{testimonial.name}</h4>
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-400">
+                        <Building2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                         <span>{testimonial.company}</span>
                       </div>
                       <span className="text-xs text-emerald-400 font-medium">{testimonial.sector}</span>
@@ -172,7 +174,7 @@ export function FiscalTestimonialsSection() {
                   {/* Rating */}
                   <div className="flex gap-1">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                      <Star key={i} className="w-3.5 sm:w-4 h-3.5 sm:h-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
                 </div>
@@ -187,14 +189,14 @@ export function FiscalTestimonialsSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.5, duration: 0.5 }}
-          className="text-center mt-12"
+          className="text-center mt-10 sm:mt-12"
         >
-          <p className="text-muted-foreground mb-4">
+          <p className="text-slate-400 mb-4 text-sm sm:text-base">
             Sua empresa pode ser a próxima a descobrir valores esquecidos
           </p>
           <a
             href="#fiscal"
-            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium transition-colors"
+            className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 font-medium transition-colors text-sm sm:text-base"
           >
             Solicitar minha análise fiscal →
           </a>
