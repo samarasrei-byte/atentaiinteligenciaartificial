@@ -6,30 +6,31 @@ interface AnimatedRoutesProps {
   children: ReactNode;
 }
 
-const easeOutQuart: Easing = [0.25, 0.46, 0.45, 0.94];
+// Smoother easing curve for premium feel
+const easeOutQuint: Easing = [0.22, 1, 0.36, 1];
 
 const pageVariants: Variants = {
   initial: {
     opacity: 0,
-    y: 8,
-    scale: 0.99,
+    y: 20,
+    filter: "blur(4px)",
   },
   animate: {
     opacity: 1,
     y: 0,
-    scale: 1,
+    filter: "blur(0px)",
     transition: {
-      duration: 0.3,
-      ease: easeOutQuart,
+      duration: 0.5,
+      ease: easeOutQuint,
     },
   },
   exit: {
     opacity: 0,
-    y: -8,
-    scale: 0.99,
+    y: -10,
+    filter: "blur(2px)",
     transition: {
-      duration: 0.2,
-      ease: easeOutQuart,
+      duration: 0.3,
+      ease: easeOutQuint,
     },
   },
 };
@@ -45,7 +46,7 @@ export function AnimatedRoutes({ children }: AnimatedRoutesProps) {
         initial="initial"
         animate="animate"
         exit="exit"
-        className="w-full"
+        className="w-full will-change-transform"
       >
         {children}
       </motion.div>
@@ -65,7 +66,7 @@ export function PageTransition({ children, className = '' }: PageTransitionProps
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.3, ease: easeOutQuart }}
+      transition={{ duration: 0.3, ease: easeOutQuint }}
       className={className}
     >
       {children}
@@ -112,7 +113,7 @@ export const staggerItemVariants: Variants = {
     y: 0,
     transition: {
       duration: 0.4,
-      ease: easeOutQuart,
+      ease: easeOutQuint,
     },
   },
 };
