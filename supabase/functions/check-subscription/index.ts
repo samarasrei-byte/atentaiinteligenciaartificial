@@ -180,19 +180,73 @@ serve(async (req) => {
     const customerId = customers.data[0].id;
     logStep("Found Stripe customer", { customerId });
 
-    const subscriptions = await stripe.subscriptions.list({
+    // Check for active subscriptions first
+    const activeSubscriptions = await stripe.subscriptions.list({
       customer: customerId,
       status: "active",
       limit: 1,
     });
 
-    const hasActiveSub = subscriptions.data.length > 0;
+    // Also check for past_due subscriptions
+    const pastDueSubscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "past_due",
+      limit: 1,
+    });
+
+    const hasActiveSub = activeSubscriptions.data.length > 0;
+    const hasPastDueSub = pastDueSubscriptions.data.length > 0;
     let plan = null;
     let subscriptionEnd = null;
     let priceId = null;
+    let isPastDue = false;
+
+    // Handle past_due subscriptions
+    if (hasPastDueSub && !hasActiveSub) {
+      const subscription = pastDueSubscriptions.data[0];
+      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
+      const productId = subscription.items.data[0].price.product as string;
+      priceId = subscription.items.data[0].price.id;
+      plan = PRODUCT_PLANS[productId] || "unknown";
+      isPastDue = true;
+      
+      logStep("Past due subscription found", { 
+        subscriptionId: subscription.id, 
+        plan,
+        productId,
+        endDate: subscriptionEnd 
+      });
+
+      // Update subscription in database with past_due status
+      await supabaseClient
+        .from('subscriptions')
+        .upsert({
+          user_id: userId,
+          plan_type: plan,
+          status: 'pending', // Mark as pending due to payment issues
+          stripe_customer_id: customerId,
+          stripe_subscription_id: subscription.id,
+          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+          current_period_end: subscriptionEnd,
+          price_cents: subscription.items.data[0].price.unit_amount || 0,
+        }, { onConflict: 'user_id' });
+      
+      logStep("Database updated with past_due status");
+
+      return new Response(JSON.stringify({
+        subscribed: false, // Block premium features
+        plan,
+        price_id: priceId,
+        subscription_end: subscriptionEnd,
+        is_past_due: true
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
 
     if (hasActiveSub) {
-      const subscription = subscriptions.data[0];
+      const subscription = activeSubscriptions.data[0];
       subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
       const productId = subscription.items.data[0].price.product as string;
       priceId = subscription.items.data[0].price.id;
@@ -227,7 +281,8 @@ serve(async (req) => {
       subscribed: hasActiveSub,
       plan,
       price_id: priceId,
-      subscription_end: subscriptionEnd
+      subscription_end: subscriptionEnd,
+      is_past_due: false
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

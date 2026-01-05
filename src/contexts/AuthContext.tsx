@@ -9,6 +9,7 @@ interface SubscriptionInfo {
   subscribed: boolean;
   plan: PlanType | null;
   subscriptionEnd: string | null;
+  isPastDue: boolean;
 }
 
 interface AuthContextType {
@@ -46,6 +47,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     subscribed: false,
     plan: null,
     subscriptionEnd: null,
+    isPastDue: false,
   });
 
   const fetchUserData = async (userId: string) => {
@@ -101,7 +103,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return checkSubscription(retryCount + 1, maxRetries);
       }
       console.log('No valid session for subscription check after retries');
-      setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
+        setSubscription({ subscribed: false, plan: null, subscriptionEnd: null, isPastDue: false });
       return;
     }
 
@@ -133,6 +135,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           subscribed: data.subscribed || false,
           plan: data.plan || null,
           subscriptionEnd: data.subscription_end || null,
+          isPastDue: data.is_past_due || false,
         });
       }
     } catch (error: any) {
@@ -162,7 +165,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         } else {
           setRoles([]);
           setProfile(null);
-          setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
+          setSubscription({ subscribed: false, plan: null, subscriptionEnd: null, isPastDue: false });
         }
         setLoading(false);
       }
@@ -232,7 +235,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setSession(null);
     setRoles([]);
     setProfile(null);
-    setSubscription({ subscribed: false, plan: null, subscriptionEnd: null });
+    setSubscription({ subscribed: false, plan: null, subscriptionEnd: null, isPastDue: false });
   };
 
   const hasRole = (role: AppRole) => roles.includes(role);
