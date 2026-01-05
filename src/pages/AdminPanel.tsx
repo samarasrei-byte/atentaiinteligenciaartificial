@@ -25,6 +25,10 @@ import { CreditRepairManagement } from '@/components/admin/CreditRepairManagemen
 import CashbackMetricsDashboard from '@/components/admin/CashbackMetricsDashboard';
 import { FiscalAnalysisManagement } from '@/components/admin/FiscalAnalysisManagement';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
+import { ChurnAnalytics } from '@/components/admin/ChurnAnalytics';
+import { CohortAnalysis } from '@/components/admin/CohortAnalysis';
+import { MassMessaging } from '@/components/admin/MassMessaging';
+import { AdminRealtimeDashboard } from '@/components/admin/AdminRealtimeDashboard';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -218,10 +222,6 @@ const AdminPanel = () => {
   const handleTabChange = (tab: string) => { 
     if (tab === 'roles') {
       navigate('/admin/roles');
-      return;
-    }
-    if (tab === 'realtime') {
-      navigate('/admin/metrics');
       return;
     }
     // Painéis externos agora são tabs embutidas no admin (não mais navegação externa)
@@ -426,6 +426,10 @@ const AdminPanel = () => {
           {activeTab === 'limpa-nome' && <CreditRepairManagement />}
           {activeTab === 'cashback' && <CashbackMetricsDashboard />}
           {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
+          {activeTab === 'realtime' && <AdminRealtimeDashboard />}
+          {activeTab === 'churn' && <ChurnAnalytics />}
+          {activeTab === 'cohort' && <CohortAnalysis />}
+          {activeTab === 'mass-messages' && <MassMessaging />}
           {activeTab === 'settings' && (
             <Card className="bg-card border-border shadow-soft">
               <CardHeader><CardTitle>Configurações</CardTitle><CardDescription>Ajustes do sistema</CardDescription></CardHeader>
