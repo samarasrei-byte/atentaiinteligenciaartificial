@@ -29,7 +29,6 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'ai-chat',
     'ai-chat-unlimited',
     'pdf-export',
-    'regime-comparator',
     'pf-pj-calculator',
     'timeline-2026-2033',
   ],

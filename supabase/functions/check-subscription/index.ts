@@ -45,13 +45,12 @@ async function checkRateLimit(
   }
 }
 
-// Product ID to plan name mapping
+// Product ID to plan name mapping - MUST match src/lib/stripe.ts
 const PRODUCT_PLANS: Record<string, string> = {
-  "prod_TeJKjnfkaw0JfV": "simulator",
-  "prod_TedPv32txqdcXM": "premium",
-  "prod_Tecf36TAM9IMat": "contador",
-  "prod_Tehfc8IkhNyBJ7": "contador", // Contador Premium Plus product
-  "prod_Tevvj1l2m0hSOP": "autonomo", // Autônomo Master product
+  "prod_TeyH8gtLUj9Llu": "simulator", // Simulador Tributário
+  "prod_TedPv32txqdcXM": "premium",   // AtentAI Premium
+  "prod_Tehfc8IkhNyBJ7": "contador",  // Business Pro
+  "prod_Tevvj1l2m0hSOP": "autonomo",  // Autônomo Master
 };
 
 serve(async (req) => {
