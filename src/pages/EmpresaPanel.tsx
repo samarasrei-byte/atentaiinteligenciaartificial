@@ -79,7 +79,7 @@ import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionH
 import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
-import { ServicesHub } from '@/components/dashboard/ServicesHub';
+import { ServicesHubModern } from '@/components/dashboard/ServicesHubModern';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
@@ -737,7 +737,7 @@ const EmpresaPanel = () => {
             <CashbackHistoryCard />
 
             {/* Services Hub */}
-            <ServicesHub />
+            <ServicesHubModern />
           </>
         );
     }

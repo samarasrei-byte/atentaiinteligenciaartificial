@@ -115,11 +115,12 @@ export const SUBSCRIBER_DISCOUNTS = {
   },
   fiscal_analysis: {
     name: 'Análise Fiscal',
-    description: 'Análise completa da situação fiscal da sua empresa com identificação de riscos e oportunidades',
-    basePrice: 29700, // cents (R$297,00)
-    discount: 0.15, // 15% off for subscribers
-    discountedPrice: 25245, // cents (R$252,45)
+    description: 'Análise 100% gratuita com pagamento apenas no êxito (50% do valor identificado)',
+    basePrice: 0, // Free analysis - success fee only
+    discount: 0.50, // 50% of identified value
+    discountedPrice: 0, // Free analysis
     icon: 'BarChart',
+    successFee: true, // Special flag for success fee model
   },
   business_consulting: {
     name: 'Consultoria Empresarial',

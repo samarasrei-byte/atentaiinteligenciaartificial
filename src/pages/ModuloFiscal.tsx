@@ -10,7 +10,7 @@ import {
   ShieldCheck, FileSearch, Receipt, CircleDollarSign,
   XCircle, ArrowDown, ChevronRight, Quote, BadgePercent
 } from "lucide-react";
-import { FiscalAnalysisForm } from "@/components/fiscal/FiscalAnalysisForm";
+import { FiscalAnalysisFormModern } from "@/components/fiscal/FiscalAnalysisFormModern";
 import { motion, useInView } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
@@ -164,19 +164,13 @@ export default function ModuloFiscal() {
 
   if (showForm) {
     return (
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-gradient-to-b from-background to-muted/20">
         <Header onNavigate={handleNavigate} />
-        <div className="pt-20 pb-12 px-4">
-          <div className="container max-w-4xl mx-auto">
-            <Button 
-              variant="ghost" 
-              onClick={() => setShowForm(false)}
-              className="mb-6"
-            >
-              ← Voltar
-            </Button>
-            <FiscalAnalysisForm onSuccess={() => navigate('/modulo-fiscal/sucesso')} />
-          </div>
+        <div className="pt-24 pb-16 px-4">
+          <FiscalAnalysisFormModern 
+            onSuccess={() => navigate('/modulo-fiscal/sucesso')} 
+            onBack={() => setShowForm(false)}
+          />
         </div>
         <Footer onNavigate={handleNavigate} />
       </div>
