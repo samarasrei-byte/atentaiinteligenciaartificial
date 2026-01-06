@@ -74,7 +74,7 @@ import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
 import CompanyOpeningStatus from '@/components/abertura/CompanyOpeningStatus';
 import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
 import { PastDueAlert } from '@/components/subscription/PastDueAlert';
-import { ServicesHub } from '@/components/dashboard/ServicesHub';
+import { ServicesHubModern } from '@/components/dashboard/ServicesHubModern';
 import { ServiceNotificationBell } from '@/components/notifications/ServiceNotificationBell';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
@@ -421,7 +421,7 @@ const AutonomoPanel: React.FC = () => {
       <CashbackHistoryCard />
 
       {/* Services Hub */}
-      <ServicesHub />
+      <ServicesHubModern />
 
       {/* Recent Activity */}
       <Card data-tour="history-section">
