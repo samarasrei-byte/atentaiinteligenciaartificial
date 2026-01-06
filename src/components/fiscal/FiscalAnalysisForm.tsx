@@ -152,24 +152,24 @@ export function FiscalAnalysisForm({ onSuccess }: FiscalAnalysisFormProps) {
   };
 
   return (
-    <Card className="border-primary/20">
-      <CardHeader className="text-center">
-        <div className="mx-auto p-3 rounded-xl bg-primary/10 w-fit mb-4">
-          <Shield className="h-8 w-8 text-primary" />
+    <Card className="border border-border/50 shadow-lg">
+      <CardHeader className="text-center pb-6">
+        <div className="mx-auto p-4 rounded-2xl bg-primary/10 w-fit mb-4">
+          <Shield className="h-10 w-10 text-primary" />
         </div>
-        <CardTitle className="text-2xl">Solicitar Análise Fiscal</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl md:text-3xl">Solicitar Análise Fiscal</CardTitle>
+        <CardDescription className="text-sm md:text-base max-w-md mx-auto">
           Preencha os dados da empresa para iniciar a análise técnica. 
           Serviço sujeito a validação prévia do enquadramento fiscal.
         </CardDescription>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-4 md:p-8">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
             {/* Personal Info */}
             <div className="space-y-4">
-              <h3 className="font-semibold flex items-center gap-2 text-lg">
+              <h3 className="font-semibold flex items-center gap-2 text-base md:text-lg">
                 <FileText className="h-5 w-5 text-primary" />
                 Dados do Responsável
               </h3>
@@ -235,7 +235,7 @@ export function FiscalAnalysisForm({ onSuccess }: FiscalAnalysisFormProps) {
 
             {/* Company Info */}
             <div className="space-y-4">
-              <h3 className="font-semibold flex items-center gap-2 text-lg">
+              <h3 className="font-semibold flex items-center gap-2 text-base md:text-lg">
                 <Building2 className="h-5 w-5 text-primary" />
                 Dados da Empresa
               </h3>
@@ -324,7 +324,7 @@ export function FiscalAnalysisForm({ onSuccess }: FiscalAnalysisFormProps) {
 
             {/* Analysis Details */}
             <div className="space-y-4">
-              <h3 className="font-semibold flex items-center gap-2 text-lg">
+              <h3 className="font-semibold flex items-center gap-2 text-base md:text-lg">
                 <Shield className="h-5 w-5 text-primary" />
                 Detalhes da Análise
               </h3>
@@ -440,8 +440,8 @@ export function FiscalAnalysisForm({ onSuccess }: FiscalAnalysisFormProps) {
               />
             </div>
 
-            <div className="pt-4">
-              <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+            <div className="pt-6">
+              <Button type="submit" size="lg" className="w-full h-12 md:h-14 text-base" disabled={isSubmitting}>
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-5 w-5 mr-2 animate-spin" />
@@ -454,7 +454,7 @@ export function FiscalAnalysisForm({ onSuccess }: FiscalAnalysisFormProps) {
                   </>
                 )}
               </Button>
-              <p className="text-xs text-muted-foreground text-center mt-3">
+              <p className="text-xs text-muted-foreground text-center mt-4">
                 Ao enviar, você concorda com nossa política de privacidade e termos de uso.
               </p>
             </div>
