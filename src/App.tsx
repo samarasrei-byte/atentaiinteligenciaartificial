@@ -45,6 +45,8 @@ import PlanoAutonomo from "./pages/PlanoAutonomo";
 import AutonomoOnboardingPage from "./pages/AutonomoOnboarding";
 import UserTypeSelection from "./pages/UserTypeSelection";
 import WelcomePage from "./pages/WelcomePage";
+import TrialOnboarding from "./pages/TrialOnboarding";
+import TrialSuccess from "./pages/TrialSuccess";
 import InstallApp from "./pages/InstallApp";
 import TransitionSimulator from "./pages/TransitionSimulator";
 import CertificatesPage from "./pages/CertificatesPage";
@@ -84,6 +86,8 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/comecar" element={<UserTypeSelection />} />
+              <Route path="/trial" element={<TrialOnboarding />} />
+              <Route path="/trial-success" element={<TrialSuccess />} />
               <Route path="/onboarding" element={<PublicOnboarding />} />
               <Route path="/autonomo-onboarding" element={<AutonomoOnboardingPage />} />
               <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
