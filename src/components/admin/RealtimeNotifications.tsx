@@ -19,7 +19,7 @@ import {
 
 interface RealtimeEvent {
   id: string;
-  type: "new_user" | "new_subscription" | "subscription_update" | "new_credit_repair" | "credit_repair_update";
+  type: "new_user" | "new_subscription" | "subscription_update" | "new_credit_repair" | "credit_repair_update" | "new_fiscal_analysis" | "fiscal_analysis_update";
   title: string;
   description: string;
   timestamp: Date;
@@ -175,10 +175,63 @@ export function RealtimeNotifications() {
       )
       .subscribe();
 
+    // Subscribe to fiscal_analysis_requests (Módulo Fiscal)
+    const fiscalAnalysisChannel = supabase
+      .channel("realtime-fiscal-analysis")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "fiscal_analysis_requests" },
+        (payload) => {
+          const request = payload.new as any;
+          addEvent({
+            type: "new_fiscal_analysis",
+            title: "📊 Nova Análise Fiscal!",
+            description: `${request.company_name} - ${request.full_name}`,
+            data: request,
+          });
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "fiscal_analysis_requests" },
+        (payload) => {
+          const request = payload.new as any;
+          const oldRequest = payload.old as any;
+          
+          if (oldRequest.status !== request.status) {
+            const statusLabels: Record<string, string> = {
+              pending: 'Pendente',
+              analyzing: 'Em Análise',
+              risk_detected: 'Risco Detectado',
+              approved: 'Aprovado',
+              completed: 'Concluído',
+              cancelled: 'Cancelado'
+            };
+            addEvent({
+              type: "fiscal_analysis_update",
+              title: "🔄 Análise Fiscal Atualizada",
+              description: `${request.company_name}: ${statusLabels[request.status] || request.status}`,
+              data: request,
+            });
+          }
+          
+          if (oldRequest.payment_status !== request.payment_status && request.payment_status === 'paid') {
+            addEvent({
+              type: "fiscal_analysis_update",
+              title: "💰 Pagamento Módulo Fiscal Recebido!",
+              description: `${request.company_name} - R$ ${((request.service_fee_cents || 0) / 100).toFixed(2)}`,
+              data: request,
+            });
+          }
+        }
+      )
+      .subscribe();
+
     return () => {
       supabase.removeChannel(profilesChannel);
       supabase.removeChannel(subscriptionsChannel);
       supabase.removeChannel(creditRepairChannel);
+      supabase.removeChannel(fiscalAnalysisChannel);
     };
   }, [soundEnabled]);
 
@@ -194,6 +247,10 @@ export function RealtimeNotifications() {
         return <ShieldCheck className="h-4 w-4 text-emerald-500" />;
       case "credit_repair_update":
         return <Activity className="h-4 w-4 text-amber-500" />;
+      case "new_fiscal_analysis":
+        return <ShieldCheck className="h-4 w-4 text-purple-500" />;
+      case "fiscal_analysis_update":
+        return <Activity className="h-4 w-4 text-violet-500" />;
       default:
         return <Bell className="h-4 w-4 text-muted-foreground" />;
     }
@@ -211,6 +268,10 @@ export function RealtimeNotifications() {
         return "bg-emerald-500/10 border-emerald-500/20";
       case "credit_repair_update":
         return "bg-amber-500/10 border-amber-500/20";
+      case "new_fiscal_analysis":
+        return "bg-purple-500/10 border-purple-500/20";
+      case "fiscal_analysis_update":
+        return "bg-violet-500/10 border-violet-500/20";
       default:
         return "bg-muted/50";
     }
@@ -264,7 +325,7 @@ export function RealtimeNotifications() {
           </div>
         </div>
         <CardDescription>
-          Receba alertas instantâneos sobre usuários, assinaturas e Limpa Nome
+          Receba alertas instantâneos sobre usuários, assinaturas, Limpa Nome e Módulo Fiscal
         </CardDescription>
       </CardHeader>
       <CardContent>

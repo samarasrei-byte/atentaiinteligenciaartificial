@@ -106,12 +106,13 @@ export default function PartnerPanel() {
     }
   }, [user, authLoading]);
 
-  // Setup realtime subscription for new requests
+  // Setup realtime subscription for new requests (Limpa Nome + Fiscal)
   useEffect(() => {
     if (!partner?.id) return;
 
     const channel = supabase
       .channel(`partner-requests-${partner.id}`)
+      // Limpa Nome realtime
       .on(
         'postgres_changes',
         {
@@ -121,14 +122,12 @@ export default function PartnerPanel() {
           filter: `partner_id=eq.${partner.id}`
         },
         (payload) => {
-          // New request came in
           setNewRequestsCount(prev => prev + 1);
           setShowNewRequestBadge(true);
           toast({
-            title: '🎉 Nova solicitação recebida!',
+            title: '🎉 Nova solicitação Limpa Nome!',
             description: `${(payload.new as any).full_name} solicitou o serviço Limpa Nome`,
           });
-          // Refresh data
           fetchPartnerData();
         }
       )
@@ -138,6 +137,37 @@ export default function PartnerPanel() {
           event: 'UPDATE',
           schema: 'public',
           table: 'credit_repair_requests',
+          filter: `partner_id=eq.${partner.id}`
+        },
+        () => {
+          fetchPartnerData();
+        }
+      )
+      // Módulo Fiscal realtime
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'fiscal_analysis_requests',
+          filter: `partner_id=eq.${partner.id}`
+        },
+        (payload) => {
+          setNewRequestsCount(prev => prev + 1);
+          setShowNewRequestBadge(true);
+          toast({
+            title: '📊 Nova análise fiscal!',
+            description: `${(payload.new as any).company_name} - ${(payload.new as any).full_name}`,
+          });
+          fetchPartnerData();
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'fiscal_analysis_requests',
           filter: `partner_id=eq.${partner.id}`
         },
         () => {
