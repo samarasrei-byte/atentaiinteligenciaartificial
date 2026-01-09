@@ -233,7 +233,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-slate-900 safe-area-top',
+          'bg-slate-900 safe-area-top overflow-hidden',
           collapsed ? 'w-16' : 'w-64'
         )}
       >
