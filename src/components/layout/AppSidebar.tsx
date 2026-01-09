@@ -53,7 +53,7 @@ interface SidebarItem {
 interface AppSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
-  variant?: 'user' | 'admin' | 'contador' | 'autonomo' | 'empresa';
+  variant?: 'user' | 'admin' | 'contador' | 'autonomo' | 'empresa' | 'partner';
   activeTab?: string;
   onTabChange?: (tab: string) => void;
 }
@@ -147,6 +147,19 @@ const autonomoItems: SidebarItem[] = [
   { icon: User, label: 'Meu Perfil', tabId: 'profile' },
 ];
 
+const partnerItems: SidebarItem[] = [
+  { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+  { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome', badge: 'LIVE', badgeColor: 'text-emerald-400' },
+  { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal', badge: 'LIVE', badgeColor: 'text-primary' },
+  { icon: Activity, label: 'Notificações', tabId: 'notifications', badge: '●', badgeColor: 'text-amber-400' },
+  { icon: MessagesSquare, label: 'Chat Clientes', tabId: 'chat' },
+  { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
+  { icon: DollarSign, label: 'Comissões', tabId: 'commissions' },
+  { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
+  { icon: User, label: 'Meu Perfil', tabId: 'profile' },
+  { icon: Settings, label: 'Configurações', tabId: 'settings' },
+];
+
 const AppSidebar: React.FC<AppSidebarProps> = ({ 
   collapsed, 
   onToggle, 
@@ -165,7 +178,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         ? autonomoItems 
         : variant === 'empresa'
           ? empresaItems
-          : userItems;
+          : variant === 'partner'
+            ? partnerItems
+            : userItems;
 
   const handleSignOut = async () => {
     await signOut();

@@ -353,30 +353,30 @@ export default function PartnerPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 flex w-full overflow-x-hidden">
+    <div className="min-h-screen bg-slate-950 flex w-full overflow-hidden">
       {/* Sidebar */}
-      <div className="hidden lg:block">
+      <div className="hidden lg:block flex-shrink-0">
         <AppSidebar 
           collapsed={collapsed} 
           onToggle={() => setCollapsed(!collapsed)} 
-          variant="user"
+          variant="partner"
           activeTab={activeTab}
           onTabChange={setActiveTab}
         />
       </div>
 
       {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 w-full min-w-0 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`flex-1 transition-all duration-300 min-w-0 overflow-y-auto overflow-x-hidden h-screen ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Header */}
         <header className="sticky top-0 z-30 bg-slate-900/80 backdrop-blur-xl border-b border-white/5 px-4 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
-              <div className="h-12 w-12 rounded-xl bg-success/10 flex items-center justify-center">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-success/20 to-primary/20 flex items-center justify-center">
                 <Building className="h-6 w-6 text-success" />
               </div>
               <div>
                 <h1 className="text-xl font-bold text-white">{partner.trade_name || partner.company_name}</h1>
-                <p className="text-sm text-white/60">Painel de Parceiro Limpa Nome</p>
+                <p className="text-sm text-white/60">Painel Master de Parceiro</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
