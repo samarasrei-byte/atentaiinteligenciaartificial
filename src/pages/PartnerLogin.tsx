@@ -20,15 +20,17 @@ export default function PartnerLogin() {
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isCheckingAccess, setIsCheckingAccess] = useState(false);
 
   useEffect(() => {
-    if (user && !authLoading) {
+    if (user && !authLoading && !isCheckingAccess) {
       checkPartnerAccess();
     }
   }, [user, authLoading]);
 
   const checkPartnerAccess = async () => {
     if (!user) return;
+    setIsCheckingAccess(true);
 
     try {
       // Check if user is linked to any partner
@@ -40,6 +42,7 @@ export default function PartnerLogin() {
 
       if (linkError) {
         console.error('Error checking partner link:', linkError);
+        setIsCheckingAccess(false);
         return;
       }
 
@@ -49,9 +52,13 @@ export default function PartnerLogin() {
       } else {
         // User is logged in but not a partner
         setError('Sua conta não está vinculada a nenhum parceiro. Entre em contato com o administrador para receber um convite.');
+        // Sign out since they don't have partner access
+        await supabase.auth.signOut();
       }
     } catch (err) {
       console.error('Error checking partner access:', err);
+    } finally {
+      setIsCheckingAccess(false);
     }
   };
 
@@ -106,7 +113,7 @@ export default function PartnerLogin() {
     }
   };
 
-  if (authLoading) {
+  if (authLoading || isCheckingAccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -144,16 +151,17 @@ export default function PartnerLogin() {
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-white">Email</Label>
                 <div className="relative">
-                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10 pointer-events-none" />
                   <Input
                     id="email"
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="seu@email.com"
-                    className="pl-10 bg-slate-800/50 border-white/10"
+                    className="pl-10 bg-slate-800/50 border-white/10 text-white placeholder:text-white/40"
                     required
                     disabled={isLoading}
+                    autoComplete="email"
                   />
                 </div>
               </div>
@@ -161,16 +169,17 @@ export default function PartnerLogin() {
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-white">Senha</Label>
                 <div className="relative">
-                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground z-10 pointer-events-none" />
                   <Input
                     id="password"
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="pl-10 bg-slate-800/50 border-white/10"
+                    className="pl-10 bg-slate-800/50 border-white/10 text-white placeholder:text-white/40"
                     required
                     disabled={isLoading}
+                    autoComplete="current-password"
                   />
                 </div>
               </div>
