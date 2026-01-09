@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LogIn, Sparkles } from "lucide-react";
+import { Menu, X, Calculator, MessageCircle, LogIn, Download, Shield, Briefcase } from "lucide-react";
 import { Link } from "react-router-dom";
+import { InstallPWAButton } from "@/components/pwa/InstallPWAPrompt";
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -10,8 +11,15 @@ interface HeaderProps {
 export function Header({ onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const navItems = [
+    { label: "Simulador", icon: Calculator, section: "simulator" },
+    { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
+    { label: "Consultar IA", icon: MessageCircle, section: "ai" },
+    { label: "Serviços", icon: Briefcase, href: "/servicos" },
+  ];
+
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/20 shadow-sm safe-area-top">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/30 shadow-sm safe-area-top">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-14 sm:h-16">
           {/* Logo */}
@@ -22,31 +30,51 @@ export function Header({ onNavigate }: HeaderProps) {
             <img 
               src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="h-8 sm:h-10 w-auto transition-all duration-300 group-hover:brightness-110"
+              className="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300 group-hover:brightness-110"
             />
           </button>
 
-          {/* Desktop - Minimal CTAs */}
-          <div className="hidden md:flex items-center gap-3">
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              asChild 
-              className="text-muted-foreground hover:text-foreground"
-            >
-              <Link to="/auth">
-                <LogIn className="w-4 h-4 mr-2" />
-                Entrar
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              'href' in item ? (
+                <Button
+                  key={item.label}
+                  variant="ghost"
+                  asChild
+                  className="flex items-center gap-2"
+                >
+                  <Link to={item.href}>
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
+                </Button>
+              ) : (
+                <Button
+                  key={item.section}
+                  variant="ghost"
+                  onClick={() => onNavigate(item.section)}
+                  className="flex items-center gap-2"
+                >
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
+                </Button>
+              )
+            ))}
+          </nav>
+
+          {/* CTA Buttons */}
+          <div className="hidden md:flex items-center gap-2">
+            <InstallPWAButton />
+            <Button variant="outline" size="sm" asChild className="border-primary text-primary hover:bg-primary/10">
+              <Link to="/planos-perfil" className="flex items-center gap-2">
+                Ver Planos
               </Link>
             </Button>
-            <Button 
-              size="sm" 
-              asChild 
-              className="bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg shadow-primary/25"
-            >
-              <Link to="/trial-onboarding" className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4" />
-                Começar Grátis
+            <Button size="sm" asChild className="bg-primary hover:bg-primary/90">
+              <Link to="/auth" className="flex items-center gap-2">
+                <LogIn className="w-4 h-4" />
+                Entrar
               </Link>
             </Button>
           </div>
@@ -64,29 +92,59 @@ export function Header({ onNavigate }: HeaderProps) {
           </div>
         </div>
 
-        {/* Mobile Menu - Simplified */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-border/30 animate-fade-in">
-            <nav className="flex flex-col gap-2">
-              <Button 
-                variant="ghost"
-                className="justify-start gap-3 h-12"
-                asChild
-              >
-                <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                  <LogIn className="w-5 h-5" />
-                  Entrar
-                </Link>
-              </Button>
-              <Button 
-                className="justify-start gap-3 h-12 bg-gradient-to-r from-primary to-primary/80"
-                asChild
-              >
-                <Link to="/trial-onboarding" onClick={() => setIsMenuOpen(false)}>
-                  <Sparkles className="w-5 h-5" />
-                  Começar Grátis
-                </Link>
-              </Button>
+          <div className="md:hidden py-4 border-t border-border/50 animate-fade-in">
+            <nav className="flex flex-col gap-1">
+              {navItems.map((item) => (
+                'href' in item ? (
+                  <Button
+                    key={item.label}
+                    variant="ghost"
+                    asChild
+                    className="justify-start gap-3 h-12"
+                  >
+                    <Link to={item.href} onClick={() => setIsMenuOpen(false)}>
+                      <item.icon className="w-5 h-5" />
+                      {item.label}
+                    </Link>
+                  </Button>
+                ) : (
+                  <Button
+                    key={item.section}
+                    variant="ghost"
+                    onClick={() => {
+                      onNavigate(item.section);
+                      setIsMenuOpen(false);
+                    }}
+                    className="justify-start gap-3 h-12"
+                  >
+                    <item.icon className="w-5 h-5" />
+                    {item.label}
+                  </Button>
+                )
+              ))}
+              <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-border/50">
+                <Button 
+                  variant="outline"
+                  className="justify-start gap-3 h-12"
+                  asChild
+                >
+                  <Link to="/instalar" onClick={() => setIsMenuOpen(false)}>
+                    <Download className="w-5 h-5" />
+                    Instalar Aplicativo
+                  </Link>
+                </Button>
+                <Button 
+                  className="justify-start gap-3 h-12"
+                  asChild
+                >
+                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                    <LogIn className="w-5 h-5" />
+                    Entrar / Criar Conta
+                  </Link>
+                </Button>
+              </div>
             </nav>
           </div>
         )}
