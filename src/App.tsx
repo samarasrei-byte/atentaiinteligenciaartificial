@@ -67,6 +67,7 @@ import AberturaEmpresa from "./pages/AberturaEmpresa";
 import ModuloFiscal from "./pages/ModuloFiscal";
 import AdminLogin from "./pages/AdminLogin";
 import PartnerInvite from "./pages/PartnerInvite";
+import PartnerLogin from "./pages/PartnerLogin";
 import TestLogin from "./pages/TestLogin";
 import QADashboard from "./pages/QADashboard";
 const queryClient = new QueryClient();
@@ -116,6 +117,7 @@ const App = () => (
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
               <Route path="/admin/login" element={<AdminLogin />} />
+              <Route path="/parceiro/login" element={<PartnerLogin />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
               <Route path="/qa-dashboard" element={
