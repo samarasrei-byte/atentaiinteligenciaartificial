@@ -23,36 +23,42 @@ const BRAZILIAN_STATES = [
   'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
 ];
 
+// Comissões alinhadas com os preços reais do sistema
 const SERVICES_INFO = [
   {
     icon: '🧠',
     name: 'Inteligência Fiscal',
     description: 'Análise com IA para recuperação de créditos tributários',
-    commission: '15%'
+    commission: 'Até R$ 500 por caso',
+    basePrice: 'Taxa de êxito: 50% do valor recuperado'
   },
   {
     icon: '🛡️',
     name: 'Limpa Nome Premium',
     description: 'Regularização rápida com equipe jurídica especializada',
-    commission: '20%'
+    commission: 'R$ 15 por venda',
+    basePrice: 'Preço: R$ 97,00'
   },
   {
     icon: '📈',
-    name: 'Score Up Empresarial',
-    description: 'Melhoria do score e reputação financeira',
-    commission: '15%'
-  },
-  {
-    icon: '🔒',
-    name: 'Proteção Comercial',
-    description: 'Monitoramento e proteção contra fraudes',
-    commission: '12%'
-  },
-  {
-    icon: '💼',
     name: 'Consultoria Empresarial',
     description: 'Planejamento tributário personalizado',
-    commission: '18%'
+    commission: 'R$ 68 por venda',
+    basePrice: 'Preço: R$ 450,00'
+  },
+  {
+    icon: '📄',
+    name: 'Declaração de IR',
+    description: 'IR Simples ou Completo',
+    commission: 'R$ 23 a R$ 53',
+    basePrice: 'Preço: R$ 150 a R$ 350'
+  },
+  {
+    icon: '🏢',
+    name: 'Abertura de Empresa',
+    description: 'Abertura completa de CNPJ',
+    commission: 'R$ 75 por venda',
+    basePrice: 'Preço: R$ 500,00'
   }
 ];
 
@@ -215,10 +221,10 @@ export default function AffiliateOnboardingFlow() {
               >
                 Ganhe até{' '}
                 <span className="relative">
-                  <span className="relative z-10">R$ 2.500</span>
+                  <span className="relative z-10">R$ 500</span>
                   <span className="absolute bottom-1 left-0 right-0 h-3 bg-white/30 -z-10" />
                 </span>
-                {' '}por venda
+                {' '}por indicação
               </motion.h1>
 
               <motion.p
@@ -227,7 +233,7 @@ export default function AffiliateOnboardingFlow() {
                 transition={{ delay: 0.2 }}
                 className="text-xl text-white/90 mb-8"
               >
-                Indique serviços premium de alta demanda e receba comissões automáticas de até 20% por cada venda.
+                Indique serviços premium de alta demanda e receba comissões automáticas de até 15% por cada venda.
               </motion.p>
 
               {/* Stats */}
@@ -245,9 +251,9 @@ export default function AffiliateOnboardingFlow() {
                 </div>
                 <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-4 border border-white/20">
                   <div className="text-3xl font-bold text-white">
-                    <AnimatedCounter target={90} suffix="%" />
+                    Até 15%
                   </div>
-                  <p className="text-white/70 text-sm">Comissão para você</p>
+                  <p className="text-white/70 text-sm">Comissão por venda</p>
                 </div>
               </motion.div>
 
@@ -548,21 +554,31 @@ export default function AffiliateOnboardingFlow() {
               <div className="space-y-6">
                 <div className="p-6 rounded-2xl bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/20">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-lg font-medium">Você recebe</span>
-                    <span className="text-4xl font-bold text-green-600">90%</span>
+                    <span className="text-lg font-medium">Sua comissão</span>
+                    <span className="text-4xl font-bold text-green-600">Até 15%</span>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Da comissão de cada venda realizada através do seu link
+                    Por cada venda realizada através do seu link exclusivo
                   </p>
                 </div>
 
                 <div className="p-6 rounded-2xl bg-muted">
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-lg font-medium">Taxa da plataforma</span>
-                    <span className="text-4xl font-bold text-muted-foreground">10%</span>
+                    <span className="text-lg font-medium">Exemplo: Limpa Nome</span>
+                    <span className="text-2xl font-bold text-foreground">R$ 15</span>
                   </div>
                   <p className="text-muted-foreground text-sm">
-                    Retido para manutenção e suporte da plataforma
+                    Serviço: R$ 97,00 → Sua comissão: R$ 14,55
+                  </p>
+                </div>
+
+                <div className="p-6 rounded-2xl bg-muted">
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-lg font-medium">Exemplo: Consultoria</span>
+                    <span className="text-2xl font-bold text-foreground">R$ 68</span>
+                  </div>
+                  <p className="text-muted-foreground text-sm">
+                    Serviço: R$ 450,00 → Sua comissão: R$ 67,50
                   </p>
                 </div>
 
@@ -629,16 +645,16 @@ export default function AffiliateOnboardingFlow() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.1 }}
-                    className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                    className="flex items-start gap-4 p-4 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
                   >
                     <span className="text-3xl">{service.icon}</span>
-                    <div className="flex-1">
+                    <div className="flex-1 min-w-0">
                       <h3 className="font-semibold">{service.name}</h3>
                       <p className="text-sm text-muted-foreground">{service.description}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{service.basePrice}</p>
                     </div>
-                    <div className="text-right">
-                      <span className="text-lg font-bold text-primary">{service.commission}</span>
-                      <p className="text-xs text-muted-foreground">comissão</p>
+                    <div className="text-right flex-shrink-0">
+                      <span className="text-sm font-bold text-primary">{service.commission}</span>
                     </div>
                   </motion.div>
                 ))}
@@ -736,62 +752,132 @@ export default function AffiliateOnboardingFlow() {
     );
   }
 
-  // WhatsApp/Final step
+  // WhatsApp/Final step with message simulation
   if (currentStep === 'whatsapp') {
+    const affiliateLink = `${window.location.origin}/p/${affiliateCode}`;
+    
+    const whatsappMessage = `🚀 *Olá! Preciso compartilhar algo importante com você.*
+
+Descobri uma plataforma que está ajudando empresários a recuperar dinheiro e limpar restrições no CNPJ.
+
+✅ *+R$ 89 milhões* já recuperados
+✅ Análise *100% gratuita*
+✅ Atendimento premium
+
+*Serviços disponíveis:*
+📊 Inteligência Fiscal - Recupere créditos
+🛡️ Limpa Nome - A partir de R$ 97
+📄 Declaração IR - A partir de R$ 150
+🏢 Abertura de Empresa - R$ 500
+
+*Documentos para análise fiscal:*
+• SPED Fiscal e Contribuições
+• Notas fiscais (entrada/saída)
+• DCTF e guias de impostos
+• Folha de pagamento
+
+👉 *Faça sua análise gratuita:*
+${affiliateLink}
+
+_Estou à disposição para tirar dúvidas!_`;
+
+    const copyWhatsAppMessage = () => {
+      navigator.clipboard.writeText(whatsappMessage);
+      toast.success('Mensagem copiada! Cole no WhatsApp.');
+    };
+
+    const openWhatsApp = () => {
+      const encoded = encodeURIComponent(whatsappMessage);
+      window.open(`https://wa.me/?text=${encoded}`, '_blank');
+    };
+
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="w-full max-w-lg text-center"
+          className="w-full max-w-2xl"
         >
           <Card className="border-0 shadow-2xl overflow-hidden">
-            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-8">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: 'spring' }}
-                className="w-24 h-24 rounded-full bg-white/20 flex items-center justify-center mx-auto mb-4"
-              >
-                <Rocket className="w-12 h-12 text-white" />
-              </motion.div>
-              <h1 className="text-3xl font-bold text-white mb-2">Tudo Pronto! 🎉</h1>
-              <p className="text-white/80">Seu painel está configurado</p>
+            <div className="bg-gradient-to-br from-green-500 to-emerald-500 p-6">
+              <div className="flex items-center gap-4">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: 'spring' }}
+                  className="w-16 h-16 rounded-full bg-white/20 flex items-center justify-center"
+                >
+                  <MessageCircle className="w-8 h-8 text-white" />
+                </motion.div>
+                <div>
+                  <h1 className="text-2xl font-bold text-white">Mensagem Pronta!</h1>
+                  <p className="text-white/80">Copie e envie pelo WhatsApp</p>
+                </div>
+              </div>
             </div>
             
-            <CardContent className="p-8">
-              <p className="text-lg text-muted-foreground mb-6">
-                Acesse seu painel para acompanhar leads, vendas, comissões e solicitar saques.
-              </p>
-
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {[
-                  { icon: Users, label: 'Leads' },
-                  { icon: DollarSign, label: 'Vendas' },
-                  { icon: BarChart3, label: 'Comissões' },
-                  { icon: Wallet, label: 'Saques' },
-                ].map((item, i) => (
-                  <motion.div
-                    key={item.label}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.3 + i * 0.1 }}
-                    className="p-4 rounded-xl bg-muted text-center"
-                  >
-                    <item.icon className="w-6 h-6 mx-auto mb-2 text-primary" />
-                    <p className="text-sm font-medium">{item.label}</p>
-                  </motion.div>
-                ))}
+            <CardContent className="p-6">
+              {/* WhatsApp Message Preview */}
+              <div className="bg-[#e5ddd5] dark:bg-[#0b141a] rounded-xl p-4 mb-6">
+                <div className="bg-[#dcf8c6] dark:bg-[#005c4b] rounded-lg p-4 max-w-[90%] ml-auto shadow-sm">
+                  <pre className="whitespace-pre-wrap text-sm text-[#111b21] dark:text-white font-sans leading-relaxed">
+                    {whatsappMessage}
+                  </pre>
+                  <p className="text-right text-xs text-[#667781] dark:text-[#8696a0] mt-2">
+                    Agora ✓✓
+                  </p>
+                </div>
               </div>
 
-              <Button
-                onClick={goToPanel}
-                size="xl"
-                className="w-full"
-              >
-                Acessar Meu Painel
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                <Button
+                  variant="outline"
+                  onClick={copyWhatsAppMessage}
+                  className="h-12"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copiar Mensagem
+                </Button>
+                <Button
+                  onClick={openWhatsApp}
+                  className="h-12 bg-green-500 hover:bg-green-600"
+                >
+                  <MessageCircle className="w-4 h-4 mr-2" />
+                  Abrir WhatsApp
+                </Button>
+              </div>
+
+              <div className="border-t pt-6">
+                <h3 className="font-semibold mb-4 text-center">Seu painel está pronto! 🎉</h3>
+                <div className="grid grid-cols-4 gap-3 mb-6">
+                  {[
+                    { icon: Users, label: 'Leads' },
+                    { icon: DollarSign, label: 'Vendas' },
+                    { icon: BarChart3, label: 'Comissões' },
+                    { icon: Wallet, label: 'Saques' },
+                  ].map((item, i) => (
+                    <motion.div
+                      key={item.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + i * 0.1 }}
+                      className="p-3 rounded-xl bg-muted text-center"
+                    >
+                      <item.icon className="w-5 h-5 mx-auto mb-1 text-primary" />
+                      <p className="text-xs font-medium">{item.label}</p>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <Button
+                  onClick={goToPanel}
+                  size="xl"
+                  className="w-full"
+                >
+                  Acessar Meu Painel
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </motion.div>

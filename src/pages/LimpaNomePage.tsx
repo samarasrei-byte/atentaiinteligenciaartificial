@@ -104,8 +104,8 @@ const LimpaNomePage = () => {
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
 
-  const basePrice = 97000; // R$ 970,00
-  const subscriberDiscount = 0.15; // 15% discount
+  const basePrice = 9700; // R$ 97,00 - alinhado com stripe.ts
+  const subscriberDiscount = 0.10; // 10% discount - alinhado com stripe.ts
   const finalPrice = isSubscribed ? basePrice * (1 - subscriberDiscount) : basePrice;
 
   const handleBureauToggle = (bureauId: string) => {
@@ -250,7 +250,7 @@ const LimpaNomePage = () => {
                 {isSubscribed && (
                   <Badge className="mt-2 bg-success text-success-foreground">
                     <TrendingDown className="h-3 w-3 mr-1" />
-                    15% de desconto exclusivo
+                    10% de desconto exclusivo
                   </Badge>
                 )}
               </div>
