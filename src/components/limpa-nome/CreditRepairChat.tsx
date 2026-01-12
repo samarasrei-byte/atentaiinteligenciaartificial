@@ -195,7 +195,7 @@ export function CreditRepairChat({
 
     const { data, error: signedUrlError } = await supabase.storage
       .from('chat-attachments')
-      .createSignedUrl(fileName, 86400);
+      .createSignedUrl(fileName, 3600); // 1 hour expiry for security
 
     if (signedUrlError || !data?.signedUrl) {
       console.error('Signed URL error:', signedUrlError);
