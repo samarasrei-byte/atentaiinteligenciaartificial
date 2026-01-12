@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import OnboardingParticles from '@/components/onboarding/OnboardingParticles';
+import CleanBackground from '@/components/onboarding/CleanBackground';
 import confetti from 'canvas-confetti';
 
 type ProfileType = 'empresa' | 'autonomo' | 'contador';
@@ -197,30 +197,8 @@ const WelcomePage = () => {
       "transition-all duration-700",
       successAnimation && "opacity-0 scale-110"
     )}>
-      {/* Animated background */}
-      <OnboardingParticles />
-
-      {/* Ambient glows */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px]"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]"
-          animate={{
-            x: [0, -30, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.3, 1],
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+      {/* Clean background */}
+      <CleanBackground />
 
       {/* Main Content */}
       <div className="flex-1 flex items-center justify-center p-4 md:p-8 relative z-10">

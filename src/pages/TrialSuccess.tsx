@@ -9,7 +9,7 @@ import {
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import confetti from 'canvas-confetti';
-import OnboardingParticles from '@/components/onboarding/OnboardingParticles';
+import CleanBackground from '@/components/onboarding/CleanBackground';
 
 const TrialSuccess = () => {
   const navigate = useNavigate();
@@ -80,7 +80,7 @@ const TrialSuccess = () => {
   if (isProcessing) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30">
-        <OnboardingParticles />
+        <CleanBackground />
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -97,7 +97,7 @@ const TrialSuccess = () => {
   if (error) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 p-4">
-        <OnboardingParticles />
+        <CleanBackground />
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -126,7 +126,7 @@ const TrialSuccess = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/30 p-4">
-      <OnboardingParticles />
+      <CleanBackground />
       
       <motion.div
         initial={{ opacity: 0, y: 20 }}
