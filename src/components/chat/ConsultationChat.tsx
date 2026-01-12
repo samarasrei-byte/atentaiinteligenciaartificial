@@ -203,7 +203,7 @@ export function ConsultationChat({
     // Use signed URL for private bucket (valid for 24 hours)
     const { data, error: signedUrlError } = await supabase.storage
       .from('chat-attachments')
-      .createSignedUrl(fileName, 86400); // 24 hours
+      .createSignedUrl(fileName, 3600); // 1 hour expiry for security
 
     if (signedUrlError || !data?.signedUrl) {
       console.error('Signed URL error:', signedUrlError);
