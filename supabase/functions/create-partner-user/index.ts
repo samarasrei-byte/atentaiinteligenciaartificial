@@ -27,14 +27,25 @@ serve(async (req) => {
 
     // Verify admin user
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    if (!authHeader) {
+      logStep("No authorization header");
+      return new Response(JSON.stringify({ error: "Autenticação necessária" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
 
     const token = authHeader.replace("Bearer ", "");
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
+    if (userError || !userData.user?.email) {
+      logStep("Authentication failed", { error: userError?.message });
+      return new Response(JSON.stringify({ error: "Autenticação inválida" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 401,
+      });
+    }
     
     const adminUser = userData.user;
-    if (!adminUser?.email) throw new Error("User not authenticated");
     logStep("Admin user authenticated", { userId: adminUser.id });
 
     // Check if admin
@@ -42,14 +53,21 @@ serve(async (req) => {
       .rpc('has_role', { _user_id: adminUser.id, _role: 'admin' });
 
     if (roleError || !roleData) {
-      throw new Error("Unauthorized: Admin role required");
+      logStep("Unauthorized access attempt", { userId: adminUser.id });
+      return new Response(JSON.stringify({ error: "Acesso não autorizado" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 403,
+      });
     }
     logStep("Admin role verified");
 
     const { email, password, full_name, partner_id, role, is_primary } = await req.json();
 
     if (!email || !password || !full_name || !partner_id) {
-      throw new Error("Missing required fields: email, password, full_name, partner_id");
+      return new Response(JSON.stringify({ error: "Preencha todos os campos obrigatórios" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
     }
 
     // Create user with Supabase Auth
@@ -60,7 +78,18 @@ serve(async (req) => {
       user_metadata: { full_name },
     });
 
-    if (createError) throw new Error(`Error creating user: ${createError.message}`);
+    if (createError) {
+      logStep("User creation failed", { error: createError.message });
+      // Check for specific error types to provide better UX
+      const isEmailTaken = createError.message?.includes('already registered') || 
+                           createError.message?.includes('already exists');
+      return new Response(JSON.stringify({ 
+        error: isEmailTaken ? "Este email já está cadastrado" : "Erro ao criar usuário. Tente novamente." 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: isEmailTaken ? 409 : 500,
+      });
+    }
     logStep("User created", { userId: newUser.user.id });
 
     // Update profile with full name
@@ -83,7 +112,17 @@ serve(async (req) => {
         is_primary: is_primary || false,
       });
 
-    if (linkError) throw new Error(`Error linking user to partner: ${linkError.message}`);
+    if (linkError) {
+      logStep("Failed to link user to partner", { error: linkError.message });
+      // User was created but linking failed - this is a partial failure
+      return new Response(JSON.stringify({ 
+        error: "Usuário criado, mas houve um erro ao vincular ao parceiro. Entre em contato com o suporte.",
+        user_id: newUser.user.id 
+      }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500,
+      });
+    }
     logStep("User linked to partner", { partnerId: partner_id });
 
     return new Response(
@@ -100,7 +139,8 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    // Return generic error message to client, keep details in server logs
+    return new Response(JSON.stringify({ error: "Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
