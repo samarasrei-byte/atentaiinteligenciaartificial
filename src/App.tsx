@@ -73,6 +73,11 @@ import QADashboard from "./pages/QADashboard";
 import AffiliateOnboarding from "./pages/AffiliateOnboarding";
 import AffiliatePanel from "./pages/AffiliatePanel";
 import AffiliateLanding from "./pages/AffiliateLanding";
+import AffiliateOnboardingFlow from "./pages/AffiliateOnboardingFlow";
+import AffiliateLandingPremium from "./pages/AffiliateLandingPremium";
+import AffiliateFiscalLanding from "./pages/AffiliateFiscalLanding";
+import AffiliateLimpaNomeLanding from "./pages/AffiliateLimpaNomeLanding";
+import FiscalDocumentsPage from "./pages/FiscalDocumentsPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -124,9 +129,13 @@ const App = () => (
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
               {/* Affiliate routes */}
-              <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
-              <Route path="/afiliado/:affiliateCode" element={<AffiliateLanding />} />
-              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLanding />} />
+              <Route path="/afiliado/cadastro" element={<AffiliateOnboardingFlow />} />
+              <Route path="/afiliado/:affiliateCode" element={<AffiliateLandingPremium />} />
+              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLandingPremium />} />
+              <Route path="/p/:affiliateCode" element={<AffiliateLandingPremium />} />
+              <Route path="/p/:affiliateCode/fiscal" element={<AffiliateFiscalLanding />} />
+              <Route path="/p/:affiliateCode/limpa-nome" element={<AffiliateLimpaNomeLanding />} />
+              <Route path="/documentos-fiscais" element={<FiscalDocumentsPage />} />
               <Route path="/afiliado/painel" element={
                 <ProtectedRoute>
                   <AffiliatePanel />
