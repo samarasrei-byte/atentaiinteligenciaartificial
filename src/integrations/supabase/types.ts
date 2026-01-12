@@ -14,6 +14,372 @@ export type Database = {
   }
   public: {
     Tables: {
+      affiliate_commissions: {
+        Row: {
+          affiliate_id: string
+          affiliate_value_cents: number
+          created_at: string
+          id: string
+          lead_id: string | null
+          paid_at: string | null
+          platform_fee_cents: number
+          service_id: string | null
+          status: string
+          total_value_cents: number
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          affiliate_value_cents: number
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          paid_at?: string | null
+          platform_fee_cents: number
+          service_id?: string | null
+          status?: string
+          total_value_cents: number
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          affiliate_value_cents?: number
+          created_at?: string
+          id?: string
+          lead_id?: string | null
+          paid_at?: string | null
+          platform_fee_cents?: number
+          service_id?: string | null
+          status?: string
+          total_value_cents?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_commissions_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_commissions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_leads: {
+        Row: {
+          affiliate_id: string
+          annual_revenue_cents: number | null
+          cnpj: string | null
+          company_name: string | null
+          converted_at: string | null
+          created_at: string
+          email: string
+          full_name: string
+          has_audited_before: boolean | null
+          has_restrictions: boolean | null
+          id: string
+          notes: string | null
+          phone: string
+          potential_value_cents: number | null
+          segment: string | null
+          service_id: string | null
+          state: string | null
+          status: string
+          tax_regime: string | null
+          updated_at: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          annual_revenue_cents?: number | null
+          cnpj?: string | null
+          company_name?: string | null
+          converted_at?: string | null
+          created_at?: string
+          email: string
+          full_name: string
+          has_audited_before?: boolean | null
+          has_restrictions?: boolean | null
+          id?: string
+          notes?: string | null
+          phone: string
+          potential_value_cents?: number | null
+          segment?: string | null
+          service_id?: string | null
+          state?: string | null
+          status?: string
+          tax_regime?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          annual_revenue_cents?: number | null
+          cnpj?: string | null
+          company_name?: string | null
+          converted_at?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          has_audited_before?: boolean | null
+          has_restrictions?: boolean | null
+          id?: string
+          notes?: string | null
+          phone?: string
+          potential_value_cents?: number | null
+          segment?: string | null
+          service_id?: string | null
+          state?: string | null
+          status?: string
+          tax_regime?: string | null
+          updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_leads_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_leads_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_service_activations: {
+        Row: {
+          affiliate_id: string
+          created_at: string
+          id: string
+          is_enabled: boolean | null
+          service_id: string
+        }
+        Insert: {
+          affiliate_id: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          service_id: string
+        }
+        Update: {
+          affiliate_id?: string
+          created_at?: string
+          id?: string
+          is_enabled?: boolean | null
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_service_activations_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_service_activations_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_services: {
+        Row: {
+          base_price_cents: number | null
+          benefits: string[] | null
+          commission_percent: number
+          created_at: string
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          slug: string
+          updated_at: string
+        }
+        Insert: {
+          base_price_cents?: number | null
+          benefits?: string[] | null
+          commission_percent?: number
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          slug: string
+          updated_at?: string
+        }
+        Update: {
+          base_price_cents?: number | null
+          benefits?: string[] | null
+          commission_percent?: number
+          created_at?: string
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          slug?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      affiliate_withdrawals: {
+        Row: {
+          affiliate_id: string
+          amount_cents: number
+          created_at: string
+          id: string
+          net_amount_cents: number
+          pix_key: string
+          pix_key_type: string
+          platform_fee_cents: number
+          processed_at: string | null
+          processed_by: string | null
+          rejection_reason: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount_cents: number
+          created_at?: string
+          id?: string
+          net_amount_cents: number
+          pix_key: string
+          pix_key_type: string
+          platform_fee_cents: number
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          net_amount_cents?: number
+          pix_key?: string
+          pix_key_type?: string
+          platform_fee_cents?: number
+          processed_at?: string | null
+          processed_by?: string | null
+          rejection_reason?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_withdrawals_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliates: {
+        Row: {
+          affiliate_code: string
+          avatar_url: string | null
+          bank_account: string | null
+          bank_agency: string | null
+          bank_name: string | null
+          city: string | null
+          company_name: string | null
+          cpf: string
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean | null
+          phone: string
+          pix_key: string | null
+          pix_key_type: string | null
+          state: string | null
+          terms_accepted_at: string | null
+          updated_at: string
+          user_id: string
+          whatsapp_number: string | null
+        }
+        Insert: {
+          affiliate_code?: string
+          avatar_url?: string | null
+          bank_account?: string | null
+          bank_agency?: string | null
+          bank_name?: string | null
+          city?: string | null
+          company_name?: string | null
+          cpf: string
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          is_active?: boolean | null
+          phone: string
+          pix_key?: string | null
+          pix_key_type?: string | null
+          state?: string | null
+          terms_accepted_at?: string | null
+          updated_at?: string
+          user_id: string
+          whatsapp_number?: string | null
+        }
+        Update: {
+          affiliate_code?: string
+          avatar_url?: string | null
+          bank_account?: string | null
+          bank_agency?: string | null
+          bank_name?: string | null
+          city?: string | null
+          company_name?: string | null
+          cpf?: string
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean | null
+          phone?: string
+          pix_key?: string | null
+          pix_key_type?: string | null
+          state?: string | null
+          terms_accepted_at?: string | null
+          updated_at?: string
+          user_id?: string
+          whatsapp_number?: string | null
+        }
+        Relationships: []
+      }
       ai_chat_messages: {
         Row: {
           content: string
@@ -1822,7 +2188,7 @@ export type Database = {
       }
     }
     Enums: {
-      app_role: "admin" | "contador" | "user" | "autonomo"
+      app_role: "admin" | "contador" | "user" | "autonomo" | "affiliate"
       company_sector:
         | "comercio"
         | "servicos"
@@ -1978,7 +2344,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "contador", "user", "autonomo"],
+      app_role: ["admin", "contador", "user", "autonomo", "affiliate"],
       company_sector: [
         "comercio",
         "servicos",
