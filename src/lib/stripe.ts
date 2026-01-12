@@ -131,12 +131,13 @@ export const SUBSCRIBER_DISCOUNTS = {
     icon: 'Briefcase',
   },
   credit_repair: {
-    name: 'Limpa Nome',
-    description: 'Regularize sua situação cadastral e limpe restrições do CPF/CNPJ',
-    basePrice: 9700, // cents (R$97,00)
+    name: 'Limpa Nome Premium',
+    description: 'Regularize sua situação cadastral e limpe restrições do CPF/CNPJ com consultoria especializada',
+    basePrice: 97000, // cents (R$970,00)
     discount: 0.10, // 10% off for subscribers
-    discountedPrice: 8730, // cents (R$87,30)
+    discountedPrice: 87300, // cents (R$873,00)
     icon: 'CreditCard',
+    installments: 4, // 4x de R$243 sem juros
   },
 } as const;
 

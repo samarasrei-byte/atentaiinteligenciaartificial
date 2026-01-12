@@ -90,10 +90,11 @@ const freeTools = [
   },
   {
     key: 'limpa-nome',
-    name: 'Limpa Nome',
-    description: 'A partir de R$97',
+    name: 'Limpa Nome Premium',
+    description: 'R$970 ou 4x de R$243',
     icon: CreditCard,
     href: '/limpa-nome',
+    highlight: true,
   },
 ];
 
@@ -426,11 +427,24 @@ const ServicosPage = () => {
               {filteredServices.map((service) => {
                 const discountPercent = Math.round(service.discount * 100);
                 const IconComponent = service.IconComponent;
+                const isLimpaNome = service.key === 'credit_repair';
+                const installmentValue = isLimpaNome ? Math.round(service.basePrice / 4) : 0;
                 
                 return (
                   <motion.div key={service.key} variants={itemVariants}>
-                    <Card className="h-full hover:border-primary/50 transition-all duration-300 hover:shadow-xl group relative overflow-hidden">
-                      {isSubscriber && (
+                    <Card className={`h-full transition-all duration-300 hover:shadow-2xl group relative overflow-hidden ${
+                      isLimpaNome 
+                        ? 'border-2 border-accent hover:border-accent' 
+                        : 'hover:border-primary/50'
+                    }`}>
+                      {/* Popular Badge for Limpa Nome */}
+                      {isLimpaNome && (
+                        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-accent to-primary text-white text-center text-xs font-bold py-1.5">
+                          🔥 MAIS VENDIDO
+                        </div>
+                      )}
+                      
+                      {isSubscriber && !isLimpaNome && (
                         <div className="absolute top-4 right-4">
                           <Badge className="bg-success text-success-foreground text-xs">
                             -{discountPercent}%
@@ -438,17 +452,37 @@ const ServicosPage = () => {
                         </div>
                       )}
                       
-                      <CardContent className="p-6">
-                        <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mb-5 group-hover:bg-primary/20 transition-colors">
-                          <IconComponent className="h-6 w-6 text-primary" />
+                      <CardContent className={`p-6 ${isLimpaNome ? 'pt-10' : ''}`}>
+                        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-5 transition-colors ${
+                          isLimpaNome 
+                            ? 'bg-gradient-to-br from-accent to-primary shadow-lg' 
+                            : 'bg-primary/10 group-hover:bg-primary/20'
+                        }`}>
+                          <IconComponent className={`h-7 w-7 ${isLimpaNome ? 'text-white' : 'text-primary'}`} />
                         </div>
                         
-                        <h3 className="text-lg font-semibold text-foreground mb-2">{service.name}</h3>
+                        <h3 className="text-xl font-bold text-foreground mb-2">{service.name}</h3>
                         <p className="text-sm text-muted-foreground mb-5 line-clamp-2">{service.description}</p>
                         
                         {/* Pricing */}
                         <div className="mb-5">
-                          {isSubscriber ? (
+                          {isLimpaNome ? (
+                            <div className="space-y-1">
+                              <div className="flex items-baseline gap-2">
+                                <span className="text-3xl font-bold text-foreground">
+                                  {formatPrice(service.basePrice)}
+                                </span>
+                              </div>
+                              <p className="text-sm font-medium text-accent">
+                                ou 4x de {formatPrice(installmentValue)} sem juros
+                              </p>
+                              {isSubscriber && (
+                                <p className="text-xs text-success">
+                                  Você economiza {formatPrice(service.basePrice - service.discountedPrice)}
+                                </p>
+                              )}
+                            </div>
+                          ) : isSubscriber ? (
                             <div className="flex items-baseline gap-2">
                               <span className="text-2xl font-bold text-foreground">
                                 {formatPrice(service.discountedPrice)}
@@ -479,9 +513,19 @@ const ServicosPage = () => {
                             <Check className="h-4 w-4 text-success flex-shrink-0" />
                             Pagamento seguro
                           </li>
+                          {isLimpaNome && (
+                            <li className="flex items-center gap-2 text-muted-foreground">
+                              <Check className="h-4 w-4 text-success flex-shrink-0" />
+                              Consultoria especializada
+                            </li>
+                          )}
                         </ul>
 
-                        <Button className="w-full group/btn" asChild>
+                        <Button 
+                          className={`w-full group/btn ${isLimpaNome ? 'bg-gradient-to-r from-accent to-primary hover:opacity-90' : ''}`}
+                          size={isLimpaNome ? 'lg' : 'default'}
+                          asChild
+                        >
                           <Link to={
                             service.key.startsWith('ir_') ? '/ir' : 
                             service.key === 'company_opening' ? '/abertura-empresa' : 
@@ -490,7 +534,7 @@ const ServicosPage = () => {
                             service.key === 'business_consulting' ? '/contadores-publico' :
                             `/certidoes`
                           }>
-                            Solicitar
+                            {isLimpaNome ? 'Limpar meu Nome' : 'Solicitar'}
                             <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
                           </Link>
                         </Button>
