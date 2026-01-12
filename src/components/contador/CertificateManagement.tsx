@@ -181,17 +181,13 @@ export function CertificateManagement() {
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
-      const { data: urlData } = supabase.storage
-        .from('certificates')
-        .getPublicUrl(fileName);
-
-      // Update request
+      // Store file path only - signed URLs will be generated on-demand for security
+      // Update request with file path (not public URL)
       const { error: updateError } = await supabase
         .from('certificate_requests')
         .update({
           status: 'completed',
-          document_url: urlData.publicUrl,
+          document_url: fileName, // Store file path, not public URL
           document_name: file.name,
           processed_at: new Date().toISOString(),
         })
@@ -455,12 +451,29 @@ export function CertificateManagement() {
                             <Button
                               size="sm"
                               variant="outline"
-                              asChild
+                              onClick={async () => {
+                                try {
+                                  // Generate signed URL on-demand for security
+                                  const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+                                    .from('certificates')
+                                    .createSignedUrl(request.document_url!, 3600); // 1 hour expiry
+                                  
+                                  if (signedUrlError) throw signedUrlError;
+                                  if (signedUrlData?.signedUrl) {
+                                    window.open(signedUrlData.signedUrl, '_blank');
+                                  }
+                                } catch (error) {
+                                  console.error('Error generating download URL:', error);
+                                  toast({
+                                    variant: 'destructive',
+                                    title: 'Erro',
+                                    description: 'Não foi possível gerar o link de download',
+                                  });
+                                }
+                              }}
                             >
-                              <a href={request.document_url} target="_blank" rel="noopener noreferrer">
-                                <Download className="h-4 w-4 mr-1" />
-                                Baixar
-                              </a>
+                              <Download className="h-4 w-4 mr-1" />
+                              Baixar
                             </Button>
                           )}
                           {request.status === 'rejected' && (

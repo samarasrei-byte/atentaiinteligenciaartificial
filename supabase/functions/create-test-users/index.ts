@@ -15,37 +15,12 @@ interface TestUserConfig {
   isPartner?: boolean;
 }
 
-const testUsers: TestUserConfig[] = [
-  {
-    email: "contadorteste@atentai.com.br",
-    password: "guigo2208",
-    full_name: "Contador Teste",
-    role: "contador",
-    plan_type: "premium",
-  },
-  {
-    email: "autonomoteste@atentai.com.br",
-    password: "guigo2208",
-    full_name: "Autônomo Teste",
-    role: "autonomo",
-    plan_type: "premium",
-  },
-  {
-    email: "empresateste@atentai.com.br",
-    password: "guigo2208",
-    full_name: "Empresa Teste",
-    role: "user",
-    plan_type: "premium",
-  },
-  {
-    email: "parceiroteste@atentai.com.br",
-    password: "guigo2208",
-    full_name: "Parceiro Teste",
-    role: "user",
-    plan_type: "premium",
-    isPartner: true,
-  },
-];
+// Generate a cryptographically secure random password
+function generateSecurePassword(): string {
+  const array = new Uint8Array(24);
+  crypto.getRandomValues(array);
+  return Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('');
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -53,13 +28,93 @@ serve(async (req) => {
   }
 
   try {
+    // SECURITY: Check environment - block in production
+    const environment = Deno.env.get("ENVIRONMENT") || "production";
+    if (environment === "production") {
+      console.log("create-test-users blocked: production environment");
+      return new Response(
+        JSON.stringify({ error: "This function is not available in production" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 403 }
+      );
+    }
+
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "",
       { auth: { persistSession: false } }
     );
 
-    const results: Array<{ email: string; status: string; userId?: string }> = [];
+    // SECURITY: Require admin authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      console.log("create-test-users blocked: no authorization header");
+      return new Response(
+        JSON.stringify({ error: "Authorization required" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
+      );
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: { user: authUser }, error: authError } = await supabaseClient.auth.getUser(token);
+    
+    if (authError || !authUser) {
+      console.log("create-test-users blocked: invalid token");
+      return new Response(
+        JSON.stringify({ error: "Invalid authentication token" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 401 }
+      );
+    }
+
+    // Verify admin role using secure RPC
+    const { data: isAdmin, error: roleError } = await supabaseClient.rpc('has_role', {
+      _user_id: authUser.id,
+      _role: 'admin'
+    });
+
+    if (roleError || !isAdmin) {
+      console.log(`create-test-users blocked: user ${authUser.id} is not admin`);
+      return new Response(
+        JSON.stringify({ error: "Admin access required" }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 403 }
+      );
+    }
+
+    console.log(`create-test-users: authorized by admin ${authUser.id}`);
+
+    // Generate secure passwords for test users
+    const testUsers: TestUserConfig[] = [
+      {
+        email: "contadorteste@atentai.com.br",
+        password: generateSecurePassword(),
+        full_name: "Contador Teste",
+        role: "contador",
+        plan_type: "premium",
+      },
+      {
+        email: "autonomoteste@atentai.com.br",
+        password: generateSecurePassword(),
+        full_name: "Autônomo Teste",
+        role: "autonomo",
+        plan_type: "premium",
+      },
+      {
+        email: "empresateste@atentai.com.br",
+        password: generateSecurePassword(),
+        full_name: "Empresa Teste",
+        role: "user",
+        plan_type: "premium",
+      },
+      {
+        email: "parceiroteste@atentai.com.br",
+        password: generateSecurePassword(),
+        full_name: "Parceiro Teste",
+        role: "user",
+        plan_type: "premium",
+        isPartner: true,
+      },
+    ];
+
+    const results: Array<{ email: string; status: string; userId?: string; tempPassword?: string }> = [];
 
     for (const testUser of testUsers) {
       // Check if user already exists
@@ -115,7 +170,7 @@ serve(async (req) => {
         continue;
       }
 
-      // Create user
+      // Create user with secure generated password
       const { data: newUser, error: createError } = await supabaseClient.auth.admin.createUser({
         email: testUser.email,
         password: testUser.password,
@@ -214,15 +269,24 @@ serve(async (req) => {
         }
       }
 
-      results.push({ email: testUser.email, status: "created", userId });
+      // Return generated password so admin can set it up properly
+      results.push({ 
+        email: testUser.email, 
+        status: "created", 
+        userId,
+        tempPassword: testUser.password // Admin will need to communicate this securely
+      });
     }
+
+    console.log(`create-test-users completed: ${results.length} users processed`);
 
     return new Response(JSON.stringify({ success: true, results }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
     });
   } catch (error: any) {
-    return new Response(JSON.stringify({ error: error.message }), {
+    console.error('create-test-users error:', error);
+    return new Response(JSON.stringify({ error: "An internal error occurred" }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });
