@@ -63,45 +63,110 @@ export function Footer({ onNavigate }: FooterProps) {
       </AnimatePresence>
 
       <footer className="bg-secondary text-secondary-foreground">
-        {/* Affiliate CTA Banner - DESTACADO */}
-        <div className="bg-gradient-to-r from-accent via-accent to-primary border-b border-accent/20">
-          <div className="container mx-auto px-4 py-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-              <div className="flex items-center gap-4">
-                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
-                  <DollarSign className="w-7 h-7 text-white" />
-                </div>
-                <div className="text-white">
-                  <div className="flex items-center gap-2 mb-1">
-                    <TrendingUp className="w-4 h-4" />
-                    <span className="text-xs font-medium uppercase tracking-wider opacity-90">Programa de Afiliados</span>
+        {/* Affiliate CTA Banner - ULTRA PREMIUM */}
+        <div className="relative overflow-hidden">
+          {/* Multi-layer gradient background */}
+          <div className="absolute inset-0 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/10 to-black/20" />
+          
+          {/* Animated glow effects */}
+          <motion.div
+            animate={{ 
+              opacity: [0.3, 0.5, 0.3],
+              scale: [1, 1.1, 1]
+            }}
+            transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+            className="absolute -left-20 top-1/2 -translate-y-1/2 w-60 h-60 bg-yellow-400/30 rounded-full blur-[80px]"
+          />
+          <motion.div
+            animate={{ 
+              opacity: [0.2, 0.4, 0.2],
+              scale: [1.1, 1, 1.1]
+            }}
+            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            className="absolute -right-20 top-1/2 -translate-y-1/2 w-72 h-72 bg-emerald-300/20 rounded-full blur-[100px]"
+          />
+          
+          <div className="container mx-auto px-4 py-10 relative z-10">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+              {/* Left content */}
+              <div className="flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                {/* Icon with glow */}
+                <motion.div 
+                  animate={{ 
+                    boxShadow: [
+                      "0 0 20px rgba(255,255,255,0.2)",
+                      "0 0 40px rgba(255,255,255,0.4)",
+                      "0 0 20px rgba(255,255,255,0.2)"
+                    ]
+                  }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                  className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/30"
+                >
+                  <DollarSign className="w-8 h-8 text-white" />
+                </motion.div>
+                
+                <div className="text-center sm:text-left">
+                  {/* Badge */}
+                  <div className="inline-flex items-center gap-2 mb-2 px-3 py-1 rounded-full bg-yellow-400/20 border border-yellow-400/40">
+                    <TrendingUp className="w-3.5 h-3.5 text-yellow-300" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-yellow-300">
+                      Programa de Afiliados • 20% Comissão
+                    </span>
                   </div>
-                  <h3 className="text-2xl lg:text-3xl font-bold">
-                    Ganhe de <span className="text-white">R$ 50</span> a <span className="text-white">R$ 1.200</span> por indicação que fechar
+                  
+                  {/* Headline */}
+                  <h3 className="text-2xl lg:text-3xl xl:text-4xl font-black text-white leading-tight">
+                    Ganhe de{' '}
+                    <span className="text-yellow-300">R$ 500</span>
+                    {' '}a{' '}
+                    <span className="text-emerald-300">R$ 13.000</span>
+                    {' '}por venda!
                   </h3>
-                  <p className="text-sm text-white/80 mt-1">
-                    💰 Comissão garantida quando sua indicação contratar um serviço • Alta taxa de conversão
+                  
+                  <p className="text-sm sm:text-base text-white/80 mt-2 flex flex-wrap items-center justify-center sm:justify-start gap-x-2">
+                    <span>💰 Comissão de 20% garantida</span>
+                    <span className="hidden sm:inline">•</span>
+                    <span>Alta taxa de conversão</span>
                   </p>
                 </div>
               </div>
               
-              <div className="flex flex-col sm:flex-row items-center gap-3">
-                <div className="flex items-center gap-1 text-white/80 text-sm">
+              {/* Right content - CTA */}
+              <div className="flex flex-col items-center gap-3">
+                {/* Stars rating */}
+                <div className="flex items-center gap-1.5">
                   {[1, 2, 3, 4, 5].map((i) => (
-                    <Star key={i} className="w-4 h-4 fill-white text-white" />
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
                   ))}
-                  <span className="ml-1">4.9/5</span>
+                  <span className="ml-2 text-white/90 font-semibold">4.9/5</span>
                 </div>
-                <Button 
-                  size="lg" 
-                  className="bg-white text-accent hover:bg-white/90 font-semibold px-8 shadow-lg group"
-                  asChild
+                
+                {/* CTA Button */}
+                <motion.div
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <Link to="/afiliado/cadastro">
-                    Quero ser Afiliado
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </Link>
-                </Button>
+                  <Button 
+                    size="lg" 
+                    className="bg-white text-emerald-700 hover:bg-white/95 font-bold text-base px-8 py-6 shadow-xl shadow-black/20 hover:shadow-2xl transition-all duration-300 group rounded-xl"
+                    asChild
+                  >
+                    <Link to="/afiliado/cadastro">
+                      Quero ser Afiliado
+                      <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                </motion.div>
+                
+                {/* Urgency text */}
+                <p className="text-xs text-white/70 flex items-center gap-1">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-yellow-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-yellow-400"></span>
+                  </span>
+                  +127 afiliados cadastrados hoje
+                </p>
               </div>
             </div>
           </div>
