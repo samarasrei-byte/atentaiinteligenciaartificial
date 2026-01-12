@@ -33,6 +33,7 @@ import { SaaSMetricsDashboard } from '@/components/admin/SaaSMetricsDashboard';
 import { RevenueForecastDashboard } from '@/components/admin/RevenueForecastDashboard';
 import { ChurnNotificationSystem } from '@/components/admin/ChurnNotificationSystem';
 import { PartnerManagement } from '@/components/admin/PartnerManagement';
+import { AffiliateManagement } from '@/components/admin/AffiliateManagement';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -494,6 +495,8 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
           )}
+
+          {activeTab === 'affiliates' && <AffiliateManagement />}
 
           {activeTab === 'panel-contador' && (
             <Card className="bg-card border-border shadow-soft">

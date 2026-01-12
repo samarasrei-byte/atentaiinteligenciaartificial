@@ -70,6 +70,9 @@ import PartnerInvite from "./pages/PartnerInvite";
 import PartnerLogin from "./pages/PartnerLogin";
 import TestLogin from "./pages/TestLogin";
 import QADashboard from "./pages/QADashboard";
+import AffiliateOnboarding from "./pages/AffiliateOnboarding";
+import AffiliatePanel from "./pages/AffiliatePanel";
+import AffiliateLanding from "./pages/AffiliateLanding";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -120,6 +123,15 @@ const App = () => (
               <Route path="/parceiro/login" element={<PartnerLogin />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
+              {/* Affiliate routes */}
+              <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
+              <Route path="/afiliado/:affiliateCode" element={<AffiliateLanding />} />
+              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLanding />} />
+              <Route path="/afiliado/painel" element={
+                <ProtectedRoute>
+                  <AffiliatePanel />
+                </ProtectedRoute>
+              } />
               <Route path="/qa-dashboard" element={
                 <ProtectedRoute>
                   <QADashboard />

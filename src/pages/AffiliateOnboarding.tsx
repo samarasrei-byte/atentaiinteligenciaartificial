@@ -257,11 +257,10 @@ export default function AffiliateOnboarding() {
                   <Label htmlFor="cpf">CPF *</Label>
                   <MaskedInput
                     id="cpf"
-                    mask="999.999.999-99"
+                    mask="cpf"
                     value={formData.cpf}
-                    onChange={(e) => setFormData({ ...formData, cpf: e.target.value })}
-                    placeholder="000.000.000-00"
-                    required
+                    onChange={(value) => setFormData({ ...formData, cpf: value })}
+                    showValidation={false}
                   />
                 </div>
 
@@ -269,11 +268,10 @@ export default function AffiliateOnboarding() {
                   <Label htmlFor="phone">Celular *</Label>
                   <MaskedInput
                     id="phone"
-                    mask="(99) 99999-9999"
+                    mask="phone"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="(00) 00000-0000"
-                    required
+                    onChange={(value) => setFormData({ ...formData, phone: value })}
+                    showValidation={false}
                   />
                 </div>
               </div>
