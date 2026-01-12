@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -54,12 +53,36 @@ const paymentLabels: Record<string, string> = {
   failed: 'Falhou',
 };
 
+// Safe CSV generation utility - avoids xlsx vulnerabilities
+function generateCSV(data: (string | number)[][]): string {
+  return data.map(row => 
+    row.map(cell => {
+      const cellStr = String(cell ?? '');
+      // Escape cells containing commas, quotes, or newlines
+      if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+        return `"${cellStr.replace(/"/g, '""')}"`;
+      }
+      return cellStr;
+    }).join(',')
+  ).join('\n');
+}
+
+function downloadFile(content: string, filename: string, mimeType: string): void {
+  const blob = new Blob(['\ufeff' + content], { type: `${mimeType};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 export function exportCreditRepairToExcel(data: CreditRepairReportData): void {
-  const wb = XLSX.utils.book_new();
   const dateRangeStr = `${format(data.dateRange.start, 'dd/MM/yyyy', { locale: ptBR })} - ${format(data.dateRange.end, 'dd/MM/yyyy', { locale: ptBR })}`;
 
-  // Sheet 1: Resumo
-  const resumoData = [
+  const resumoData: (string | number)[][] = [
     ['RELATÓRIO LIMPA NOME - AtentAI'],
     [`Período: ${dateRangeStr}`],
     [`Gerado em: ${new Date().toLocaleString('pt-BR')}`],
@@ -77,38 +100,23 @@ export function exportCreditRepairToExcel(data: CreditRepairReportData): void {
     ['Pagamentos Recebidos', data.stats.paidCount],
     ['Ticket Médio', formatCurrency(data.stats.avgTicket)],
     ['Taxa de Conclusão', `${data.stats.conversionRate.toFixed(1)}%`],
-  ];
-
-  const wsResumo = XLSX.utils.aoa_to_sheet(resumoData);
-  wsResumo['!cols'] = [{ wch: 30 }, { wch: 25 }];
-  XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo');
-
-  // Sheet 2: Solicitações
-  const requestsHeader = ['Cliente', 'Status', 'Pagamento', 'Valor', 'Dívida', 'Data Criação', 'Data Conclusão'];
-  const requestsData = data.requests.map(r => [
-    r.full_name,
-    statusLabels[r.status] || r.status,
-    paymentLabels[r.payment_status] || r.payment_status,
-    formatCurrency(r.final_price_cents),
-    formatCurrency(r.debt_amount_cents),
-    formatDate(r.created_at),
-    r.completed_at ? formatDate(r.completed_at) : '-',
-  ]);
-
-  const wsRequests = XLSX.utils.aoa_to_sheet([
-    ['SOLICITAÇÕES LIMPA NOME'],
-    [`Período: ${dateRangeStr}`],
     [''],
-    requestsHeader,
-    ...requestsData,
-  ]);
-  wsRequests['!cols'] = [
-    { wch: 25 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 }, { wch: 12 }, { wch: 12 }
+    ['SOLICITAÇÕES LIMPA NOME'],
+    ['Cliente', 'Status', 'Pagamento', 'Valor', 'Dívida', 'Data Criação', 'Data Conclusão'],
+    ...data.requests.map(r => [
+      r.full_name,
+      statusLabels[r.status] || r.status,
+      paymentLabels[r.payment_status] || r.payment_status,
+      formatCurrency(r.final_price_cents),
+      formatCurrency(r.debt_amount_cents),
+      formatDate(r.created_at),
+      r.completed_at ? formatDate(r.completed_at) : '-',
+    ]),
   ];
-  XLSX.utils.book_append_sheet(wb, wsRequests, 'Solicitações');
 
-  const filename = `limpa-nome-relatorio-${format(new Date(), 'yyyy-MM-dd')}.xlsx`;
-  XLSX.writeFile(wb, filename);
+  const csv = generateCSV(resumoData);
+  const filename = `limpa-nome-relatorio-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+  downloadFile(csv, filename, 'text/csv');
 }
 
 export function exportCreditRepairToPdf(data: CreditRepairReportData): void {

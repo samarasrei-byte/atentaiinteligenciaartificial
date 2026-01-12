@@ -1,4 +1,3 @@
-import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import { STRIPE_PLANS } from '@/lib/stripe';
 
@@ -58,11 +57,34 @@ const formatDate = (dateStr: string) => {
   return new Date(dateStr).toLocaleDateString('pt-BR');
 };
 
-export function exportAdminReportToExcel(data: AdminReportData): void {
-  const wb = XLSX.utils.book_new();
+// Safe CSV generation utility - avoids xlsx vulnerabilities
+function generateCSV(data: (string | number)[][]): string {
+  return data.map(row => 
+    row.map(cell => {
+      const cellStr = String(cell ?? '');
+      // Escape cells containing commas, quotes, or newlines
+      if (cellStr.includes(',') || cellStr.includes('"') || cellStr.includes('\n')) {
+        return `"${cellStr.replace(/"/g, '""')}"`;
+      }
+      return cellStr;
+    }).join(',')
+  ).join('\n');
+}
 
-  // Sheet 1: Resumo Geral
-  const resumoData = [
+function downloadFile(content: string, filename: string, mimeType: string): void {
+  const blob = new Blob(['\ufeff' + content], { type: `${mimeType};charset=utf-8` });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
+export function exportAdminReportToExcel(data: AdminReportData): void {
+  const resumoData: (string | number)[][] = [
     ['RELATÓRIO ADMINISTRATIVO - AtentAI'],
     [`Gerado em: ${new Date().toLocaleString('pt-BR')}`],
     [''],
@@ -93,77 +115,42 @@ export function exportAdminReportToExcel(data: AdminReportData): void {
     [''],
     ['Usuários Ativos (hoje)', data.stats.activeUsersToday],
     ['Usuários Ativos (semana)', data.stats.activeUsersThisWeek],
-  ];
-
-  const wsResumo = XLSX.utils.aoa_to_sheet(resumoData);
-  wsResumo['!cols'] = [{ wch: 30 }, { wch: 20 }];
-  XLSX.utils.book_append_sheet(wb, wsResumo, 'Resumo');
-
-  // Sheet 2: Distribuição de Planos
-  const planosData = [
-    ['DISTRIBUIÇÃO DE PLANOS'],
     [''],
+    ['DISTRIBUIÇÃO DE PLANOS'],
     ['Plano', 'Quantidade', 'Receita Mensal'],
     ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price)],
     ['AtentAI Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * STRIPE_PLANS.premium.price)],
     ['Contador Premium Plus', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)],
-    [''],
     ['Total Assinaturas', data.stats.totalSubscriptions, formatCurrency(
       (data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price) + 
       (data.stats.premiumPlanCount * STRIPE_PLANS.premium.price) + 
       (data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)
     )],
-  ];
-
-  const wsPlanos = XLSX.utils.aoa_to_sheet(planosData);
-  wsPlanos['!cols'] = [{ wch: 20 }, { wch: 15 }, { wch: 20 }];
-  XLSX.utils.book_append_sheet(wb, wsPlanos, 'Planos');
-
-  // Sheet 3: Assinaturas
-  const subsHeader = ['ID', 'Usuário ID', 'Plano', 'Status', 'Valor', 'Data Criação'];
-  const subsData = data.subscriptions.map(s => [
-    s.id.slice(0, 8) + '...',
-    s.user_id.slice(0, 8) + '...',
-    s.plan_type,
-    s.status,
-    formatCurrency(s.price_cents),
-    formatDate(s.created_at),
-  ]);
-
-  const wsSubs = XLSX.utils.aoa_to_sheet([
+    [''],
     ['ASSINATURAS'],
+    ['ID', 'Usuário ID', 'Plano', 'Status', 'Valor', 'Data Criação'],
+    ...data.subscriptions.map(s => [
+      s.id.slice(0, 8) + '...',
+      s.user_id.slice(0, 8) + '...',
+      s.plan_type,
+      s.status,
+      formatCurrency(s.price_cents),
+      formatDate(s.created_at),
+    ]),
     [''],
-    subsHeader,
-    ...subsData,
-  ]);
-  wsSubs['!cols'] = [{ wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 15 }, { wch: 15 }];
-  XLSX.utils.book_append_sheet(wb, wsSubs, 'Assinaturas');
-
-  // Sheet 4: Consultas
-  const consultHeader = ['ID', 'Cliente ID', 'Contador ID', 'Status', 'Valor', 'Taxa', 'Data'];
-  const consultData = data.consultations.map(c => [
-    c.id.slice(0, 8) + '...',
-    c.user_id.slice(0, 8) + '...',
-    c.contador_id.slice(0, 8) + '...',
-    c.status,
-    formatCurrency(c.price_cents),
-    formatCurrency(c.platform_fee_cents),
-    formatDate(c.created_at),
-  ]);
-
-  const wsConsult = XLSX.utils.aoa_to_sheet([
     ['CONSULTAS'],
+    ['ID', 'Cliente ID', 'Contador ID', 'Status', 'Valor', 'Taxa', 'Data'],
+    ...data.consultations.map(c => [
+      c.id.slice(0, 8) + '...',
+      c.user_id.slice(0, 8) + '...',
+      c.contador_id.slice(0, 8) + '...',
+      c.status,
+      formatCurrency(c.price_cents),
+      formatCurrency(c.platform_fee_cents),
+      formatDate(c.created_at),
+    ]),
     [''],
-    consultHeader,
-    ...consultData,
-  ]);
-  wsConsult['!cols'] = [{ wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 12 }, { wch: 15 }, { wch: 12 }, { wch: 15 }];
-  XLSX.utils.book_append_sheet(wb, wsConsult, 'Consultas');
-
-  // Sheet 5: Métricas de Consultas
-  const consultMetrics = [
     ['MÉTRICAS DE CONSULTAS'],
-    [''],
     ['Período', 'Métrica', 'Valor'],
     ['Esta semana', 'Agendadas', data.stats.consultationsScheduledThisWeek],
     ['Esta semana', 'Concluídas', data.stats.consultationsCompletedThisWeek],
@@ -174,12 +161,9 @@ export function exportAdminReportToExcel(data: AdminReportData): void {
     ],
   ];
 
-  const wsMetrics = XLSX.utils.aoa_to_sheet(consultMetrics);
-  wsMetrics['!cols'] = [{ wch: 15 }, { wch: 20 }, { wch: 15 }];
-  XLSX.utils.book_append_sheet(wb, wsMetrics, 'Métricas Consultas');
-
-  const filename = `relatorio-admin-${new Date().toISOString().split('T')[0]}.xlsx`;
-  XLSX.writeFile(wb, filename);
+  const csv = generateCSV(resumoData);
+  const filename = `relatorio-admin-${new Date().toISOString().split('T')[0]}.csv`;
+  downloadFile(csv, filename, 'text/csv');
 }
 
 export function exportAdminReportToPdf(data: AdminReportData): void {
