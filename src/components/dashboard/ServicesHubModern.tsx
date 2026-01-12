@@ -21,6 +21,8 @@ import {
   BadgeCheck,
   TrendingUp,
   FileSearch,
+  CreditCard,
+  Users,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
@@ -35,6 +37,7 @@ interface ServiceCardProps {
   isSubscribed: boolean;
   features: string[];
   gradient: string;
+  iconGradient: string;
   onClick: () => void;
   badge?: string;
   popular?: boolean;
@@ -52,6 +55,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   isSubscribed,
   features,
   gradient,
+  iconGradient,
   onClick,
   badge,
   popular,
@@ -59,107 +63,151 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      transition={{ duration: 0.5, delay: index * 0.08, ease: [0.25, 0.46, 0.45, 0.94] }}
+      whileHover={{ y: -12, transition: { duration: 0.25 } }}
       className="h-full"
     >
-      <Card className={`
-        h-full bg-card border-border/50 transition-all duration-300 overflow-hidden relative group
-        hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10
-        ${popular ? 'ring-2 ring-primary/50 shadow-lg shadow-primary/20' : ''}
+      <div className={`
+        relative h-full rounded-3xl overflow-hidden group cursor-pointer
+        ${popular ? 'p-[2px] bg-gradient-to-br from-primary via-emerald-400 to-teal-500' : 'p-[1px] bg-gradient-to-br from-border/50 to-border/20'}
       `}>
-        {/* Popular badge */}
-        {popular && (
-          <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-primary to-emerald-500 text-primary-foreground text-xs font-medium py-1.5 text-center">
-            ⭐ Mais Popular
-          </div>
-        )}
+        {/* Glowing effect on hover */}
+        <div className={`
+          absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl
+          bg-gradient-to-br ${gradient}
+        `} />
         
-        {/* Discount badge */}
-        {badge && !popular && (
-          <Badge className="absolute top-4 right-4 bg-accent text-accent-foreground text-xs shadow-md">
-            {badge}
-          </Badge>
-        )}
-
-        <CardContent className={`p-6 ${popular ? 'pt-10' : ''}`}>
-          {/* Icon */}
-          <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center mb-5 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-            <Icon className="h-7 w-7 text-white" />
-          </div>
+        <Card className={`
+          relative h-full bg-card/95 backdrop-blur-sm border-0 transition-all duration-300 rounded-[22px]
+          ${popular ? 'shadow-2xl shadow-primary/20' : 'shadow-lg'}
+        `}>
+          {/* Popular ribbon */}
+          {popular && (
+            <div className="absolute -top-1 -right-1 z-10">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-emerald-500 blur-lg opacity-60" />
+                <div className="relative bg-gradient-to-r from-primary to-emerald-500 text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                  <Star className="h-3 w-3 fill-current" />
+                  MAIS VENDIDO
+                </div>
+              </div>
+            </div>
+          )}
           
-          {/* Title & Description */}
-          <h3 className="text-lg font-bold text-foreground mb-2">{title}</h3>
-          <p className="text-sm text-muted-foreground mb-5 line-clamp-2">
-            {description}
-          </p>
-          
-          {/* Pricing */}
-          <div className="mb-5 p-4 rounded-xl bg-muted/50 border border-border/50">
-            {basePrice === 0 ? (
-              // Success Fee Model
-              <div className="space-y-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-2xl font-bold text-success">Grátis</span>
-                  <Badge className="bg-success/10 text-success border-success/30 text-xs">
-                    Success Fee
-                  </Badge>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-xs font-medium">
-                    <Sparkles className="h-3 w-3" />
-                    Pague apenas no êxito
-                  </div>
-                </div>
-              </div>
-            ) : isSubscribed ? (
-              <div className="space-y-2">
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-success">{formatPrice(discountedPrice)}</span>
-                  <span className="text-sm text-muted-foreground line-through">{formatPrice(basePrice)}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-success/10 text-success text-xs font-medium">
-                    <Percent className="h-3 w-3" />
-                    -{discountPercent}% de desconto
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                <span className="text-3xl font-bold text-foreground">{formatPrice(basePrice)}</span>
-                <div className="flex items-center gap-1.5">
-                  <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent/10 text-accent text-xs font-medium">
-                    <Crown className="h-3 w-3" />
-                    {formatPrice(discountedPrice)} p/ assinantes
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Badge */}
+          {badge && !popular && (
+            <div className="absolute top-4 right-4 z-10">
+              <Badge className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-600 border-amber-500/30 text-xs font-medium shadow-sm">
+                {badge}
+              </Badge>
+            </div>
+          )}
 
-          {/* Features */}
-          <ul className="space-y-2.5 mb-6">
-            {features.map((feature, idx) => (
-              <li key={idx} className="flex items-center gap-2 text-sm text-muted-foreground">
-                <CheckCircle2 className="h-4 w-4 text-success flex-shrink-0" />
-                <span>{feature}</span>
-              </li>
-            ))}
-          </ul>
+          <CardContent className="p-6 flex flex-col h-full">
+            {/* Header with Icon */}
+            <div className="flex items-start gap-4 mb-5">
+              <div className={`
+                relative w-14 h-14 rounded-2xl bg-gradient-to-br ${iconGradient} 
+                flex items-center justify-center shadow-lg
+                group-hover:scale-110 group-hover:shadow-xl transition-all duration-300
+              `}>
+                <div className="absolute inset-0 rounded-2xl bg-white/10" />
+                <Icon className="h-7 w-7 text-white relative z-10" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-bold text-foreground leading-tight mb-1 group-hover:text-primary transition-colors">
+                  {title}
+                </h3>
+                <p className="text-sm text-muted-foreground line-clamp-2">
+                  {description}
+                </p>
+              </div>
+            </div>
+            
+            {/* Pricing Card */}
+            <div className={`
+              relative mb-5 p-4 rounded-2xl overflow-hidden
+              ${basePrice === 0 ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20' : 
+                isSubscribed ? 'bg-gradient-to-br from-success/10 to-emerald-500/10 border border-success/20' : 
+                'bg-gradient-to-br from-muted/80 to-muted/40 border border-border/50'}
+            `}>
+              {basePrice === 0 ? (
+                // Success Fee Model
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-3xl font-black bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                      GRÁTIS
+                    </span>
+                    <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30 text-xs font-bold animate-pulse">
+                      💰 Success Fee
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-amber-600/80 font-medium">
+                    Pague apenas 50% do valor recuperado
+                  </p>
+                </div>
+              ) : isSubscribed ? (
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-3">
+                    <span className="text-3xl font-black text-success">{formatPrice(discountedPrice)}</span>
+                    <span className="text-base text-muted-foreground/70 line-through">{formatPrice(basePrice)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/20 text-success text-xs font-bold">
+                      <Percent className="h-3.5 w-3.5" />
+                      {discountPercent}% OFF
+                    </div>
+                    <span className="text-xs text-success/80">Desconto de assinante</span>
+                  </div>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-black text-foreground">{formatPrice(basePrice)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                      <Crown className="h-3.5 w-3.5" />
+                      {formatPrice(discountedPrice)} p/ assinantes
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
 
-          {/* CTA */}
-          <Button 
-            onClick={onClick} 
-            className={`w-full group/btn ${popular ? 'bg-gradient-to-r from-primary to-emerald-500 hover:from-primary/90 hover:to-emerald-500/90 shadow-lg' : ''}`}
-          >
-            Solicitar
-            <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-          </Button>
-        </CardContent>
-      </Card>
+            {/* Features with modern styling */}
+            <ul className="space-y-3 mb-6 flex-1">
+              {features.map((feature, idx) => (
+                <li key={idx} className="flex items-center gap-3 text-sm text-muted-foreground group/item">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-success/10 flex items-center justify-center">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+                  </div>
+                  <span className="group-hover/item:text-foreground transition-colors">{feature}</span>
+                </li>
+              ))}
+            </ul>
+
+            {/* CTA Button */}
+            <Button 
+              onClick={onClick} 
+              className={`
+                w-full h-12 font-semibold text-base rounded-xl group/btn relative overflow-hidden
+                ${popular 
+                  ? 'bg-gradient-to-r from-primary via-emerald-500 to-teal-500 hover:from-primary/90 hover:via-emerald-500/90 hover:to-teal-500/90 shadow-lg shadow-primary/30' 
+                  : 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70'
+                }
+              `}
+            >
+              <span className="relative z-10 flex items-center justify-center gap-2">
+                Solicitar Serviço
+                <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+              </span>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </motion.div>
   );
 };
@@ -183,12 +231,13 @@ export const ServicesHubModern: React.FC = () => {
         'Envio de documentos',
         'Resposta em até 24h',
       ],
-      gradient: 'from-primary to-teal-500',
+      gradient: 'from-primary/40 to-teal-500/40',
+      iconGradient: 'from-primary to-teal-500',
       onClick: () => navigate('/contadores'),
     },
     {
       title: 'Abertura de Empresa',
-      description: 'Formalize seu negócio com suporte especializado',
+      description: 'Formalize seu negócio com suporte contábil completo',
       icon: Building2,
       basePrice: SUBSCRIBER_DISCOUNTS.company_opening.basePrice,
       discountedPrice: SUBSCRIBER_DISCOUNTS.company_opening.discountedPrice,
@@ -198,12 +247,13 @@ export const ServicesHubModern: React.FC = () => {
         'Documentação completa',
         'Acompanhamento do processo',
       ],
-      gradient: 'from-emerald-500 to-green-500',
+      gradient: 'from-emerald-500/40 to-green-500/40',
+      iconGradient: 'from-emerald-500 to-green-500',
       onClick: () => navigate('/abertura-empresa'),
       popular: true,
     },
     {
-      title: 'Análise Fiscal',
+      title: 'Análise Fiscal Inteligente',
       description: 'Identifique oportunidades de economia tributária',
       icon: FileSearch,
       basePrice: 0,
@@ -214,9 +264,10 @@ export const ServicesHubModern: React.FC = () => {
         'Pague apenas no êxito',
         'Taxa de 50% do recuperado',
       ],
-      gradient: 'from-amber-500 to-orange-500',
+      gradient: 'from-amber-500/40 to-orange-500/40',
+      iconGradient: 'from-amber-500 to-orange-500',
       onClick: () => navigate('/modulo-fiscal'),
-      badge: 'Sem Custo',
+      badge: 'Sem Custo Inicial',
     },
     {
       title: 'Emissão de Certidões',
@@ -230,7 +281,8 @@ export const ServicesHubModern: React.FC = () => {
         'Entrega em até 7 dias úteis',
         'Documento oficial verificável',
       ],
-      gradient: 'from-violet-500 to-purple-500',
+      gradient: 'from-violet-500/40 to-purple-500/40',
+      iconGradient: 'from-violet-500 to-purple-500',
       onClick: () => navigate('/certificates'),
     },
     {
@@ -245,7 +297,8 @@ export const ServicesHubModern: React.FC = () => {
         'Envio ao sistema da Receita',
         'Comprovante de entrega',
       ],
-      gradient: 'from-blue-500 to-indigo-500',
+      gradient: 'from-blue-500/40 to-indigo-500/40',
+      iconGradient: 'from-blue-500 to-indigo-500',
       onClick: () => navigate('/ir'),
     },
     {
@@ -260,9 +313,27 @@ export const ServicesHubModern: React.FC = () => {
         'Otimização fiscal',
         'Acompanhamento pós-envio',
       ],
-      gradient: 'from-rose-500 to-pink-500',
+      gradient: 'from-rose-500/40 to-pink-500/40',
+      iconGradient: 'from-rose-500 to-pink-500',
       onClick: () => navigate('/ir'),
       badge: 'Completo',
+    },
+    {
+      title: 'Consultoria Empresarial',
+      description: 'Planejamento tributário e otimização fiscal estratégica',
+      icon: TrendingUp,
+      basePrice: 45000,
+      discountedPrice: 36000,
+      discountPercent: 20,
+      features: [
+        'Análise tributária completa',
+        'Planejamento estratégico',
+        'Relatório personalizado',
+      ],
+      gradient: 'from-cyan-500/40 to-sky-500/40',
+      iconGradient: 'from-cyan-500 to-sky-500',
+      onClick: () => navigate('/contadores'),
+      badge: 'Premium',
     },
   ];
 
@@ -270,52 +341,69 @@ export const ServicesHubModern: React.FC = () => {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 },
+      transition: { staggerChildren: 0.08 },
     },
   };
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-lg bg-primary/10">
-              <Zap className="h-5 w-5 text-primary" />
+    <div className="space-y-10">
+      {/* Modern Header */}
+      <div className="relative">
+        <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
+          <div className="space-y-3">
+            <div className="flex items-center gap-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent blur-xl opacity-40" />
+                <div className="relative p-3 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg">
+                  <Zap className="h-6 w-6 text-primary-foreground" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-3xl font-black text-foreground tracking-tight">
+                  Nossos Serviços
+                </h2>
+                <p className="text-muted-foreground text-base">
+                  Contadores especializados na Reforma Tributária
+                </p>
+              </div>
             </div>
-            <h2 className="text-2xl font-bold text-foreground">Serviços Contábeis</h2>
           </div>
-          <p className="text-muted-foreground">
-            Contrate serviços de contadores especializados na Reforma Tributária
-          </p>
+          
+          {isSubscribed && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-success/10 to-emerald-500/10 border border-success/20"
+            >
+              <div className="p-2 rounded-xl bg-success/20">
+                <Sparkles className="h-5 w-5 text-success" />
+              </div>
+              <div>
+                <p className="text-sm font-bold text-success">Descontos Ativos</p>
+                <p className="text-xs text-success/70">Até 30% em todos os serviços</p>
+              </div>
+            </motion.div>
+          )}
         </div>
-        
-        {isSubscribed && (
-          <Badge className="bg-gradient-to-r from-success/20 to-emerald-500/20 text-success border-success/30 px-4 py-2">
-            <Sparkles className="h-4 w-4 mr-2" />
-            Descontos Ativos
-          </Badge>
-        )}
       </div>
 
-      {/* Trust indicators */}
-      <div className="flex flex-wrap items-center gap-6 text-sm text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <Shield className="h-4 w-4 text-success" />
-          <span>Pagamento 100% seguro</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <BadgeCheck className="h-4 w-4 text-primary" />
-          <span>Contadores verificados</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Clock className="h-4 w-4 text-accent" />
-          <span>Suporte em até 24h</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <Star className="h-4 w-4 text-amber-500 fill-amber-500" />
-          <span>4.9/5 avaliação</span>
-        </div>
+      {/* Trust Indicators - Modern Pills */}
+      <div className="flex flex-wrap items-center gap-3">
+        {[
+          { icon: Shield, text: 'Pagamento Seguro', color: 'text-success' },
+          { icon: BadgeCheck, text: 'Contadores Verificados', color: 'text-primary' },
+          { icon: Clock, text: 'Suporte 24h', color: 'text-accent' },
+          { icon: Star, text: '4.9/5 Avaliação', color: 'text-amber-500', fill: true },
+          { icon: Users, text: '+10.000 Clientes', color: 'text-violet-500' },
+        ].map((item, idx) => (
+          <div 
+            key={idx}
+            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm shadow-sm hover:shadow-md transition-shadow"
+          >
+            <item.icon className={`h-4 w-4 ${item.color} ${item.fill ? 'fill-current' : ''}`} />
+            <span className="text-muted-foreground font-medium">{item.text}</span>
+          </div>
+        ))}
       </div>
 
       {/* Limpa Nome Banner */}
@@ -338,42 +426,50 @@ export const ServicesHubModern: React.FC = () => {
         ))}
       </motion.div>
 
-      {/* CTA for non-subscribers */}
+      {/* CTA for non-subscribers - Premium Design */}
       {!isSubscribed && (
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
         >
-          <Card className="bg-gradient-to-br from-primary/5 via-background to-accent/5 border-primary/20 overflow-hidden relative">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent" />
-            <CardContent className="relative py-8 px-6">
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4">
-                  <div className="p-4 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg">
-                    <TrendingUp className="h-8 w-8 text-primary-foreground" />
+          <div className="relative rounded-3xl overflow-hidden">
+            {/* Animated background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-emerald-500 opacity-90" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-black/20 via-transparent to-transparent" />
+            
+            {/* Content */}
+            <div className="relative py-10 px-8">
+              <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div className="flex items-center gap-6">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-white/30 blur-xl" />
+                    <div className="relative p-5 rounded-3xl bg-white/20 backdrop-blur-sm border border-white/30">
+                      <CreditCard className="h-10 w-10 text-white" />
+                    </div>
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-foreground mb-1">
+                  <div className="text-white">
+                    <h3 className="text-2xl lg:text-3xl font-black mb-2">
                       Economize até 30% em todos os serviços
                     </h3>
-                    <p className="text-muted-foreground">
-                      Assine o AtentAI Premium e desbloqueie descontos exclusivos
+                    <p className="text-white/80 text-lg">
+                      Assine o AtentAI Premium e desbloqueie descontos exclusivos em toda plataforma
                     </p>
                   </div>
                 </div>
                 <Button 
                   onClick={() => navigate('/pricing')}
                   size="lg"
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/25 px-8 group"
+                  className="bg-white text-primary hover:bg-white/90 shadow-2xl shadow-black/20 px-10 h-14 text-lg font-bold rounded-2xl group whitespace-nowrap"
                 >
-                  <Crown className="h-5 w-5 mr-2" />
-                  Ver Planos
-                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  <Crown className="h-6 w-6 mr-3" />
+                  Ver Planos Premium
+                  <ArrowRight className="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </motion.div>
       )}
     </div>
