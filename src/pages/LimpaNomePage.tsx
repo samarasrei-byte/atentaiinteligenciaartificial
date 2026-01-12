@@ -104,9 +104,10 @@ const LimpaNomePage = () => {
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
 
-  const basePrice = 9700; // R$ 97,00 - alinhado com stripe.ts
+  const basePrice = 97000; // R$ 970,00 - alinhado com stripe.ts
   const subscriberDiscount = 0.10; // 10% discount - alinhado com stripe.ts
   const finalPrice = isSubscribed ? basePrice * (1 - subscriberDiscount) : basePrice;
+  const installmentValue = Math.round(basePrice / 4); // 4x sem juros
 
   const handleBureauToggle = (bureauId: string) => {
     setSelectedBureaus(prev => 

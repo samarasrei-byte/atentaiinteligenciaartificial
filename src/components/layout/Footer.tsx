@@ -1,7 +1,8 @@
-import { Calculator, MessageCircle, Users, Mail, MapPin, ArrowUp } from "lucide-react";
+import { Calculator, MessageCircle, Users, Mail, MapPin, ArrowUp, DollarSign, ArrowRight, TrendingUp, Star } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
 interface FooterProps {
   onNavigate: (section: string) => void;
@@ -62,6 +63,50 @@ export function Footer({ onNavigate }: FooterProps) {
       </AnimatePresence>
 
       <footer className="bg-secondary text-secondary-foreground">
+        {/* Affiliate CTA Banner - DESTACADO */}
+        <div className="bg-gradient-to-r from-accent via-accent to-primary border-b border-accent/20">
+          <div className="container mx-auto px-4 py-8">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center">
+                  <DollarSign className="w-7 h-7 text-white" />
+                </div>
+                <div className="text-white">
+                  <div className="flex items-center gap-2 mb-1">
+                    <TrendingUp className="w-4 h-4" />
+                    <span className="text-xs font-medium uppercase tracking-wider opacity-90">Programa de Afiliados</span>
+                  </div>
+                  <h3 className="text-2xl lg:text-3xl font-bold">
+                    Ganhe de <span className="text-white">R$ 500</span> até <span className="text-white">R$ 12 mil</span> por indicação
+                  </h3>
+                  <p className="text-sm text-white/80 mt-1">
+                    Indique serviços premium e receba comissões de até 15% em cada venda
+                  </p>
+                </div>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <div className="flex items-center gap-1 text-white/80 text-sm">
+                  {[1, 2, 3, 4, 5].map((i) => (
+                    <Star key={i} className="w-4 h-4 fill-white text-white" />
+                  ))}
+                  <span className="ml-1">4.9/5</span>
+                </div>
+                <Button 
+                  size="lg" 
+                  className="bg-white text-accent hover:bg-white/90 font-semibold px-8 shadow-lg group"
+                  asChild
+                >
+                  <Link to="/afiliado/cadastro">
+                    Quero ser Afiliado
+                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Main Footer */}
         <div className="container mx-auto px-4 py-16">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
