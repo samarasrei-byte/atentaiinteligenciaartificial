@@ -78,6 +78,7 @@ import AffiliateLandingPremium from "./pages/AffiliateLandingPremium";
 import AffiliateFiscalLanding from "./pages/AffiliateFiscalLanding";
 import AffiliateLimpaNomeLanding from "./pages/AffiliateLimpaNomeLanding";
 import FiscalDocumentsPage from "./pages/FiscalDocumentsPage";
+import AffiliateOfferPage from "./pages/AffiliateOfferPage";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -130,6 +131,7 @@ const App = () => (
               <Route path="/test-login" element={<TestLogin />} />
               {/* Affiliate routes */}
               <Route path="/afiliado/cadastro" element={<AffiliateOnboardingFlow />} />
+              <Route path="/afiliado/oferta/:affiliateCode" element={<AffiliateOfferPage />} />
               <Route path="/afiliado/:affiliateCode" element={<AffiliateLandingPremium />} />
               <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLandingPremium />} />
               <Route path="/p/:affiliateCode" element={<AffiliateLandingPremium />} />

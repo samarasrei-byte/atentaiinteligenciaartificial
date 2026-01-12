@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, MessageCircle, LogIn, Download, Shield, Briefcase } from "lucide-react";
+import { Menu, X, Calculator, MessageCircle, LogIn, Download, Shield, Briefcase, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { InstallPWAButton } from "@/components/pwa/InstallPWAPrompt";
 
@@ -16,6 +16,7 @@ export function Header({ onNavigate }: HeaderProps) {
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
     { label: "Consultar IA", icon: MessageCircle, section: "ai" },
     { label: "Serviços", icon: Briefcase, href: "/servicos" },
+    { label: "Seja Afiliado", icon: Users, href: "/afiliado/cadastro" },
   ];
 
   return (
