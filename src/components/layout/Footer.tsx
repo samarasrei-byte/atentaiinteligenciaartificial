@@ -77,10 +77,10 @@ export function Footer({ onNavigate }: FooterProps) {
                     <span className="text-xs font-medium uppercase tracking-wider opacity-90">Programa de Afiliados</span>
                   </div>
                   <h3 className="text-2xl lg:text-3xl font-bold">
-                    Ganhe de <span className="text-white">R$ 500</span> até <span className="text-white">R$ 12 mil</span> por indicação
+                    Ganhe de <span className="text-white">R$ 50</span> a <span className="text-white">R$ 1.200</span> por indicação que fechar
                   </h3>
                   <p className="text-sm text-white/80 mt-1">
-                    Indique serviços premium e receba comissões de até 15% em cada venda
+                    💰 Comissão garantida quando sua indicação contratar um serviço • Alta taxa de conversão
                   </p>
                 </div>
               </div>
