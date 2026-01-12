@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { ArrowLeft, ArrowRight, Check, Loader2, Sparkles, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import OnboardingParticles from './OnboardingParticles';
+import CleanBackground from './CleanBackground';
 import OnboardingProgress3D from './OnboardingProgress3D';
 
 interface Step {
@@ -47,39 +47,9 @@ const OnboardingLayoutEnhanced: React.FC<OnboardingLayoutEnhancedProps> = ({
   const isLastStep = currentStep === totalSteps;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/30 relative overflow-hidden">
-      {/* Animated background */}
-      <OnboardingParticles />
-
-      {/* Ambient glow effects */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute top-0 left-1/4 w-96 h-96 bg-primary/20 rounded-full blur-[128px]"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.1, 1],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-0 right-1/4 w-80 h-80 bg-purple-500/20 rounded-full blur-[100px]"
-          animate={{
-            x: [0, -30, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-      </div>
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Clean background */}
+      <CleanBackground />
 
       {/* Main content */}
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-8">

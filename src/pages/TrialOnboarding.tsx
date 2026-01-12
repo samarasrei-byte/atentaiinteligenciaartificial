@@ -11,7 +11,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import UltraModernParticles from '@/components/onboarding/UltraModernParticles';
+import CleanBackground from '@/components/onboarding/CleanBackground';
 import GlowingProgress from '@/components/onboarding/GlowingProgress';
 import FloatingCard from '@/components/onboarding/FloatingCard';
 import { supabase } from '@/integrations/supabase/client';
@@ -165,7 +165,7 @@ const TrialOnboarding = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20 relative overflow-hidden">
-      <UltraModernParticles />
+      <CleanBackground />
 
       {/* Header */}
       <motion.header 

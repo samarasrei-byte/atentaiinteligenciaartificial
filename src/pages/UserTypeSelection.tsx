@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Calculator, Briefcase, ArrowLeft, ArrowRight, Sparkles, Rocket, Star, Shield, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import OnboardingParticles from '@/components/onboarding/OnboardingParticles';
+import CleanBackground from '@/components/onboarding/CleanBackground';
 
 type UserType = 'empresa' | 'autonomo' | 'contador';
 
@@ -107,30 +107,8 @@ const UserTypeSelection = () => {
       "transition-all duration-700",
       isAnimating && "opacity-0 scale-95"
     )}>
-      {/* Animated background */}
-      <OnboardingParticles />
-
-      {/* Ambient glows */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[150px]"
-          animate={{
-            x: [0, 50, 0],
-            y: [0, 30, 0],
-            scale: [1, 1.2, 1],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-        />
-        <motion.div
-          className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-500/10 rounded-full blur-[120px]"
-          animate={{
-            x: [0, -30, 0],
-            y: [0, -50, 0],
-            scale: [1, 1.3, 1],
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-        />
-      </div>
+      {/* Clean background */}
+      <CleanBackground />
 
       {/* Header */}
       <motion.div 
