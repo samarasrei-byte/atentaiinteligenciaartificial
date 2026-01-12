@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,7 @@ import {
   Brain, TrendingUp, FileSearch, Calculator, Shield, CheckCircle2,
   ArrowRight, Star, Quote, Loader2, MessageCircle, Sparkles, DollarSign,
   FileText, Upload, Clock, Award, Users, Zap, Lock, ChevronDown,
-  Check, Building, BarChart3, PiggyBank, Receipt
+  Building, BarChart3, PiggyBank, Receipt, Check
 } from 'lucide-react';
 
 const WHATSAPP_GLOBAL = '5511999999999';
@@ -62,16 +62,22 @@ const TESTIMONIALS = [
 ];
 
 const STEPS = [
-  { icon: Users, title: 'Você se cadastra', desc: 'Preencha seus dados em poucos minutos' },
-  { icon: Upload, title: 'Envia os documentos', desc: 'Upload seguro dos documentos fiscais' },
-  { icon: Brain, title: 'IA + especialistas analisam', desc: 'Tecnologia avançada identifica oportunidades' },
-  { icon: FileSearch, title: 'Recebe o relatório', desc: 'Detalhamento de créditos e devoluções' },
+  { icon: Users, title: 'Cadastro rápido', desc: 'Preencha seus dados em poucos minutos' },
+  { icon: Upload, title: 'Envio de documentos', desc: 'Upload seguro dos documentos fiscais' },
+  { icon: Brain, title: 'Análise com IA', desc: 'Tecnologia avançada identifica oportunidades' },
+  { icon: FileSearch, title: 'Relatório completo', desc: 'Detalhamento de créditos e devoluções' },
   { icon: DollarSign, title: 'Só paga se tiver resultado', desc: 'Modelo de sucesso garantido' }
+];
+
+const BENEFITS = [
+  { icon: Brain, title: 'Inteligência Artificial', desc: 'Análise automatizada de milhares de dados fiscais' },
+  { icon: Shield, title: 'Segurança jurídica', desc: 'Equipe de advogados especializados em direito tributário' },
+  { icon: TrendingUp, title: 'Recuperação de créditos', desc: 'Identificamos valores pagos a mais nos últimos 5 anos' },
+  { icon: Clock, title: 'Resultado em 15 dias', desc: 'Processo ágil e transparente do início ao fim' }
 ];
 
 export default function AffiliateFiscalLanding() {
   const { affiliateCode } = useParams();
-  const navigate = useNavigate();
   const [affiliate, setAffiliate] = useState<Affiliate | null>(null);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(false);
@@ -115,7 +121,7 @@ export default function AffiliateFiscalLanding() {
   };
 
   const openWhatsApp = () => {
-    const message = `Olá! Vim pelo site do parceiro ${affiliate?.full_name || 'AtentAI'}. Gostaria de saber mais sobre a análise fiscal.`;
+    const message = `Olá! Gostaria de saber mais sobre a análise fiscal inteligente.`;
     window.open(`https://wa.me/${WHATSAPP_GLOBAL}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -130,7 +136,7 @@ export default function AffiliateFiscalLanding() {
     setSubmitting(true);
 
     try {
-      // Create lead for affiliate
+      // Create lead for affiliate (silently)
       if (affiliate) {
         await supabase.from('affiliate_leads').insert({
           affiliate_id: affiliate.id,
@@ -192,7 +198,7 @@ export default function AffiliateFiscalLanding() {
         <span className="font-semibold hidden sm:inline">Falar com Especialista</span>
       </motion.button>
 
-      {/* Hero Section */}
+      {/* Hero Section - Clean for clients */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 hero-gradient opacity-95" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptMCAyMmMtNS41MjMgMC0xMC00LjQ3Ny0xMC0xMHM0LjQ3Ny0xMCAxMC0xMCAxMCA0LjQ3NyAxMCAxMC00LjQ3NyAxMC0xMCAxMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L2c+PC9zdmc+')] opacity-30" />
@@ -222,8 +228,8 @@ export default function AffiliateFiscalLanding() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-8"
               >
                 <Sparkles className="w-4 h-4 text-accent" />
-                Análise 100% Gratuita
-                <span className="px-2 py-0.5 rounded-full bg-green-500 text-white text-xs font-bold">GRÁTIS</span>
+                Inteligência Fiscal com IA
+                <span className="px-2 py-0.5 rounded-full bg-green-500 text-white text-xs font-bold">ANÁLISE GRÁTIS</span>
               </motion.div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight tracking-tight">
@@ -233,15 +239,18 @@ export default function AffiliateFiscalLanding() {
                     pagando impostos a mais
                   </span>
                 </span>
-                <br />
-                <span className="text-white/90">Descubra agora.</span>
               </h1>
 
-              <p className="text-xl sm:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Empresas brasileiras recuperaram mais de{' '}
-                <span className="text-accent font-bold">R$ 89 milhões</span> usando tecnologia fiscal inteligente. 
-                Verifique se você também tem direito.
+              <p className="text-xl sm:text-2xl text-white/80 mb-6 max-w-3xl mx-auto leading-relaxed">
+                Recupere créditos tributários e reduza sua carga fiscal com a tecnologia mais avançada do mercado.
               </p>
+
+              <div className="flex items-center justify-center gap-4 mb-12">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-accent/20 border border-accent/30">
+                  <DollarSign className="w-5 h-5 text-accent" />
+                  <span className="text-accent font-bold text-lg">+ R$ 89 milhões recuperados</span>
+                </div>
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button
@@ -250,7 +259,7 @@ export default function AffiliateFiscalLanding() {
                   className="h-16 px-10 text-lg font-bold rounded-2xl bg-accent hover:bg-accent/90 text-accent-foreground shadow-gold group"
                 >
                   <FileSearch className="w-5 h-5 mr-2" />
-                  Quero Fazer Minha Análise Fiscal
+                  Solicitar Análise Gratuita
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
                 <Button
@@ -291,28 +300,40 @@ export default function AffiliateFiscalLanding() {
         </div>
       </section>
 
-      {/* Big Number Section */}
+      {/* Benefits Section */}
       <section className="py-20 bg-gradient-to-b from-background to-muted/30">
         <div className="container mx-auto px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            className="text-center"
-          >
-            <div className="inline-flex items-center gap-3 mb-6">
-              <DollarSign className="w-8 h-8 text-accent" />
-              <span className="text-lg font-medium text-muted-foreground">Resultados Comprovados</span>
-            </div>
-            <div className="text-5xl sm:text-7xl lg:text-8xl font-bold mb-4">
-              <span className="bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-                + R$ 89.000.000
-              </span>
-            </div>
-            <p className="text-xl sm:text-2xl text-muted-foreground max-w-2xl mx-auto">
-              devolvidos para empresários em todo o Brasil
-            </p>
-          </motion.div>
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+              <Brain className="w-4 h-4" />
+              Por que escolher o AtentAI?
+            </span>
+            <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-4">
+              Tecnologia que trabalha para você
+            </h2>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            {BENEFITS.map((benefit, index) => (
+              <motion.div
+                key={benefit.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <Card className="h-full border-0 shadow-soft hover:shadow-medium transition-all">
+                  <CardContent className="p-6 text-center">
+                    <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center mx-auto mb-4">
+                      <benefit.icon className="w-7 h-7 text-white" />
+                    </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">{benefit.title}</h3>
+                    <p className="text-muted-foreground text-sm">{benefit.desc}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -404,7 +425,7 @@ export default function AffiliateFiscalLanding() {
               className="h-14 px-10 text-lg font-semibold rounded-xl"
             >
               <Upload className="w-5 h-5 mr-2" />
-              Enviar Documentos Após Cadastro
+              Começar Minha Análise
             </Button>
           </div>
         </div>
@@ -416,7 +437,7 @@ export default function AffiliateFiscalLanding() {
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               <Quote className="w-4 h-4" />
-              Depoimentos
+              Clientes Satisfeitos
             </span>
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               O que nossos clientes dizem
@@ -440,23 +461,23 @@ export default function AffiliateFiscalLanding() {
                       ))}
                     </div>
                     
-                    <p className="text-lg text-foreground mb-8 leading-relaxed">
+                    <p className="text-lg text-foreground mb-6 leading-relaxed">
                       "{testimonial.text}"
                     </p>
 
-                    <div className="flex items-center gap-4 mb-4">
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-white font-bold text-lg">
+                    <div className="p-3 rounded-xl bg-green-50 dark:bg-green-950/30 mb-6">
+                      <div className="text-sm text-muted-foreground">Crédito recuperado</div>
+                      <div className="text-2xl font-bold text-green-600">{testimonial.savings}</div>
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary-glow flex items-center justify-center text-white font-bold">
                         {testimonial.avatar}
                       </div>
                       <div>
                         <div className="font-semibold text-foreground">{testimonial.name}</div>
                         <div className="text-sm text-muted-foreground">{testimonial.company}</div>
                       </div>
-                    </div>
-
-                    <div className="pt-4 border-t">
-                      <p className="text-sm text-muted-foreground">Créditos recuperados</p>
-                      <p className="text-2xl font-bold text-green-600">{testimonial.savings}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -466,142 +487,151 @@ export default function AffiliateFiscalLanding() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-primary via-secondary to-primary relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptMCAyMmMtNS41MjMgMC0xMC00LjQ3Ny0xMC0xMHM0LjQ3Ny0xMCAxMC0xMCAxMCA0LjQ3NyAxMCAxMC00LjQ3NyAxMC0xMCAxMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L2c+PC9zdmc+')] opacity-30" />
-        
+      {/* Final CTA */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 hero-gradient opacity-95" />
         <div className="container relative z-10 mx-auto px-4 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
-              Pronto para descobrir seus créditos?
+              Pronto para recuperar seus créditos?
             </h2>
             <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-              Análise gratuita, sem compromisso. Você só paga se tiver resultado.
+              Análise gratuita, sem compromisso. Você só paga se identificarmos créditos para recuperar.
             </p>
-
-            <Button
-              size="lg"
-              onClick={() => setFormOpen(true)}
-              className="h-16 px-12 text-lg font-bold rounded-2xl bg-accent hover:bg-accent/90 text-accent-foreground shadow-gold"
-            >
-              <FileSearch className="w-5 h-5 mr-2" />
-              Iniciar Análise Fiscal Gratuita
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                onClick={() => setFormOpen(true)}
+                className="h-16 px-12 text-lg font-bold rounded-2xl bg-accent hover:bg-accent/90 text-accent-foreground shadow-gold"
+              >
+                <FileSearch className="w-5 h-5 mr-2" />
+                Solicitar Análise Gratuita
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={openWhatsApp}
+                className="h-16 px-12 text-lg font-bold rounded-2xl bg-white/10 border-white/30 text-white hover:bg-white/20"
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Tirar Dúvidas
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-background border-t">
+      <footer className="py-8 bg-background border-t">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p className="mb-4">© 2024 AtentAI. Todos os direitos reservados.</p>
-          {affiliate && (
-            <p className="text-sm">Indicação: {affiliate.full_name}</p>
-          )}
+          <p>© {new Date().getFullYear()} AtentAI. Todos os direitos reservados.</p>
         </div>
       </footer>
 
-      {/* Registration Form Dialog */}
+      {/* Lead Form Dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl">
-              {success ? 'Cadastro Realizado!' : 'Análise Fiscal Gratuita'}
+            <DialogTitle className="text-2xl font-bold text-center">
+              {success ? '✅ Cadastro Realizado!' : 'Solicitar Análise Gratuita'}
             </DialogTitle>
           </DialogHeader>
 
           {success ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-8 text-center"
-            >
+            <div className="text-center py-8">
               <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-10 h-10 text-green-600" />
+                <Check className="w-10 h-10 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Obrigado, {formData.fullName}!</h3>
-              <p className="text-muted-foreground mb-4">
-                Sua solicitação foi recebida. Vamos te redirecionar para o WhatsApp.
+              <h3 className="text-xl font-semibold mb-2">Obrigado pelo interesse!</h3>
+              <p className="text-muted-foreground mb-6">
+                Um especialista entrará em contato em breve. Você será redirecionado para o WhatsApp.
               </p>
-              <p className="text-sm text-muted-foreground">
-                Nossa equipe entrará em contato em breve.
-              </p>
-            </motion.div>
+              <Button onClick={openWhatsApp} className="w-full">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Falar Agora no WhatsApp
+              </Button>
+            </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label>Nome Completo *</Label>
-                <Input
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder="Seu nome"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 py-4">
+              <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label>E-mail *</Label>
+                  <Label htmlFor="fullName">Nome completo *</Label>
                   <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="seu@email.com"
+                    id="fullName"
+                    placeholder="Seu nome"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     required
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <Label>Telefone *</Label>
+                  <Label htmlFor="email">E-mail *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefone/WhatsApp *</Label>
                   <MaskedInput
+                    id="phone"
                     mask="phone"
+                    placeholder="(11) 99999-9999"
                     value={formData.phone}
                     onChange={(value) => setFormData({ ...formData, phone: value })}
-                    showValidation={false}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="companyName">Nome da empresa *</Label>
+                  <Input
+                    id="companyName"
+                    placeholder="Sua Empresa LTDA"
+                    value={formData.companyName}
+                    onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cnpj">CNPJ *</Label>
+                  <MaskedInput
+                    id="cnpj"
+                    mask="cnpj"
+                    placeholder="00.000.000/0000-00"
+                    value={formData.cnpj}
+                    onChange={(value) => setFormData({ ...formData, cnpj: value })}
+                    required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>Nome da Empresa *</Label>
-                <Input
-                  value={formData.companyName}
-                  onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
-                  placeholder="Razão social ou nome fantasia"
-                  required
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label>CNPJ *</Label>
-                <MaskedInput
-                  mask="cnpj"
-                  value={formData.cnpj}
-                  onChange={(value) => setFormData({ ...formData, cnpj: value })}
-                  showValidation={false}
-                />
-              </div>
-
-              <div className="flex items-start gap-3 pt-2">
+              <div className="flex items-start space-x-2 pt-4">
                 <Checkbox
                   id="terms"
                   checked={formData.termsAccepted}
-                  onCheckedChange={(checked) => setFormData({ ...formData, termsAccepted: checked as boolean })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, termsAccepted: checked as boolean })
+                  }
                 />
-                <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                  Li e aceito os <a href="/termos-de-uso" className="text-primary hover:underline">Termos de Uso</a> e a{' '}
-                  <a href="/politica-privacidade" className="text-primary hover:underline">Política de Privacidade</a>
+                <Label htmlFor="terms" className="text-sm leading-tight">
+                  Concordo com os termos de uso e política de privacidade
                 </Label>
               </div>
 
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full h-12 font-semibold rounded-xl mt-4"
-              >
+              <Button type="submit" className="w-full h-12" disabled={submitting}>
                 {submitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -609,15 +639,11 @@ export default function AffiliateFiscalLanding() {
                   </>
                 ) : (
                   <>
-                    <FileSearch className="w-4 h-4 mr-2" />
-                    Iniciar Análise Fiscal Gratuita
+                    <ArrowRight className="w-4 h-4 mr-2" />
+                    Solicitar Análise Gratuita
                   </>
                 )}
               </Button>
-
-              <p className="text-xs text-center text-muted-foreground">
-                Seus dados estão seguros e protegidos
-              </p>
             </form>
           )}
         </DialogContent>
