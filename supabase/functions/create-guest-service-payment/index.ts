@@ -124,9 +124,12 @@ serve(async (req) => {
       validatedData = requestSchema.parse(body);
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
+        // Log full details server-side, return safe message to client
         const errors = validationError.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
         logStep("Validation failed", { errors });
-        throw new Error(`Dados inválidos: ${errors}`);
+        // Return user-friendly message without internal path details
+        const userErrors = validationError.errors.map(e => e.message).join(', ');
+        throw new Error(`Dados inválidos: ${userErrors}`);
       }
       throw validationError;
     }
@@ -420,9 +423,20 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    
+    // Determine if error is user-facing (validation) or internal
+    const isValidationError = errorMessage.startsWith('Dados inválidos:') || 
+                               errorMessage === 'Tipo de serviço inválido' ||
+                               errorMessage === 'Tipo de serviço não suportado';
+    
+    // Return validation errors to user, but sanitize internal errors
+    const clientMessage = isValidationError 
+      ? errorMessage 
+      : 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.';
+    
+    return new Response(JSON.stringify({ error: clientMessage }), {
       headers: { ...corsHeaders, ...securityHeaders, "Content-Type": "application/json" },
-      status: 500,
+      status: isValidationError ? 400 : 500,
     });
   }
 });

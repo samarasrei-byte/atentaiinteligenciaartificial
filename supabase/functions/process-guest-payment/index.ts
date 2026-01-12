@@ -72,8 +72,13 @@ serve(async (req) => {
 
     // If guest user, create account
     if (is_guest === 'true' && email && !user_id) {
-      // Generate temporary password
-      tempPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8).toUpperCase();
+      // Generate cryptographically secure temporary password
+      const randomBytes = new Uint8Array(24);
+      crypto.getRandomValues(randomBytes);
+      tempPassword = Array.from(randomBytes)
+        .map(byte => byte.toString(36).padStart(2, '0'))
+        .join('')
+        .slice(0, 20);
       
       // Create user account
       const { data: newUser, error: createError } = await supabaseAdmin.auth.admin.createUser({
@@ -223,7 +228,8 @@ serve(async (req) => {
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
-    return new Response(JSON.stringify({ error: errorMessage }), {
+    // Return generic error message to client, keep details in server logs
+    return new Response(JSON.stringify({ error: "Erro ao processar pagamento. Por favor, tente novamente." }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 500,
     });

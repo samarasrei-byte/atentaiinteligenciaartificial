@@ -177,9 +177,10 @@ serve(async (req) => {
       },
     });
   } catch (error: unknown) {
+    // Log full error details server-side only
     console.error('Error in ai-chat function:', error);
-    const message = error instanceof Error ? error.message : 'Erro desconhecido';
-    return new Response(JSON.stringify({ error: message }), {
+    // Return generic error message to client
+    return new Response(JSON.stringify({ error: 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.' }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
