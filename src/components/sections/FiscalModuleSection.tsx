@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Shield, Lock, FileCheck, TrendingUp, Zap, AlertTriangle, CheckCircle2, ArrowRight, Sparkles, BadgePercent, Clock, Building2 } from "lucide-react";
+import { Shield, Lock, FileCheck, TrendingUp, Zap, AlertTriangle, CheckCircle2, ArrowRight, Sparkles, BadgePercent, Clock, Building2, Award } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { useRef, useEffect, useState } from "react";
 
@@ -122,20 +122,25 @@ export function FiscalModuleSection() {
         >
           <Badge className="mb-4 sm:mb-6 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
             <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2" />
-            Exclusivo para Empresas
+            Empresa Parceira Certificada
           </Badge>
           
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 leading-tight px-2">
-            Inteligência Fiscal para{" "}
+            Inteligência Fiscal por{" "}
             <span className="bg-gradient-to-r from-emerald-400 via-green-400 to-teal-400 bg-clip-text text-transparent">
-              Empresas que Não Aceitam Riscos
+              Especialistas Premiados
             </span>
           </h2>
           
-          <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto px-4">
-            Análise fiscal avançada com software próprio de rastreabilidade,
-            executada por empresa parceira homologada
+          <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto px-4 mb-4">
+            Análise executada por empresa parceira do AtentAI, reconhecida como
+            <span className="text-emerald-400 font-semibold"> a melhor empresa de Inteligência Fiscal do Brasil</span>
           </p>
+          
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 backdrop-blur-sm">
+            <Award className="h-4 w-4 text-amber-400" />
+            <span className="text-white/90 text-sm font-medium">Parceria exclusiva AtentAI + Especialistas em Recuperação Tributária</span>
+          </div>
         </motion.div>
 
         {/* Stats Cards - Impactantes */}
