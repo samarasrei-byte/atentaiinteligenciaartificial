@@ -641,11 +641,10 @@ export default function AffiliateLanding() {
               <div className="space-y-2">
                 <Label>Telefone *</Label>
                 <MaskedInput
-                  mask="(99) 99999-9999"
+                  mask="phone"
                   value={leadData.phone}
-                  onChange={(e) => setLeadData({ ...leadData, phone: e.target.value })}
-                  placeholder="(00) 00000-0000"
-                  required
+                  onChange={(value) => setLeadData({ ...leadData, phone: value })}
+                  showValidation={false}
                 />
               </div>
 

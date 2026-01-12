@@ -98,6 +98,7 @@ const adminItems: SidebarItem[] = [
   { icon: Target, label: 'Análise Cohort', tabId: 'cohort', badge: 'NEW', badgeColor: 'text-primary' },
   { icon: MessagesSquare, label: 'Mensagens Massa', tabId: 'mass-messages', badge: 'NEW', badgeColor: 'text-amber-400' },
   { icon: Building2, label: 'Parceiros', tabId: 'partners', badge: 'NEW', badgeColor: 'text-success' },
+  { icon: Users, label: 'Afiliados', tabId: 'affiliates', badge: 'NEW', badgeColor: 'text-purple-400' },
   { icon: Users, label: 'Usuários', tabId: 'users' },
   { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
   { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
