@@ -14,8 +14,7 @@ import { MaskedInput } from '@/components/ui/masked-input';
 import {
   Shield, CheckCircle2, ArrowRight, Star, Quote, Loader2, MessageCircle,
   Sparkles, Zap, Lock, ChevronDown, Check, Clock, TrendingUp, Users,
-  Scale, Bot, Headphones, AlertTriangle, BadgeCheck, Award, Heart,
-  Target, Percent, FileCheck
+  Scale, Bot, Headphones, Target, Percent, FileCheck
 } from 'lucide-react';
 
 const WHATSAPP_GLOBAL = '5511999999999';
@@ -60,11 +59,11 @@ const BENEFITS = [
 ];
 
 const STEPS = [
-  { icon: Users, title: 'Você se cadastra', desc: 'Processo rápido e seguro' },
-  { icon: FileCheck, title: 'Verificamos suas dívidas', desc: 'Análise automática em todos os birôs' },
+  { icon: Users, title: 'Cadastro rápido', desc: 'Processo simples e seguro' },
+  { icon: FileCheck, title: 'Análise de dívidas', desc: 'Verificação automática em todos os birôs' },
   { icon: Bot, title: 'IA sugere negociações', desc: 'Melhores condições identificadas' },
   { icon: Headphones, title: 'Consultor acompanha', desc: 'Suporte dedicado em cada etapa' },
-  { icon: CheckCircle2, title: 'Nome limpo + relatório', desc: 'Documentação completa do processo' }
+  { icon: CheckCircle2, title: 'Nome limpo', desc: 'Regularização completa' }
 ];
 
 const TESTIMONIALS = [
@@ -91,15 +90,15 @@ const TESTIMONIALS = [
 const FAQ_ITEMS = [
   {
     question: 'Em quanto tempo meu nome é limpo?',
-    answer: 'O tempo varia de acordo com cada caso, mas a maioria dos nossos clientes consegue limpar o nome em 24 a 72 horas após a quitação da dívida negociada. Nossa equipe trabalha de forma ágil para garantir o melhor resultado.'
+    answer: 'O tempo varia de acordo com cada caso, mas a maioria dos nossos clientes consegue limpar o nome em 24 a 72 horas após a quitação da dívida negociada.'
   },
   {
     question: 'O serviço é seguro?',
-    answer: 'Sim, 100% seguro. Somos uma empresa registrada, com equipe jurídica própria e processos em conformidade com a LGPD. Seus dados são criptografados e nunca compartilhados com terceiros.'
+    answer: 'Sim, 100% seguro. Somos uma empresa registrada, com equipe jurídica própria e processos em conformidade com a LGPD.'
   },
   {
     question: 'Qual o custo do serviço?',
-    answer: 'Trabalhamos no modelo de performance: você só paga uma taxa após conseguirmos negociar sua dívida com sucesso. Não há taxas antecipadas ou custos ocultos. O valor é combinado antes de iniciarmos o processo.'
+    answer: 'Trabalhamos no modelo de performance: você só paga uma taxa após conseguirmos negociar sua dívida com sucesso. Não há taxas antecipadas.'
   }
 ];
 
@@ -147,7 +146,7 @@ export default function AffiliateLimpaNomeLanding() {
   };
 
   const openWhatsApp = () => {
-    const message = `Olá! Vim pelo site do parceiro ${affiliate?.full_name || 'AtentAI'}. Gostaria de saber mais sobre o Limpa Nome Premium.`;
+    const message = `Olá! Gostaria de saber mais sobre o serviço Limpa Nome.`;
     window.open(`https://wa.me/${WHATSAPP_GLOBAL}?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -162,7 +161,7 @@ export default function AffiliateLimpaNomeLanding() {
     setSubmitting(true);
 
     try {
-      // Create lead for affiliate
+      // Create lead for affiliate (silently)
       if (affiliate) {
         await supabase.from('affiliate_leads').insert({
           affiliate_id: affiliate.id,
@@ -177,7 +176,7 @@ export default function AffiliateLimpaNomeLanding() {
 
       // Create credit repair request
       await supabase.from('credit_repair_requests').insert({
-        user_id: affiliate?.id || null, // Will be null for guests
+        user_id: affiliate?.id || '00000000-0000-0000-0000-000000000000',
         full_name: formData.fullName,
         email: formData.email,
         phone: formData.phone.replace(/\D/g, ''),
@@ -222,7 +221,7 @@ export default function AffiliateLimpaNomeLanding() {
         <span className="font-semibold hidden sm:inline">Atendimento WhatsApp</span>
       </motion.button>
 
-      {/* Hero Section */}
+      {/* Hero Section - Clean for clients */}
       <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800 opacity-95" />
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptMCAyMmMtNS41MjMgMC0xMC00LjQ3Ny0xMC0xMHM0LjQ3Ny0xMCAxMC0xMCAxMCA0LjQ3NyAxMCAxMC00LjQ3NyAxMC0xMCAxMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L2c+PC9zdmc+')] opacity-30" />
@@ -252,24 +251,33 @@ export default function AffiliateLimpaNomeLanding() {
                 className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-white text-sm font-medium mb-8"
               >
                 <Shield className="w-4 h-4 text-emerald-300" />
-                Limpa Nome Premium
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-bold">MAIS RÁPIDO</span>
+                Limpa Nome com IA
+                <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-white text-xs font-bold">ATÉ 90% OFF</span>
               </motion.div>
 
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-8 leading-tight tracking-tight">
                 Limpe seu nome{' '}
                 <span className="relative inline-block">
                   <span className="relative z-10 bg-gradient-to-r from-emerald-300 via-green-200 to-emerald-300 bg-clip-text text-transparent">
-                    rapidamente
+                    em até 48 horas
                   </span>
                 </span>
-                {' '}com tecnologia e atendimento premium
               </h1>
 
-              <p className="text-xl sm:text-2xl text-white/80 mb-12 max-w-3xl mx-auto leading-relaxed">
-                O serviço mais moderno do Brasil para eliminar dívidas, negociar acordos e{' '}
-                <span className="text-emerald-300 font-semibold">recuperar sua reputação financeira</span>.
+              <p className="text-xl sm:text-2xl text-white/80 mb-6 max-w-3xl mx-auto leading-relaxed">
+                Negocie suas dívidas com até 90% de desconto usando tecnologia de ponta e equipe jurídica especializada.
               </p>
+
+              <div className="flex flex-wrap items-center justify-center gap-4 mb-12">
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20">
+                  <Clock className="w-5 h-5 text-emerald-300" />
+                  <span className="text-white font-medium">Resultado em até 48h</span>
+                </div>
+                <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20">
+                  <Percent className="w-5 h-5 text-emerald-300" />
+                  <span className="text-white font-medium">Até 90% de desconto</span>
+                </div>
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
                 <Button
@@ -298,12 +306,12 @@ export default function AffiliateLimpaNomeLanding() {
                   <span className="text-sm">100% Seguro</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Clock className="w-4 h-4" />
-                  <span className="text-sm">Resultado em até 48h</span>
+                  <CheckCircle2 className="w-4 h-4" />
+                  <span className="text-sm">Sem taxas antecipadas</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Percent className="w-4 h-4" />
-                  <span className="text-sm">Até 90% de desconto</span>
+                  <Scale className="w-4 h-4" />
+                  <span className="text-sm">Equipe jurídica inclusa</span>
                 </div>
               </div>
             </motion.div>
@@ -325,10 +333,10 @@ export default function AffiliateLimpaNomeLanding() {
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-medium mb-4">
               <Sparkles className="w-4 h-4" />
-              Benefícios Exclusivos
+              Por que escolher o AtentAI?
             </span>
             <h2 className="text-3xl lg:text-5xl font-bold text-foreground mb-4">
-              Por que escolher nosso serviço?
+              Tecnologia que resolve
             </h2>
           </div>
 
@@ -401,7 +409,7 @@ export default function AffiliateLimpaNomeLanding() {
           <div className="text-center mb-16">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
               <Quote className="w-4 h-4" />
-              Prova Social
+              Clientes Satisfeitos
             </span>
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               Resultados reais de clientes
@@ -435,7 +443,7 @@ export default function AffiliateLimpaNomeLanding() {
                       </div>
                       <div>
                         <div className="font-semibold text-foreground">{testimonial.name}</div>
-                        <div className="text-sm text-emerald-600 font-medium">{testimonial.result}</div>
+                        <div className="text-sm font-medium text-emerald-600">{testimonial.result}</div>
                       </div>
                     </div>
                   </CardContent>
@@ -446,27 +454,23 @@ export default function AffiliateLimpaNomeLanding() {
         </div>
       </section>
 
-      {/* FAQ Section */}
+      {/* FAQ */}
       <section className="py-20 bg-muted/30">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
+          <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-foreground mb-4">
               Perguntas Frequentes
             </h2>
           </div>
 
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-3xl mx-auto">
             <Accordion type="single" collapsible className="space-y-4">
               {FAQ_ITEMS.map((item, index) => (
-                <AccordionItem
-                  key={index}
-                  value={`item-${index}`}
-                  className="bg-card rounded-xl border-0 shadow-soft px-6"
-                >
-                  <AccordionTrigger className="text-left font-semibold hover:no-underline py-5">
+                <AccordionItem key={index} value={`item-${index}`} className="border rounded-xl px-6 bg-card shadow-soft">
+                  <AccordionTrigger className="text-left font-semibold hover:no-underline">
                     {item.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-5">
+                  <AccordionContent className="text-muted-foreground">
                     {item.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -476,132 +480,140 @@ export default function AffiliateLimpaNomeLanding() {
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className="py-24 bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0zNiAxOGMtNi42MjcgMC0xMiA1LjM3My0xMiAxMnM1LjM3MyAxMiAxMiAxMiAxMi01LjM3MyAxMi0xMi01LjM3My0xMi0xMi0xMnptMCAyMmMtNS41MjMgMC0xMC00LjQ3Ny0xMC0xMHM0LjQ3Ny0xMCAxMC0xMCAxMCA0LjQ3NyAxMCAxMC00LjQ3NyAxMC0xMCAxMHoiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4wNSkiLz48L2c+PC9zdmc+')] opacity-30" />
-        
+      {/* Final CTA */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-emerald-600 via-green-700 to-teal-800 opacity-95" />
         <div className="container relative z-10 mx-auto px-4 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
             <h2 className="text-3xl lg:text-5xl font-bold text-white mb-6">
-              Não deixe dívidas controlarem sua vida
+              Pronto para limpar seu nome?
             </h2>
             <p className="text-xl text-white/80 mb-10 max-w-2xl mx-auto">
-              Comece agora e recupere sua liberdade financeira.
+              Comece agora e negocie suas dívidas com até 90% de desconto. Sem taxas antecipadas.
             </p>
-
-            <Button
-              size="lg"
-              onClick={() => setFormOpen(true)}
-              className="h-16 px-12 text-lg font-bold rounded-2xl bg-white hover:bg-white/90 text-emerald-700 shadow-lg"
-            >
-              <Shield className="w-5 h-5 mr-2" />
-              Iniciar Limpa Nome Premium
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Button
+                size="lg"
+                onClick={() => setFormOpen(true)}
+                className="h-16 px-12 text-lg font-bold rounded-2xl bg-white hover:bg-white/90 text-emerald-700 shadow-lg"
+              >
+                <Shield className="w-5 h-5 mr-2" />
+                Limpar Meu Nome Agora
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={openWhatsApp}
+                className="h-16 px-12 text-lg font-bold rounded-2xl bg-white/10 border-white/30 text-white hover:bg-white/20"
+              >
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Tirar Dúvidas
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="py-12 bg-background border-t">
+      <footer className="py-8 bg-background border-t">
         <div className="container mx-auto px-4 text-center text-muted-foreground">
-          <p className="mb-4">© 2024 AtentAI. Todos os direitos reservados.</p>
-          {affiliate && (
-            <p className="text-sm">Indicação: {affiliate.full_name}</p>
-          )}
+          <p>© {new Date().getFullYear()} AtentAI. Todos os direitos reservados.</p>
         </div>
       </footer>
 
-      {/* Registration Form Dialog */}
+      {/* Lead Form Dialog */}
       <Dialog open={formOpen} onOpenChange={setFormOpen}>
         <DialogContent className="max-w-lg">
           <DialogHeader>
-            <DialogTitle className="text-2xl">
-              {success ? 'Cadastro Realizado!' : 'Limpa Nome Premium'}
+            <DialogTitle className="text-2xl font-bold text-center">
+              {success ? '✅ Cadastro Realizado!' : 'Limpar Meu Nome'}
             </DialogTitle>
           </DialogHeader>
 
           {success ? (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="py-8 text-center"
-            >
+            <div className="text-center py-8">
               <div className="w-20 h-20 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-10 h-10 text-green-600" />
+                <Check className="w-10 h-10 text-green-600" />
               </div>
-              <h3 className="text-xl font-semibold mb-2">Obrigado, {formData.fullName}!</h3>
-              <p className="text-muted-foreground mb-4">
-                Sua solicitação foi recebida. Vamos te redirecionar para o WhatsApp.
+              <h3 className="text-xl font-semibold mb-2">Obrigado pelo interesse!</h3>
+              <p className="text-muted-foreground mb-6">
+                Um especialista entrará em contato em breve. Você será redirecionado para o WhatsApp.
               </p>
-              <p className="text-sm text-muted-foreground">
-                Um consultor entrará em contato em breve.
-              </p>
-            </motion.div>
+              <Button onClick={openWhatsApp} className="w-full bg-emerald-600 hover:bg-emerald-700">
+                <MessageCircle className="w-5 h-5 mr-2" />
+                Falar Agora no WhatsApp
+              </Button>
+            </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4 pt-4">
-              <div className="space-y-2">
-                <Label>Nome Completo *</Label>
-                <Input
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  placeholder="Seu nome completo"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-4 py-4">
+              <div className="grid gap-4">
                 <div className="space-y-2">
-                  <Label>E-mail *</Label>
+                  <Label htmlFor="fullName">Nome completo *</Label>
                   <Input
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="seu@email.com"
+                    id="fullName"
+                    placeholder="Seu nome"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                     required
                   />
                 </div>
+
                 <div className="space-y-2">
-                  <Label>Telefone *</Label>
+                  <Label htmlFor="email">E-mail *</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="phone">Telefone/WhatsApp *</Label>
                   <MaskedInput
+                    id="phone"
                     mask="phone"
+                    placeholder="(11) 99999-9999"
                     value={formData.phone}
                     onChange={(value) => setFormData({ ...formData, phone: value })}
-                    showValidation={false}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="cpf">CPF *</Label>
+                  <MaskedInput
+                    id="cpf"
+                    mask="cpf"
+                    placeholder="000.000.000-00"
+                    value={formData.cpf}
+                    onChange={(value) => setFormData({ ...formData, cpf: value })}
+                    required
                   />
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <Label>CPF *</Label>
-                <MaskedInput
-                  mask="cpf"
-                  value={formData.cpf}
-                  onChange={(value) => setFormData({ ...formData, cpf: value })}
-                  showValidation={false}
-                />
-              </div>
-
-              <div className="flex items-start gap-3 pt-2">
+              <div className="flex items-start space-x-2 pt-4">
                 <Checkbox
                   id="terms"
                   checked={formData.termsAccepted}
-                  onCheckedChange={(checked) => setFormData({ ...formData, termsAccepted: checked as boolean })}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, termsAccepted: checked as boolean })
+                  }
                 />
-                <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
-                  Li e aceito os <a href="/termos-de-uso" className="text-primary hover:underline">Termos de Uso</a> e a{' '}
-                  <a href="/politica-privacidade" className="text-primary hover:underline">Política de Privacidade</a>
+                <Label htmlFor="terms" className="text-sm leading-tight">
+                  Concordo com os termos de uso e política de privacidade
                 </Label>
               </div>
 
-              <Button
-                type="submit"
-                disabled={submitting}
-                className="w-full h-12 font-semibold rounded-xl mt-4 bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700"
-              >
+              <Button type="submit" className="w-full h-12 bg-emerald-600 hover:bg-emerald-700" disabled={submitting}>
                 {submitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
@@ -609,15 +621,11 @@ export default function AffiliateLimpaNomeLanding() {
                   </>
                 ) : (
                   <>
-                    <Shield className="w-4 h-4 mr-2" />
-                    Iniciar Limpa Nome Premium
+                    <ArrowRight className="w-4 h-4 mr-2" />
+                    Limpar Meu Nome
                   </>
                 )}
               </Button>
-
-              <p className="text-xs text-center text-muted-foreground">
-                Seus dados estão seguros e protegidos
-              </p>
             </form>
           )}
         </DialogContent>
