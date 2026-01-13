@@ -65,6 +65,7 @@ import InvestorPresentation from "./pages/InvestorPresentation";
 import PartnerPanel from "./pages/PartnerPanel";
 import AberturaEmpresa from "./pages/AberturaEmpresa";
 import ModuloFiscal from "./pages/ModuloFiscal";
+import FiscalSuccessPage from "./pages/FiscalSuccessPage";
 import AdminLogin from "./pages/AdminLogin";
 import PartnerInvite from "./pages/PartnerInvite";
 import PartnerLogin from "./pages/PartnerLogin";
@@ -125,6 +126,7 @@ const App = () => (
               <Route path="/limpa-nome" element={<LimpaNomePage />} />
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
+              <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/parceiro/login" element={<PartnerLogin />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
