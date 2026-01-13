@@ -1,81 +1,131 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft } from 'lucide-react';
+import { Shield, Lock, Eye, EyeOff, AlertTriangle, ArrowLeft, Loader2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+
+type LoginState = 'idle' | 'authenticating' | 'checking_role' | 'success' | 'error';
 
 const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [loginState, setLoginState] = useState<LoginState>('idle');
   const [attempts, setAttempts] = useState(0);
-  const { signIn, user, hasRole } = useAuth();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const { user, hasRole, loading: authLoading, refreshUserData } = useAuth();
   const navigate = useNavigate();
 
   // Redirect if already logged in as admin
   useEffect(() => {
-    if (user && hasRole('admin')) {
-      navigate('/admin');
+    if (!authLoading && user && hasRole('admin')) {
+      navigate('/admin', { replace: true });
     }
-  }, [user, hasRole, navigate]);
+  }, [user, hasRole, navigate, authLoading]);
+
+  // Direct database check for admin role (bypass state timing issues)
+  const checkAdminRoleDirectly = async (userId: string): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase.rpc('has_role', {
+        _user_id: userId,
+        _role: 'admin'
+      });
+      
+      if (error) {
+        console.error('Error checking admin role:', error);
+        return false;
+      }
+      
+      return data === true;
+    } catch (err) {
+      console.error('Exception checking admin role:', err);
+      return false;
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorMessage(null);
     
     if (attempts >= 5) {
-      toast.error('Muitas tentativas. Aguarde alguns minutos.');
+      setErrorMessage('Muitas tentativas. Aguarde 5 minutos.');
       return;
     }
     
-    setIsLoading(true);
+    setLoginState('authenticating');
     
     try {
-      const { error } = await signIn(email, password);
+      // Step 1: Authenticate
+      const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
       
-      if (error) {
+      if (authError) {
         setAttempts(prev => prev + 1);
-        toast.error('Credenciais inválidas');
-        setIsLoading(false);
+        if (authError.message.includes('Invalid login credentials')) {
+          setErrorMessage('Email ou senha incorretos');
+        } else {
+          setErrorMessage(authError.message);
+        }
+        setLoginState('error');
         return;
       }
 
-      toast.success('Login realizado! Verificando permissões...');
+      if (!authData.user) {
+        setErrorMessage('Erro ao autenticar. Tente novamente.');
+        setLoginState('error');
+        return;
+      }
+
+      setLoginState('checking_role');
       
-      // Wait for auth context to update and roles to be fetched
-      // Poll for admin role with timeout
-      let attempts = 0;
-      const maxAttempts = 10;
-      const checkInterval = setInterval(async () => {
-        attempts++;
+      // Step 2: Check admin role directly from database (not from state)
+      const isAdmin = await checkAdminRoleDirectly(authData.user.id);
+      
+      if (isAdmin) {
+        setLoginState('success');
+        toast.success('Acesso autorizado! Redirecionando...');
         
-        // Check if user now has admin role
-        if (hasRole('admin')) {
-          clearInterval(checkInterval);
-          toast.success('Acesso autorizado!');
-          navigate('/admin');
-          return;
-        }
+        // Refresh user data in context
+        await refreshUserData();
         
-        if (attempts >= maxAttempts) {
-          clearInterval(checkInterval);
-          toast.error('Você não tem permissão de administrador');
-          setIsLoading(false);
-        }
-      }, 500);
+        // Small delay for visual feedback
+        setTimeout(() => {
+          navigate('/admin', { replace: true });
+        }, 500);
+      } else {
+        // Not an admin - sign out and show error
+        await supabase.auth.signOut();
+        setAttempts(prev => prev + 1);
+        setErrorMessage('Sua conta não possui permissão de administrador');
+        setLoginState('error');
+      }
       
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('Erro ao fazer login');
+      setErrorMessage('Erro inesperado. Tente novamente.');
       setAttempts(prev => prev + 1);
-      setIsLoading(false);
+      setLoginState('error');
     }
   };
+
+  const isLoading = loginState === 'authenticating' || loginState === 'checking_role' || loginState === 'success';
+
+  // Show loading while checking initial auth state
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-red-400" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
@@ -159,6 +209,7 @@ const AdminLogin = () => {
                     placeholder="admin@empresa.com"
                     required
                     disabled={isLoading || attempts >= 5}
+                    autoComplete="email"
                     className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-red-500 focus:ring-red-500/20 h-12"
                   />
                 </div>
@@ -176,26 +227,49 @@ const AdminLogin = () => {
                       placeholder="••••••••"
                       required
                       disabled={isLoading || attempts >= 5}
+                      autoComplete="current-password"
                       className="bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-500 focus:border-red-500 focus:ring-red-500/20 h-12 pr-12"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                      disabled={isLoading}
                     >
                       {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                     </button>
                   </div>
                 </div>
 
-                {attempts > 0 && attempts < 5 && (
-                  <motion.p
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-xs text-red-400"
-                  >
+                {/* Status feedback */}
+                <AnimatePresence mode="wait">
+                  {errorMessage && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0 }}
+                      className="p-3 rounded-lg bg-red-500/10 border border-red-500/20"
+                    >
+                      <p className="text-sm text-red-400 text-center">{errorMessage}</p>
+                    </motion.div>
+                  )}
+
+                  {loginState === 'success' && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="p-3 rounded-lg bg-green-500/10 border border-green-500/20 flex items-center justify-center gap-2"
+                    >
+                      <CheckCircle className="h-5 w-5 text-green-400" />
+                      <p className="text-sm text-green-400">Acesso autorizado!</p>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {attempts > 0 && attempts < 5 && !errorMessage && (
+                  <p className="text-xs text-amber-400 text-center">
                     Tentativas restantes: {5 - attempts}
-                  </motion.p>
+                  </p>
                 )}
 
                 {attempts >= 5 && (
@@ -215,12 +289,25 @@ const AdminLogin = () => {
                   disabled={isLoading || attempts >= 5}
                   className="w-full h-12 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-semibold shadow-lg shadow-red-500/20 transition-all duration-300"
                 >
-                  {isLoading ? (
+                  {loginState === 'authenticating' && (
                     <div className="flex items-center gap-2">
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Verificando...
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Autenticando...
                     </div>
-                  ) : (
+                  )}
+                  {loginState === 'checking_role' && (
+                    <div className="flex items-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      Verificando permissões...
+                    </div>
+                  )}
+                  {loginState === 'success' && (
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5" />
+                      Redirecionando...
+                    </div>
+                  )}
+                  {(loginState === 'idle' || loginState === 'error') && (
                     <div className="flex items-center gap-2">
                       <Lock className="h-5 w-5" />
                       Acessar Painel
