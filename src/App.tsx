@@ -4,12 +4,15 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import ProtectedRoute from "@/components/ProtectedRoute";
-import RoleProtectedRoute from "@/components/RoleProtectedRoute";
+import { ProtectedRoute } from "@/components/ProtectedRoute";
+import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { PWATour } from "@/components/tour/PWATour";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
-import ScrollToTop from "@/components/ScrollToTop";
+import { ScrollToTop } from "@/components/ScrollToTop";
+import { BottomNavigation } from "@/components/pwa/BottomNavigation";
+import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
+import QaModeIndicator from "@/components/qa/QaModeIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import DashboardRouter from "./pages/DashboardRouter";
@@ -80,6 +83,7 @@ import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
 import PartnerOnboarding from "./pages/PartnerOnboarding";
 import LimpaNomeLanding from "./pages/LimpaNomeLanding";
 import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
+import TestLogin from "./pages/TestLogin";
 
 const queryClient = new QueryClient();
 
@@ -101,7 +105,7 @@ const App = () => (
               <Route path="/trial" element={<TrialOnboarding />} />
               <Route path="/trial-success" element={<TrialSuccess />} />
               <Route path="/onboarding" element={<PublicOnboarding />} />
-              <Route path="/autonomo-onboarding" element={<AutonomoOnboardingPage />} />
+              <Route path="/autonomo-onboarding" element={<AutonomoOnboarding />} />
               <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
               <Route path="/pricing" element={<Pricing />} />
               <Route path="/instalar" element={<InstallApp />} />
@@ -124,11 +128,14 @@ const App = () => (
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
-              <Route path="/limpa-nome" element={<LimpaNomePage />} />
+              <Route path="/limpa-nome" element={<LimpaNomeLanding />} />
+              <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
               <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
-              <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
+              <Route path="/modulo-fiscal" element={<ModuloFiscalLanding />} />
+              <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
+              <Route path="/parceiro/onboarding" element={<PartnerOnboarding />} />
               <Route path="/admin/login" element={<AdminLogin />} />
               <Route path="/parceiro/login" element={<PartnerLogin />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
@@ -226,7 +233,7 @@ const App = () => (
               } />
               <Route path="/autonomo/onboarding" element={
                 <RoleProtectedRoute requiredRole="autonomo">
-                  <AutonomoOnboardingPage />
+                  <AutonomoOnboarding />
                 </RoleProtectedRoute>
               } />
               <Route path="/contador" element={
