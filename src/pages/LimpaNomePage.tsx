@@ -84,11 +84,46 @@ const testimonials = [
   },
 ];
 
+type PlanType = 'pf' | 'pj';
+
+const plans = {
+  pf: {
+    id: 'pf',
+    name: 'Pessoa Física',
+    description: 'Limpa nome para CPF',
+    basePrice: 68000, // R$ 680,00
+    icon: '👤',
+    features: [
+      'Análise completa em 8 bureaus',
+      'Verificação de CPF',
+      'Contador humano dedicado',
+      'Acompanhamento por 90 dias',
+    ]
+  },
+  pj: {
+    id: 'pj',
+    name: 'Empresa (CNPJ)',
+    description: 'Limpa nome para CNPJ',
+    basePrice: 89000, // R$ 890,00
+    icon: '🏢',
+    popular: true,
+    features: [
+      'Análise completa em 8 bureaus',
+      'Verificação de CNPJ',
+      'Análise de protestos empresariais',
+      'Contador humano dedicado',
+      'Orientação CADIN/PGFN',
+      'Acompanhamento por 90 dias',
+    ]
+  }
+};
+
 const LimpaNomePage = () => {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
   const isSubscribed = subscription.subscribed;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
   const [selectedBureaus, setSelectedBureaus] = useState<string[]>(['spc', 'serasa', 'scpc', 'boa_vista']);
   
   const [formData, setFormData] = useState({
@@ -104,10 +139,11 @@ const LimpaNomePage = () => {
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
 
-  const basePrice = 97000; // R$ 970,00 - alinhado com stripe.ts
-  const subscriberDiscount = 0.10; // 10% discount - alinhado com stripe.ts
+  const currentPlan = plans[selectedPlan];
+  const subscriberDiscount = 0.10; // 10% discount
+  const basePrice = currentPlan.basePrice;
   const finalPrice = isSubscribed ? basePrice * (1 - subscriberDiscount) : basePrice;
-  const installmentValue = Math.round(basePrice / 4); // 4x sem juros
+  const installmentValue = Math.round(finalPrice / 4); // 4x sem juros
 
   const handleBureauToggle = (bureauId: string) => {
     setSelectedBureaus(prev => 
@@ -142,12 +178,12 @@ const LimpaNomePage = () => {
         .map(c => c.trim())
         .filter(c => c.length > 0);
 
-      // Use guest checkout endpoint
+      // Use guest checkout endpoint with plan type
       const { data: paymentData, error: paymentError } = await supabase.functions.invoke(
         'create-guest-service-payment',
         {
           body: {
-            serviceType: 'credit_repair',
+            serviceType: selectedPlan === 'pf' ? 'credit_repair_pf' : 'credit_repair_pj',
             email: formData.email || user?.email,
             fullName: formData.fullName,
             cpf: formData.cpf,
@@ -156,6 +192,7 @@ const LimpaNomePage = () => {
             debtDescription: formData.debtDescription,
             creditors: creditorsArray,
             bureausSelected: selectedBureaus,
+            planType: selectedPlan,
           }
         }
       );
@@ -234,27 +271,45 @@ const LimpaNomePage = () => {
                 ))}
               </div>
 
-              <div className="glass-card rounded-2xl p-6 inline-block">
-                <div className="flex items-center justify-center gap-4">
-                  {isSubscribed && (
-                    <span className="text-white/60 line-through text-2xl">
-                      {formatCurrency(basePrice)}
-                    </span>
-                  )}
-                  <span className="text-4xl md:text-5xl font-bold text-white">
-                    {formatCurrency(finalPrice)}
-                  </span>
-                </div>
-                <p className="text-white/80 mt-2 text-lg">
-                  ou <span className="font-bold text-primary-glow">4x de {formatCurrency(Math.round(finalPrice / 4))}</span> sem juros
-                </p>
-                {isSubscribed && (
-                  <Badge className="mt-2 bg-success text-success-foreground">
-                    <TrendingDown className="h-3 w-3 mr-1" />
-                    10% de desconto exclusivo
-                  </Badge>
-                )}
+              {/* Plan Selection Cards */}
+              <div className="grid md:grid-cols-2 gap-4 max-w-xl mx-auto mb-8">
+                {Object.values(plans).map((plan) => (
+                  <div
+                    key={plan.id}
+                    onClick={() => setSelectedPlan(plan.id as PlanType)}
+                    className={`relative p-6 rounded-2xl cursor-pointer transition-all duration-300 ${
+                      selectedPlan === plan.id
+                        ? 'bg-white/20 border-2 border-primary-glow shadow-lg scale-105'
+                        : 'bg-white/10 border border-white/20 hover:bg-white/15'
+                    }`}
+                  >
+                    {'popular' in plan && plan.popular && (
+                      <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-xs">
+                        Mais Solicitado
+                      </Badge>
+                    )}
+                    <div className="text-4xl mb-3">{plan.icon}</div>
+                    <h3 className="text-xl font-bold text-white mb-1">{plan.name}</h3>
+                    <p className="text-white/60 text-sm mb-4">{plan.description}</p>
+                    <div className="text-3xl font-bold text-white">
+                      {formatCurrency(isSubscribed ? plan.basePrice * 0.9 : plan.basePrice)}
+                    </div>
+                    <p className="text-white/80 text-sm mt-1">
+                      ou 4x de {formatCurrency(Math.round((isSubscribed ? plan.basePrice * 0.9 : plan.basePrice) / 4))}
+                    </p>
+                    {selectedPlan === plan.id && (
+                      <CheckCircle className="absolute top-4 right-4 h-6 w-6 text-primary-glow" />
+                    )}
+                  </div>
+                ))}
               </div>
+              
+              {isSubscribed && (
+                <Badge className="bg-success text-success-foreground">
+                  <TrendingDown className="h-3 w-3 mr-1" />
+                  10% de desconto exclusivo aplicado
+                </Badge>
+              )}
             </div>
           </div>
         </section>

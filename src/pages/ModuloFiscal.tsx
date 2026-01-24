@@ -299,7 +299,7 @@ export default function ModuloFiscal() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center mb-12 sm:mb-16"
           >
             <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-foreground mb-4">
@@ -312,7 +312,7 @@ export default function ModuloFiscal() {
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
             >
               <Card className="h-full border-destructive/20 bg-destructive/5">
                 <CardContent className="p-5 sm:p-8">
@@ -338,7 +338,7 @@ export default function ModuloFiscal() {
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
+              viewport={{ once: true, amount: 0.1 }}
             >
               <Card className="h-full border-success/20 bg-success/5 relative">
                 <div className="absolute top-4 right-4">
@@ -374,7 +374,7 @@ export default function ModuloFiscal() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center mb-12 sm:mb-16"
           >
             <Badge variant="outline" className="mb-4 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
@@ -390,7 +390,7 @@ export default function ModuloFiscal() {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="grid sm:grid-cols-2 gap-4 sm:gap-6"
           >
             {benefits.map((benefit, i) => (
@@ -418,7 +418,7 @@ export default function ModuloFiscal() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center mb-12 sm:mb-16"
           >
             <Badge variant="outline" className="mb-4 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
@@ -436,7 +436,7 @@ export default function ModuloFiscal() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ delay: i * 0.1 }}
               >
                 <Card className="h-full text-center hover:border-primary/50 transition-all duration-300">
@@ -462,7 +462,7 @@ export default function ModuloFiscal() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center mb-12 sm:mb-16"
           >
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-4">
@@ -476,7 +476,7 @@ export default function ModuloFiscal() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ delay: i * 0.1 }}
               >
                 <Card className={`h-full hover:border-primary/50 transition-all duration-300 ${regime.popular ? 'border-primary/50 shadow-lg' : ''}`}>
@@ -508,7 +508,7 @@ export default function ModuloFiscal() {
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
             className="text-center mb-12 sm:mb-16"
           >
             <Badge className="mb-4 bg-emerald-500/20 text-emerald-400 border-emerald-500/30 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm">
@@ -526,7 +526,7 @@ export default function ModuloFiscal() {
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
+                viewport={{ once: true, amount: 0.1 }}
                 transition={{ delay: i * 0.1 }}
               >
                 <Card className="h-full bg-white/5 backdrop-blur-sm border-white/10 hover:border-emerald-500/30 transition-all duration-300">
@@ -563,7 +563,7 @@ export default function ModuloFiscal() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            viewport={{ once: true, amount: 0.1 }}
           >
             {/* Timer */}
             <div className="flex justify-center mb-6 sm:mb-8">

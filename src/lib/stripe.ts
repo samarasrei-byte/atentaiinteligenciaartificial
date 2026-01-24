@@ -130,14 +130,23 @@ export const SUBSCRIBER_DISCOUNTS = {
     discountedPrice: 36000, // cents (R$360,00)
     icon: 'Briefcase',
   },
-  credit_repair: {
-    name: 'Limpa Nome Premium',
-    description: 'Regularize sua situação cadastral e limpe restrições do CPF/CNPJ com consultoria especializada',
-    basePrice: 97000, // cents (R$970,00)
+  credit_repair_pf: {
+    name: 'Limpa Nome Pessoa Física',
+    description: 'Regularize seu CPF e limpe restrições com consultoria especializada',
+    basePrice: 68000, // cents (R$680,00)
     discount: 0.10, // 10% off for subscribers
-    discountedPrice: 87300, // cents (R$873,00)
-    icon: 'CreditCard',
-    installments: 4, // 4x de R$243 sem juros
+    discountedPrice: 61200, // cents (R$612,00)
+    icon: 'User',
+    installments: 4, // 4x de R$170 sem juros
+  },
+  credit_repair_pj: {
+    name: 'Limpa Nome Empresa (CNPJ)',
+    description: 'Regularize seu CNPJ e limpe restrições com consultoria especializada',
+    basePrice: 89000, // cents (R$890,00)
+    discount: 0.10, // 10% off for subscribers
+    discountedPrice: 80100, // cents (R$801,00)
+    icon: 'Building2',
+    installments: 4, // 4x de R$222,50 sem juros
   },
 } as const;
 
