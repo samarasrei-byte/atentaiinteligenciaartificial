@@ -68,9 +68,6 @@ const OnboardingLayoutModern: React.FC<OnboardingLayoutModernProps> = ({
 
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
-              <Link to="/instalar-app">Instalar App</Link>
-            </Button>
-            <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
               <Link to="/pricing">Ver Planos</Link>
             </Button>
             <Button size="sm" className="bg-primary hover:bg-primary/90" asChild>

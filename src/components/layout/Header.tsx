@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, MessageCircle, LogIn, Download, Shield, Briefcase, Users } from "lucide-react";
+import { Menu, X, Calculator, MessageCircle, LogIn, Shield, Briefcase, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import { InstallPWAButton } from "@/components/pwa/InstallPWAPrompt";
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -66,7 +65,6 @@ export function Header({ onNavigate }: HeaderProps) {
 
           {/* CTA Buttons */}
           <div className="hidden md:flex items-center gap-2">
-            <InstallPWAButton />
             <Button variant="outline" size="sm" asChild className="border-primary text-primary hover:bg-primary/10">
               <Link to="/planos-perfil" className="flex items-center gap-2">
                 Ver Planos
@@ -126,16 +124,6 @@ export function Header({ onNavigate }: HeaderProps) {
                 )
               ))}
               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-border/50">
-                <Button 
-                  variant="outline"
-                  className="justify-start gap-3 h-12"
-                  asChild
-                >
-                  <Link to="/instalar" onClick={() => setIsMenuOpen(false)}>
-                    <Download className="w-5 h-5" />
-                    Instalar Aplicativo
-                  </Link>
-                </Button>
                 <Button 
                   className="justify-start gap-3 h-12"
                   asChild
