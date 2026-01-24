@@ -6,12 +6,10 @@ import { Badge } from "@/components/ui/badge";
 import { 
   Shield, 
   CheckCircle, 
-  MessageCircle, 
   Sparkles,
   ArrowRight,
   Star,
   TrendingDown,
-  Bot,
   Clock,
   FileCheck,
   Award,
@@ -42,65 +40,73 @@ const benefits = [
   { icon: Award, title: '🎁 Bônus: Aumento de Score', desc: 'Regularização do score inclusa para quem limpar o nome agora!' },
 ];
 
-const included = [
+const includedPF = [
   'Liminar coletiva para exclusão permanente',
   'Antecipação do prazo prescricional',
   'Exclusão em SPC, Serasa, SCPC, Boa Vista e mais',
-  'Dívidas viram apenas internas (na instituição)',
   'Processo 100% jurídico e documentado',
   'Acompanhamento por 90 dias',
   'Suporte prioritário via WhatsApp',
-  'Relatório final detalhado',
   '🎁 Bônus: Regularização de Score inclusa!',
   'Garantia de resultado ou dinheiro de volta',
 ];
 
-const clientTypes = [
-  { 
-    id: 'pf', 
-    icon: User, 
-    title: 'Pessoa Física (CPF)', 
-    color: 'blue',
-    bgColor: 'bg-blue-500/10 hover:bg-blue-500/20',
-    borderColor: 'border-blue-500/30 hover:border-blue-500/50',
-    iconColor: 'text-blue-500'
-  },
-  { 
-    id: 'autonomo', 
-    icon: Building2, 
-    title: 'Autônomos (CPF/CNPJ)', 
-    color: 'violet',
-    bgColor: 'bg-violet-500/10 hover:bg-violet-500/20',
-    borderColor: 'border-violet-500/30 hover:border-violet-500/50',
-    iconColor: 'text-violet-500'
-  },
-  { 
-    id: 'empresa', 
-    icon: Building2, 
-    title: 'Empresas (CNPJ)', 
-    color: 'emerald',
-    bgColor: 'bg-emerald-500/10 hover:bg-emerald-500/20',
-    borderColor: 'border-emerald-500/30 hover:border-emerald-500/50',
-    iconColor: 'text-emerald-500'
-  },
+const includedPJ = [
+  'Liminar coletiva para exclusão permanente',
+  'Antecipação do prazo prescricional',
+  'Exclusão em SPC, Serasa, SCPC, Boa Vista e mais',
+  'Análise de protestos empresariais',
+  'Orientação CADIN/PGFN',
+  'Processo 100% jurídico e documentado',
+  'Acompanhamento por 90 dias',
+  'Suporte prioritário via WhatsApp',
+  '🎁 Bônus: Regularização de Score inclusa!',
+  'Garantia de resultado ou dinheiro de volta',
 ];
+
+type PlanType = 'pf' | 'pj';
+
+const plans = {
+  pf: {
+    id: 'pf',
+    name: 'Pessoa Física',
+    description: 'Liminar coletiva para CPF',
+    basePrice: 680,
+    icon: User,
+    iconColor: 'text-blue-500',
+    bgColor: 'from-blue-500/20 to-blue-600/20',
+    borderColor: 'border-blue-500/30',
+    included: includedPF,
+  },
+  pj: {
+    id: 'pj',
+    name: 'Empresa (CNPJ)',
+    description: 'Liminar coletiva para CNPJ',
+    basePrice: 890,
+    icon: Building2,
+    iconColor: 'text-emerald-500',
+    bgColor: 'from-emerald-500/20 to-emerald-600/20',
+    borderColor: 'border-emerald-500/30',
+    popular: true,
+    included: includedPJ,
+  }
+};
 
 export function LimpaNomeSection() {
   const navigate = useNavigate();
   const { subscription } = useAuth();
   const isSubscribed = subscription.subscribed;
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
-  const [selectedType, setSelectedType] = useState<string | null>(null);
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
 
-  const basePrice = 970;
-  const discountedPrice = isSubscribed ? 824 : 970;
+  const currentPlan = plans[selectedPlan];
+  const discountPercent = 10;
+  const basePrice = currentPlan.basePrice;
+  const discountedPrice = isSubscribed ? Math.round(basePrice * (1 - discountPercent / 100)) : basePrice;
+  const installmentPrice = Math.round(discountedPrice / 4);
 
-  const handleSelectType = (typeId: string) => {
-    setSelectedType(typeId);
-    // Scroll suave para o card de preço
-    setTimeout(() => {
-      document.getElementById('limpa-nome-price-card')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }, 100);
+  const formatPrice = (value: number) => {
+    return value.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   };
 
   return (
@@ -132,35 +138,51 @@ export function LimpaNomeSection() {
             <span className="block mt-2 text-rose-500 font-semibold">🎁 Bônus: Regularização de Score inclusa!</span>
           </p>
           
-          {/* Client Type Selection - Interactive Cards */}
-          <div className="flex flex-wrap justify-center gap-4 mt-10">
-            {clientTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => handleSelectType(type.id)}
-                className={`
-                  group px-6 py-4 rounded-full border-2 transition-all duration-300 cursor-pointer
-                  ${type.bgColor} ${type.borderColor}
-                  ${selectedType === type.id ? 'ring-2 ring-primary ring-offset-2 ring-offset-background scale-105' : ''}
-                  hover:scale-105 hover:shadow-lg
-                `}
-              >
-                <div className="flex items-center gap-3">
-                  <type.icon className={`h-5 w-5 ${type.iconColor} group-hover:scale-110 transition-transform`} />
-                  <span className="font-medium text-foreground">{type.title}</span>
-                </div>
-              </button>
-            ))}
+          {/* Plan Selection Cards */}
+          <div className="flex flex-wrap justify-center gap-6 mt-10 max-w-2xl mx-auto">
+            {Object.values(plans).map((plan) => {
+              const PlanIcon = plan.icon;
+              const planPrice = isSubscribed ? Math.round(plan.basePrice * 0.9) : plan.basePrice;
+              return (
+                <button
+                  key={plan.id}
+                  onClick={() => setSelectedPlan(plan.id as PlanType)}
+                  className={`
+                    relative flex-1 min-w-[200px] p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer text-left
+                    bg-gradient-to-br ${plan.bgColor} ${plan.borderColor}
+                    ${selectedPlan === plan.id ? 'ring-2 ring-rose-500 ring-offset-2 ring-offset-background scale-105 shadow-xl' : ''}
+                    hover:scale-105 hover:shadow-lg
+                  `}
+                >
+                  {'popular' in plan && plan.popular && (
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-rose-500 text-white border-0 text-xs">
+                      Mais Solicitado
+                    </Badge>
+                  )}
+                  <div className="flex items-center gap-3 mb-3">
+                    <PlanIcon className={`h-6 w-6 ${plan.iconColor}`} />
+                    <span className="font-bold text-foreground">{plan.name}</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
+                  <div className="text-2xl font-bold text-foreground">
+                    R$ {formatPrice(planPrice)}
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    ou 4x de R$ {formatPrice(planPrice / 4)}
+                  </p>
+                  {selectedPlan === plan.id && (
+                    <CheckCircle className="absolute top-4 right-4 h-6 w-6 text-rose-500" />
+                  )}
+                </button>
+              );
+            })}
           </div>
 
-          {/* Selected Type Indicator */}
-          {selectedType && (
-            <div className="mt-6 animate-fade-in">
-              <Badge className="bg-green-500/20 text-green-600 border-green-500/30 px-4 py-2">
-                <CheckCircle className="h-4 w-4 mr-2" />
-                {clientTypes.find(t => t.id === selectedType)?.title} selecionado - Role para continuar!
-              </Badge>
-            </div>
+          {isSubscribed && (
+            <Badge className="mt-6 bg-green-500/20 text-green-600 border-green-500/30 px-4 py-2">
+              <TrendingDown className="h-4 w-4 mr-2" />
+              10% de desconto exclusivo aplicado!
+            </Badge>
           )}
         </div>
 
@@ -230,11 +252,11 @@ export function LimpaNomeSection() {
               {/* Decorative Top */}
               <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-rose-500 via-pink-500 to-rose-500" />
               
-              {/* Popular Badge */}
+              {/* Plan Badge */}
               <div className="absolute top-4 right-4">
-                <Badge className="bg-rose-500 text-white border-0">
-                  <Award className="h-3 w-3 mr-1" />
-                  EMPRESA ESPECIALIZADA
+                <Badge className={`${selectedPlan === 'pj' ? 'bg-emerald-500' : 'bg-blue-500'} text-white border-0`}>
+                  {selectedPlan === 'pj' && <Award className="h-3 w-3 mr-1" />}
+                  {currentPlan.name}
                 </Badge>
               </div>
               
@@ -253,28 +275,28 @@ export function LimpaNomeSection() {
 
                 {/* Price */}
                 <div className="mb-6">
-                  <p className="text-sm text-muted-foreground mb-2">Investimento único</p>
+                  <p className="text-sm text-muted-foreground mb-2">Investimento único - {currentPlan.name}</p>
                   <div className="flex items-baseline gap-3">
                     {isSubscribed && (
                       <span className="text-2xl text-muted-foreground line-through">
-                        R$ {basePrice}
+                        R$ {formatPrice(basePrice)}
                       </span>
                     )}
                     <span className="text-5xl font-bold bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent">
-                      R$ {discountedPrice}
+                      R$ {formatPrice(discountedPrice)}
                     </span>
                   </div>
                   <p className="text-lg text-foreground font-semibold mt-2">
-                    ou <span className="text-rose-500">4x de R$ {Math.round(discountedPrice / 4)}</span> sem juros
+                    ou <span className="text-rose-500">4x de R$ {formatPrice(installmentPrice)}</span> sem juros
                   </p>
                   {isSubscribed ? (
                     <Badge className="mt-2 bg-green-500/10 text-green-600 border-green-500/30">
                       <TrendingDown className="h-3 w-3 mr-1" />
-                      15% de desconto aplicado
+                      10% de desconto aplicado
                     </Badge>
                   ) : (
                     <p className="text-sm text-muted-foreground mt-2">
-                      ou até <span className="font-semibold text-foreground">12x de R$ {Math.round(discountedPrice / 12)}</span>
+                      ou até <span className="font-semibold text-foreground">12x de R$ {formatPrice(Math.round(discountedPrice / 12))}</span>
                     </p>
                   )}
                 </div>
@@ -286,7 +308,7 @@ export function LimpaNomeSection() {
                     Tudo que está incluso:
                   </p>
                   <div className="grid gap-2">
-                    {included.map((item, index) => (
+                    {currentPlan.included.map((item, index) => (
                       <div key={index} className="flex items-center gap-2">
                         <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
                         <span className="text-sm text-muted-foreground">{item}</span>
@@ -333,7 +355,7 @@ export function LimpaNomeSection() {
                     <div className="w-1 h-1 rounded-full bg-border" />
                     <div className="flex items-center gap-1">
                       <Users className="h-4 w-4 text-blue-500" />
-                      Empresa Especializada
+                      Serviço Jurídico
                     </div>
                   </div>
                   <p className="text-center text-xs text-muted-foreground mt-3">
