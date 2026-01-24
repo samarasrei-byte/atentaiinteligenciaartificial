@@ -34,6 +34,7 @@ import { RevenueForecastDashboard } from '@/components/admin/RevenueForecastDash
 import { ChurnNotificationSystem } from '@/components/admin/ChurnNotificationSystem';
 import { PartnerManagement } from '@/components/admin/PartnerManagement';
 import { AffiliateManagement } from '@/components/admin/AffiliateManagement';
+import { AffiliateCouponManagement } from '@/components/admin/AffiliateCouponManagement';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -497,6 +498,7 @@ const AdminPanel = () => {
           )}
 
           {activeTab === 'affiliates' && <AffiliateManagement />}
+          {activeTab === 'affiliate-coupons' && <AffiliateCouponManagement />}
 
           {activeTab === 'panel-contador' && (
             <Card className="bg-card border-border shadow-soft">

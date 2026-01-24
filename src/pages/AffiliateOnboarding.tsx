@@ -7,11 +7,13 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { toast } from 'sonner';
 import { 
   Eye, EyeOff, Loader2, Users, TrendingUp, Wallet, Shield, 
   ArrowRight, CheckCircle2, Zap, Gift, BarChart3, Clock,
-  ArrowLeft, Star, BadgeCheck, Sparkles
+  ArrowLeft, Star, BadgeCheck, Sparkles, HelpCircle, Quote, MessageCircle
 } from 'lucide-react';
 import { MaskedInput } from '@/components/ui/masked-input';
 
@@ -53,28 +55,28 @@ const SERVICES = [
     price: 680, 
     commission: 20, 
     icon: Shield,
-    color: 'from-blue-500 to-blue-600'
+    color: 'from-cyan-500 to-blue-600'
   },
   { 
     name: 'Limpa Nome CNPJ', 
     price: 890, 
     commission: 20, 
     icon: BriefcaseIcon,
-    color: 'from-emerald-500 to-emerald-600'
+    color: 'from-emerald-500 to-teal-600'
   },
   { 
     name: 'Análise Fiscal', 
     price: 4500, 
     commission: 15, 
     icon: BarChart3,
-    color: 'from-purple-500 to-purple-600'
+    color: 'from-violet-500 to-purple-600'
   },
   { 
     name: 'Abertura de Empresa', 
     price: 500, 
     commission: 15, 
     icon: TrendingUp,
-    color: 'from-orange-500 to-orange-600'
+    color: 'from-orange-500 to-amber-600'
   },
 ];
 
@@ -99,6 +101,58 @@ const AUDIENCES = [
     title: 'Autônomos', 
     description: 'Ganhe indicando empresas do seu dia a dia',
     icon: Sparkles 
+  },
+];
+
+// Testimonials
+const TESTIMONIALS = [
+  {
+    name: 'Carolina M.',
+    role: 'Contadora Digital',
+    avatar: '👩‍💼',
+    text: 'Em 3 meses já ganhei mais de R$ 8.000 só indicando clientes que eu já atendia. O sistema de afiliados é muito simples!',
+    rating: 5,
+    earnings: 'R$ 8.200'
+  },
+  {
+    name: 'Rafael S.',
+    role: 'Consultor Financeiro',
+    avatar: '👨‍💼',
+    text: 'A cada cliente que indico para o Limpa Nome, recebo minha comissão em poucos dias. Excelente programa!',
+    rating: 5,
+    earnings: 'R$ 4.500'
+  },
+  {
+    name: 'Amanda L.',
+    role: 'Influenciadora de Finanças',
+    avatar: '💫',
+    text: 'Minha audiência adora os serviços. Já indiquei mais de 50 pessoas e a conversão é muito boa!',
+    rating: 5,
+    earnings: 'R$ 12.000'
+  },
+];
+
+// FAQ Items
+const FAQ_ITEMS = [
+  {
+    question: 'Quanto tempo leva para receber minhas comissões?',
+    answer: 'As comissões são creditadas em sua conta de afiliado assim que o cliente efetua o pagamento. Você pode solicitar o saque a qualquer momento após atingir o mínimo de R$ 50.'
+  },
+  {
+    question: 'Preciso ter CNPJ para ser afiliado?',
+    answer: 'Não! Você pode ser afiliado como pessoa física. Basta ter CPF válido e uma conta bancária para receber suas comissões via PIX.'
+  },
+  {
+    question: 'Como acompanho minhas indicações e ganhos?',
+    answer: 'Você terá acesso a um painel completo onde pode ver em tempo real todas as indicações, conversões, comissões pendentes e valores já sacados.'
+  },
+  {
+    question: 'Existe um limite de quanto posso ganhar?',
+    answer: 'Não há limite! Quanto mais você indicar, mais você ganha. Temos afiliados que ganham mais de R$ 10.000 por mês apenas com indicações.'
+  },
+  {
+    question: 'Como funciona o cupom de desconto?',
+    answer: 'Você pode criar cupons personalizados para oferecer descontos exclusivos aos seus indicados. Isso aumenta a conversão e você ainda ganha sua comissão integral!'
   },
 ];
 
@@ -143,7 +197,6 @@ export default function AffiliateOnboarding() {
     setLoading(true);
 
     try {
-      // Create user account with auto-confirm
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
@@ -158,13 +211,12 @@ export default function AffiliateOnboarding() {
       if (authError) throw authError;
 
       if (authData.user) {
-        // Create affiliate profile - cpf is required but we'll collect later
         const { error: affiliateError } = await supabase
           .from('affiliates')
           .insert({
             user_id: authData.user.id,
             full_name: formData.fullName,
-            cpf: '00000000000', // Will be collected in profile later
+            cpf: '00000000000',
             email: formData.email,
             phone: formData.phone.replace(/\D/g, ''),
             terms_accepted_at: new Date().toISOString()
@@ -172,7 +224,6 @@ export default function AffiliateOnboarding() {
 
         if (affiliateError) throw affiliateError;
 
-        // Auto sign-in after registration
         const { error: signInError } = await supabase.auth.signInWithPassword({
           email: formData.email,
           password: formData.password
@@ -199,22 +250,22 @@ export default function AffiliateOnboarding() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       {/* Header */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
+      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-white/10">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2">
               <img src="/logo-atentai.png" alt="AtentAI" className="h-8 w-auto" />
             </Link>
             <div className="flex items-center gap-3">
-              <Button variant="ghost" size="sm" asChild>
+              <Button variant="ghost" size="sm" asChild className="text-white/70 hover:text-white hover:bg-white/10">
                 <Link to="/">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar
                 </Link>
               </Button>
-              <Button variant="outline" size="sm" asChild className="hidden sm:flex">
+              <Button variant="outline" size="sm" asChild className="hidden sm:flex border-white/20 text-white hover:bg-white/10">
                 <Link to="/auth">Já sou afiliado</Link>
               </Button>
             </div>
@@ -223,12 +274,14 @@ export default function AffiliateOnboarding() {
       </header>
 
       <main className="pt-16">
-        {/* Hero Section */}
-        <section className="relative py-20 lg:py-28 overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-primary/10" />
-          <div className="absolute top-20 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl opacity-50" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-3xl opacity-50" />
+        {/* Hero Section - Dark Theme */}
+        <section className="relative py-20 lg:py-32 overflow-hidden">
+          {/* Animated Background */}
+          <div className="absolute inset-0">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-primary/20 rounded-full blur-[100px] animate-pulse" />
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-violet-500/20 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-500/10 rounded-full blur-[150px]" />
+          </div>
           
           <div className="container relative mx-auto px-4">
             <motion.div
@@ -237,39 +290,42 @@ export default function AffiliateOnboarding() {
               transition={{ duration: 0.6 }}
               className="text-center max-w-4xl mx-auto"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-6">
-                <Gift className="w-4 h-4" />
-                Programa de Afiliados
-              </span>
+              <Badge className="mb-6 bg-gradient-to-r from-primary/20 to-violet-500/20 text-primary border-primary/30 px-6 py-2 text-sm">
+                <Gift className="w-4 h-4 mr-2" />
+                Programa de Afiliados Premium
+              </Badge>
               
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight leading-tight">
-                Ganhe dinheiro indicando{' '}
-                <span className="text-primary">serviços financeiros</span>{' '}
-                que realmente vendem
+              <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white mb-6 tracking-tight leading-tight">
+                Ganhe{' '}
+                <span className="bg-gradient-to-r from-primary via-cyan-400 to-violet-400 bg-clip-text text-transparent">
+                  até 20%
+                </span>{' '}
+                de comissão
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
-                Seja afiliado da Atentai e receba comissões recorrentes indicando 
-                serviços contábeis, fiscais e de regularização.
+              <p className="text-lg md:text-xl text-white/60 mb-8 max-w-2xl mx-auto">
+                Indique serviços financeiros de alta conversão e receba suas comissões automaticamente. 
+                Sem limite de ganhos.
               </p>
 
-              {/* Quick highlights */}
-              <div className="flex flex-wrap justify-center gap-4 mb-10">
+              {/* Live Stats */}
+              <div className="grid grid-cols-3 gap-4 max-w-xl mx-auto mb-10">
                 {[
-                  { icon: Wallet, text: 'Comissões atrativas' },
-                  { icon: Zap, text: 'Pagamento rápido' },
-                  { icon: BarChart3, text: 'Painel completo' },
-                  { icon: Users, text: 'Atendimento humano' },
-                ].map((item, i) => (
+                  { value: 500, suffix: '+', label: 'Afiliados ativos' },
+                  { value: 95, suffix: '%', label: 'Taxa de pagamento' },
+                  { value: 48, suffix: 'h', label: 'Prazo de saque' },
+                ].map((stat, i) => (
                   <motion.div
-                    key={item.text}
+                    key={stat.label}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.3 + i * 0.1 }}
-                    className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 shadow-sm"
+                    className="p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm"
                   >
-                    <item.icon className="w-4 h-4 text-primary" />
-                    <span className="text-sm font-medium text-foreground">{item.text}</span>
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      <AnimatedCounter end={stat.value} suffix={stat.suffix} />
+                    </p>
+                    <p className="text-xs text-white/50">{stat.label}</p>
                   </motion.div>
                 ))}
               </div>
@@ -282,9 +338,9 @@ export default function AffiliateOnboarding() {
                 <Button
                   size="lg"
                   onClick={() => document.getElementById('register')?.scrollIntoView({ behavior: 'smooth' })}
-                  className="h-14 px-10 text-lg font-semibold rounded-xl shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all"
+                  className="h-14 px-10 text-lg font-semibold rounded-xl bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all border-0"
                 >
-                  Quero ser afiliado agora
+                  Começar a ganhar agora
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </motion.div>
@@ -292,8 +348,8 @@ export default function AffiliateOnboarding() {
           </div>
         </section>
 
-        {/* How it works */}
-        <section className="py-20 bg-muted/30">
+        {/* Earnings Potential - Dark Cards */}
+        <section className="py-20 relative">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -301,62 +357,13 @@ export default function AffiliateOnboarding() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-                Como funciona
-              </h2>
-              <p className="text-lg text-muted-foreground">
-                4 passos simples para começar a ganhar
-              </p>
-            </motion.div>
-
-            <div className="grid md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-              {[
-                { step: 1, title: 'Cadastre-se', desc: 'Gratuitamente', icon: Users },
-                { step: 2, title: 'Receba seu link', desc: 'Exclusivo', icon: Gift },
-                { step: 3, title: 'Indique clientes', desc: 'Compartilhe', icon: TrendingUp },
-                { step: 4, title: 'Ganhe comissões', desc: 'Automaticamente', icon: Wallet },
-              ].map((item, i) => (
-                <motion.div
-                  key={item.step}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="relative"
-                >
-                  <Card className="h-full border-0 shadow-sm bg-card hover:shadow-md transition-shadow">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4 text-primary font-bold text-xl">
-                        {item.step}
-                      </div>
-                      <h3 className="text-lg font-semibold text-foreground mb-1">{item.title}</h3>
-                      <p className="text-sm text-muted-foreground">{item.desc}</p>
-                    </CardContent>
-                  </Card>
-                  {i < 3 && (
-                    <div className="hidden md:block absolute top-1/2 -right-3 transform -translate-y-1/2 z-10">
-                      <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
-                    </div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Earnings potential */}
-        <section className="py-20">
-          <div className="container mx-auto px-4">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-center mb-16"
-            >
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              <Badge className="mb-4 bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                💰 Potencial de ganhos
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Quanto você pode ganhar
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-white/60">
                 Comissões reais em serviços de alta demanda
               </p>
             </motion.div>
@@ -372,29 +379,31 @@ export default function AffiliateOnboarding() {
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
                   >
-                    <Card className="h-full border-0 shadow-lg hover:shadow-xl transition-all overflow-hidden group">
-                      <div className={`h-2 bg-gradient-to-r ${service.color}`} />
+                    <Card className="h-full border-0 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all overflow-hidden group">
+                      <div className={`h-1 bg-gradient-to-r ${service.color}`} />
                       <CardContent className="p-6">
                         <div className="flex items-center gap-3 mb-4">
                           <div className={`w-10 h-10 rounded-lg bg-gradient-to-r ${service.color} flex items-center justify-center`}>
                             <service.icon className="w-5 h-5 text-white" />
                           </div>
-                          <h3 className="font-semibold text-foreground">{service.name}</h3>
+                          <h3 className="font-semibold text-white">{service.name}</h3>
                         </div>
                         
                         <div className="space-y-2">
                           <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Valor do serviço</span>
-                            <span className="font-medium">R$ {service.price.toLocaleString('pt-BR')}</span>
+                            <span className="text-white/50">Valor do serviço</span>
+                            <span className="font-medium text-white">R$ {service.price.toLocaleString('pt-BR')}</span>
                           </div>
                           <div className="flex justify-between items-center text-sm">
-                            <span className="text-muted-foreground">Comissão</span>
-                            <span className="font-medium text-primary">{service.commission}%</span>
+                            <span className="text-white/50">Comissão</span>
+                            <Badge className={`bg-gradient-to-r ${service.color} border-0 text-white`}>
+                              {service.commission}%
+                            </Badge>
                           </div>
-                          <div className="pt-3 border-t border-border">
+                          <div className="pt-3 border-t border-white/10">
                             <div className="flex justify-between items-center">
-                              <span className="text-sm text-muted-foreground">Você ganha</span>
-                              <span className="text-xl font-bold text-primary">
+                              <span className="text-sm text-white/50">Você ganha</span>
+                              <span className="text-2xl font-bold bg-gradient-to-r from-emerald-400 to-cyan-400 bg-clip-text text-transparent">
                                 R$ {earning.toLocaleString('pt-BR')}
                               </span>
                             </div>
@@ -409,8 +418,71 @@ export default function AffiliateOnboarding() {
           </div>
         </section>
 
+        {/* Testimonials - Dark Theme */}
+        <section className="py-20 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+          
+          <div className="container mx-auto px-4 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <Badge className="mb-4 bg-amber-500/20 text-amber-400 border-amber-500/30">
+                <Star className="w-3 h-3 mr-1 fill-amber-400" />
+                Depoimentos reais
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                O que nossos afiliados dizem
+              </h2>
+            </motion.div>
+
+            <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {TESTIMONIALS.map((testimonial, i) => (
+                <motion.div
+                  key={testimonial.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <Card className="h-full border-0 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all">
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-1 mb-4">
+                        {[...Array(testimonial.rating)].map((_, i) => (
+                          <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                      
+                      <Quote className="w-8 h-8 text-primary/30 mb-3" />
+                      
+                      <p className="text-white/80 mb-6 leading-relaxed">
+                        "{testimonial.text}"
+                      </p>
+                      
+                      <div className="flex items-center justify-between pt-4 border-t border-white/10">
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl">{testimonial.avatar}</span>
+                          <div>
+                            <p className="font-semibold text-white">{testimonial.name}</p>
+                            <p className="text-xs text-white/50">{testimonial.role}</p>
+                          </div>
+                        </div>
+                        <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+                          {testimonial.earnings}
+                        </Badge>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* Who is this for */}
-        <section className="py-20 bg-muted/30">
+        <section className="py-20">
           <div className="container mx-auto px-4">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -418,10 +490,10 @@ export default function AffiliateOnboarding() {
               viewport={{ once: true }}
               className="text-center mb-16"
             >
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 Para quem é o programa
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-white/60">
                 Ideal para profissionais com rede de contatos empresariais
               </p>
             </motion.div>
@@ -435,17 +507,62 @@ export default function AffiliateOnboarding() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <Card className="h-full border-0 shadow-sm hover:shadow-md transition-all bg-card">
+                  <Card className="h-full border-0 bg-white/5 backdrop-blur-sm hover:bg-white/10 transition-all">
                     <CardContent className="p-6 text-center">
-                      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                      <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-violet-500/20 flex items-center justify-center mx-auto mb-4">
                         <audience.icon className="w-7 h-7 text-primary" />
                       </div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">{audience.title}</h3>
-                      <p className="text-sm text-muted-foreground">{audience.description}</p>
+                      <h3 className="text-lg font-semibold text-white mb-2">{audience.title}</h3>
+                      <p className="text-sm text-white/60">{audience.description}</p>
                     </CardContent>
                   </Card>
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="py-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-violet-500/5 to-transparent" />
+          
+          <div className="container mx-auto px-4 relative">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <Badge className="mb-4 bg-violet-500/20 text-violet-400 border-violet-500/30">
+                <HelpCircle className="w-3 h-3 mr-1" />
+                Perguntas frequentes
+              </Badge>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                Dúvidas sobre o programa
+              </h2>
+            </motion.div>
+
+            <div className="max-w-3xl mx-auto">
+              <Accordion type="single" collapsible className="space-y-4">
+                {FAQ_ITEMS.map((item, i) => (
+                  <motion.div
+                    key={i}
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ delay: i * 0.05 }}
+                  >
+                    <AccordionItem value={`item-${i}`} className="border border-white/10 rounded-xl bg-white/5 backdrop-blur-sm px-6 overflow-hidden">
+                      <AccordionTrigger className="text-left text-white hover:no-underline py-5">
+                        <span className="text-base font-medium">{item.question}</span>
+                      </AccordionTrigger>
+                      <AccordionContent className="text-white/70 pb-5">
+                        {item.answer}
+                      </AccordionContent>
+                    </AccordionItem>
+                  </motion.div>
+                ))}
+              </Accordion>
             </div>
           </div>
         </section>
@@ -463,79 +580,81 @@ export default function AffiliateOnboarding() {
                   transition={{ delay: i * 0.1 }}
                   className="flex items-center gap-3"
                 >
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
                     <signal.icon className="w-5 h-5 text-primary" />
                   </div>
-                  <span className="font-medium text-foreground">{signal.text}</span>
+                  <span className="font-medium text-white">{signal.text}</span>
                 </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* Registration Form */}
-        <section id="register" className="py-20 bg-gradient-to-b from-muted/30 to-background">
-          <div className="container mx-auto px-4">
+        {/* Registration Form - Dark Theme */}
+        <section id="register" className="py-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-t from-primary/10 via-transparent to-transparent" />
+          
+          <div className="container mx-auto px-4 relative">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               className="max-w-md mx-auto"
             >
-              <Card className="border-0 shadow-2xl bg-card">
+              <Card className="border-0 shadow-2xl bg-slate-900/80 backdrop-blur-xl border border-white/10">
                 <CardContent className="p-8">
                   <div className="text-center mb-8">
-                    <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
-                      <Users className="w-8 h-8 text-primary" />
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-violet-500 flex items-center justify-center mx-auto mb-4">
+                      <Users className="w-8 h-8 text-white" />
                     </div>
-                    <h2 className="text-2xl font-bold text-foreground mb-2">
+                    <h2 className="text-2xl font-bold text-white mb-2">
                       Criar conta de afiliado
                     </h2>
-                    <p className="text-muted-foreground">
+                    <p className="text-white/60">
                       Comece a ganhar em minutos
                     </p>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="fullName">Nome completo</Label>
+                      <Label htmlFor="fullName" className="text-white/80">Nome completo</Label>
                       <Input
                         id="fullName"
                         value={formData.fullName}
                         onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                         placeholder="Seu nome completo"
-                        className="h-12"
+                        className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                         required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="email">E-mail</Label>
+                      <Label htmlFor="email" className="text-white/80">E-mail</Label>
                       <Input
                         id="email"
                         type="email"
                         value={formData.email}
                         onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                         placeholder="seu@email.com"
-                        className="h-12"
+                        className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                         required
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="phone">WhatsApp</Label>
+                      <Label htmlFor="phone" className="text-white/80">WhatsApp</Label>
                       <MaskedInput
                         id="phone"
                         mask="phone"
                         value={formData.phone}
                         onChange={(value) => setFormData({ ...formData, phone: value })}
                         showValidation={false}
-                        className="h-12"
+                        className="h-12 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                       />
                     </div>
 
                     <div className="space-y-2">
-                      <Label htmlFor="password">Senha</Label>
+                      <Label htmlFor="password" className="text-white/80">Senha</Label>
                       <div className="relative">
                         <Input
                           id="password"
@@ -543,14 +662,14 @@ export default function AffiliateOnboarding() {
                           value={formData.password}
                           onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                           placeholder="Mínimo 6 caracteres"
-                          className="h-12 pr-10"
+                          className="h-12 pr-10 bg-white/5 border-white/10 text-white placeholder:text-white/40"
                           required
                           minLength={6}
                         />
                         <button
                           type="button"
                           onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white"
                         >
                           {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                         </button>
@@ -562,8 +681,9 @@ export default function AffiliateOnboarding() {
                         id="terms"
                         checked={formData.termsAccepted}
                         onCheckedChange={(checked) => setFormData({ ...formData, termsAccepted: checked as boolean })}
+                        className="border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                       />
-                      <Label htmlFor="terms" className="text-sm text-muted-foreground leading-relaxed cursor-pointer">
+                      <Label htmlFor="terms" className="text-sm text-white/60 leading-relaxed cursor-pointer">
                         Li e aceito os{' '}
                         <Link to="/termos" className="text-primary hover:underline">Termos de Uso</Link>
                         {' '}e a{' '}
@@ -574,7 +694,7 @@ export default function AffiliateOnboarding() {
                     <Button
                       type="submit"
                       disabled={loading}
-                      className="w-full h-14 text-base font-semibold rounded-xl mt-4"
+                      className="w-full h-14 text-base font-semibold rounded-xl mt-4 bg-gradient-to-r from-primary to-violet-500 hover:from-primary/90 hover:to-violet-500/90 border-0"
                     >
                       {loading ? (
                         <>
@@ -590,7 +710,7 @@ export default function AffiliateOnboarding() {
                     </Button>
                   </form>
 
-                  <p className="text-center text-sm text-muted-foreground mt-6">
+                  <p className="text-center text-sm text-white/50 mt-6">
                     Já tem conta?{' '}
                     <Link to="/auth" className="text-primary hover:underline font-medium">
                       Fazer login
@@ -604,16 +724,16 @@ export default function AffiliateOnboarding() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-border/50">
+      <footer className="py-8 border-t border-white/10">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <Link to="/" className="flex items-center gap-2">
               <img src="/logo-atentai.png" alt="AtentAI" className="h-6 w-auto" />
-              <span className="text-sm text-muted-foreground">© 2024 Atentai</span>
+              <span className="text-sm text-white/50">© 2024 Atentai</span>
             </Link>
-            <div className="flex items-center gap-6 text-sm text-muted-foreground">
-              <Link to="/termos" className="hover:text-foreground transition-colors">Termos</Link>
-              <Link to="/privacidade" className="hover:text-foreground transition-colors">Privacidade</Link>
+            <div className="flex items-center gap-6 text-sm text-white/50">
+              <Link to="/termos" className="hover:text-white transition-colors">Termos</Link>
+              <Link to="/privacidade" className="hover:text-white transition-colors">Privacidade</Link>
             </div>
           </div>
         </div>

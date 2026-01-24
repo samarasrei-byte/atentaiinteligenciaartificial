@@ -10,6 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { MaskedInput } from '@/components/ui/masked-input';
+import { AffiliateCouponInput, AppliedAffiliateCoupon, calculateAffiliateCouponDiscount } from '@/components/pricing/AffiliateCouponInput';
 import { useToast } from '@/hooks/use-toast';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
 import { cleanDocument } from '@/lib/documentValidation';
@@ -23,7 +24,8 @@ import {
   Globe,
   Users,
   Lock,
-  Sparkles
+  Sparkles,
+  Tag
 } from 'lucide-react';
 
 interface IRRequestFormProps {
@@ -53,11 +55,17 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedAffiliateCoupon | null>(null);
 
   const isSubscriber = subscription.subscribed;
   const serviceKey = irType === 'simples' ? 'ir_simples' : 'ir_completo';
   const service = SUBSCRIBER_DISCOUNTS[serviceKey];
-  const finalPrice = isSubscriber ? service.discountedPrice : service.basePrice;
+  const basePriceAfterSubscription = isSubscriber ? service.discountedPrice : service.basePrice;
+  const { discountCents: couponDiscountCents, finalPriceCents } = calculateAffiliateCouponDiscount(
+    basePriceAfterSubscription,
+    appliedCoupon
+  );
+  const finalPrice = finalPriceCents;
   const discountPercent = Math.round(service.discount * 100);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -369,7 +377,27 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
               />
             </div>
 
-            {!isSubscriber && (
+            {/* Affiliate Coupon Input */}
+            <div className="p-4 bg-muted/50 rounded-lg border border-border">
+              <div className="flex items-center gap-2 mb-3">
+                <Tag className="h-4 w-4 text-primary" />
+                <span className="text-sm font-medium">Tem um cupom de desconto?</span>
+              </div>
+              <AffiliateCouponInput
+                serviceType="ir"
+                onCouponApplied={setAppliedCoupon}
+                onCouponRemoved={() => setAppliedCoupon(null)}
+                appliedCoupon={appliedCoupon}
+              />
+              {appliedCoupon && (
+                <div className="mt-2 flex items-center gap-2 text-sm text-success">
+                  <Sparkles className="h-4 w-4" />
+                  <span>Cupom <strong>{appliedCoupon.code}</strong> aplicado: -{formatPrice(couponDiscountCents)}</span>
+                </div>
+              )}
+            </div>
+
+            {!isSubscriber && !appliedCoupon && (
               <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                 <p className="text-sm text-foreground">
                   <strong>💡 Dica:</strong> Assinantes têm {discountPercent}% de desconto em declarações de IR!{' '}
