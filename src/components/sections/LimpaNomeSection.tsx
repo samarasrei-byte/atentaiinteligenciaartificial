@@ -36,24 +36,23 @@ const bureaus = [
 ];
 
 const benefits = [
-  { icon: Building2, title: 'Empresa Especializada Dedicada', desc: 'Atendimento 100% humano com especialistas em recuperação de crédito' },
-  { icon: Clock, title: 'Resultado em até 30 dias', desc: 'Processo ágil com acompanhamento em tempo real via WhatsApp' },
-  { icon: FileCheck, title: 'Carta de Quitação Digital', desc: 'Documento oficial + relatório completo de regularização' },
-  { icon: Shield, title: 'Garantia de Resultado', desc: 'Seu dinheiro de volta se não limparmos seu nome' },
+  { icon: Shield, title: 'Serviço 100% Jurídico', desc: 'Liminar coletiva para exclusão permanente de todos os apontamentos' },
+  { icon: Clock, title: 'Sem Negociação de Dívidas', desc: 'Antecipamos o prazo prescricional, não quitamos nem fazemos acordos' },
+  { icon: FileCheck, title: 'Resultado em até 30 dias', desc: 'Processo ágil com acompanhamento em tempo real via WhatsApp' },
+  { icon: Award, title: '🎁 Bônus: Aumento de Score', desc: 'Regularização do score inclusa para quem limpar o nome agora!' },
 ];
 
 const included = [
-  'Análise completa CPF ou CNPJ em 8 bureaus',
-  'Especialista dedicado ao seu caso',
-  'Atendimento personalizado via chat e WhatsApp',
-  'Consulta Registrato (Banco Central)',
-  'Verificação protestos (Cenprot)',
-  'Carta de quitação digital',
+  'Liminar coletiva para exclusão permanente',
+  'Antecipação do prazo prescricional',
+  'Exclusão em SPC, Serasa, SCPC, Boa Vista e mais',
+  'Dívidas viram apenas internas (na instituição)',
+  'Processo 100% jurídico e documentado',
   'Acompanhamento por 90 dias',
-  'Suporte prioritário WhatsApp',
+  'Suporte prioritário via WhatsApp',
   'Relatório final detalhado',
-  'Orientação para melhoria de score',
-  'Garantia de resultado',
+  '🎁 Bônus: Regularização de Score inclusa!',
+  'Garantia de resultado ou dinheiro de volta',
 ];
 
 const clientTypes = [
@@ -121,15 +120,16 @@ export function LimpaNomeSection() {
         <div className="text-center mb-12">
           <Badge className="mb-6 bg-rose-500/20 text-rose-600 border-rose-500/30 px-6 py-2">
             <Sparkles className="h-4 w-4 mr-2" />
-            EMPRESA ESPECIALIZADA • RESULTADO GARANTIDO
+            SERVIÇO 100% JURÍDICO • LIMINAR COLETIVA
           </Badge>
           <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
             <span className="bg-gradient-to-r from-rose-500 to-pink-600 bg-clip-text text-transparent italic">Limpa Nome</span>
-            <span className="block mt-2 text-foreground">Para CPF e CNPJ</span>
+            <span className="block mt-2 text-foreground">Jurídico</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Regularize seu CPF ou CNPJ com atendimento <strong className="text-foreground">100% humano</strong>. 
-            Empresa especializada dedicada ao seu caso, do início ao fim.
+            Serviço <strong className="text-foreground">100% jurídico</strong> com liminar coletiva para exclusão permanente 
+            de todos os apontamentos. Não quitamos dívidas, antecipamos o prazo prescricional.
+            <span className="block mt-2 text-rose-500 font-semibold">🎁 Bônus: Regularização de Score inclusa!</span>
           </p>
           
           {/* Client Type Selection - Interactive Cards */}
@@ -306,19 +306,20 @@ export function LimpaNomeSection() {
                   <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
 
-                {/* Empresa Especializada Info */}
+                {/* Serviço Jurídico Info */}
                 <div className="mt-4 p-4 rounded-xl bg-gradient-to-br from-primary/10 to-violet-500/10 border border-primary/20">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 rounded-lg bg-primary/20">
                       <Briefcase className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="font-semibold text-sm text-foreground">Empresa Especializada</p>
-                      <p className="text-xs text-muted-foreground">Parceiro oficial em recuperação de crédito</p>
+                      <p className="font-semibold text-sm text-foreground">Como Funciona?</p>
+                      <p className="text-xs text-muted-foreground">Serviço 100% jurídico com liminar coletiva</p>
                     </div>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    Contamos com parceiros especializados em negociação de dívidas, com mais de 10 anos de experiência no mercado brasileiro.
+                    Entramos com liminar coletiva solicitando exclusão permanente dos apontamentos. 
+                    As dívidas se tornam internas (apenas na instituição). Não fazemos acordos nem quitamos débitos.
                   </p>
                 </div>
 

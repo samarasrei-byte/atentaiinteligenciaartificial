@@ -42,14 +42,14 @@ const bureaus = [
 
 const benefits = [
   {
-    icon: MessageCircle,
-    title: 'Empresa Especializada Dedicada',
-    description: 'Atendimento 100% humano com especialistas em recuperação de crédito'
+    icon: Shield,
+    title: 'Serviço 100% Jurídico',
+    description: 'Entramos com liminar coletiva para exclusão permanente dos apontamentos'
   },
   {
-    icon: Shield,
-    title: 'Análise em 8 Plataformas',
-    description: 'Verificação completa: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot e mais'
+    icon: MessageCircle,
+    title: 'Sem Negociação de Dívidas',
+    description: 'Antecipamos o prazo prescricional, não quitamos nem fazemos acordos'
   },
   {
     icon: Clock,
@@ -58,8 +58,8 @@ const benefits = [
   },
   {
     icon: BadgeCheck,
-    title: 'Garantia de Resultado',
-    description: 'Se não conseguirmos resolver, devolvemos 100% do seu dinheiro'
+    title: 'Bônus: Aumento de Score',
+    description: 'Regularização do score inclusa para quem limpar o nome agora!'
   },
 ];
 
@@ -90,30 +90,32 @@ const plans = {
   pf: {
     id: 'pf',
     name: 'Pessoa Física',
-    description: 'Limpa nome para CPF',
+    description: 'Liminar coletiva para CPF',
     basePrice: 68000, // R$ 680,00
     icon: '👤',
     features: [
-      'Análise completa em 8 bureaus',
-      'Verificação de CPF',
-      'Contador humano dedicado',
-      'Acompanhamento por 90 dias',
+      'Liminar coletiva em todos os bureaus',
+      'Exclusão permanente de apontamentos',
+      'Antecipação do prazo prescricional',
+      'Acompanhamento jurídico completo',
+      '🎁 Bônus: Regularização de Score',
     ]
   },
   pj: {
     id: 'pj',
     name: 'Empresa (CNPJ)',
-    description: 'Limpa nome para CNPJ',
+    description: 'Liminar coletiva para CNPJ',
     basePrice: 89000, // R$ 890,00
     icon: '🏢',
     popular: true,
     features: [
-      'Análise completa em 8 bureaus',
-      'Verificação de CNPJ',
+      'Liminar coletiva em todos os bureaus',
+      'Exclusão permanente de apontamentos',
+      'Antecipação do prazo prescricional',
       'Análise de protestos empresariais',
-      'Contador humano dedicado',
       'Orientação CADIN/PGFN',
-      'Acompanhamento por 90 dias',
+      'Acompanhamento jurídico completo',
+      '🎁 Bônus: Regularização de Score',
     ]
   }
 };
@@ -250,12 +252,12 @@ const LimpaNomePage = () => {
 
               <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
                 Limpa Nome
-                <span className="block text-primary-glow mt-2">CPF e CNPJ</span>
+                <span className="block text-primary-glow mt-2">Serviço Jurídico</span>
               </h1>
 
               <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-                Regularize seu CPF ou CNPJ com atendimento <strong className="text-white">100% humano</strong>.
-                Empresa especializada dedicada ao seu caso, do início ao fim.
+                Serviço <strong className="text-white">100% jurídico</strong> com liminar coletiva para exclusão permanente 
+                de todos os apontamentos nos Órgãos de Proteção ao Crédito. <strong className="text-accent">+ Bônus: Aumento de Score!</strong>
               </p>
 
               <div className="flex flex-wrap justify-center gap-4 mb-8">
