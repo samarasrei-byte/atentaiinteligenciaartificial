@@ -78,6 +78,106 @@ export type Database = {
           },
         ]
       }
+      affiliate_coupon_uses: {
+        Row: {
+          coupon_id: string
+          created_at: string | null
+          discount_amount_cents: number
+          final_amount_cents: number
+          id: string
+          original_amount_cents: number
+          service_type: string
+          stripe_session_id: string | null
+          user_email: string
+          user_id: string | null
+        }
+        Insert: {
+          coupon_id: string
+          created_at?: string | null
+          discount_amount_cents: number
+          final_amount_cents: number
+          id?: string
+          original_amount_cents: number
+          service_type: string
+          stripe_session_id?: string | null
+          user_email: string
+          user_id?: string | null
+        }
+        Update: {
+          coupon_id?: string
+          created_at?: string | null
+          discount_amount_cents?: number
+          final_amount_cents?: number
+          id?: string
+          original_amount_cents?: number
+          service_type?: string
+          stripe_session_id?: string | null
+          user_email?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_coupon_uses_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "affiliate_coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_coupons: {
+        Row: {
+          affiliate_id: string
+          applicable_services: string[] | null
+          code: string
+          created_at: string | null
+          current_uses: number | null
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          applicable_services?: string[] | null
+          code: string
+          created_at?: string | null
+          current_uses?: number | null
+          discount_type?: string
+          discount_value: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          applicable_services?: string[] | null
+          code?: string
+          created_at?: string | null
+          current_uses?: number | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_coupons_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       affiliate_leads: {
         Row: {
           affiliate_id: string
@@ -2164,6 +2264,17 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      apply_affiliate_coupon: {
+        Args: {
+          p_coupon_id: string
+          p_discount_amount_cents: number
+          p_original_amount_cents: number
+          p_service_type: string
+          p_stripe_session_id?: string
+          p_user_email: string
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           p_endpoint: string
@@ -2185,6 +2296,10 @@ export type Database = {
       increment_daily_questions: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      validate_affiliate_coupon: {
+        Args: { p_code: string; p_service_type?: string }
+        Returns: Json
       }
     }
     Enums: {
