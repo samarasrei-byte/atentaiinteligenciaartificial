@@ -18,6 +18,7 @@ import { Separator } from '@/components/ui/separator';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { AreaChart, Area, XAxis, YAxis, PieChart, Pie, Cell, BarChart, Bar, ResponsiveContainer } from 'recharts';
 import { toast } from 'sonner';
+import { AffiliateCouponManager } from '@/components/affiliate/AffiliateCouponManager';
 import {
   Users, TrendingUp, Wallet, Link as LinkIcon, Copy, Check,
   Calendar, Phone, Mail, Building, ChevronRight, RefreshCw,
@@ -90,7 +91,7 @@ interface Withdrawal {
   created_at: string;
 }
 
-type PanelSection = 'overview' | 'leads' | 'services' | 'financial' | 'withdrawals' | 'profile';
+type PanelSection = 'overview' | 'leads' | 'services' | 'coupons' | 'financial' | 'withdrawals' | 'profile';
 
 const COLORS = ['hsl(var(--primary))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3))', 'hsl(var(--chart-4))'];
 
@@ -105,6 +106,7 @@ const NAV_ITEMS = [
   { id: 'overview', label: 'Visão Geral', icon: Home },
   { id: 'leads', label: 'Leads', icon: Users },
   { id: 'services', label: 'Serviços', icon: Sparkles },
+  { id: 'coupons', label: 'Cupons', icon: Gift },
   { id: 'financial', label: 'Financeiro', icon: Wallet },
   { id: 'withdrawals', label: 'Saques', icon: Banknote },
   { id: 'profile', label: 'Perfil', icon: User },
@@ -1145,12 +1147,32 @@ export default function AffiliatePanel() {
     </div>
   );
 
+  // Render Coupons
+  const renderCoupons = () => {
+    if (!affiliate) return null;
+    return (
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+            <Gift className="h-5 w-5 text-primary" />
+            Cupons de Desconto
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Crie cupons exclusivos para atrair mais clientes
+          </p>
+        </div>
+        <AffiliateCouponManager affiliateId={affiliate.id} />
+      </div>
+    );
+  };
+
   // Render content based on active section
   const renderContent = () => {
     switch (activeSection) {
       case 'overview': return renderOverview();
       case 'leads': return renderLeads();
       case 'services': return renderServices();
+      case 'coupons': return renderCoupons();
       case 'financial': return renderFinancial();
       case 'withdrawals': return renderWithdrawals();
       case 'profile': return renderProfile();
