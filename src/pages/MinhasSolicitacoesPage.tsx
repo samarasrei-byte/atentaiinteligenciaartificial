@@ -5,11 +5,11 @@ import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
-import { ServiceChat } from '@/components/chat/ServiceChat';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import {
   ArrowLeft,
@@ -24,7 +24,8 @@ import {
   MessageCircle,
   Loader2,
   Plus,
-  DollarSign
+  Scale,
+  User
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -38,6 +39,21 @@ interface CreditRepairRequest {
   payment_status: string;
   final_price_cents: number;
   contador_id: string | null;
+  partner_id: string | null;
+  created_at: string;
+}
+
+interface FiscalAnalysisRequest {
+  id: string;
+  full_name: string;
+  company_name: string;
+  cnpj: string;
+  tax_regime: string;
+  status: string;
+  payment_status: string | null;
+  service_fee_cents: number | null;
+  identified_value_cents: number | null;
+  partner_id: string | null;
   created_at: string;
 }
 
@@ -74,10 +90,18 @@ interface CompanyOpeningRequest {
   created_at: string;
 }
 
-interface ContadorInfo {
-  full_name: string | null;
-  user_id: string;
+interface PartnerInfo {
+  id: string;
+  company_name: string;
+  contact_person: string;
 }
+
+// Partner Guilherme Info - Fixed for display
+const PARTNER_GUILHERME = {
+  name: 'Guilherme',
+  role: 'Especialista AtentAI',
+  specialty: 'Limpa Nome & Análise Fiscal'
+};
 
 const MinhasSolicitacoesPage = () => {
   const navigate = useNavigate();
@@ -87,19 +111,21 @@ const MinhasSolicitacoesPage = () => {
   
   // Request states
   const [creditRepairRequests, setCreditRepairRequests] = useState<CreditRepairRequest[]>([]);
+  const [fiscalRequests, setFiscalRequests] = useState<FiscalAnalysisRequest[]>([]);
   const [irRequests, setIRRequests] = useState<IRRequest[]>([]);
   const [certificateRequests, setCertificateRequests] = useState<CertificateRequest[]>([]);
   const [companyOpeningRequests, setCompanyOpeningRequests] = useState<CompanyOpeningRequest[]>([]);
   
+  // Partner info
+  const [partnerInfo, setPartnerInfo] = useState<PartnerInfo | null>(null);
+  
   // Chat state
   const [selectedChat, setSelectedChat] = useState<{
-    type: 'credit_repair' | 'ir' | 'certificate' | 'company_opening';
+    type: 'credit_repair' | 'fiscal';
     requestId: string;
-    contadorId: string;
-    contadorName: string;
+    partnerId: string;
+    partnerName: string;
   } | null>(null);
-  
-  const [contadorInfoMap, setContadorInfoMap] = useState<Record<string, ContadorInfo>>({});
 
   useEffect(() => {
     if (user) {
@@ -110,9 +136,14 @@ const MinhasSolicitacoesPage = () => {
   const fetchAllRequests = async () => {
     setIsLoading(true);
     
-    const [creditRepairRes, irRes, certificateRes, companyOpeningRes] = await Promise.all([
+    const [creditRepairRes, fiscalRes, irRes, certificateRes, companyOpeningRes] = await Promise.all([
       supabase
         .from('credit_repair_requests')
+        .select('*')
+        .eq('user_id', user?.id)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('fiscal_analysis_requests')
         .select('*')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false }),
@@ -134,28 +165,21 @@ const MinhasSolicitacoesPage = () => {
     ]);
 
     setCreditRepairRequests(creditRepairRes.data || []);
+    setFiscalRequests(fiscalRes.data || []);
     setIRRequests(irRes.data || []);
     setCertificateRequests(certificateRes.data || []);
     setCompanyOpeningRequests(companyOpeningRes.data || []);
 
-    // Fetch contador info for all requests
-    const allContadorIds = new Set<string>();
-    [...(creditRepairRes.data || []), ...(irRes.data || []), ...(certificateRes.data || []), ...(companyOpeningRes.data || [])]
-      .forEach(req => {
-        if (req.contador_id) allContadorIds.add(req.contador_id);
-      });
-
-    if (allContadorIds.size > 0) {
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
-        .in('user_id', Array.from(allContadorIds));
-
-      const map: Record<string, ContadorInfo> = {};
-      profiles?.forEach(p => {
-        map[p.user_id] = { full_name: p.full_name, user_id: p.user_id };
-      });
-      setContadorInfoMap(map);
+    // Fetch partner info (Guilherme)
+    const { data: partner } = await supabase
+      .from('credit_repair_partners')
+      .select('id, company_name, contact_person')
+      .eq('is_active', true)
+      .limit(1)
+      .maybeSingle();
+    
+    if (partner) {
+      setPartnerInfo(partner);
     }
 
     setIsLoading(false);
@@ -166,16 +190,16 @@ const MinhasSolicitacoesPage = () => {
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { class: string; icon: any; label: string }> = {
-      pending: { class: 'bg-accent/10 text-accent', icon: Clock, label: 'Pendente' },
-      analyzing: { class: 'bg-info/10 text-info', icon: AlertCircle, label: 'Analisando' },
-      in_progress: { class: 'bg-info/10 text-info', icon: AlertCircle, label: 'Em Andamento' },
-      documents_pending: { class: 'bg-accent/10 text-accent', icon: FileText, label: 'Docs Pendentes' },
-      negotiating: { class: 'bg-primary/10 text-primary', icon: MessageCircle, label: 'Negociando' },
-      completed: { class: 'bg-success/10 text-success', icon: CheckCircle, label: 'Concluído' },
-      cancelled: { class: 'bg-destructive/10 text-destructive', icon: XCircle, label: 'Cancelado' },
-      rejected: { class: 'bg-destructive/10 text-destructive', icon: XCircle, label: 'Rejeitado' },
-      issued: { class: 'bg-success/10 text-success', icon: CheckCircle, label: 'Emitido' },
-      processing: { class: 'bg-info/10 text-info', icon: AlertCircle, label: 'Processando' },
+      pending: { class: 'bg-amber-100 text-amber-700', icon: Clock, label: 'Nova' },
+      analyzing: { class: 'bg-blue-100 text-blue-700', icon: AlertCircle, label: 'Analisando' },
+      in_progress: { class: 'bg-blue-100 text-blue-700', icon: AlertCircle, label: 'Em Andamento' },
+      documents_pending: { class: 'bg-amber-100 text-amber-700', icon: FileText, label: 'Docs Pendentes' },
+      negotiating: { class: 'bg-purple-100 text-purple-700', icon: MessageCircle, label: 'Em Contato' },
+      completed: { class: 'bg-emerald-100 text-emerald-700', icon: CheckCircle, label: 'Concluído' },
+      cancelled: { class: 'bg-red-100 text-red-700', icon: XCircle, label: 'Cancelado' },
+      rejected: { class: 'bg-red-100 text-red-700', icon: XCircle, label: 'Rejeitado' },
+      issued: { class: 'bg-emerald-100 text-emerald-700', icon: CheckCircle, label: 'Emitido' },
+      processing: { class: 'bg-blue-100 text-blue-700', icon: AlertCircle, label: 'Processando' },
     };
     const cfg = config[status] || config.pending;
     const Icon = cfg.icon;
@@ -184,21 +208,20 @@ const MinhasSolicitacoesPage = () => {
 
   const getPaymentBadge = (status: string | null) => {
     if (!status || status === 'pending') {
-      return <Badge variant="outline" className="bg-accent/10 text-accent">Aguardando Pagamento</Badge>;
+      return <Badge variant="outline" className="bg-amber-50 text-amber-700">Aguardando</Badge>;
     }
     if (status === 'paid') {
-      return <Badge variant="outline" className="bg-success/10 text-success">Pago</Badge>;
+      return <Badge variant="outline" className="bg-emerald-50 text-emerald-700">Pago</Badge>;
     }
     return null;
   };
 
-  const openChat = (type: 'credit_repair' | 'ir' | 'certificate' | 'company_opening', requestId: string, contadorId: string) => {
-    const contadorInfo = contadorInfoMap[contadorId];
+  const openPartnerChat = (type: 'credit_repair' | 'fiscal', requestId: string, partnerId: string) => {
     setSelectedChat({
       type,
       requestId,
-      contadorId,
-      contadorName: contadorInfo?.full_name || 'Contador',
+      partnerId,
+      partnerName: partnerInfo?.contact_person || PARTNER_GUILHERME.name,
     });
   };
 
@@ -223,7 +246,7 @@ const MinhasSolicitacoesPage = () => {
     return labels[type] || type;
   };
 
-  const totalRequests = creditRepairRequests.length + irRequests.length + certificateRequests.length + companyOpeningRequests.length;
+  const totalRequests = creditRepairRequests.length + fiscalRequests.length + irRequests.length + certificateRequests.length + companyOpeningRequests.length;
 
   if (isLoading) {
     return (
@@ -233,16 +256,28 @@ const MinhasSolicitacoesPage = () => {
     );
   }
 
+  const renderPartnerBadge = (partnerId: string | null) => {
+    if (!partnerId) return null;
+    return (
+      <div className="flex items-center gap-2 mt-3 p-2 bg-primary/5 rounded-lg">
+        <Avatar className="h-8 w-8 border border-primary/20">
+          <AvatarFallback className="bg-primary/10 text-primary text-xs font-bold">G</AvatarFallback>
+        </Avatar>
+        <div>
+          <p className="text-xs font-medium text-slate-700">Parceiro: {PARTNER_GUILHERME.name}</p>
+          <p className="text-xs text-slate-500">{PARTNER_GUILHERME.specialty}</p>
+        </div>
+      </div>
+    );
+  };
+
   const renderCreditRepairCard = (request: CreditRepairRequest) => (
-    <Card 
-      key={request.id} 
-      className="hover:border-success/50 transition-colors"
-    >
+    <Card key={request.id} className="hover:border-emerald-500/50 transition-colors">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-success/10 flex items-center justify-center">
-              <Shield className="h-6 w-6 text-success" />
+            <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
+              <Shield className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
               <p className="font-semibold">Limpa Nome</p>
@@ -257,20 +292,21 @@ const MinhasSolicitacoesPage = () => {
               <p className="font-semibold text-destructive">{formatCurrency(request.debt_amount_cents)}</p>
             </div>
             {getStatusBadge(request.status)}
-            {request.contador_id && (
+            {request.partner_id && (
               <Button
-                variant="outline"
+                variant="default"
                 size="sm"
-                onClick={() => openChat('credit_repair', request.id, request.contador_id!)}
-                className="gap-2"
+                onClick={() => openPartnerChat('credit_repair', request.id, request.partner_id!)}
+                className="gap-2 bg-emerald-600 hover:bg-emerald-700"
               >
                 <MessageCircle className="h-4 w-4" />
-                Chat
+                Chat com Guilherme
               </Button>
             )}
           </div>
         </div>
-        <div className="mt-4 flex flex-wrap gap-2">
+        {renderPartnerBadge(request.partner_id)}
+        <div className="mt-3 flex flex-wrap gap-2">
           {request.bureaus_selected?.map(b => (
             <Badge key={b} variant="secondary" className="uppercase text-xs">{b}</Badge>
           ))}
@@ -279,11 +315,51 @@ const MinhasSolicitacoesPage = () => {
     </Card>
   );
 
+  const renderFiscalCard = (request: FiscalAnalysisRequest) => (
+    <Card key={request.id} className="hover:border-blue-500/50 transition-colors">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
+              <Scale className="h-6 w-6 text-blue-600" />
+            </div>
+            <div>
+              <p className="font-semibold">Análise Fiscal</p>
+              <p className="text-sm text-muted-foreground">
+                {request.company_name} • {format(new Date(request.created_at), "dd/MM/yyyy", { locale: ptBR })}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-4">
+            {request.identified_value_cents && request.identified_value_cents > 0 ? (
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">Valor Identificado</p>
+                <p className="font-semibold text-emerald-600">{formatCurrency(request.identified_value_cents)}</p>
+              </div>
+            ) : (
+              <Badge variant="outline" className="bg-blue-50 text-blue-700">Análise Gratuita</Badge>
+            )}
+            {getStatusBadge(request.status)}
+            {request.partner_id && (
+              <Button
+                variant="default"
+                size="sm"
+                onClick={() => openPartnerChat('fiscal', request.id, request.partner_id!)}
+                className="gap-2 bg-blue-600 hover:bg-blue-700"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Chat com Guilherme
+              </Button>
+            )}
+          </div>
+        </div>
+        {renderPartnerBadge(request.partner_id)}
+      </CardContent>
+    </Card>
+  );
+
   const renderIRCard = (request: IRRequest) => (
-    <Card 
-      key={request.id} 
-      className="hover:border-primary/50 transition-colors"
-    >
+    <Card key={request.id} className="hover:border-primary/50 transition-colors">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -304,17 +380,6 @@ const MinhasSolicitacoesPage = () => {
             </div>
             {getStatusBadge(request.status)}
             {getPaymentBadge(request.payment_status)}
-            {request.contador_id && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openChat('ir', request.id, request.contador_id!)}
-                className="gap-2"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat
-              </Button>
-            )}
           </div>
         </div>
       </CardContent>
@@ -322,15 +387,12 @@ const MinhasSolicitacoesPage = () => {
   );
 
   const renderCertificateCard = (request: CertificateRequest) => (
-    <Card 
-      key={request.id} 
-      className="hover:border-amber-500/50 transition-colors"
-    >
+    <Card key={request.id} className="hover:border-amber-500/50 transition-colors">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <Award className="h-6 w-6 text-amber-500" />
+            <div className="h-12 w-12 rounded-full bg-amber-100 flex items-center justify-center">
+              <Award className="h-6 w-6 text-amber-600" />
             </div>
             <div>
               <p className="font-semibold">{getCertificateTypeLabel(request.certificate_type)}</p>
@@ -346,17 +408,6 @@ const MinhasSolicitacoesPage = () => {
             </div>
             {getStatusBadge(request.status)}
             {getPaymentBadge(request.payment_status)}
-            {request.contador_id && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openChat('certificate', request.id, request.contador_id!)}
-                className="gap-2"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat
-              </Button>
-            )}
           </div>
         </div>
       </CardContent>
@@ -364,15 +415,12 @@ const MinhasSolicitacoesPage = () => {
   );
 
   const renderCompanyOpeningCard = (request: CompanyOpeningRequest) => (
-    <Card 
-      key={request.id} 
-      className="hover:border-emerald-500/50 transition-colors"
-    >
+    <Card key={request.id} className="hover:border-emerald-500/50 transition-colors">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <Building2 className="h-6 w-6 text-emerald-500" />
+            <div className="h-12 w-12 rounded-full bg-emerald-100 flex items-center justify-center">
+              <Building2 className="h-6 w-6 text-emerald-600" />
             </div>
             <div>
               <p className="font-semibold">Abertura de Empresa</p>
@@ -390,17 +438,6 @@ const MinhasSolicitacoesPage = () => {
             )}
             {getStatusBadge(request.status)}
             {getPaymentBadge(request.payment_status)}
-            {request.contador_id && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => openChat('company_opening', request.id, request.contador_id!)}
-                className="gap-2"
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat
-              </Button>
-            )}
           </div>
         </div>
       </CardContent>
@@ -414,11 +451,7 @@ const MinhasSolicitacoesPage = () => {
       <main className="flex-1 container mx-auto px-4 py-8 pt-20">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <Button 
-              variant="ghost" 
-              onClick={() => navigate('/dashboard')}
-              className="mb-2"
-            >
+            <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-2">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Voltar
             </Button>
@@ -431,13 +464,9 @@ const MinhasSolicitacoesPage = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/ir')}>
+            <Button variant="outline" onClick={() => navigate('/modulo-fiscal')}>
               <Plus className="h-4 w-4 mr-2" />
-              Novo IR
-            </Button>
-            <Button variant="outline" onClick={() => navigate('/certidoes')}>
-              <Plus className="h-4 w-4 mr-2" />
-              Nova Certidão
+              Análise Fiscal
             </Button>
             <Button onClick={() => navigate('/limpa-nome')}>
               <Plus className="h-4 w-4 mr-2" />
@@ -455,11 +484,8 @@ const MinhasSolicitacoesPage = () => {
                 Você ainda não tem solicitações de serviços.
               </p>
               <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => navigate('/ir')}>
-                  Declarar IR
-                </Button>
-                <Button variant="outline" onClick={() => navigate('/certidoes')}>
-                  Solicitar Certidão
+                <Button variant="outline" onClick={() => navigate('/modulo-fiscal')}>
+                  Análise Fiscal
                 </Button>
                 <Button onClick={() => navigate('/limpa-nome')}>
                   Limpar Nome
@@ -477,6 +503,10 @@ const MinhasSolicitacoesPage = () => {
                 <Shield className="h-4 w-4" />
                 Limpa Nome ({creditRepairRequests.length})
               </TabsTrigger>
+              <TabsTrigger value="fiscal" className="gap-2">
+                <Scale className="h-4 w-4" />
+                Fiscal ({fiscalRequests.length})
+              </TabsTrigger>
               <TabsTrigger value="ir" className="gap-2">
                 <FileText className="h-4 w-4" />
                 IR ({irRequests.length})
@@ -493,6 +523,7 @@ const MinhasSolicitacoesPage = () => {
 
             <TabsContent value="all" className="space-y-4">
               {creditRepairRequests.map(renderCreditRepairCard)}
+              {fiscalRequests.map(renderFiscalCard)}
               {irRequests.map(renderIRCard)}
               {certificateRequests.map(renderCertificateCard)}
               {companyOpeningRequests.map(renderCompanyOpeningCard)}
@@ -511,6 +542,22 @@ const MinhasSolicitacoesPage = () => {
                 </Card>
               ) : (
                 creditRepairRequests.map(renderCreditRepairCard)
+              )}
+            </TabsContent>
+
+            <TabsContent value="fiscal" className="space-y-4">
+              {fiscalRequests.length === 0 ? (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <Scale className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
+                    <p className="text-muted-foreground">Nenhuma análise fiscal</p>
+                    <Button className="mt-4" onClick={() => navigate('/modulo-fiscal')}>
+                      Solicitar Análise Fiscal
+                    </Button>
+                  </CardContent>
+                </Card>
+              ) : (
+                fiscalRequests.map(renderFiscalCard)
               )}
             </TabsContent>
 
@@ -565,35 +612,34 @@ const MinhasSolicitacoesPage = () => {
         )}
       </main>
 
-      {/* Chat Sheet */}
+      {/* Chat Sheet with Partner Info */}
       <Sheet open={!!selectedChat} onOpenChange={() => setSelectedChat(null)}>
         <SheetContent side="right" className="w-full sm:max-w-lg p-0">
-          <SheetHeader className="p-6 border-b">
-            <SheetTitle className="flex items-center gap-2">
-              <MessageCircle className="h-5 w-5 text-primary" />
-              Chat com {selectedChat?.contadorName}
-            </SheetTitle>
-            <SheetDescription>
-              Converse diretamente com o contador responsável
-            </SheetDescription>
+          <SheetHeader className="p-6 border-b bg-gradient-to-r from-primary/5 to-primary/10">
+            <div className="flex items-center gap-4">
+              <Avatar className="h-14 w-14 border-2 border-primary/20">
+                <AvatarFallback className="bg-primary/10 text-primary font-bold text-lg">G</AvatarFallback>
+              </Avatar>
+              <div>
+                <SheetTitle className="flex items-center gap-2 text-lg">
+                  <User className="h-4 w-4 text-primary" />
+                  {PARTNER_GUILHERME.name}
+                </SheetTitle>
+                <SheetDescription className="text-sm">
+                  {PARTNER_GUILHERME.specialty}
+                </SheetDescription>
+              </div>
+            </div>
           </SheetHeader>
-          <div className="h-[calc(100vh-120px)]">
-            {selectedChat && selectedChat.type === 'credit_repair' ? (
+          <div className="h-[calc(100vh-140px)]">
+            {selectedChat && (
               <CreditRepairChat
                 requestId={selectedChat.requestId}
-                otherUserId={selectedChat.contadorId}
-                otherUserName={selectedChat.contadorName}
+                otherUserId={selectedChat.partnerId}
+                otherUserName={selectedChat.partnerName}
                 isAdmin={false}
               />
-            ) : selectedChat ? (
-              <ServiceChat
-                consultationId={selectedChat.requestId}
-                otherUserId={selectedChat.contadorId}
-                otherUserName={selectedChat.contadorName}
-                serviceType={selectedChat.type as 'ir' | 'certificate' | 'company_opening'}
-                isContador={false}
-              />
-            ) : null}
+            )}
           </div>
         </SheetContent>
       </Sheet>

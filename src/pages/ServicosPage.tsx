@@ -217,8 +217,8 @@ const ServicosPage = () => {
           </div>
         </section>
 
-        {/* Search & Filter Bar - STICKY */}
-        <section className="sticky top-14 sm:top-16 z-40 bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm">
+        {/* Search & Filter Bar - STICKY with clear separation */}
+        <section className="sticky top-0 z-40 bg-white/98 backdrop-blur-xl border-b border-slate-200 shadow-md">
           <div className="container max-w-6xl mx-auto px-4 py-4">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-3 items-center w-full lg:w-auto">
