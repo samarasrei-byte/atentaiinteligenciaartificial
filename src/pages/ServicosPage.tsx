@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
+import { ServiceCardPremium, ServiceCardConfig } from '@/components/services/ServiceCardPremium';
 import { motion } from 'framer-motion';
 import { 
   MessageSquare, 
@@ -15,7 +15,6 @@ import {
   FileCheck, 
   FileText, 
   FileSpreadsheet,
-  Check,
   ArrowRight,
   ArrowLeft,
   Crown,
@@ -30,25 +29,9 @@ import {
   Target,
   Zap,
   Star,
-  TrendingUp,
   Users,
-  Clock,
   BadgeCheck,
-  Sparkles,
-  Award,
-  Flame
 } from 'lucide-react';
-
-const iconMap: Record<string, React.ElementType> = {
-  MessageSquare,
-  Building2,
-  FileCheck,
-  FileText,
-  FileSpreadsheet,
-  BarChart: FileBarChart,
-  Briefcase,
-  CreditCard,
-};
 
 const categories = [
   { id: 'all', label: 'Todos', icon: Briefcase },
@@ -56,17 +39,6 @@ const categories = [
   { id: 'empresarial', label: 'Empresarial', icon: Building2 },
   { id: 'consultoria', label: 'Consultoria', icon: MessageSquare },
 ];
-
-const serviceCategoryMap: Record<string, string> = {
-  consultation: 'consultoria',
-  company_opening: 'empresarial',
-  certificate: 'documentos',
-  ir_simples: 'declaracoes',
-  ir_completo: 'declaracoes',
-  credit_repair: 'documentos',
-  fiscal_analysis: 'empresarial',
-  business_consulting: 'consultoria',
-};
 
 const freeTools = [
   {
@@ -123,6 +95,203 @@ const socialProof = [
   { value: '24h', label: 'Tempo resposta' },
 ];
 
+// Service configurations with all information needed
+const serviceConfigs: ServiceCardConfig[] = [
+  // Limpa Nome PF
+  {
+    key: 'credit_repair_pf',
+    name: 'Limpa Nome Pessoa Física',
+    description: 'Regularização de restrições com análise humana especializada.',
+    targetAudience: 'Para CPF negativado',
+    features: [
+      'Análise individual por especialista',
+      'Estratégia personalizada',
+      'Acompanhamento humano dedicado',
+    ],
+    guarantees: ['Atendimento humano', 'Parceria séria'],
+    basePrice: 68000,
+    discountPercent: 10,
+    installments: 4,
+    badge: 'popular',
+    cta: 'Limpar meu nome agora',
+    color: 'accent',
+    icon: CreditCard,
+    serviceType: 'credit_repair_pf',
+    category: 'documentos',
+  },
+  // Limpa Nome PJ
+  {
+    key: 'credit_repair_pj',
+    name: 'Limpa Nome Empresa (CNPJ)',
+    description: 'Regularização cadastral com análise fiscal e jurídica especializada.',
+    targetAudience: 'Para empresas com restrições',
+    features: [
+      'Avaliação completa do CNPJ',
+      'Estratégia adequada ao porte da empresa',
+      'Atendimento humano especializado',
+    ],
+    guarantees: ['Especialistas reais', 'Atendimento responsável'],
+    basePrice: 89000,
+    discountPercent: 10,
+    installments: 4,
+    badge: 'popular',
+    cta: 'Regularizar meu CNPJ',
+    color: 'accent',
+    icon: Building2,
+    serviceType: 'credit_repair_pj',
+    category: 'empresarial',
+  },
+  // Análise Fiscal - FREE
+  {
+    key: 'fiscal_analysis',
+    name: 'Análise Fiscal',
+    description: 'Entenda seus riscos fiscais e descubra oportunidades de economia.',
+    targetAudience: 'Para empresas que querem economizar',
+    features: [
+      'Análise completa gratuita',
+      'Identificação de créditos tributários',
+      'Relatório detalhado',
+    ],
+    guarantees: ['Sem risco', 'Pagamento no êxito'],
+    basePrice: 0,
+    discountPercent: 0,
+    badge: 'free',
+    cta: 'Solicitar análise gratuita',
+    color: 'emerald',
+    icon: Scale,
+    serviceType: 'fiscal_analysis',
+    isFree: true,
+    successFee: true,
+    checkoutRoute: '/modulo-fiscal',
+    category: 'empresarial',
+  },
+  // Consulta com Contador
+  {
+    key: 'consultation',
+    name: 'Consulta com Contador',
+    description: 'Tire suas dúvidas tributárias com um contador especializado.',
+    targetAudience: 'Para quem precisa de orientação',
+    features: [
+      'Atendimento com contador especializado',
+      'Orientação clara e prática',
+      'Resposta em até 24h',
+    ],
+    guarantees: ['Profissionais verificados', 'Pagamento seguro'],
+    basePrice: 15000,
+    discountPercent: 20,
+    cta: 'Solicitar agora',
+    color: 'primary',
+    icon: MessageSquare,
+    serviceType: 'consultation',
+    checkoutRoute: '/contadores-publico',
+    category: 'consultoria',
+  },
+  // Abertura de Empresa
+  {
+    key: 'company_opening',
+    name: 'Abertura de Empresa',
+    description: 'Abertura completa de CNPJ com suporte contábil especializado.',
+    targetAudience: 'Para quem quer abrir CNPJ',
+    features: [
+      'Abertura completa de CNPJ',
+      'Suporte contábil especializado',
+      'Documentação inclusa',
+    ],
+    guarantees: ['Processo simplificado', 'Acompanhamento total'],
+    basePrice: 50000,
+    discountPercent: 15,
+    cta: 'Abrir minha empresa',
+    color: 'blue',
+    icon: Building2,
+    serviceType: 'company_opening',
+    checkoutRoute: '/abertura-empresa',
+    category: 'empresarial',
+  },
+  // Certidão
+  {
+    key: 'certificate',
+    name: 'Emissão de Certidão',
+    description: 'Certidões negativas de débitos fiscais para sua empresa ou CPF.',
+    targetAudience: 'Para regularização fiscal',
+    features: [
+      'Emissão de certidões negativas',
+      'Federal, estadual e municipal',
+      'Entrega digital rápida',
+    ],
+    guarantees: ['Processo ágil', 'Suporte incluso'],
+    basePrice: 8000,
+    discountPercent: 10,
+    cta: 'Solicitar certidão',
+    color: 'primary',
+    icon: FileCheck,
+    serviceType: 'certificate',
+    category: 'documentos',
+  },
+  // IR Simples
+  {
+    key: 'ir_simples',
+    name: 'Declaração IR Simples',
+    description: 'Para CLT com poucos rendimentos e sem investimentos complexos.',
+    targetAudience: 'Para CLT sem investimentos',
+    features: [
+      'Declaração completa',
+      'Revisão por especialista',
+      'Envio à Receita Federal',
+    ],
+    guarantees: ['Sem erros', 'Recibo garantido'],
+    basePrice: 15000,
+    discountPercent: 15,
+    cta: 'Fazer minha declaração',
+    color: 'primary',
+    icon: FileText,
+    serviceType: 'ir_simples',
+    checkoutRoute: '/ir',
+    category: 'declaracoes',
+  },
+  // IR Completo
+  {
+    key: 'ir_completo',
+    name: 'Declaração IR Completo',
+    description: 'Para autônomos, investidores ou quem tem múltiplas fontes de renda.',
+    targetAudience: 'Para autônomos e investidores',
+    features: [
+      'Declaração detalhada',
+      'Análise completa de rendimentos',
+      'Otimização fiscal inclusa',
+    ],
+    guarantees: ['Maximiza restituição', 'Especialista dedicado'],
+    basePrice: 35000,
+    discountPercent: 15,
+    cta: 'Fazer minha declaração',
+    color: 'purple',
+    icon: FileSpreadsheet,
+    serviceType: 'ir_completo',
+    checkoutRoute: '/ir',
+    category: 'declaracoes',
+  },
+  // Consultoria Empresarial
+  {
+    key: 'business_consulting',
+    name: 'Consultoria Empresarial',
+    description: 'Planejamento tributário estratégico para pagar menos impostos legalmente.',
+    targetAudience: 'Para empresas que querem economizar',
+    features: [
+      'Planejamento tributário completo',
+      'Estratégia personalizada',
+      'Acompanhamento mensal',
+    ],
+    guarantees: ['ROI garantido', 'Especialistas sênior'],
+    basePrice: 45000,
+    discountPercent: 20,
+    cta: 'Contratar consultoria',
+    color: 'purple',
+    icon: Briefcase,
+    serviceType: 'business_consulting',
+    checkoutRoute: '/contadores-publico',
+    category: 'consultoria',
+  },
+];
+
 const ServicosPage = () => {
   const { subscription, user } = useAuth();
   const navigate = useNavigate();
@@ -134,37 +303,26 @@ const ServicosPage = () => {
     window.location.href = '/';
   };
 
-  const services = Object.entries(SUBSCRIBER_DISCOUNTS).map(([key, service]) => ({
-    key,
-    ...service,
-    IconComponent: iconMap[service.icon] || FileText,
-    category: serviceCategoryMap[key] || 'outros',
-  }));
-
   const filteredServices = useMemo(() => {
-    return services.filter((service) => {
+    return serviceConfigs.filter((service) => {
       const matchesSearch = 
         service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase());
+        service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        service.targetAudience.toLowerCase().includes(searchTerm.toLowerCase());
       
       const matchesCategory = 
         selectedCategory === 'all' || service.category === selectedCategory;
       
       return matchesSearch && matchesCategory;
     });
-  }, [services, searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory]);
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.06 },
+      transition: { staggerChildren: 0.08 },
     },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    visible: { opacity: 1, y: 0, transition: { duration: 0.4 } },
   };
 
   return (
@@ -231,7 +389,7 @@ const ServicosPage = () => {
           </div>
         </section>
 
-        {/* Search & Filter Bar - STICKY with clear separation */}
+        {/* Search & Filter Bar - STICKY */}
         <section className="sticky top-0 z-40 bg-white/98 backdrop-blur-xl border-b border-slate-200 shadow-md">
           <div className="container max-w-6xl mx-auto px-4 py-4">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
@@ -282,7 +440,7 @@ const ServicosPage = () => {
 
         {/* Panel Access - If logged in */}
         {user && (
-          <section className="py-8 bg-slate-50/50">
+          <section className="py-6 bg-slate-50/50">
             <div className="container max-w-6xl mx-auto px-4">
               <div className="flex items-center gap-4 overflow-x-auto pb-2">
                 <span className="text-sm font-medium text-slate-600 whitespace-nowrap">Acesso rápido:</span>
@@ -306,143 +464,15 @@ const ServicosPage = () => {
               variants={containerVariants}
               initial="hidden"
               animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5"
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
             >
-              {filteredServices.map((service) => {
-                const discountPercent = Math.round(service.discount * 100);
-                const IconComponent = service.IconComponent;
-                const isLimpaNome = service.key === 'credit_repair' || service.key === 'credit_repair_pf' || service.key === 'credit_repair_pj';
-                const isFiscal = service.key === 'fiscal_analysis';
-                const installmentValue = isLimpaNome ? Math.round(service.basePrice / 4) : 0;
-                
-                return (
-                  <motion.div key={service.key} variants={itemVariants} className="h-full">
-                    <Card className={`h-full flex flex-col bg-white border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group relative overflow-hidden ${
-                      isLimpaNome 
-                        ? 'border-accent/50 ring-1 ring-accent/20' 
-                        : isFiscal
-                          ? 'border-emerald-500/50 ring-1 ring-emerald-500/20'
-                          : 'border-slate-200 hover:border-primary/30'
-                    }`}>
-                      {/* Popular Badge - More Elegant */}
-                      {isLimpaNome && (
-                        <div className="absolute top-3 right-3">
-                          <Badge className="bg-accent text-white border-0 text-[10px] font-semibold px-2 py-0.5 shadow-sm">
-                            <Flame className="w-3 h-3 mr-1" />
-                            MAIS VENDIDO
-                          </Badge>
-                        </div>
-                      )}
-
-                      {/* Free Badge for Fiscal */}
-                      {isFiscal && (
-                        <div className="absolute top-3 right-3">
-                          <Badge className="bg-emerald-500 text-white border-0 text-[10px] font-semibold px-2 py-0.5 shadow-sm">
-                            <Sparkles className="w-3 h-3 mr-1" />
-                            GRÁTIS
-                          </Badge>
-                        </div>
-                      )}
-                      
-                      <CardContent className="p-6 flex flex-col flex-1">
-                        {/* Icon - Smaller */}
-                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${
-                          isLimpaNome 
-                            ? 'bg-accent/10' 
-                            : isFiscal
-                              ? 'bg-emerald-500/10'
-                              : 'bg-primary/5'
-                        }`}>
-                          <IconComponent className={`h-6 w-6 ${
-                            isLimpaNome ? 'text-accent' : isFiscal ? 'text-emerald-600' : 'text-primary'
-                          }`} />
-                        </div>
-                        
-                        <h3 className="text-lg font-bold text-slate-900 mb-2 leading-tight">{service.name}</h3>
-                        <p className="text-sm text-slate-500 mb-4 line-clamp-2 flex-grow">{service.description}</p>
-                        
-                        {/* Pricing - Clear Hierarchy */}
-                        <div className="mb-4 pt-2 border-t border-slate-100">
-                          {isFiscal ? (
-                            <div className="space-y-1">
-                              <span className="text-xl font-bold text-emerald-600">Análise Gratuita</span>
-                              <p className="text-xs text-slate-500">Pague só no êxito (50%)</p>
-                            </div>
-                          ) : isLimpaNome ? (
-                            <div className="space-y-1">
-                              <div className="flex items-baseline gap-2">
-                                <span className="text-xl font-bold text-slate-900">
-                                  {formatPrice(service.basePrice)}
-                                </span>
-                              </div>
-                              <p className="text-xs font-medium text-accent">
-                                ou 4x de {formatPrice(installmentValue)} sem juros
-                              </p>
-                            </div>
-                          ) : (
-                            <div className="flex items-baseline gap-2 flex-wrap">
-                              <span className="text-xl font-bold text-slate-900">
-                                {formatPrice(service.basePrice)}
-                              </span>
-                              {!isSubscriber && service.discountedPrice < service.basePrice && (
-                                <span className="text-xs text-accent font-medium">
-                                  {formatPrice(service.discountedPrice)} p/ assinantes
-                                </span>
-                              )}
-                              {isSubscriber && discountPercent > 0 && (
-                                <Badge className="bg-accent/10 text-accent border-0 text-[10px]">
-                                  -{discountPercent}%
-                                </Badge>
-                              )}
-                            </div>
-                          )}
-                        </div>
-
-                        {/* Features - Minimal */}
-                        <ul className="space-y-2 mb-5">
-                          <li className="flex items-center gap-2 text-slate-600 text-xs">
-                            <Check className="h-3.5 w-3.5 text-accent flex-shrink-0" />
-                            Profissionais verificados
-                          </li>
-                          <li className="flex items-center gap-2 text-slate-600 text-xs">
-                            <Check className="h-3.5 w-3.5 text-accent flex-shrink-0" />
-                            {isFiscal ? 'Sem risco para você' : 'Pagamento seguro'}
-                          </li>
-                        </ul>
-
-                        {/* Button - Always at bottom */}
-                        <Button 
-                          className={`w-full rounded-xl h-11 font-semibold transition-all mt-auto ${
-                            isLimpaNome 
-                              ? 'bg-accent hover:bg-accent/90 text-white hover:shadow-lg' 
-                              : isFiscal
-                                ? 'bg-emerald-500 hover:bg-emerald-600 text-white hover:shadow-lg'
-                                : 'bg-primary hover:bg-primary/90 text-white hover:shadow-lg'
-                          }`}
-                          asChild
-                        >
-                          <Link to={
-                            service.key === 'ir_simples' ? '/marketplace/declaracao-ir-simples' : 
-                            service.key === 'ir_completo' ? '/marketplace/declaracao-ir-completo' : 
-                            service.key === 'company_opening' ? '/marketplace/abertura-empresa' : 
-                            service.key === 'credit_repair' ? '/limpa-nome' :
-                            service.key === 'credit_repair_pf' ? '/limpa-nome' :
-                            service.key === 'credit_repair_pj' ? '/limpa-nome' :
-                            service.key === 'fiscal_analysis' ? '/marketplace/analise-fiscal' :
-                            service.key === 'business_consulting' ? '/marketplace/consultoria-empresarial' :
-                            service.key === 'consultation' ? '/marketplace/consulta-contador' :
-                            service.key === 'certificate' ? '/marketplace/emissao-certidao' :
-                            `/servicos`
-                          }>
-                            Solicitar
-                            <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                          </Link>
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  </motion.div>
-                );
-              })}
+              {filteredServices.map((service) => (
+                <ServiceCardPremium
+                  key={service.key}
+                  service={service}
+                  isSubscriber={isSubscriber}
+                />
+              ))}
             </motion.div>
 
             {filteredServices.length === 0 && (
@@ -460,7 +490,6 @@ const ServicosPage = () => {
             )}
           </div>
         </section>
-
 
         {/* Free Tools Section */}
         <section className="py-12 bg-white">
