@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Header } from "@/components/layout/Header";
-import { Footer } from "@/components/layout/Footer";
+import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -233,10 +232,9 @@ export default function TimelineReforma() {
   const daysUntilNext = nextEvent ? calculateDaysUntil(nextEvent.date) : 0;
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header onNavigate={handleNavigate} />
-      
-      <main className="container mx-auto px-4 py-8 pt-24">
+    <PublicLayout>
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm mb-4">
@@ -468,9 +466,8 @@ export default function TimelineReforma() {
             </Button>
           </div>
         </section>
-      </main>
-
-      <Footer onNavigate={handleNavigate} />
-    </div>
+        </main>
+      </div>
+    </PublicLayout>
   );
 }

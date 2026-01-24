@@ -1,111 +1,101 @@
 import React from 'react';
+import { PublicLayout } from '@/components/layout/PublicLayout';
 import { TransitionYearAlerts } from '@/components/alerts/TransitionYearAlerts';
 import { CashbackSimulator } from '@/components/calculator/CashbackSimulator';
 import { SplitPaymentCalculator } from '@/components/calculator/SplitPaymentCalculator';
 import { SelectiveTaxCalculator } from '@/components/calculator/SelectiveTaxCalculator';
 import { TaxDeadlineNotifications } from '@/components/notifications/TaxDeadlineNotifications';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Bell, Coins, Receipt, FileText, ArrowLeft, Cigarette, Calendar } from 'lucide-react';
+import { Bell, Coins, Receipt, FileText, Cigarette, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom';
 
 const FerramentasLC214 = () => {
   return (
-    <div className="min-h-screen flex flex-col bg-background overflow-x-hidden animate-page-enter">
-      {/* Simple Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/30 p-4">
-        <div className="container mx-auto flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link to="/"><ArrowLeft className="h-5 w-5" /></Link>
-          </Button>
-          <h1 className="font-semibold text-lg">Ferramentas LC 214/2025</h1>
-        </div>
-      </header>
-      
-      <main className="flex-1 container mx-auto px-4 py-8 md:py-12">
-        <div className="max-w-5xl mx-auto">
-          {/* Hero Section */}
-          <div className="text-center mb-8">
-            <Badge className="bg-primary/20 text-primary mb-4">
-              <FileText className="h-3 w-3 mr-1" />
-              LC 214/2025
-            </Badge>
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
-              Ferramentas da Reforma Tributária
-            </h1>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Simule o cashback, split payment, imposto seletivo e acompanhe alertas fiscais.
-            </p>
+    <PublicLayout>
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-4 py-8 md:py-12">
+          <div className="max-w-5xl mx-auto">
+            {/* Hero Section */}
+            <div className="text-center mb-8">
+              <Badge className="bg-primary/20 text-primary mb-4">
+                <FileText className="h-3 w-3 mr-1" />
+                LC 214/2025
+              </Badge>
+              <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
+                Ferramentas da Reforma Tributária
+              </h1>
+              <p className="text-muted-foreground max-w-2xl mx-auto">
+                Simule o cashback, split payment, imposto seletivo e acompanhe alertas fiscais.
+              </p>
+            </div>
+
+            {/* Tabs para as ferramentas */}
+            <Tabs defaultValue="alertas" className="w-full">
+              <TabsList className="grid w-full grid-cols-5 mb-6">
+                <TabsTrigger value="alertas" className="flex items-center gap-1">
+                  <Bell className="h-4 w-4" />
+                  <span className="hidden sm:inline text-xs">Alertas</span>
+                </TabsTrigger>
+                <TabsTrigger value="prazos" className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4" />
+                  <span className="hidden sm:inline text-xs">Prazos</span>
+                </TabsTrigger>
+                <TabsTrigger value="cashback" className="flex items-center gap-1">
+                  <Coins className="h-4 w-4" />
+                  <span className="hidden sm:inline text-xs">Cashback</span>
+                </TabsTrigger>
+                <TabsTrigger value="split" className="flex items-center gap-1">
+                  <Receipt className="h-4 w-4" />
+                  <span className="hidden sm:inline text-xs">Split</span>
+                </TabsTrigger>
+                <TabsTrigger value="seletivo" className="flex items-center gap-1">
+                  <Cigarette className="h-4 w-4" />
+                  <span className="hidden sm:inline text-xs">IS</span>
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="alertas" className="space-y-6">
+                <TransitionYearAlerts />
+                
+                <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+                  <CardHeader>
+                    <CardTitle className="text-lg">Sobre os Alertas de Transição</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-sm text-muted-foreground space-y-2">
+                    <p>
+                      O período de transição da reforma tributária vai de <strong>2026 a 2033</strong>. 
+                      Durante esse período, as alíquotas de IBS e CBS são gradualmente aumentadas 
+                      enquanto os tributos antigos (ICMS, ISS, PIS, COFINS) são reduzidos.
+                    </p>
+                    <p>
+                      Acompanhe os alertas para se preparar para as mudanças de cada ano e 
+                      ajustar seu planejamento tributário.
+                    </p>
+                  </CardContent>
+                </Card>
+              </TabsContent>
+
+              <TabsContent value="prazos" className="space-y-6">
+                <TaxDeadlineNotifications />
+              </TabsContent>
+
+              <TabsContent value="cashback" className="space-y-6">
+                <CashbackSimulator />
+              </TabsContent>
+
+              <TabsContent value="split" className="space-y-6">
+                <SplitPaymentCalculator />
+              </TabsContent>
+
+              <TabsContent value="seletivo" className="space-y-6">
+                <SelectiveTaxCalculator />
+              </TabsContent>
+            </Tabs>
           </div>
-
-          {/* Tabs para as ferramentas */}
-          <Tabs defaultValue="alertas" className="w-full">
-            <TabsList className="grid w-full grid-cols-5 mb-6">
-              <TabsTrigger value="alertas" className="flex items-center gap-1">
-                <Bell className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Alertas</span>
-              </TabsTrigger>
-              <TabsTrigger value="prazos" className="flex items-center gap-1">
-                <Calendar className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Prazos</span>
-              </TabsTrigger>
-              <TabsTrigger value="cashback" className="flex items-center gap-1">
-                <Coins className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Cashback</span>
-              </TabsTrigger>
-              <TabsTrigger value="split" className="flex items-center gap-1">
-                <Receipt className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">Split</span>
-              </TabsTrigger>
-              <TabsTrigger value="seletivo" className="flex items-center gap-1">
-                <Cigarette className="h-4 w-4" />
-                <span className="hidden sm:inline text-xs">IS</span>
-              </TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="alertas" className="space-y-6">
-              <TransitionYearAlerts />
-              
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                <CardHeader>
-                  <CardTitle className="text-lg">Sobre os Alertas de Transição</CardTitle>
-                </CardHeader>
-                <CardContent className="text-sm text-muted-foreground space-y-2">
-                  <p>
-                    O período de transição da reforma tributária vai de <strong>2026 a 2033</strong>. 
-                    Durante esse período, as alíquotas de IBS e CBS são gradualmente aumentadas 
-                    enquanto os tributos antigos (ICMS, ISS, PIS, COFINS) são reduzidos.
-                  </p>
-                  <p>
-                    Use esta ferramenta para visualizar os principais alertas e mudanças de cada ano, 
-                    incluindo marcos importantes como a obrigatoriedade do Split Payment e início 
-                    do programa de Cashback.
-                  </p>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="prazos" className="space-y-6">
-              <TaxDeadlineNotifications />
-            </TabsContent>
-
-            <TabsContent value="cashback" className="space-y-6">
-              <CashbackSimulator />
-            </TabsContent>
-
-            <TabsContent value="split" className="space-y-6">
-              <SplitPaymentCalculator />
-            </TabsContent>
-
-            <TabsContent value="seletivo" className="space-y-6">
-              <SelectiveTaxCalculator />
-            </TabsContent>
-          </Tabs>
-        </div>
-      </main>
-    </div>
+        </main>
+      </div>
+    </PublicLayout>
   );
 };
 
