@@ -98,7 +98,7 @@ interface PartnerInfo {
 
 // Partner Guilherme Info - Fixed for display
 const PARTNER_GUILHERME = {
-  name: 'Guilherme',
+  name: 'Guilherme Barros',
   role: 'Especialista AtentAI',
   specialty: 'Limpa Nome & Análise Fiscal'
 };
@@ -297,10 +297,9 @@ const MinhasSolicitacoesPage = () => {
                 variant="default"
                 size="sm"
                 onClick={() => openPartnerChat('credit_repair', request.id, request.partner_id!)}
-                className="gap-2 bg-emerald-600 hover:bg-emerald-700"
               >
                 <MessageCircle className="h-4 w-4" />
-                Chat com Guilherme
+                Chat com Guilherme Barros
               </Button>
             )}
           </div>
@@ -345,10 +344,9 @@ const MinhasSolicitacoesPage = () => {
                 variant="default"
                 size="sm"
                 onClick={() => openPartnerChat('fiscal', request.id, request.partner_id!)}
-                className="gap-2 bg-blue-600 hover:bg-blue-700"
               >
                 <MessageCircle className="h-4 w-4" />
-                Chat com Guilherme
+                Chat com Guilherme Barros
               </Button>
             )}
           </div>

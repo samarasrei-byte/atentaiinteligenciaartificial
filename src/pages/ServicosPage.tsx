@@ -17,6 +17,7 @@ import {
   FileSpreadsheet,
   Check,
   ArrowRight,
+  ArrowLeft,
   Crown,
   Shield,
   Search,
@@ -169,6 +170,19 @@ const ServicosPage = () => {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <Header onNavigate={scrollToSection} />
+      
+      {/* Back Button - Fixed Position */}
+      <div className="fixed top-20 left-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border-slate-200"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+      </div>
       
       <main className="pt-20">
         {/* Hero Section - Clean & Modern */}

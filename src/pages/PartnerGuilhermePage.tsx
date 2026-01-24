@@ -81,9 +81,9 @@ interface ChatMessage {
   read_at: string | null;
 }
 
-// Partner Info - Guilherme
+// Partner Info - Guilherme Barros
 const PARTNER_INFO = {
-  name: 'Guilherme',
+  name: 'Guilherme Barros',
   role: 'Especialista em Recuperação Financeira',
   avatar: null,
   company: 'Parceiro AtentAI',
@@ -144,11 +144,11 @@ export default function PartnerGuilhermePage() {
           await fetchRequestsForPartner(partnerData.id);
         }
       } else if (adminCheck) {
-        // Admin can see all requests - fetch partner Guilherme
+        // Admin can see all requests - fetch partner Guilherme Barros
         const { data: guilhermePartner } = await supabase
           .from('credit_repair_partners')
           .select('*')
-          .eq('contact_person', 'Guilherme')
+          .eq('contact_person', 'Guilherme Barros')
           .maybeSingle();
 
         if (guilhermePartner) {
@@ -175,9 +175,9 @@ export default function PartnerGuilhermePage() {
       .from('credit_repair_partners')
       .insert({
         company_name: 'Parceiro AtentAI',
-        trade_name: 'Guilherme Especialista',
-        contact_person: 'Guilherme',
-        email: 'guilherme@atentai.com',
+        trade_name: 'Guilherme Barros Especialista',
+        contact_person: 'Guilherme Barros',
+        email: 'guilherme.barros@atentai.com',
         phone: '(11) 99999-0000',
         is_active: true,
         commission_percent: 15,
