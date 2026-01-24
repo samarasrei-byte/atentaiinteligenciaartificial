@@ -23,7 +23,7 @@ const logStep = (step: string, details?: any) => {
 
 // Input validation schema
 const requestSchema = z.object({
-  serviceType: z.enum(['ir', 'credit_repair', 'certificate', 'company_opening']),
+  serviceType: z.enum(['ir', 'credit_repair', 'credit_repair_pf', 'credit_repair_pj', 'certificate', 'company_opening']),
   email: z.string().email("Email inválido").max(255, "Email muito longo"),
   fullName: z.string().min(2, "Nome muito curto").max(200, "Nome muito longo"),
   cpf: z.string().regex(/^\d{11}$/, "CPF deve ter 11 dígitos").optional().nullable(),
@@ -82,6 +82,18 @@ const SERVICE_CONFIGS = {
     description: 'Regularização em 8 plataformas: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot, Registrato, CADIN',
     basePriceCents: 97000,
     discountPercent: 15,
+  },
+  credit_repair_pf: {
+    name: 'Limpa Nome Pessoa Física',
+    description: 'Liminar coletiva para CPF - Exclusão permanente de apontamentos',
+    basePriceCents: 68000,
+    discountPercent: 10,
+  },
+  credit_repair_pj: {
+    name: 'Limpa Nome Empresa (CNPJ)',
+    description: 'Liminar coletiva para CNPJ - Exclusão permanente de apontamentos',
+    basePriceCents: 89000,
+    discountPercent: 10,
   },
   certificate: {
     name: 'Certidão',
@@ -258,7 +270,7 @@ serve(async (req) => {
       if (error) throw error;
       requestId = request.id;
       
-    } else if (serviceType === 'credit_repair') {
+    } else if (serviceType === 'credit_repair' || serviceType === 'credit_repair_pf' || serviceType === 'credit_repair_pj') {
       // Find active partner to assign the request
       let partnerId: string | null = null;
       const { data: activePartner } = await supabaseAdmin
@@ -271,6 +283,8 @@ serve(async (req) => {
       if (activePartner) {
         partnerId = activePartner.id;
         logStep("Active partner found", { partnerId });
+      } else {
+        logStep("WARNING: No active partner found - request will be orphaned");
       }
 
       const { data: request, error } = await supabaseAdmin
@@ -296,7 +310,12 @@ serve(async (req) => {
 
       if (error) throw error;
       requestId = request.id;
-      logStep("Credit repair request created", { requestId, partnerId });
+      logStep("Credit repair request created", { 
+        requestId, 
+        partnerId, 
+        serviceType,
+        planType: serviceType === 'credit_repair_pf' ? 'PF' : serviceType === 'credit_repair_pj' ? 'PJ' : 'Standard'
+      });
       
     } else if (serviceType === 'certificate') {
       const { data: request, error } = await supabaseAdmin

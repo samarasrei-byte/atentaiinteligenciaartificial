@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -122,10 +122,16 @@ const plans = {
 
 const LimpaNomePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { user, subscription } = useAuth();
   const isSubscribed = subscription.subscribed;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
+  
+  // Get plan from URL params (from onboarding)
+  const planFromUrl = searchParams.get('plan');
+  const isPrefilled = searchParams.get('prefilled') === 'true';
+  
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>(planFromUrl === 'pj' ? 'pj' : 'pf');
   const [selectedBureaus, setSelectedBureaus] = useState<string[]>(['spc', 'serasa', 'scpc', 'boa_vista']);
   
   const [formData, setFormData] = useState({
@@ -140,6 +146,33 @@ const LimpaNomePage = () => {
   
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
+
+  // Hydrate form data from localStorage (from onboarding)
+  useEffect(() => {
+    if (isPrefilled) {
+      try {
+        const savedLead = localStorage.getItem('limpa_nome_lead');
+        if (savedLead) {
+          const leadData = JSON.parse(savedLead);
+          setFormData(prev => ({
+            ...prev,
+            fullName: leadData.name || '',
+            cpf: leadData.cpf || '',
+            phone: leadData.whatsapp || '',
+            debtDescription: leadData.debtTypes?.join(', ') || '',
+          }));
+          // Update plan from saved data if available
+          if (leadData.plan === 'pf' || leadData.plan === 'pj') {
+            setSelectedPlan(leadData.plan);
+          }
+          // Clear localStorage after hydration
+          localStorage.removeItem('limpa_nome_lead');
+        }
+      } catch (error) {
+        console.error('Error loading saved lead data:', error);
+      }
+    }
+  }, [isPrefilled]);
 
   const currentPlan = plans[selectedPlan];
   const subscriberDiscount = 0.10; // 10% discount
