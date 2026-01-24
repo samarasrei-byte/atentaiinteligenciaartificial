@@ -1,25 +1,28 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { PublicLayout } from '@/components/layout/PublicLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { motion } from 'framer-motion';
 import { 
-  ArrowLeft, 
   Building2, 
   User, 
   Sparkles, 
   CheckCircle2, 
   AlertTriangle,
-  FileText,
   Calculator,
   Users,
-  Zap,
   ArrowRight,
   Shield,
   Clock,
   TrendingUp,
-  CreditCard
+  CreditCard,
+  Star,
+  Zap,
+  FileText,
+  Phone
 } from 'lucide-react';
 import MEIFlow from '@/components/abertura/MEIFlow';
 import AutonomoMEFlow from '@/components/abertura/AutonomoMEFlow';
@@ -45,256 +48,304 @@ const AberturaEmpresa: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      <div className="container mx-auto px-4 py-8 max-w-6xl">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => navigate('/dashboard')}
-            className="text-white/60 hover:text-white hover:bg-white/5"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-2xl md:text-3xl font-bold text-white">
-              Abertura de Empresa
-            </h1>
-            <p className="text-white/60 text-sm mt-1">
-              Formalize seu negócio com o suporte da nova Reforma Tributária
+    <PublicLayout>
+      <div className="min-h-screen bg-background">
+        {/* Hero Section */}
+        <section className="relative py-12 lg:py-20 bg-gradient-to-br from-primary/5 via-background to-emerald-500/5 overflow-hidden">
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-20 right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
+            <div className="absolute bottom-10 left-10 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl" />
+          </div>
+          
+          <div className="container relative mx-auto px-4 max-w-6xl">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center mb-12"
+            >
+              <Badge variant="outline" className="mb-4 border-primary/30 text-primary">
+                <Building2 className="w-3 h-3 mr-1" />
+                Abertura de Empresa
+              </Badge>
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                Formalize seu negócio com
+                <span className="text-primary"> suporte especializado</span>
+              </h1>
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                Abra sua empresa de forma rápida e segura, com diagnóstico inteligente 
+                do melhor regime tributário para você.
+              </p>
+            </motion.div>
+
+            {/* Reform Alert */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+            >
+              <Card className="bg-amber-50 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800/50 mb-10">
+                <CardContent className="p-5">
+                  <div className="flex items-start gap-4">
+                    <div className="h-10 w-10 rounded-xl bg-amber-100 dark:bg-amber-900/50 flex items-center justify-center shrink-0">
+                      <AlertTriangle className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-amber-900 dark:text-amber-200 mb-1">
+                        Reforma Tributária 2024/2025
+                      </h3>
+                      <p className="text-sm text-amber-700 dark:text-amber-300/80 leading-relaxed">
+                        Com as mudanças trazidas pela <strong>EC 132/2023</strong> e <strong>LC 214/2025</strong>, 
+                        a formalização traz benefícios significativos: simplificação de impostos e aproveitamento de créditos.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Options Section */}
+        <section className="py-12 bg-muted/30">
+          <div className="container mx-auto px-4 max-w-6xl">
+            <div className="grid lg:grid-cols-2 gap-6 mb-10">
+              {/* Guest Checkout Card - Show prominently if not logged in */}
+              {!user && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="lg:col-span-2"
+                >
+                  <Card 
+                    className="bg-gradient-to-r from-emerald-50 to-primary/5 dark:from-emerald-950/30 dark:to-primary/10 border-emerald-200 dark:border-emerald-800/50 hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer group overflow-hidden shadow-lg"
+                    onClick={() => setSelectedFlow('guest')}
+                  >
+                    <CardContent className="p-8">
+                      <div className="flex flex-col md:flex-row md:items-center gap-6">
+                        <div className="flex items-start gap-4 flex-1">
+                          <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-primary flex items-center justify-center shrink-0">
+                            <Zap className="h-7 w-7 text-white" />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2 mb-2">
+                              <h3 className="text-xl font-bold text-foreground">
+                                Abertura Rápida
+                              </h3>
+                              <Badge className="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border-0">
+                                Sem Login
+                              </Badge>
+                            </div>
+                            <p className="text-muted-foreground mb-4">
+                              Comece agora sem precisar criar conta. Diagnóstico IA gratuito!
+                            </p>
+                            <div className="flex flex-wrap gap-4 text-sm">
+                              <span className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                                <CheckCircle2 className="h-4 w-4" />
+                                Diagnóstico IA grátis
+                              </span>
+                              <span className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                                <CheckCircle2 className="h-4 w-4" />
+                                Conta criada automaticamente
+                              </span>
+                              <span className="flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
+                                <CheckCircle2 className="h-4 w-4" />
+                                Acompanhamento completo
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <Button size="lg" className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 shrink-0">
+                          Começar Agora
+                          <ArrowRight className="h-5 w-5" />
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {/* MEI Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <Card 
+                  className="h-full border-border hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer group hover:shadow-lg"
+                  onClick={() => user ? setSelectedFlow('mei') : setSelectedFlow('guest')}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-3">
+                        <User className="h-7 w-7 text-white" />
+                      </div>
+                      <Badge className="bg-emerald-100 dark:bg-emerald-900/50 text-emerald-700 dark:text-emerald-300 border-0">
+                        100% Digital
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-xl">Abrir MEI</CardTitle>
+                    <CardDescription>Microempreendedor Individual</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      {[
+                        'Faturamento até R$ 81.000/ano',
+                        'Processo 100% automatizado',
+                        'Sem necessidade de contador',
+                        'Emissão de NFS-e inclusa'
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-4 border-t">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Clock className="h-4 w-4 text-emerald-500" />
+                          <span>~15 minutos</span>
+                        </div>
+                        <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                          Começar
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Autônomo / ME Card */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.4 }}
+              >
+                <Card 
+                  className="h-full border-border hover:border-primary/50 transition-all cursor-pointer group hover:shadow-lg"
+                  onClick={() => user ? setSelectedFlow('autonomo-me') : setSelectedFlow('guest')}
+                >
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-3">
+                        <Building2 className="h-7 w-7 text-white" />
+                      </div>
+                      <Badge className="bg-primary/10 text-primary border-0">
+                        Assistido
+                      </Badge>
+                    </div>
+                    <CardTitle className="text-xl">Autônomo / ME</CardTitle>
+                    <CardDescription>Microempresa ou Profissional Liberal</CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="space-y-3">
+                      {[
+                        'Faturamento acima de R$ 81.000/ano',
+                        'Diagnóstico inteligente do regime',
+                        'Contadores parceiros especializados',
+                        'Acompanhamento completo'
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                          <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
+                          <span>{item}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="pt-4 border-t">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <Users className="h-4 w-4 text-primary" />
+                          <span>Com contador</span>
+                        </div>
+                        <Button className="gap-2">
+                          Iniciar Análise
+                          <ArrowRight className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Benefits Grid */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+            >
+              <Card className="border-border">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2 text-lg">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    Por que formalizar com a Reforma Tributária?
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    {[
+                      {
+                        icon: TrendingUp,
+                        color: 'text-primary bg-primary/10',
+                        title: 'Aproveitamento de Créditos',
+                        desc: 'O novo IVA permite recuperar créditos de impostos, reduzindo sua carga tributária.'
+                      },
+                      {
+                        icon: Calculator,
+                        color: 'text-emerald-500 bg-emerald-500/10',
+                        title: 'Simplicidade Tributária',
+                        desc: 'Menos impostos, menos burocracia. IBS e CBS substituem 5 tributos diferentes.'
+                      },
+                      {
+                        icon: Shield,
+                        color: 'text-amber-500 bg-amber-500/10',
+                        title: 'Segurança Jurídica',
+                        desc: 'Empresa formalizada tem proteção legal, emite notas e acessa linhas de crédito.'
+                      },
+                    ].map((benefit, i) => (
+                      <div key={i} className="space-y-3">
+                        <div className={`h-10 w-10 rounded-lg ${benefit.color} flex items-center justify-center`}>
+                          <benefit.icon className="h-5 w-5" />
+                        </div>
+                        <h4 className="font-semibold text-foreground">{benefit.title}</h4>
+                        <p className="text-sm text-muted-foreground">{benefit.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            {/* CTA for logged out users */}
+            {!user && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.6 }}
+                className="mt-10 text-center"
+              >
+                <p className="text-muted-foreground mb-4">
+                  Já tem conta? Faça login para acessar todas as funcionalidades.
+                </p>
+                <Button variant="outline" asChild>
+                  <Link to="/auth">Entrar na minha conta</Link>
+                </Button>
+              </motion.div>
+            )}
+
+            {/* Disclaimer */}
+            <p className="text-center text-xs text-muted-foreground mt-10">
+              O sistema auxilia no processo de formalização, mas não substitui orientação jurídica ou contábil quando necessário.
             </p>
           </div>
-        </div>
-
-        {/* Reform Alert */}
-        <Card className="bg-gradient-to-r from-amber-500/10 to-orange-500/10 border-amber-500/30 mb-8">
-          <CardContent className="p-6">
-            <div className="flex items-start gap-4">
-              <div className="h-12 w-12 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
-                <AlertTriangle className="h-6 w-6 text-amber-400" />
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-white mb-2">
-                  Reforma Tributária 2024/2025
-                </h3>
-                <p className="text-white/70 text-sm leading-relaxed">
-                  Com as mudanças trazidas pela <strong className="text-amber-400">EC 132/2023</strong> e <strong className="text-amber-400">LC 214/2025</strong>, 
-                  a formalização do seu negócio ficou ainda mais importante. O novo sistema tributário traz benefícios 
-                  significativos para empresas formalizadas, incluindo simplificação de impostos e possibilidade de 
-                  aproveitamento de créditos.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Flow Selection */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
-          {/* Guest Checkout Card - Show prominently if not logged in */}
-          {!user && (
-            <Card 
-              className="md:col-span-2 bg-gradient-to-r from-emerald-500/10 to-primary/10 border-emerald-500/30 hover:border-emerald-500/50 transition-all cursor-pointer group relative overflow-hidden"
-              onClick={() => setSelectedFlow('guest')}
-            >
-              <CardHeader className="relative">
-                <div className="flex items-start justify-between">
-                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-primary flex items-center justify-center mb-4">
-                    <CreditCard className="h-7 w-7 text-white" />
-                  </div>
-                  <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                    Sem Login
-                  </Badge>
-                </div>
-                <CardTitle className="text-xl text-white">
-                  Abertura Rápida
-                </CardTitle>
-                <CardDescription className="text-white/60">
-                  Comece agora sem precisar criar conta
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="relative">
-                <div className="flex items-center gap-6">
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Diagnóstico IA do melhor regime</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Conta criada automaticamente</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-sm text-white/70">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Acompanhamento completo</span>
-                  </div>
-                </div>
-                <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
-                  Começar Agora
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* MEI Flow Card */}
-          <Card 
-            className="bg-slate-800/50 border-slate-700/50 hover:border-emerald-500/50 transition-all cursor-pointer group relative overflow-hidden"
-            onClick={() => user ? setSelectedFlow('mei') : setSelectedFlow('guest')}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader className="relative">
-              <div className="flex items-start justify-between">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center mb-4">
-                  <User className="h-7 w-7 text-white" />
-                </div>
-                <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
-                  100% Digital
-                </Badge>
-              </div>
-              <CardTitle className="text-xl text-white">
-                Abrir MEI
-              </CardTitle>
-              <CardDescription className="text-white/60">
-                Microempreendedor Individual
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="relative space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>Faturamento até R$ 81.000/ano</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>Processo 100% automatizado pelo sistema</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
-                  <span>Sem necessidade de contador</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-700/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-emerald-400" />
-                    <span className="text-sm text-white/60">~15 minutos</span>
-                  </div>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2">
-                    Começar
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Autônomo / ME Flow Card */}
-          <Card 
-            className="bg-slate-800/50 border-slate-700/50 hover:border-primary/50 transition-all cursor-pointer group relative overflow-hidden"
-            onClick={() => user ? setSelectedFlow('autonomo-me') : setSelectedFlow('guest')}
-          >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-            <CardHeader className="relative">
-              <div className="flex items-start justify-between">
-                <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center mb-4">
-                  <Building2 className="h-7 w-7 text-white" />
-                </div>
-                <Badge className="bg-primary/20 text-primary border-primary/30">
-                  Assistido
-                </Badge>
-              </div>
-              <CardTitle className="text-xl text-white">
-                Autônomo / ME
-              </CardTitle>
-              <CardDescription className="text-white/60">
-                Microempresa ou Profissional Liberal
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="relative space-y-4">
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  <span>Faturamento acima de R$ 81.000/ano</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  <span>Diagnóstico inteligente do melhor regime</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  <span>Contadores parceiros especializados</span>
-                </div>
-                <div className="flex items-center gap-3 text-sm text-white/70">
-                  <CheckCircle2 className="h-4 w-4 text-primary shrink-0" />
-                  <span>Acompanhamento completo do processo</span>
-                </div>
-              </div>
-
-              <div className="pt-4 border-t border-slate-700/50">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Users className="h-4 w-4 text-primary" />
-                    <span className="text-sm text-white/60">Com contador</span>
-                  </div>
-                  <Button className="bg-primary hover:bg-primary/90 text-white gap-2">
-                    Iniciar Análise
-                    <ArrowRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Benefits Section */}
-        <Card className="bg-slate-800/30 border-slate-700/50">
-          <CardHeader>
-            <CardTitle className="text-lg text-white flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-primary" />
-              Por que formalizar com a Reforma Tributária?
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="space-y-2">
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="h-5 w-5 text-primary" />
-                </div>
-                <h4 className="font-medium text-white">Aproveitamento de Créditos</h4>
-                <p className="text-sm text-white/60">
-                  O novo IVA permite recuperar créditos de impostos pagos, reduzindo sua carga tributária final.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-10 w-10 rounded-lg bg-emerald-500/10 flex items-center justify-center">
-                  <Calculator className="h-5 w-5 text-emerald-400" />
-                </div>
-                <h4 className="font-medium text-white">Simplicidade Tributária</h4>
-                <p className="text-sm text-white/60">
-                  Menos impostos, menos burocracia. O IBS e CBS substituem 5 tributos diferentes.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <div className="h-10 w-10 rounded-lg bg-amber-500/10 flex items-center justify-center">
-                  <Shield className="h-5 w-5 text-amber-400" />
-                </div>
-                <h4 className="font-medium text-white">Segurança Jurídica</h4>
-                <p className="text-sm text-white/60">
-                  Empresa formalizada tem proteção legal, pode emitir notas e acessar linhas de crédito.
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Disclaimer */}
-        <p className="text-center text-xs text-white/40 mt-8">
-          O sistema auxilia no processo de formalização, mas não substitui orientação jurídica ou contábil quando necessário.
-          Valores e regras podem variar conforme legislação vigente.
-        </p>
+        </section>
       </div>
-    </div>
+    </PublicLayout>
   );
 };
 

@@ -31,6 +31,7 @@ import {
   ArrowLeft,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { PublicLayout } from "@/components/layout/PublicLayout";
 
 interface FAQItem {
   id: string;
@@ -363,9 +364,10 @@ export default function FAQ() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b">
+    <PublicLayout>
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="bg-gradient-to-r from-primary/10 via-primary/5 to-background border-b">
         <div className="container mx-auto px-4 py-8">
           <Button
             variant="ghost"
@@ -600,7 +602,8 @@ export default function FAQ() {
             </Card>
           </div>
         </div>
+        </div>
       </div>
-    </div>
+    </PublicLayout>
   );
 }

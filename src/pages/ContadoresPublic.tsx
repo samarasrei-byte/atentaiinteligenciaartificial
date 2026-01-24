@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
+import { PublicLayout } from '@/components/layout/PublicLayout';
 import { 
   Users,
   Star,
@@ -86,10 +85,9 @@ const ContadoresPublic = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header onNavigate={scrollToSection} />
-      
-      <main className="pt-20">
+    <PublicLayout>
+      <div className="min-h-screen bg-background">
+        <main>
         {/* Hero Section */}
         <section className="py-16 bg-gradient-to-br from-primary/10 via-background to-secondary/10">
           <div className="container mx-auto px-4 text-center">
@@ -307,9 +305,8 @@ const ContadoresPublic = () => {
           </div>
         </section>
       </main>
-
-      <Footer onNavigate={scrollToSection} />
-    </div>
+      </div>
+    </PublicLayout>
   );
 };
 

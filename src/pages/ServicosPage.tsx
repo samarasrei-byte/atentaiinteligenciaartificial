@@ -1,8 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
+import { PublicLayout } from '@/components/layout/PublicLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -326,23 +325,9 @@ const ServicosPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <Header onNavigate={scrollToSection} />
-      
-      {/* Back Button - Fixed Position */}
-      <div className="fixed top-20 left-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate('/')}
-          className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border-slate-200"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar
-        </Button>
-      </div>
-      
-      <main className="pt-20">
+    <PublicLayout>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+        <main>
         {/* Hero Section - Clean & Modern */}
         <section className="relative py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-slate-900 via-primary to-slate-800">
           <div className="absolute inset-0 overflow-hidden">
@@ -583,9 +568,8 @@ const ServicosPage = () => {
           </div>
         </section>
       </main>
-
-      <Footer onNavigate={scrollToSection} />
-    </div>
+      </div>
+    </PublicLayout>
   );
 };
 
