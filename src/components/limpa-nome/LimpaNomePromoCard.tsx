@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,12 +12,9 @@ import {
   Percent,
   Crown,
   Zap,
-  Bot,
-  MessageCircle,
   Building2,
   User,
   Star,
-  Clock,
   Award,
 } from 'lucide-react';
 
@@ -26,17 +23,46 @@ interface LimpaNomePromoCardProps {
   showAIFeature?: boolean;
 }
 
+type PlanType = 'pf' | 'pj';
+
+const plans = {
+  pf: {
+    id: 'pf',
+    name: 'Pessoa Física',
+    description: 'CPF',
+    basePrice: 68000, // R$ 680,00 em centavos
+    icon: User,
+    iconColor: 'text-blue-500',
+    bgColor: 'bg-blue-500/10',
+    borderColor: 'border-blue-500/30',
+  },
+  pj: {
+    id: 'pj',
+    name: 'Empresa (CNPJ)',
+    description: 'CNPJ',
+    basePrice: 89000, // R$ 890,00 em centavos
+    icon: Building2,
+    iconColor: 'text-emerald-500',
+    bgColor: 'bg-emerald-500/10',
+    borderColor: 'border-emerald-500/30',
+    popular: true,
+  }
+};
+
 export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({ 
   variant = 'full',
   showAIFeature = true
 }) => {
   const navigate = useNavigate();
   const { subscription } = useAuth();
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
   
   const isSubscribed = subscription?.subscribed || false;
-  const basePrice = 97000; // R$ 970,00
-  const discountPercent = 15;
-  const discountedPrice = Math.round(basePrice * (1 - discountPercent / 100));
+  const discountPercent = 10;
+  
+  const currentPlan = plans[selectedPlan];
+  const basePrice = currentPlan.basePrice;
+  const discountedPrice = isSubscribed ? Math.round(basePrice * (1 - discountPercent / 100)) : basePrice;
 
   const formatPrice = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
@@ -46,15 +72,11 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
   };
 
   const features = [
-    'Análise em 8 plataformas (SPC, Serasa, Quod, Cenprot...)',
-    'Especialista dedicado ao seu caso',
-    'Atendimento personalizado via WhatsApp',
-    'Carta de quitação + relatório completo',
+    'Liminar coletiva para exclusão permanente',
+    'Antecipação do prazo prescricional',
     'Acompanhamento por 90 dias',
-    'Garantia de resultado',
+    '🎁 Bônus: Regularização de Score!',
   ];
-
-  const bureaus = ['SPC', 'Serasa', 'SCPC', 'Boa Vista', 'Quod', 'Cenprot', 'Registrato', 'CADIN'];
 
   if (variant === 'banner') {
     return (
@@ -68,27 +90,21 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-bold text-foreground">Limpa Nome</h3>
+                  <h3 className="font-bold text-foreground">Limpa Nome Jurídico</h3>
                   <Badge className="bg-rose-500/20 text-rose-600 border-rose-500/30 text-xs">
                     <Sparkles className="h-3 w-3 mr-1" />
-                    CPF & CNPJ
+                    100% Jurídico
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  Regularize seu CPF ou CNPJ com IA + Especialista • Resultado em 30 dias
+                  PF a partir de {formatPrice(plans.pf.basePrice)} • CNPJ a partir de {formatPrice(plans.pj.basePrice)}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
-                {isSubscribed ? (
-                  <>
-                    <span className="text-xl font-bold text-green-600">{formatPrice(discountedPrice)}</span>
-                    <span className="text-sm text-muted-foreground line-through ml-2">{formatPrice(basePrice)}</span>
-                  </>
-                ) : (
-                  <span className="text-xl font-bold text-foreground">{formatPrice(basePrice)}</span>
-                )}
+                <span className="text-sm text-muted-foreground">A partir de</span>
+                <span className="text-xl font-bold text-foreground ml-2">{formatPrice(plans.pf.basePrice)}</span>
               </div>
               <Button 
                 onClick={() => navigate('/limpa-nome')}
@@ -114,11 +130,11 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-foreground">Limpa Nome</h3>
+                <h3 className="font-semibold text-foreground">Limpa Nome Jurídico</h3>
                 <Badge className="bg-rose-500/20 text-rose-600 border-rose-500/30 text-xs">CPF & CNPJ</Badge>
               </div>
               <p className="text-sm text-muted-foreground">
-                IA + Especialista • Resultado garantido
+                PF {formatPrice(plans.pf.basePrice)} • CNPJ {formatPrice(plans.pj.basePrice)}
               </p>
             </div>
             <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-rose-500 transition-colors" />
@@ -137,7 +153,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
       <div className="absolute top-4 right-4">
         <Badge className="bg-rose-500 text-white border-0 text-xs">
           <Award className="h-3 w-3 mr-1" />
-          PREMIUM
+          JURÍDICO
         </Badge>
       </div>
       
@@ -151,39 +167,58 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
               Limpa Nome
             </CardTitle>
             <CardDescription className="text-muted-foreground text-sm">
-              CPF ou CNPJ • Todos os bureaus
+              Serviço 100% Jurídico • Liminar Coletiva
             </CardDescription>
           </div>
         </div>
       </CardHeader>
 
       <CardContent className="space-y-4 relative">
-        {/* Target badges */}
-        <div className="flex flex-wrap gap-2">
-          <Badge variant="outline" className="bg-blue-500/10 text-blue-600 border-blue-500/30 text-xs">
-            <User className="h-3 w-3 mr-1" />
-            Pessoa Física
-          </Badge>
-          <Badge variant="outline" className="bg-violet-500/10 text-violet-600 border-violet-500/30 text-xs">
-            <Building2 className="h-3 w-3 mr-1" />
-            Autônomos
-          </Badge>
-          <Badge variant="outline" className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 text-xs">
-            <Building2 className="h-3 w-3 mr-1" />
-            Empresas
-          </Badge>
+        {/* Plan Selection */}
+        <div className="grid grid-cols-2 gap-2">
+          {Object.values(plans).map((plan) => {
+            const PlanIcon = plan.icon;
+            const planPrice = isSubscribed ? Math.round(plan.basePrice * 0.9) : plan.basePrice;
+            return (
+              <button
+                key={plan.id}
+                onClick={() => setSelectedPlan(plan.id as PlanType)}
+                className={`
+                  relative p-3 rounded-xl border-2 transition-all text-left
+                  ${plan.bgColor} ${plan.borderColor}
+                  ${selectedPlan === plan.id ? 'ring-2 ring-rose-500' : ''}
+                `}
+              >
+                {'popular' in plan && plan.popular && (
+                  <Badge className="absolute -top-2 left-1/2 -translate-x-1/2 bg-rose-500 text-white border-0 text-[10px] px-2">
+                    Mais Solicitado
+                  </Badge>
+                )}
+                <div className="flex items-center gap-2 mb-1">
+                  <PlanIcon className={`h-4 w-4 ${plan.iconColor}`} />
+                  <span className="font-semibold text-foreground text-sm">{plan.name}</span>
+                </div>
+                <div className="text-lg font-bold text-foreground">
+                  {formatPrice(planPrice)}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  4x de {formatPrice(planPrice / 4)}
+                </p>
+              </button>
+            );
+          })}
         </div>
 
-        {/* Human Feature Highlight */}
+        {/* Jurídico Feature Highlight */}
         {showAIFeature && (
-          <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-emerald-500/10 to-green-500/10 border border-emerald-500/20">
-            <div className="p-2 rounded-lg bg-emerald-500/20">
-              <Building2 className="h-5 w-5 text-emerald-600" />
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-rose-500/10 to-pink-500/10 border border-rose-500/20">
+            <div className="p-2 rounded-lg bg-rose-500/20">
+              <ShieldCheck className="h-5 w-5 text-rose-600" />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-foreground">Empresa Especializada Dedicada</p>
+              <p className="text-sm font-medium text-foreground">Serviço 100% Jurídico</p>
               <p className="text-xs text-muted-foreground">
-                Atendimento 100% humano • Resultado em 30 dias
+                Liminar coletiva • Resultado em 30 dias
               </p>
             </div>
             <Zap className="h-4 w-4 text-amber-500" />
@@ -202,7 +237,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
 
         {/* Features */}
         <div className="space-y-2">
-          {features.slice(0, 4).map((feature, index) => (
+          {features.map((feature, index) => (
             <div key={index} className="flex items-center gap-2 text-sm text-muted-foreground">
               <CheckCircle2 className="h-3.5 w-3.5 text-green-500 shrink-0" />
               <span>{feature}</span>
@@ -223,7 +258,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
             </div>
           )}
           <p className="text-sm font-semibold text-rose-500">
-            ou 4x de {formatPrice(Math.round((isSubscribed ? discountedPrice : basePrice) / 4))} sem juros
+            ou 4x de {formatPrice(Math.round(discountedPrice / 4))} sem juros
           </p>
           {isSubscribed ? (
             <div className="flex items-center gap-1.5">
@@ -246,7 +281,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
           onClick={() => navigate('/limpa-nome')}
           className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
         >
-          <MessageCircle className="h-4 w-4 mr-2" />
+          <ShieldCheck className="h-4 w-4 mr-2" />
           Limpar Meu Nome
           <ArrowRight className="h-4 w-4 ml-2" />
         </Button>
