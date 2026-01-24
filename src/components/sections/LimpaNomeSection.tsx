@@ -70,26 +70,46 @@ type PlanType = 'pf' | 'pj';
 const plans = {
   pf: {
     id: 'pf',
-    name: 'Pessoa Física',
-    description: 'Liminar coletiva para CPF',
+    name: 'Para CPF negativado',
+    shortName: 'Pessoa Física',
+    description: 'Regularização de restrições com análise humana especializada.',
     basePrice: 680,
     icon: User,
-    iconColor: 'text-blue-500',
-    bgColor: 'from-blue-500/20 to-blue-600/20',
-    borderColor: 'border-blue-500/30',
+    iconColor: 'text-blue-600',
+    bgColor: 'bg-gradient-to-br from-blue-50 to-slate-50',
+    bgColorSelected: 'bg-gradient-to-br from-blue-100 to-blue-50',
+    borderColor: 'border-blue-200',
+    borderColorSelected: 'border-blue-500',
     included: includedPF,
+    benefits: [
+      'Análise individual por especialista',
+      'Estratégia personalizada',
+      'Acompanhamento humano',
+    ],
+    cta: 'Iniciar análise agora',
+    microcopy: 'Atendimento humano • Parceria séria',
   },
   pj: {
     id: 'pj',
-    name: 'Empresa (CNPJ)',
-    description: 'Liminar coletiva para CNPJ',
+    name: 'Para empresas (CNPJ)',
+    shortName: 'Empresa (CNPJ)',
+    description: 'Regularização cadastral com análise fiscal e jurídica especializada.',
     basePrice: 890,
     icon: Building2,
-    iconColor: 'text-emerald-500',
-    bgColor: 'from-emerald-500/20 to-emerald-600/20',
-    borderColor: 'border-emerald-500/30',
+    iconColor: 'text-emerald-600',
+    bgColor: 'bg-gradient-to-br from-emerald-50 to-slate-50',
+    bgColorSelected: 'bg-gradient-to-br from-emerald-100 to-emerald-50',
+    borderColor: 'border-emerald-200',
+    borderColorSelected: 'border-emerald-500',
     popular: true,
     included: includedPJ,
+    benefits: [
+      'Avaliação completa do CNPJ',
+      'Estratégia adequada ao porte',
+      'Atendimento humano especializado',
+    ],
+    cta: 'Quero regularizar meu CNPJ',
+    microcopy: 'Especialistas reais • Atendimento responsável',
   }
 };
 
@@ -142,51 +162,129 @@ export function LimpaNomeSection() {
               <span className="block mt-2">Nada de robôs ou decisões automáticas.</span>
             </p>
             
-            {/* Plan Selection Cards */}
-            <div className="flex flex-wrap justify-center gap-6 mt-10 max-w-2xl mx-auto">
+            {/* Premium Plan Selection Cards */}
+            <div className="flex flex-col lg:flex-row justify-center gap-6 mt-12 max-w-4xl mx-auto px-4">
               {Object.values(plans).map((plan) => {
                 const PlanIcon = plan.icon;
                 const planPrice = isSubscribed ? Math.round(plan.basePrice * 0.9) : plan.basePrice;
+                const isSelected = selectedPlan === plan.id;
+                const isPJ = plan.id === 'pj';
+                
                 return (
                   <button
                     key={plan.id}
                     onClick={() => setSelectedPlan(plan.id as PlanType)}
                     className={`
-                      relative flex-1 min-w-[200px] p-6 rounded-2xl border-2 transition-all duration-300 cursor-pointer text-left
-                      bg-gradient-to-br ${plan.bgColor} ${plan.borderColor}
-                      ${selectedPlan === plan.id ? 'ring-2 ring-rose-500 ring-offset-2 ring-offset-background scale-105 shadow-xl' : ''}
-                      hover:scale-105 hover:shadow-lg
+                      group relative flex-1 min-w-[300px] p-8 rounded-3xl transition-all duration-500 cursor-pointer text-left
+                      ${isSelected ? plan.bgColorSelected : plan.bgColor}
+                      border-2 ${isSelected ? plan.borderColorSelected : plan.borderColor}
+                      ${isSelected ? 'shadow-2xl scale-[1.02]' : 'shadow-lg hover:shadow-xl'}
+                      hover:scale-[1.02] hover:-translate-y-1
                     `}
                   >
+                    {/* Popular Badge - PJ only */}
                     {'popular' in plan && plan.popular && (
-                      <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-rose-500 text-white border-0 text-xs">
-                        Mais Solicitado
-                      </Badge>
+                      <div className="absolute -top-4 left-1/2 -translate-x-1/2">
+                        <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0 px-4 py-1.5 text-xs font-semibold shadow-lg">
+                          <Star className="h-3.5 w-3.5 mr-1.5 fill-white" />
+                          Mais solicitado por empresas
+                        </Badge>
+                      </div>
                     )}
-                    <div className="flex items-center gap-3 mb-3">
-                      <PlanIcon className={`h-6 w-6 ${plan.iconColor}`} />
-                      <span className="font-bold text-foreground">{plan.name}</span>
+                    
+                    {/* Selection Indicator */}
+                    <div className={`
+                      absolute top-6 right-6 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all duration-300
+                      ${isSelected 
+                        ? `${isPJ ? 'bg-emerald-500 border-emerald-500' : 'bg-blue-500 border-blue-500'}` 
+                        : 'border-slate-300 bg-white'
+                      }
+                    `}>
+                      {isSelected && <CheckCircle className="h-5 w-5 text-white" />}
                     </div>
-                    <p className="text-sm text-muted-foreground mb-3">{plan.description}</p>
-                    <div className="text-2xl font-bold text-foreground">
-                      R$ {formatPrice(planPrice)}
+
+                    {/* Icon + Title */}
+                    <div className="flex items-center gap-4 mb-4">
+                      <div className={`
+                        p-3 rounded-2xl transition-all duration-300
+                        ${isPJ ? 'bg-emerald-100 group-hover:bg-emerald-200' : 'bg-blue-100 group-hover:bg-blue-200'}
+                      `}>
+                        <PlanIcon className={`h-7 w-7 ${plan.iconColor}`} />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-slate-900">{plan.name}</h3>
+                        <p className="text-sm text-slate-500">{plan.shortName}</p>
+                      </div>
                     </div>
-                    <p className="text-sm text-muted-foreground">
-                      ou 4x de R$ {formatPrice(planPrice / 4)}
+                    
+                    {/* Description */}
+                    <p className="text-slate-600 mb-6 leading-relaxed">{plan.description}</p>
+                    
+                    {/* Benefits List */}
+                    <div className="space-y-3 mb-6">
+                      {plan.benefits.map((benefit, idx) => (
+                        <div key={idx} className="flex items-center gap-3">
+                          <div className={`
+                            w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0
+                            ${isPJ ? 'bg-emerald-500' : 'bg-blue-500'}
+                          `}>
+                            <CheckCircle className="h-3.5 w-3.5 text-white" />
+                          </div>
+                          <span className="text-sm text-slate-700 font-medium">{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Divider */}
+                    <div className="border-t border-slate-200 my-6" />
+                    
+                    {/* Price Section */}
+                    <div className="mb-6">
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-4xl font-bold text-slate-900">
+                          R$ {formatPrice(planPrice)}
+                        </span>
+                        {isSubscribed && (
+                          <span className="text-lg text-slate-400 line-through">
+                            R$ {formatPrice(plan.basePrice)}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-slate-500 mt-1">
+                        ou <span className="font-semibold text-slate-700">4x de R$ {formatPrice(planPrice / 4)}</span> sem juros
+                      </p>
+                    </div>
+                    
+                    {/* CTA Button */}
+                    <div className={`
+                      w-full py-4 px-6 rounded-2xl text-center font-semibold transition-all duration-300
+                      ${isSelected 
+                        ? isPJ 
+                          ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/25' 
+                          : 'bg-blue-500 text-white shadow-lg shadow-blue-500/25'
+                        : 'bg-slate-100 text-slate-600 group-hover:bg-slate-200'
+                      }
+                    `}>
+                      {plan.cta}
+                      <ArrowRight className={`inline-block h-5 w-5 ml-2 transition-transform ${isSelected ? 'translate-x-0' : 'group-hover:translate-x-1'}`} />
+                    </div>
+                    
+                    {/* Microcopy */}
+                    <p className="text-center text-xs text-slate-400 mt-4">
+                      {plan.microcopy}
                     </p>
-                    {selectedPlan === plan.id && (
-                      <CheckCircle className="absolute top-4 right-4 h-6 w-6 text-rose-500" />
-                    )}
                   </button>
                 );
               })}
             </div>
 
             {isSubscribed && (
-              <Badge className="mt-6 bg-green-500/20 text-green-600 border-green-500/30 px-4 py-2">
-                <TrendingDown className="h-4 w-4 mr-2" />
-                10% de desconto exclusivo aplicado!
-              </Badge>
+              <div className="mt-8">
+                <Badge className="bg-emerald-50 text-emerald-700 border-emerald-200 px-5 py-2.5 text-sm font-medium">
+                  <TrendingDown className="h-4 w-4 mr-2" />
+                  🎉 10% de desconto exclusivo de assinante aplicado!
+                </Badge>
+              </div>
             )}
           </div>
 
@@ -325,16 +423,20 @@ export function LimpaNomeSection() {
                   <Button 
                     size="lg"
                     onClick={() => navigate(`/limpa-nome/onboarding?plan=${selectedPlan}`)}
-                    className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 glow-accent group"
+                    className={`w-full h-16 text-lg font-semibold group transition-all duration-300 ${
+                      selectedPlan === 'pj' 
+                        ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 shadow-lg shadow-emerald-500/25' 
+                        : 'bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg shadow-blue-500/25'
+                    }`}
                   >
                     <Users className="h-5 w-5 mr-2" />
-                    Limpar meu nome agora
+                    {currentPlan.cta}
                     <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
 
                   {/* Microcopy - Very Important */}
-                  <p className="text-xs text-center text-muted-foreground mt-3">
-                    Você será direcionado para o onboarding de conexão com um parceiro especializado.
+                  <p className="text-xs text-center text-muted-foreground mt-4">
+                    {currentPlan.microcopy}
                   </p>
 
                   {/* Human Analysis Info */}
