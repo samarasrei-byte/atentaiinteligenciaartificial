@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Shield, Lock, CheckCircle2, 
-  Building2, Zap, Star, ArrowRight, 
+  Building2, Zap, Star, ArrowRight, ArrowLeft,
   Clock, Users, Heart, Handshake,
   MessageCircle, Sparkles,
   TrendingUp, Award, User, Scale,
@@ -18,7 +18,7 @@ import { Footer } from "@/components/layout/Footer";
 
 // Parceiro fixo
 const PARTNER_INFO = {
-  name: 'Guilherme Mendes',
+  name: 'Guilherme Barros',
   role: 'Especialista em Limpa Nome',
   avatar: null,
 };
@@ -118,6 +118,19 @@ export default function LimpaNomeLanding() {
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
       <Header onNavigate={handleNavigate} />
+      
+      {/* Back Button - Fixed Position */}
+      <div className="fixed top-20 left-4 z-50">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => navigate('/')}
+          className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border-slate-200"
+        >
+          <ArrowLeft className="h-4 w-4 mr-2" />
+          Voltar
+        </Button>
+      </div>
       
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
@@ -391,10 +404,9 @@ export default function LimpaNomeLanding() {
 
                   <Button 
                     onClick={() => navigate(`/parceiro/onboarding?service=limpa-nome&plan=${selectedPlan}`)}
-                    className="w-full h-14 text-lg bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600"
                   >
                     <Handshake className="h-5 w-5 mr-2" />
-                    Conectar com Guilherme
+                    Conectar com Guilherme Barros
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
                 </CardContent>

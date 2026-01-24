@@ -62,11 +62,11 @@ const steps = [
 
 // Parceiro fixo para simulação
 const PARTNER_INFO = {
-  name: 'Guilherme Mendes',
+  name: 'Guilherme Barros',
   role: 'Especialista em Recuperação',
   specialty: 'Limpa Nome e Análise Fiscal',
   avatar: null,
-  message: 'Olá! Sou o Guilherme, parceiro certificado da AtentAI. Vou analisar pessoalmente seu caso e acompanhar todo o processo. Conte comigo!'
+  message: 'Olá! Sou o Guilherme Barros, parceiro certificado da AtentAI. Vou analisar pessoalmente seu caso e acompanhar todo o processo. Conte comigo!'
 };
 
 export default function PartnerOnboarding() {
@@ -259,6 +259,15 @@ export default function PartnerOnboarding() {
       <header className="border-b border-border bg-background/80 backdrop-blur-sm sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate(-1)}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Voltar
+            </Button>
             <img src="/logo-atentai.png" alt="AtentAI" className="h-8" />
             <Badge variant="outline" className="text-xs">
               <ServiceIcon className={`h-3 w-3 mr-1 ${config.iconColor}`} />
