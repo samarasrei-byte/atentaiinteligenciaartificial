@@ -217,43 +217,46 @@ const ServicosPage = () => {
           </div>
         </section>
 
-        {/* Search & Filter Bar */}
-        <section className="py-8 bg-white border-b border-slate-100 sticky top-16 z-40 shadow-sm">
-          <div className="container max-w-6xl mx-auto px-4">
+        {/* Search & Filter Bar - STICKY */}
+        <section className="sticky top-14 sm:top-16 z-40 bg-white/95 backdrop-blur-lg border-b border-slate-100 shadow-sm">
+          <div className="container max-w-6xl mx-auto px-4 py-4">
             <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
               <div className="flex flex-col sm:flex-row gap-3 items-center w-full lg:w-auto">
-                <h2 className="text-2xl font-bold text-slate-900 hidden lg:block">
+                <h2 className="text-xl lg:text-2xl font-bold text-slate-900 whitespace-nowrap">
                   Nossos Serviços
                 </h2>
-                <p className="text-slate-500 text-sm hidden lg:block">
-                  {isSubscriber ? '' : 'Assine para desbloquear descontos'}
-                </p>
+                {!isSubscriber && (
+                  <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30 whitespace-nowrap">
+                    Assine para descontos
+                  </Badge>
+                )}
               </div>
               
               <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                <div className="relative w-full sm:w-56">
+                <div className="relative w-full sm:w-64">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
-                    placeholder="Buscar..."
+                    placeholder="Buscar serviço..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-50 border-slate-200 focus:bg-white"
+                    className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors"
                   />
                 </div>
                 
-                <div className="flex gap-2 overflow-x-auto pb-1">
+                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
                   {categories.map((category) => (
                     <Button
                       key={category.id}
                       variant={selectedCategory === category.id ? "default" : "outline"}
                       size="sm"
                       onClick={() => setSelectedCategory(category.id)}
-                      className={`whitespace-nowrap ${
+                      className={`whitespace-nowrap transition-all ${
                         selectedCategory === category.id 
-                          ? 'bg-primary text-white' 
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                          ? 'bg-primary text-white shadow-md' 
+                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-primary/30'
                       }`}
                     >
+                      <category.icon className="h-3.5 w-3.5 mr-1.5" />
                       {category.label}
                     </Button>
                   ))}
@@ -294,62 +297,86 @@ const ServicosPage = () => {
               {filteredServices.map((service) => {
                 const discountPercent = Math.round(service.discount * 100);
                 const IconComponent = service.IconComponent;
-                const isLimpaNome = service.key === 'credit_repair';
+                const isLimpaNome = service.key === 'credit_repair' || service.key === 'credit_repair_pf' || service.key === 'credit_repair_pj';
+                const isFiscal = service.key === 'fiscal_analysis';
                 const installmentValue = isLimpaNome ? Math.round(service.basePrice / 4) : 0;
                 
                 return (
-                  <motion.div key={service.key} variants={itemVariants}>
-                    <Card className={`h-full bg-white border transition-all duration-300 hover:shadow-xl group relative overflow-hidden ${
+                  <motion.div key={service.key} variants={itemVariants} className="h-full">
+                    <Card className={`h-full flex flex-col bg-white border transition-all duration-300 hover:shadow-xl hover:-translate-y-1 group relative overflow-hidden ${
                       isLimpaNome 
-                        ? 'border-accent ring-2 ring-accent/20' 
-                        : 'border-slate-200 hover:border-primary/30'
+                        ? 'border-accent/50 ring-1 ring-accent/20' 
+                        : isFiscal
+                          ? 'border-emerald-500/50 ring-1 ring-emerald-500/20'
+                          : 'border-slate-200 hover:border-primary/30'
                     }`}>
-                      {/* Popular Badge for Limpa Nome */}
+                      {/* Popular Badge - More Elegant */}
                       {isLimpaNome && (
-                        <div className="absolute top-0 left-0 right-0 bg-gradient-to-r from-accent to-emerald-500 text-white text-center text-xs font-bold py-2 flex items-center justify-center gap-2">
-                          <Flame className="w-3.5 h-3.5" />
-                          MAIS VENDIDO
+                        <div className="absolute top-3 right-3">
+                          <Badge className="bg-accent text-white border-0 text-[10px] font-semibold px-2 py-0.5 shadow-sm">
+                            <Flame className="w-3 h-3 mr-1" />
+                            MAIS VENDIDO
+                          </Badge>
+                        </div>
+                      )}
+
+                      {/* Free Badge for Fiscal */}
+                      {isFiscal && (
+                        <div className="absolute top-3 right-3">
+                          <Badge className="bg-emerald-500 text-white border-0 text-[10px] font-semibold px-2 py-0.5 shadow-sm">
+                            <Sparkles className="w-3 h-3 mr-1" />
+                            GRÁTIS
+                          </Badge>
                         </div>
                       )}
                       
-                      <CardContent className={`p-6 ${isLimpaNome ? 'pt-12' : ''}`}>
-                        {/* Icon */}
-                        <div className={`h-14 w-14 rounded-2xl flex items-center justify-center mb-5 ${
+                      <CardContent className="p-6 flex flex-col flex-1">
+                        {/* Icon - Smaller */}
+                        <div className={`h-12 w-12 rounded-xl flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${
                           isLimpaNome 
                             ? 'bg-accent/10' 
-                            : 'bg-primary/5'
+                            : isFiscal
+                              ? 'bg-emerald-500/10'
+                              : 'bg-primary/5'
                         }`}>
-                          <IconComponent className={`h-7 w-7 ${isLimpaNome ? 'text-accent' : 'text-primary'}`} />
+                          <IconComponent className={`h-6 w-6 ${
+                            isLimpaNome ? 'text-accent' : isFiscal ? 'text-emerald-600' : 'text-primary'
+                          }`} />
                         </div>
                         
-                        <h3 className="text-lg font-bold text-slate-900 mb-2">{service.name}</h3>
-                        <p className="text-sm text-slate-500 mb-5 line-clamp-2">{service.description}</p>
+                        <h3 className="text-lg font-bold text-slate-900 mb-2 leading-tight">{service.name}</h3>
+                        <p className="text-sm text-slate-500 mb-4 line-clamp-2 flex-grow">{service.description}</p>
                         
-                        {/* Pricing - Marketplace Style */}
-                        <div className="mb-5">
-                          {isLimpaNome ? (
+                        {/* Pricing - Clear Hierarchy */}
+                        <div className="mb-4 pt-2 border-t border-slate-100">
+                          {isFiscal ? (
+                            <div className="space-y-1">
+                              <span className="text-xl font-bold text-emerald-600">Análise Gratuita</span>
+                              <p className="text-xs text-slate-500">Pague só no êxito (50%)</p>
+                            </div>
+                          ) : isLimpaNome ? (
                             <div className="space-y-1">
                               <div className="flex items-baseline gap-2">
-                                <span className="text-2xl font-bold text-slate-900">
+                                <span className="text-xl font-bold text-slate-900">
                                   {formatPrice(service.basePrice)}
                                 </span>
                               </div>
-                              <p className="text-sm font-medium text-accent">
+                              <p className="text-xs font-medium text-accent">
                                 ou 4x de {formatPrice(installmentValue)} sem juros
                               </p>
                             </div>
                           ) : (
-                            <div className="flex items-baseline gap-2">
-                              <span className="text-2xl font-bold text-slate-900">
+                            <div className="flex items-baseline gap-2 flex-wrap">
+                              <span className="text-xl font-bold text-slate-900">
                                 {formatPrice(service.basePrice)}
                               </span>
-                              {!isSubscriber && (
-                                <span className="text-sm text-accent font-medium">
+                              {!isSubscriber && service.discountedPrice < service.basePrice && (
+                                <span className="text-xs text-accent font-medium">
                                   {formatPrice(service.discountedPrice)} p/ assinantes
                                 </span>
                               )}
-                              {isSubscriber && (
-                                <Badge className="bg-accent/10 text-accent border-0 text-xs">
+                              {isSubscriber && discountPercent > 0 && (
+                                <Badge className="bg-accent/10 text-accent border-0 text-[10px]">
                                   -{discountPercent}%
                                 </Badge>
                               )}
@@ -357,36 +384,44 @@ const ServicosPage = () => {
                           )}
                         </div>
 
-                        {/* Features */}
-                        <ul className="space-y-2.5 mb-6">
-                          <li className="flex items-center gap-2.5 text-slate-600 text-sm">
-                            <Check className="h-4 w-4 text-accent flex-shrink-0" />
+                        {/* Features - Minimal */}
+                        <ul className="space-y-2 mb-5">
+                          <li className="flex items-center gap-2 text-slate-600 text-xs">
+                            <Check className="h-3.5 w-3.5 text-accent flex-shrink-0" />
                             Profissionais verificados
                           </li>
-                          <li className="flex items-center gap-2.5 text-slate-600 text-sm">
-                            <Check className="h-4 w-4 text-accent flex-shrink-0" />
-                            Pagamento seguro
+                          <li className="flex items-center gap-2 text-slate-600 text-xs">
+                            <Check className="h-3.5 w-3.5 text-accent flex-shrink-0" />
+                            {isFiscal ? 'Sem risco para você' : 'Pagamento seguro'}
                           </li>
                         </ul>
 
+                        {/* Button - Always at bottom */}
                         <Button 
-                          className={`w-full rounded-xl h-11 font-semibold ${
+                          className={`w-full rounded-xl h-11 font-semibold transition-all mt-auto ${
                             isLimpaNome 
-                              ? 'bg-accent hover:bg-accent/90 text-white' 
-                              : 'bg-primary hover:bg-primary/90 text-white'
+                              ? 'bg-accent hover:bg-accent/90 text-white hover:shadow-lg' 
+                              : isFiscal
+                                ? 'bg-emerald-500 hover:bg-emerald-600 text-white hover:shadow-lg'
+                                : 'bg-primary hover:bg-primary/90 text-white hover:shadow-lg'
                           }`}
                           asChild
                         >
                           <Link to={
-                            service.key.startsWith('ir_') ? '/ir' : 
-                            service.key === 'company_opening' ? '/abertura-empresa' : 
+                            service.key === 'ir_simples' ? '/marketplace/declaracao-ir-simples' : 
+                            service.key === 'ir_completo' ? '/marketplace/declaracao-ir-completo' : 
+                            service.key === 'company_opening' ? '/marketplace/abertura-empresa' : 
                             service.key === 'credit_repair' ? '/limpa-nome' :
-                            service.key === 'fiscal_analysis' ? '/modulo-fiscal' :
-                            service.key === 'business_consulting' ? '/contadores-publico' :
-                            `/certidoes`
+                            service.key === 'credit_repair_pf' ? '/limpa-nome' :
+                            service.key === 'credit_repair_pj' ? '/limpa-nome' :
+                            service.key === 'fiscal_analysis' ? '/marketplace/analise-fiscal' :
+                            service.key === 'business_consulting' ? '/marketplace/consultoria-empresarial' :
+                            service.key === 'consultation' ? '/marketplace/consulta-contador' :
+                            service.key === 'certificate' ? '/marketplace/emissao-certidao' :
+                            `/servicos`
                           }>
                             Solicitar
-                            <ArrowRight className="h-4 w-4 ml-2" />
+                            <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
                           </Link>
                         </Button>
                       </CardContent>
@@ -411,6 +446,7 @@ const ServicosPage = () => {
             )}
           </div>
         </section>
+
 
         {/* Free Tools Section */}
         <section className="py-12 bg-white">

@@ -84,6 +84,8 @@ import PartnerOnboarding from "./pages/PartnerOnboarding";
 import LimpaNomeLanding from "./pages/LimpaNomeLanding";
 import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
 import TestLogin from "./pages/TestLogin";
+import PartnerGuilhermePage from "./pages/PartnerGuilhermePage";
+import MarketplaceServicePage from "./pages/MarketplaceServicePage";
 
 const queryClient = new QueryClient();
 
@@ -124,6 +126,8 @@ const App = () => (
               <Route path="/transicao-tributaria" element={<TransicaoTributaria />} />
               <Route path="/certidoes" element={<CertificatesPage />} />
               <Route path="/servicos" element={<ServicosPage />} />
+              <Route path="/marketplace/:serviceSlug" element={<MarketplaceServicePage />} />
+              <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
               <Route path="/ir" element={<IRPage />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
