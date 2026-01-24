@@ -42,7 +42,6 @@ export const systemRoutes = {
     { path: '/faq', name: 'FAQ', description: 'Perguntas frequentes' },
     { path: '/termos', name: 'Termos de Uso', description: 'Termos legais' },
     { path: '/privacidade', name: 'Privacidade', description: 'Política de privacidade' },
-    { path: '/instalar', name: 'Instalar App', description: 'PWA install' },
     { path: '/contadores-publico', name: 'Contadores Público', description: 'Lista pública de contadores' },
     { path: '/planos-perfil', name: 'Planos por Perfil', description: 'Planos por tipo de usuário' },
     { path: '/limpa-nome', name: 'Limpa Nome', description: 'Serviço limpa nome' },

@@ -7,11 +7,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
-import { PWATour } from "@/components/tour/PWATour";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { BottomNavigation } from "@/components/pwa/BottomNavigation";
-import { InstallPWAPrompt } from "@/components/pwa/InstallPWAPrompt";
 import QaModeIndicator from "@/components/qa/QaModeIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
@@ -50,7 +48,6 @@ import ServicosPage from "./pages/ServicosPage";
 import FiscalDocumentsPage from "./pages/FiscalDocumentsPage";
 import FiscalSuccessPage from "./pages/FiscalSuccessPage";
 import ModuloFiscal from "./pages/ModuloFiscal";
-import InstallApp from "./pages/InstallApp";
 import TimelineReforma from "./pages/TimelineReforma";
 import TransicaoTributaria from "./pages/TransicaoTributaria";
 import FerramentasLC214 from "./pages/FerramentasLC214";
@@ -110,7 +107,6 @@ const App = () => (
               <Route path="/autonomo-onboarding" element={<AutonomoOnboarding />} />
               <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/instalar" element={<InstallApp />} />
               <Route path="/plano/simulador" element={<PlanoSimulador />} />
               <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
               <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
@@ -145,7 +141,7 @@ const App = () => (
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
               {/* Affiliate routes */}
-              <Route path="/afiliado/cadastro" element={<AffiliateOnboardingFlow />} />
+              <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
               <Route path="/afiliado/oferta/:affiliateCode" element={<AffiliateOfferPage />} />
               <Route path="/afiliado/:affiliateCode" element={<AffiliateLandingPremium />} />
               <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLandingPremium />} />
@@ -286,8 +282,6 @@ const App = () => (
             </AnimatedRoutes>
           </div>
           <BottomNavigation />
-          <InstallPWAPrompt />
-          <PWATour />
           <QaModeIndicator />
         </AuthProvider>
       </TooltipProvider>
