@@ -59,6 +59,7 @@ import IRPage from "./pages/IRPage";
 import FerramentasLC214 from "./pages/FerramentasLC214";
 import TimelineReforma from "./pages/TimelineReforma";
 import LimpaNomePage from "./pages/LimpaNomePage";
+import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
 import LimpaNomeStatusPage from "./pages/LimpaNomeStatusPage";
 import MinhasSolicitacoesPage from "./pages/MinhasSolicitacoesPage";
 import InvestorPresentation from "./pages/InvestorPresentation";
@@ -124,6 +125,7 @@ const App = () => (
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
               <Route path="/limpa-nome" element={<LimpaNomePage />} />
+              <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />

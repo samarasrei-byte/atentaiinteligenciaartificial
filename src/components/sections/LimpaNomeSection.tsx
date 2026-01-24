@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,7 +23,6 @@ import {
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useAuth } from "@/contexts/AuthContext";
-import { PartnerConnectionOnboarding } from "@/components/limpa-nome/PartnerConnectionOnboarding";
 
 const bureaus = [
   { name: 'SPC', color: 'bg-blue-500' },
@@ -94,11 +94,11 @@ const plans = {
 };
 
 export function LimpaNomeSection() {
+  const navigate = useNavigate();
   const { subscription } = useAuth();
   const isSubscribed = subscription.subscribed;
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
-  const [showOnboarding, setShowOnboarding] = useState(false);
 
   const currentPlan = plans[selectedPlan];
   const discountPercent = 10;
@@ -321,10 +321,10 @@ export function LimpaNomeSection() {
                     </div>
                   </div>
 
-                  {/* CTA - New Human-Focused Button */}
+                  {/* CTA - Navigate to Onboarding Page */}
                   <Button 
                     size="lg"
-                    onClick={() => setShowOnboarding(true)}
+                    onClick={() => navigate(`/limpa-nome/onboarding?plan=${selectedPlan}`)}
                     className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700 glow-accent group"
                   >
                     <Users className="h-5 w-5 mr-2" />
@@ -377,13 +377,6 @@ export function LimpaNomeSection() {
           </div>
         </div>
       </section>
-
-      {/* Partner Connection Onboarding Modal */}
-      <PartnerConnectionOnboarding 
-        isOpen={showOnboarding}
-        onClose={() => setShowOnboarding(false)}
-        selectedPlan={selectedPlan}
-      />
     </>
   );
 }
