@@ -164,10 +164,28 @@ export function LimpaNomeSection() {
                 const isSelected = selectedPlan === plan.id;
                 const isPJ = plan.id === 'pj';
                 
+                const handleCardClick = () => {
+                  setSelectedPlan(plan.id as PlanType);
+                  // Scroll to price card on mobile for better UX
+                  if (window.innerWidth < 1024) {
+                    setTimeout(() => {
+                      document.getElementById('limpa-nome-price-card')?.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                      });
+                    }, 100);
+                  }
+                };
+
+                const handleCTAClick = (e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  navigate(`/limpa-nome/onboarding?plan=${plan.id}`);
+                };
+                
                 return (
                   <button
                     key={plan.id}
-                    onClick={() => setSelectedPlan(plan.id as PlanType)}
+                    onClick={handleCardClick}
                     className={`
                       group relative flex-1 min-w-[300px] p-8 rounded-3xl transition-all duration-500 cursor-pointer text-left
                       bg-white/5 backdrop-blur-sm border
@@ -250,14 +268,17 @@ export function LimpaNomeSection() {
                       </p>
                     </div>
                     
-                    {/* CTA Button */}
-                    <div className={`
-                      w-full py-4 px-6 rounded-2xl text-center font-semibold transition-all duration-300
-                      ${isSelected 
-                        ? `bg-gradient-to-r ${plan.gradientFrom} ${plan.gradientTo} text-white shadow-lg` 
-                        : 'bg-white/10 text-white/60 group-hover:bg-white/20'
-                      }
-                    `}>
+                    {/* CTA Button - Now clickable and navigates */}
+                    <div 
+                      onClick={handleCTAClick}
+                      className={`
+                        w-full py-4 px-6 rounded-2xl text-center font-semibold transition-all duration-300 cursor-pointer
+                        ${isSelected 
+                          ? `bg-gradient-to-r ${plan.gradientFrom} ${plan.gradientTo} text-white shadow-lg hover:opacity-90` 
+                          : 'bg-white/10 text-white/60 group-hover:bg-white/20 hover:bg-white/30'
+                        }
+                      `}
+                    >
                       {plan.cta}
                       <ArrowRight className={`inline-block h-5 w-5 ml-2 transition-transform ${isSelected ? 'translate-x-0' : 'group-hover:translate-x-1'}`} />
                     </div>
@@ -269,6 +290,13 @@ export function LimpaNomeSection() {
                   </button>
                 );
               })}
+            </div>
+            
+            {/* Mobile CTA - Shows after card selection */}
+            <div className="lg:hidden mt-8 px-4">
+              <p className="text-center text-white/50 text-sm mb-4">
+                👆 Toque no plano desejado para ver detalhes
+              </p>
             </div>
 
             {isSubscribed && (
