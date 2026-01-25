@@ -159,17 +159,32 @@ export function PartnerConnectionOnboarding({ isOpen, onClose, selectedPlan }: P
                   </div>
 
                   <div className="space-y-2">
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-                      <Users className="h-4 w-4 text-primary shrink-0" />
-                      <span className="text-xs text-muted-foreground">Análise feita por pessoas reais</span>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                      <div className="p-2 rounded-lg bg-primary/10">
+                        <Users className="h-4 w-4 text-primary shrink-0" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Análise feita por pessoas reais</p>
+                        <p className="text-xs text-muted-foreground">Nenhuma decisão automática</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-                      <Shield className="h-4 w-4 text-green-500 shrink-0" />
-                      <span className="text-xs text-muted-foreground">Conexão com parceiro especializado</span>
+                    <div className="flex items-center gap-3 p-3 rounded-lg bg-muted/50">
+                      <div className="p-2 rounded-lg bg-green-500/10">
+                        <Shield className="h-4 w-4 text-green-500 shrink-0" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-foreground">Conexão com parceiro especializado</p>
+                        <p className="text-xs text-muted-foreground">Profissionais verificados</p>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2 p-2 rounded-lg bg-muted/50">
-                      <Heart className="h-4 w-4 text-rose-500 shrink-0" />
-                      <span className="text-xs text-muted-foreground">Nada é automático – atendimento humano</span>
+                    <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/90 border border-rose-500/30">
+                      <div className="p-2 rounded-lg bg-rose-500/20">
+                        <Heart className="h-4 w-4 text-rose-400 shrink-0" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-rose-400 uppercase tracking-wide">Atendimento Humano Garantido</p>
+                        <p className="text-xs text-white/90">Nada é automático – parceiros reais</p>
+                      </div>
                     </div>
                   </div>
 
