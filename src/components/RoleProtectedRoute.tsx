@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
 
-type AppRole = 'admin' | 'contador' | 'autonomo' | 'user';
+type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate';
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode;
@@ -16,7 +16,8 @@ const roleLabels: Record<AppRole, string> = {
   admin: 'Administrador',
   contador: 'Contador',
   autonomo: 'Autônomo',
-  user: 'Empresa'
+  user: 'Empresa',
+  affiliate: 'Afiliado'
 };
 
 export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {

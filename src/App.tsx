@@ -6,6 +6,8 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
+import { AffiliateProtectedRoute } from "@/components/AffiliateProtectedRoute";
+import { PartnerProtectedRoute } from "@/components/PartnerProtectedRoute";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -150,9 +152,9 @@ const App = () => (
               <Route path="/p/:affiliateCode/limpa-nome" element={<AffiliateLimpaNomeLanding />} />
               <Route path="/documentos-fiscais" element={<FiscalDocumentsPage />} />
               <Route path="/afiliado/painel" element={
-                <ProtectedRoute>
+                <AffiliateProtectedRoute>
                   <AffiliatePanel />
-                </ProtectedRoute>
+                </AffiliateProtectedRoute>
               } />
               <Route path="/qa-dashboard" element={
                 <ProtectedRoute>
@@ -160,9 +162,9 @@ const App = () => (
                 </ProtectedRoute>
               } />
               <Route path="/parceiro" element={
-                <ProtectedRoute>
+                <PartnerProtectedRoute>
                   <PartnerPanel />
-                </ProtectedRoute>
+                </PartnerProtectedRoute>
               } />
               <Route path="/limpa-nome/status/:id" element={
                 <ProtectedRoute>
