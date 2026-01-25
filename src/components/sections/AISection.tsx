@@ -288,43 +288,34 @@ export function AISection() {
   ];
 
   return (
-    <section id="ai" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gradient-to-br from-violet-950 via-slate-950 to-fuchsia-950">
-      {/* Futuristic Background Effects */}
+    <section id="ai" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gradient-to-b from-muted/30 via-background to-muted/30">
+      {/* Clean Light Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
-        {/* Neural network pattern */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(168,85,247,0.15)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.15)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1)_0%,transparent_60%)]" />
+        {/* Soft accent patterns */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(168,85,247,0.08)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(59,130,246,0.08)_0%,transparent_50%)]" />
         
-        {/* Animated particles */}
+        {/* Subtle floating elements */}
         <motion.div 
-          className="absolute top-1/4 left-1/4 w-2 h-2 bg-violet-400 rounded-full"
+          className="absolute top-1/4 left-1/4 w-2 h-2 bg-primary/40 rounded-full"
           animate={{ 
             y: [0, -30, 0],
-            opacity: [0.5, 1, 0.5],
+            opacity: [0.3, 0.6, 0.3],
             scale: [1, 1.5, 1]
           }}
           transition={{ duration: 3, repeat: Infinity }}
         />
         <motion.div 
-          className="absolute top-1/3 right-1/4 w-3 h-3 bg-fuchsia-400 rounded-full"
+          className="absolute top-1/3 right-1/4 w-3 h-3 bg-accent/40 rounded-full"
           animate={{ 
             y: [0, 40, 0],
-            opacity: [0.3, 0.8, 0.3]
+            opacity: [0.2, 0.5, 0.2]
           }}
           transition={{ duration: 4, repeat: Infinity, delay: 1 }}
         />
-        <motion.div 
-          className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-cyan-400 rounded-full"
-          animate={{ 
-            x: [0, 20, 0],
-            opacity: [0.4, 1, 0.4]
-          }}
-          transition={{ duration: 5, repeat: Infinity, delay: 2 }}
-        />
         
-        {/* Grid */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:80px_80px]" />
+        {/* Subtle Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:80px_80px]" />
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -332,35 +323,31 @@ export function AISection() {
           {/* Section Header */}
           <div className="text-center mb-8 md:mb-12">
             <motion.div 
-              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-violet-500/20 via-fuchsia-500/20 to-violet-500/20 border border-violet-500/30 text-violet-300 text-sm font-semibold mb-6 backdrop-blur-sm"
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/30 text-primary text-sm font-semibold mb-6"
               initial={{ scale: 0.8, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
               viewport={{ once: true }}
-              animate={{ 
-                boxShadow: ['0 0 20px rgba(168,85,247,0.2)', '0 0 40px rgba(168,85,247,0.4)', '0 0 20px rgba(168,85,247,0.2)']
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
             >
               <Brain className="w-5 h-5" />
               <span>INTELIGÊNCIA ARTIFICIAL</span>
               <div className="flex gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
-                <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" style={{ animationDelay: '0.2s' }} />
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" style={{ animationDelay: '0.4s' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" style={{ animationDelay: '0.2s' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-info animate-pulse" style={{ animationDelay: '0.4s' }} />
               </div>
             </motion.div>
             
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-black mb-6 tracking-tight px-2">
-              <span className="text-white">Seu Assistente Tributário</span>
+              <span className="text-foreground">Seu Assistente Tributário</span>
               <br />
-              <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-info to-accent bg-clip-text text-transparent">
                 Disponível 24h
               </span>
             </h2>
-            <p className="text-base md:text-lg text-white/70 max-w-3xl mx-auto px-4 leading-relaxed">
-              O <span className="text-violet-400 font-semibold">AtentAI</span> foi treinado com toda a legislação da Reforma Tributária 2026.
+            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4 leading-relaxed">
+              O <span className="text-primary font-semibold">AtentAI</span> foi treinado com toda a legislação da Reforma Tributária 2026.
               <br className="hidden md:block" />
-              Pergunte sobre IBS, CBS, IS e receba <span className="text-fuchsia-400 font-semibold">respostas instantâneas</span>.
+              Pergunte sobre IBS, CBS, IS e receba <span className="text-info font-semibold">respostas instantâneas</span>.
             </p>
           </div>
 
@@ -375,25 +362,21 @@ export function AISection() {
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
               >
-                <Card className="relative overflow-hidden group border-0 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl h-full">
-                  {/* Glow effect */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 blur-xl" />
-                  <div className="absolute inset-[1px] rounded-lg bg-gradient-to-br from-slate-900/90 to-slate-950/90" />
-                  
+                <Card className="relative overflow-hidden group border border-border bg-card h-full shadow-md hover:shadow-lg transition-shadow">
                   <CardContent className="relative pt-6 pb-4 px-4">
                     <div className="flex items-start gap-3 mb-3">
                       <motion.div 
-                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/30"
+                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-info flex items-center justify-center flex-shrink-0 shadow-lg"
                         whileHover={{ rotate: 5, scale: 1.1 }}
                       >
-                        <item.icon className="w-6 h-6 text-white" />
+                        <item.icon className="w-6 h-6 text-primary-foreground" />
                       </motion.div>
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white flex items-center justify-center text-xs font-bold shadow-lg">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-r from-primary to-info text-primary-foreground flex items-center justify-center text-xs font-bold shadow-lg">
                         {item.step}
                       </div>
                     </div>
-                    <h3 className="font-bold text-lg mb-2 text-white">{item.title}</h3>
-                    <p className="text-sm text-white/70 leading-relaxed">{item.description}</p>
+                    <h3 className="font-bold text-lg mb-2 text-foreground">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -406,14 +389,11 @@ export function AISection() {
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true }}
           >
-            <Card className="mb-12 md:mb-16 border-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 backdrop-blur-xl overflow-hidden relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-transparent to-orange-500/20 opacity-50" />
-              <div className="absolute inset-[1px] rounded-lg bg-slate-950/80" />
-              
+            <Card className="mb-12 md:mb-16 border border-amber-200 bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 overflow-hidden relative">
               <CardContent className="relative py-8 px-4 md:px-8">
                 <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
                   <motion.div 
-                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-xl shadow-amber-500/30"
+                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-xl"
                     animate={{ 
                       scale: [1, 1.05, 1],
                       rotate: [0, 2, -2, 0]
@@ -423,17 +403,17 @@ export function AISection() {
                     <span className="text-4xl">⚠️</span>
                   </motion.div>
                   <div className="flex-1">
-                    <h4 className="text-xl md:text-2xl font-black mb-3 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                    <h4 className="text-xl md:text-2xl font-black mb-3 bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                       O regime tributário errado pode tirar até 27% do seu lucro!
                     </h4>
-                    <p className="text-base text-white/70 leading-relaxed">
+                    <p className="text-base text-muted-foreground leading-relaxed">
                       Muitas empresas estão no Simples Nacional sem saber que o Lucro Presumido seria mais vantajoso — ou o contrário. 
-                      A <span className="text-amber-400 font-semibold">AtentAI</span> analisa seu enquadramento e mostra qual regime é mais lucrativo.
+                      A <span className="text-amber-600 font-semibold">AtentAI</span> analisa seu enquadramento e mostra qual regime é mais lucrativo.
                     </p>
                   </div>
                   <Button 
                     size="lg" 
-                    className="whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold shadow-lg shadow-amber-500/30 border-0"
+                    className="whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold shadow-lg border-0"
                     onClick={() => navigate('/pricing')}
                   >
                     <Zap className="w-5 h-5 mr-2" />
