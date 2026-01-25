@@ -445,12 +445,12 @@ export function AISection() {
           </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-            {/* Chat Interface - Futuristic */}
-            <Card className="lg:col-span-2 flex flex-col h-[450px] md:h-[550px] lg:h-[600px] border-0 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl overflow-hidden relative rounded-3xl">
+            {/* Chat Interface - White Background */}
+            <Card className="lg:col-span-2 flex flex-col h-[450px] md:h-[550px] lg:h-[600px] border-0 bg-white backdrop-blur-xl overflow-hidden relative rounded-3xl shadow-2xl">
               {/* Glowing border */}
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-violet-500/30 via-fuchsia-500/30 to-violet-500/30 blur-sm -z-10" />
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-violet-500/20 via-fuchsia-500/20 to-violet-500/20 blur-sm -z-10" />
               
-              <CardHeader className="border-b border-white/5 bg-gradient-to-r from-violet-500/10 via-transparent to-fuchsia-500/10 py-4">
+              <CardHeader className="border-b border-slate-200 bg-gradient-to-r from-violet-500/10 via-transparent to-fuchsia-500/10 py-4">
                 <div className="flex items-center gap-4">
                   <motion.div 
                     className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/40"
@@ -462,15 +462,15 @@ export function AISection() {
                     <Bot className="w-6 h-6 text-white" />
                   </motion.div>
                   <div>
-                    <CardTitle className="text-lg md:text-xl text-white font-bold">AtentAI</CardTitle>
-                    <CardDescription className="flex items-center gap-2 text-sm text-white/60">
+                    <CardTitle className="text-lg md:text-xl text-slate-900 font-bold">AtentAI</CardTitle>
+                    <CardDescription className="flex items-center gap-2 text-sm text-slate-600">
                       <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-                      Demonstração • <span className="text-violet-400 font-medium">Assine para IA completa</span>
+                      Demonstração • <span className="text-violet-600 font-medium">Assine para IA completa</span>
                     </CardDescription>
                   </div>
                 </div>
               </CardHeader>
-              <CardContent className="flex-1 overflow-hidden p-0 flex flex-col">
+              <CardContent className="flex-1 overflow-hidden p-0 flex flex-col bg-slate-50">
                 {/* Messages */}
                 <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
                   {messages.map((msg, index) => (
@@ -479,18 +479,18 @@ export function AISection() {
                       className={`flex gap-2 md:gap-3 ${msg.role === "user" ? "flex-row-reverse" : ""}`}
                     >
                       <div className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                        msg.role === "user" ? "bg-violet-500" : "bg-slate-700"
+                        msg.role === "user" ? "bg-violet-500" : "bg-slate-200"
                       }`}>
                         {msg.role === "user" ? (
                           <User className="w-3.5 h-3.5 md:w-4 md:h-4 text-white" />
                         ) : (
-                          <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-300" />
+                          <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-600" />
                         )}
                       </div>
                       <div className={`max-w-[85%] md:max-w-[80%] rounded-2xl px-3 py-2 md:px-4 md:py-3 ${
                         msg.role === "user" 
                           ? "bg-violet-500 text-white rounded-tr-sm" 
-                          : "bg-slate-800 text-white rounded-tl-sm"
+                          : "bg-white border border-slate-200 text-slate-800 rounded-tl-sm shadow-sm"
                       }`}>
                         <div className="text-xs md:text-sm whitespace-pre-wrap leading-relaxed">
                           {msg.content}
@@ -500,14 +500,14 @@ export function AISection() {
                   ))}
                   {isTyping && (
                     <div className="flex gap-2 md:gap-3">
-                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-700 flex items-center justify-center">
-                        <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-300" />
+                      <div className="w-7 h-7 md:w-8 md:h-8 rounded-full bg-slate-200 flex items-center justify-center">
+                        <Bot className="w-3.5 h-3.5 md:w-4 md:h-4 text-slate-600" />
                       </div>
-                      <div className="bg-slate-800 rounded-2xl rounded-tl-sm px-3 py-2 md:px-4 md:py-3">
+                      <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-sm px-3 py-2 md:px-4 md:py-3 shadow-sm">
                         <div className="flex gap-1">
-                          <span className="w-2 h-2 rounded-full bg-slate-500 animate-bounce" />
-                          <span className="w-2 h-2 rounded-full bg-slate-500 animate-bounce" style={{ animationDelay: "0.2s" }} />
-                          <span className="w-2 h-2 rounded-full bg-slate-500 animate-bounce" style={{ animationDelay: "0.4s" }} />
+                          <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" />
+                          <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "0.2s" }} />
+                          <span className="w-2 h-2 rounded-full bg-slate-400 animate-bounce" style={{ animationDelay: "0.4s" }} />
                         </div>
                       </div>
                     </div>
@@ -516,7 +516,7 @@ export function AISection() {
                 </div>
 
                 {/* Input */}
-                <div className="p-3 md:p-4 border-t border-white/10 bg-slate-900/80">
+                <div className="p-3 md:p-4 border-t border-slate-200 bg-white">
                   <form 
                     onSubmit={(e) => { e.preventDefault(); handleSend(); }}
                     className="flex gap-2"
@@ -525,24 +525,24 @@ export function AISection() {
                       value={input}
                       onChange={(e) => setInput(e.target.value)}
                       placeholder="Digite sua pergunta..."
-                      className="flex-1 h-10 md:h-12 text-sm md:text-base bg-slate-800/50 border-white/20 text-white placeholder:text-slate-500"
+                      className="flex-1 h-10 md:h-12 text-sm md:text-base bg-slate-100 border-slate-300 text-slate-900 placeholder:text-slate-500"
                       disabled={isTyping}
                     />
                     <Button 
                       type="submit" 
                       size="icon" 
-                      className="h-10 w-10 md:h-12 md:w-12"
+                      className="h-10 w-10 md:h-12 md:w-12 bg-gradient-to-r from-violet-500 to-fuchsia-500 hover:from-violet-600 hover:to-fuchsia-600"
                       disabled={!input.trim() || isTyping}
                     >
                       {isTyping ? (
-                        <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin" />
+                        <Loader2 className="w-4 h-4 md:w-5 md:h-5 animate-spin text-white" />
                       ) : (
-                        <Send className="w-4 h-4 md:w-5 md:h-5" />
+                        <Send className="w-4 h-4 md:w-5 md:h-5 text-white" />
                       )}
                     </Button>
                   </form>
-                  <p className="text-[10px] md:text-xs text-white/50 text-center mt-2">
-                    Demonstração com respostas pré-definidas. <button onClick={() => navigate('/pricing')} className="text-violet-400 underline hover:no-underline">Assine para IA completa</button>.
+                  <p className="text-[10px] md:text-xs text-slate-500 text-center mt-2">
+                    Demonstração com respostas pré-definidas. <button onClick={() => navigate('/pricing')} className="text-violet-600 underline hover:no-underline">Assine para IA completa</button>.
                   </p>
                 </div>
               </CardContent>
@@ -555,7 +555,7 @@ export function AISection() {
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <CardTitle className="text-lg md:text-xl text-white">AtentAI Premium</CardTitle>
-                <CardDescription className="text-white/60">
+                <CardDescription className="text-white/80">
                   Desbloqueie todo o potencial do AtentAI
                 </CardDescription>
               </CardHeader>
@@ -569,14 +569,14 @@ export function AISection() {
                   ))}
                 </div>
 
-                <div className="p-3 bg-slate-800/50 rounded-lg text-xs md:text-sm text-white/60">
+                <div className="p-3 bg-slate-800/50 rounded-lg text-xs md:text-sm text-white/80">
                   <p>Premium: <strong className="text-white">Perguntas ilimitadas</strong></p>
                 </div>
 
                 <div className="pt-4 border-t border-white/10">
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-3xl md:text-4xl font-bold text-white">{formatPrice(plan.price)}</span>
-                    <span className="text-white/60 text-sm">/mês</span>
+                    <span className="text-white/80 text-sm">/mês</span>
                   </div>
                   
                   {isPremium ? (
@@ -601,7 +601,7 @@ export function AISection() {
                   )}
                 </div>
 
-                <p className="text-[10px] md:text-xs text-white/50 text-center">
+                <p className="text-[10px] md:text-xs text-white/80 text-center">
                   Cancele a qualquer momento. Sem compromisso.
                 </p>
               </CardContent>
