@@ -131,16 +131,46 @@ export function SimulatorSection() {
   };
 
   return (
-    <section ref={containerRef} id="simulator" className="py-20 md:py-32 bg-muted/30 relative overflow-hidden">
-      {/* Parallax Background Elements */}
-      <motion.div 
-        className="absolute top-10 left-10 w-72 h-72 bg-primary/5 rounded-full blur-3xl pointer-events-none"
-        style={{ y: y1 }}
-      />
-      <motion.div 
-        className="absolute bottom-10 right-10 w-64 h-64 bg-accent/5 rounded-full blur-3xl pointer-events-none"
-        style={{ y: y2 }}
-      />
+    <section ref={containerRef} id="simulator" className="py-20 md:py-32 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      {/* Futuristic Animated Background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {/* Animated mesh gradient */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-violet-600/15 via-transparent to-transparent" />
+        
+        {/* Floating orbs with parallax */}
+        <motion.div 
+          className="absolute top-20 left-[10%] w-96 h-96 bg-gradient-to-br from-cyan-500/30 to-blue-600/20 rounded-full blur-[100px]"
+          style={{ y: y1 }}
+          animate={{ 
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3] 
+          }}
+          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute bottom-20 right-[10%] w-80 h-80 bg-gradient-to-br from-violet-500/30 to-purple-600/20 rounded-full blur-[80px]"
+          style={{ y: y2 }}
+          animate={{ 
+            scale: [1.2, 1, 1.2],
+            opacity: [0.4, 0.2, 0.4] 
+          }}
+          transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+        />
+        <motion.div 
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/10 to-teal-500/5 rounded-full blur-[120px]"
+          animate={{ 
+            rotate: 360 
+          }}
+          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+        />
+        
+        {/* Grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        
+        {/* Scanline effect */}
+        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.05)_50%)] bg-[size:100%_4px] opacity-30" />
+      </div>
       
       <div className="container mx-auto px-4 relative z-10">
         <motion.div 
@@ -151,31 +181,59 @@ export function SimulatorSection() {
           transition={{ duration: 0.6 }}
         >
           <div className="text-center mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
+            {/* Futuristic badge */}
+            <motion.div 
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm font-semibold mb-6 backdrop-blur-sm"
+              initial={{ scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              animate={{ 
+                boxShadow: ['0 0 20px rgba(34,211,238,0.2)', '0 0 40px rgba(34,211,238,0.4)', '0 0 20px rgba(34,211,238,0.2)']
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
               <Calculator className="w-4 h-4" />
-              Simulador Gratuito
-            </div>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4 text-balance">
-              Compare Seus Impostos
-              <span className="gradient-text"> Antes e Depois</span>
+              <span>SIMULADOR INTELIGENTE</span>
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+            </motion.div>
+            
+            <h2 className="text-3xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight">
+              <span className="text-white">Compare Seus Impostos</span>
+              <br />
+              <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent animate-gradient-x">
+                Antes e Depois
+              </span>
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Descubra como a Reforma Tributária de 2026 vai impactar o seu negócio. 
-              Simulação baseada nas alíquotas oficiais do IBS, CBS e IS.
+            <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+              Descubra como a <span className="text-cyan-400 font-semibold">Reforma Tributária 2026</span> vai impactar seu negócio.
+              <br className="hidden md:block" />
+              Simulação com alíquotas oficiais IBS, CBS e IS.
             </p>
           </div>
 
-          <Card variant="elevated" className="overflow-hidden">
-            <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent">
-              <CardTitle className="flex items-center gap-2">
-                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Calculator className="w-5 h-5 text-primary" />
+          {/* Futuristic Card */}
+          <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 backdrop-blur-xl shadow-2xl shadow-cyan-500/10 rounded-3xl">
+            {/* Glowing border effect */}
+            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-cyan-500/20 blur-sm -z-10" />
+            
+            <CardHeader className="bg-gradient-to-r from-cyan-500/10 via-transparent to-violet-500/10 border-b border-white/5 pb-6">
+              <CardTitle className="flex items-center gap-4 text-white">
+                <motion.div 
+                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-lg shadow-cyan-500/30"
+                  animate={{ 
+                    boxShadow: ['0 10px 30px rgba(34,211,238,0.3)', '0 10px 50px rgba(34,211,238,0.5)', '0 10px 30px rgba(34,211,238,0.3)']
+                  }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <Calculator className="w-7 h-7 text-white" />
+                </motion.div>
+                <div>
+                  <span className="text-xl md:text-2xl font-bold">Simulador de Impacto Tributário</span>
+                  <CardDescription className="text-slate-400 mt-1">
+                    Preencha os dados e veja a estimativa em tempo real
+                  </CardDescription>
                 </div>
-                Simulador de Impacto Tributário
               </CardTitle>
-              <CardDescription>
-                Preencha os dados do seu negócio para ver a estimativa de impostos
-              </CardDescription>
             </CardHeader>
             <CardContent className="p-6 md:p-8">
               <div className="grid gap-6">

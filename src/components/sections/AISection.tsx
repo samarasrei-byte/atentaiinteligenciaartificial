@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { MessageCircle, Send, Bot, User, Loader2, Lock, Sparkles, CheckCircle, Shield, Zap, Brain, Target } from "lucide-react";
+import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -287,85 +288,184 @@ export function AISection() {
   ];
 
   return (
-    <section id="ai" className="py-16 md:py-24 lg:py-32">
-      <div className="container mx-auto px-4">
+    <section id="ai" className="py-16 md:py-24 lg:py-32 relative overflow-hidden bg-gradient-to-br from-violet-950 via-slate-950 to-fuchsia-950">
+      {/* Futuristic Background Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Neural network pattern */}
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(168,85,247,0.15)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(236,72,153,0.15)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(59,130,246,0.1)_0%,transparent_60%)]" />
+        
+        {/* Animated particles */}
+        <motion.div 
+          className="absolute top-1/4 left-1/4 w-2 h-2 bg-violet-400 rounded-full"
+          animate={{ 
+            y: [0, -30, 0],
+            opacity: [0.5, 1, 0.5],
+            scale: [1, 1.5, 1]
+          }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
+        <motion.div 
+          className="absolute top-1/3 right-1/4 w-3 h-3 bg-fuchsia-400 rounded-full"
+          animate={{ 
+            y: [0, 40, 0],
+            opacity: [0.3, 0.8, 0.3]
+          }}
+          transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+        />
+        <motion.div 
+          className="absolute bottom-1/4 left-1/3 w-2 h-2 bg-cyan-400 rounded-full"
+          animate={{ 
+            x: [0, 20, 0],
+            opacity: [0.4, 1, 0.4]
+          }}
+          transition={{ duration: 5, repeat: Infinity, delay: 2 }}
+        />
+        
+        {/* Grid */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.015)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.015)_1px,transparent_1px)] bg-[size:80px_80px]" />
+      </div>
+      
+      <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-6xl mx-auto">
           {/* Section Header */}
           <div className="text-center mb-8 md:mb-12">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-4">
-              <MessageCircle className="w-4 h-4" />
-              Inteligência Artificial
-            </div>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-4 text-balance px-2">
-              Seu Assistente Tributário
-              <span className="gradient-text"> Disponível 24h</span>
+            <motion.div 
+              className="inline-flex items-center gap-3 px-6 py-3 rounded-full bg-gradient-to-r from-violet-500/20 via-fuchsia-500/20 to-violet-500/20 border border-violet-500/30 text-violet-300 text-sm font-semibold mb-6 backdrop-blur-sm"
+              initial={{ scale: 0.8, opacity: 0 }}
+              whileInView={{ scale: 1, opacity: 1 }}
+              viewport={{ once: true }}
+              animate={{ 
+                boxShadow: ['0 0 20px rgba(168,85,247,0.2)', '0 0 40px rgba(168,85,247,0.4)', '0 0 20px rgba(168,85,247,0.2)']
+              }}
+              transition={{ duration: 2, repeat: Infinity }}
+            >
+              <Brain className="w-5 h-5" />
+              <span>INTELIGÊNCIA ARTIFICIAL</span>
+              <div className="flex gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-fuchsia-400 animate-pulse" style={{ animationDelay: '0.2s' }} />
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" style={{ animationDelay: '0.4s' }} />
+              </div>
+            </motion.div>
+            
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-6xl font-black mb-6 tracking-tight px-2">
+              <span className="text-white">Seu Assistente Tributário</span>
+              <br />
+              <span className="bg-gradient-to-r from-violet-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent">
+                Disponível 24h
+              </span>
             </h2>
-            <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
-              O AtentAI foi treinado com toda a legislação da Reforma Tributária 2026.
-              Pergunte sobre IBS, CBS, IS, regimes tributários e receba respostas instantâneas.
+            <p className="text-base md:text-lg text-slate-400 max-w-3xl mx-auto px-4 leading-relaxed">
+              O <span className="text-violet-400 font-semibold">AtentAI</span> foi treinado com toda a legislação da Reforma Tributária 2026.
+              <br className="hidden md:block" />
+              Pergunte sobre IBS, CBS, IS e receba <span className="text-fuchsia-400 font-semibold">respostas instantâneas</span>.
             </p>
           </div>
 
-          {/* How It Works - Cards */}
+          {/* How It Works - Futuristic Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-12 md:mb-16">
             {howItWorks.map((item, index) => (
-              <Card key={index} variant="elevated" className="relative overflow-hidden group hover:shadow-lg transition-all duration-300">
-                <CardContent className="pt-6 pb-4 px-4">
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                      <item.icon className="w-5 h-5 md:w-6 md:h-6 text-primary" />
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+              >
+                <Card className="relative overflow-hidden group border-0 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl h-full">
+                  {/* Glow effect */}
+                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-br from-violet-500/20 to-fuchsia-500/20 blur-xl" />
+                  <div className="absolute inset-[1px] rounded-lg bg-gradient-to-br from-slate-900/90 to-slate-950/90" />
+                  
+                  <CardContent className="relative pt-6 pb-4 px-4">
+                    <div className="flex items-start gap-3 mb-3">
+                      <motion.div 
+                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 shadow-lg shadow-violet-500/30"
+                        whileHover={{ rotate: 5, scale: 1.1 }}
+                      >
+                        <item.icon className="w-6 h-6 text-white" />
+                      </motion.div>
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white flex items-center justify-center text-xs font-bold shadow-lg">
+                        {item.step}
+                      </div>
                     </div>
-                    <div className="w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
-                      {item.step}
-                    </div>
-                  </div>
-                  <h3 className="font-semibold text-base md:text-lg mb-2">{item.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{item.description}</p>
-                </CardContent>
-              </Card>
+                    <h3 className="font-bold text-lg mb-2 text-white">{item.title}</h3>
+                    <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
             ))}
           </div>
 
-          {/* Important Alert */}
-          <Card className="mb-12 md:mb-16 border-2 border-warning/30 bg-warning/5">
-            <CardContent className="py-6 px-4 md:px-8">
-              <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 text-center md:text-left">
-                <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-warning/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-3xl md:text-4xl">⚠️</span>
+          {/* Important Alert - Futuristic */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+          >
+            <Card className="mb-12 md:mb-16 border-0 bg-gradient-to-r from-amber-500/10 via-orange-500/10 to-red-500/10 backdrop-blur-xl overflow-hidden relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/20 via-transparent to-orange-500/20 opacity-50" />
+              <div className="absolute inset-[1px] rounded-lg bg-slate-950/80" />
+              
+              <CardContent className="relative py-8 px-4 md:px-8">
+                <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                  <motion.div 
+                    className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center flex-shrink-0 shadow-xl shadow-amber-500/30"
+                    animate={{ 
+                      scale: [1, 1.05, 1],
+                      rotate: [0, 2, -2, 0]
+                    }}
+                    transition={{ duration: 4, repeat: Infinity }}
+                  >
+                    <span className="text-4xl">⚠️</span>
+                  </motion.div>
+                  <div className="flex-1">
+                    <h4 className="text-xl md:text-2xl font-black mb-3 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                      O regime tributário errado pode tirar até 27% do seu lucro!
+                    </h4>
+                    <p className="text-base text-slate-400 leading-relaxed">
+                      Muitas empresas estão no Simples Nacional sem saber que o Lucro Presumido seria mais vantajoso — ou o contrário. 
+                      A <span className="text-amber-400 font-semibold">AtentAI</span> analisa seu enquadramento e mostra qual regime é mais lucrativo.
+                    </p>
+                  </div>
+                  <Button 
+                    size="lg" 
+                    className="whitespace-nowrap bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-bold shadow-lg shadow-amber-500/30 border-0"
+                    onClick={() => navigate('/pricing')}
+                  >
+                    <Zap className="w-5 h-5 mr-2" />
+                    Faça sua Análise
+                  </Button>
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-lg md:text-xl font-bold mb-2 text-warning-foreground">
-                    O regime tributário errado pode tirar até 27% do seu lucro!
-                  </h4>
-                  <p className="text-sm md:text-base text-muted-foreground">
-                    Muitas empresas estão no Simples Nacional sem saber que o Lucro Presumido seria mais vantajoso — ou o contrário. 
-                    A AtentAI analisa seu enquadramento e mostra qual regime é mais lucrativo, sempre 100% legal.
-                  </p>
-                </div>
-                <Button 
-                  size="lg" 
-                  className="whitespace-nowrap"
-                  onClick={() => navigate('/pricing')}
-                >
-                  Faça sua Análise
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           <div className="grid lg:grid-cols-3 gap-4 md:gap-6">
-            {/* Chat Interface */}
-            <Card variant="elevated" className="lg:col-span-2 flex flex-col h-[450px] md:h-[550px] lg:h-[600px]">
-              <CardHeader className="border-b bg-gradient-to-r from-primary/5 to-transparent py-3 md:py-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Bot className="w-5 h-5 text-primary" />
-                  </div>
+            {/* Chat Interface - Futuristic */}
+            <Card className="lg:col-span-2 flex flex-col h-[450px] md:h-[550px] lg:h-[600px] border-0 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl overflow-hidden relative rounded-3xl">
+              {/* Glowing border */}
+              <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-violet-500/30 via-fuchsia-500/30 to-violet-500/30 blur-sm -z-10" />
+              
+              <CardHeader className="border-b border-white/5 bg-gradient-to-r from-violet-500/10 via-transparent to-fuchsia-500/10 py-4">
+                <div className="flex items-center gap-4">
+                  <motion.div 
+                    className="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 flex items-center justify-center shadow-lg shadow-violet-500/40"
+                    animate={{ 
+                      boxShadow: ['0 10px 30px rgba(168,85,247,0.4)', '0 10px 50px rgba(236,72,153,0.5)', '0 10px 30px rgba(168,85,247,0.4)']
+                    }}
+                    transition={{ duration: 3, repeat: Infinity }}
+                  >
+                    <Bot className="w-6 h-6 text-white" />
+                  </motion.div>
                   <div>
-                    <CardTitle className="text-base md:text-lg">AtentAI</CardTitle>
-                    <CardDescription className="flex items-center gap-1 text-xs md:text-sm">
-                      <span className="w-2 h-2 rounded-full bg-warning animate-pulse" />
-                      Demonstração • Assine para IA completa
+                    <CardTitle className="text-lg md:text-xl text-white font-bold">AtentAI</CardTitle>
+                    <CardDescription className="flex items-center gap-2 text-sm text-slate-400">
+                      <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
+                      Demonstração • <span className="text-violet-400 font-medium">Assine para IA completa</span>
                     </CardDescription>
                   </div>
                 </div>

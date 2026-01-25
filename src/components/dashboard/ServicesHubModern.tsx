@@ -23,6 +23,7 @@ import {
   FileSearch,
   CreditCard,
   Users,
+  Rocket,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
@@ -71,35 +72,40 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       <div className={`
         relative h-full rounded-3xl overflow-hidden group cursor-pointer
-        ${popular ? 'p-[2px] bg-gradient-to-br from-primary via-emerald-400 to-teal-500' : 'p-[1px] bg-gradient-to-br from-border/50 to-border/20'}
+        ${popular ? 'p-[2px] bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400' : 'p-[1px] bg-gradient-to-br from-white/20 to-white/5'}
       `}>
-        {/* Glowing effect on hover */}
-        <div className={`
-          absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-xl
-          bg-gradient-to-br ${gradient}
-        `} />
+        {/* Animated glow effect on hover */}
+        <motion.div 
+          className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl bg-gradient-to-br ${gradient}`}
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ duration: 3, repeat: Infinity }}
+        />
         
         <Card className={`
-          relative h-full bg-card/95 backdrop-blur-sm border-0 transition-all duration-300 rounded-[22px]
-          ${popular ? 'shadow-2xl shadow-primary/20' : 'shadow-lg'}
+          relative h-full bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl border-0 transition-all duration-300 rounded-[22px]
+          ${popular ? 'shadow-2xl shadow-emerald-500/20' : 'shadow-xl shadow-black/20'}
         `}>
-          {/* Popular ribbon */}
+          {/* Popular ribbon with glow */}
           {popular && (
             <div className="absolute -top-1 -right-1 z-10">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-emerald-500 blur-lg opacity-60" />
-                <div className="relative bg-gradient-to-r from-primary to-emerald-500 text-primary-foreground text-xs font-bold px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5">
+                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 blur-lg opacity-70" />
+                <motion.div 
+                  className="relative bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-900 text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5"
+                  animate={{ boxShadow: ['0 0 20px rgba(52,211,153,0.3)', '0 0 40px rgba(52,211,153,0.6)', '0 0 20px rgba(52,211,153,0.3)'] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
                   <Star className="h-3 w-3 fill-current" />
                   MAIS VENDIDO
-                </div>
+                </motion.div>
               </div>
             </div>
           )}
           
-          {/* Badge */}
+          {/* Badge with glow */}
           {badge && !popular && (
             <div className="absolute top-4 right-4 z-10">
-              <Badge className="bg-gradient-to-r from-amber-500/20 to-orange-500/20 text-amber-600 border-amber-500/30 text-xs font-medium shadow-sm">
+              <Badge className="bg-gradient-to-r from-amber-500/30 to-orange-500/30 text-amber-300 border-amber-500/40 text-xs font-bold shadow-lg shadow-amber-500/20 backdrop-blur-sm">
                 {badge}
               </Badge>
             </div>
@@ -108,67 +114,66 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           <CardContent className="p-6 flex flex-col h-full">
             {/* Header with Icon */}
             <div className="flex items-start gap-4 mb-5">
-              <div className={`
-                relative w-14 h-14 rounded-2xl bg-gradient-to-br ${iconGradient} 
-                flex items-center justify-center shadow-lg
-                group-hover:scale-110 group-hover:shadow-xl transition-all duration-300
-              `}>
+              <motion.div 
+                className={`relative w-14 h-14 rounded-2xl bg-gradient-to-br ${iconGradient} flex items-center justify-center shadow-xl`}
+                whileHover={{ rotate: 5, scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
                 <div className="absolute inset-0 rounded-2xl bg-white/10" />
                 <Icon className="h-7 w-7 text-white relative z-10" />
-              </div>
+              </motion.div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-foreground leading-tight mb-1 group-hover:text-primary transition-colors">
+                <h3 className="text-lg font-bold text-white leading-tight mb-1 group-hover:text-emerald-300 transition-colors">
                   {title}
                 </h3>
-                <p className="text-sm text-muted-foreground line-clamp-2">
+                <p className="text-sm text-slate-400 line-clamp-2">
                   {description}
                 </p>
               </div>
             </div>
             
-            {/* Pricing Card */}
+            {/* Pricing Card - Futuristic */}
             <div className={`
               relative mb-5 p-4 rounded-2xl overflow-hidden
-              ${basePrice === 0 ? 'bg-gradient-to-br from-amber-500/10 to-orange-500/10 border border-amber-500/20' : 
-                isSubscribed ? 'bg-gradient-to-br from-success/10 to-emerald-500/10 border border-success/20' : 
-                'bg-gradient-to-br from-muted/80 to-muted/40 border border-border/50'}
+              ${basePrice === 0 ? 'bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/30' : 
+                isSubscribed ? 'bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/30' : 
+                'bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10'}
             `}>
               {basePrice === 0 ? (
-                // Success Fee Model
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl font-black bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                    <span className="text-3xl font-black bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                       GRÁTIS
                     </span>
-                    <Badge className="bg-amber-500/20 text-amber-600 border-amber-500/30 text-xs font-bold animate-pulse">
+                    <Badge className="bg-amber-500/30 text-amber-300 border-amber-500/40 text-xs font-bold animate-pulse">
                       💰 Success Fee
                     </Badge>
                   </div>
-                  <p className="text-xs text-amber-600/80 font-medium">
+                  <p className="text-xs text-amber-400/80 font-medium">
                     Pague apenas 50% do valor recuperado
                   </p>
                 </div>
               ) : isSubscribed ? (
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-black text-success">{formatPrice(discountedPrice)}</span>
-                    <span className="text-base text-muted-foreground/70 line-through">{formatPrice(basePrice)}</span>
+                    <span className="text-3xl font-black text-emerald-400">{formatPrice(discountedPrice)}</span>
+                    <span className="text-base text-slate-500 line-through">{formatPrice(basePrice)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/20 text-success text-xs font-bold">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
                       <Percent className="h-3.5 w-3.5" />
                       {discountPercent}% OFF
                     </div>
-                    <span className="text-xs text-success/80">Desconto de assinante</span>
+                    <span className="text-xs text-emerald-400/70">Desconto ativo</span>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black text-foreground">{formatPrice(basePrice)}</span>
+                    <span className="text-3xl font-black text-white">{formatPrice(basePrice)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-medium">
                       <Crown className="h-3.5 w-3.5" />
                       {formatPrice(discountedPrice)} p/ assinantes
                     </div>
@@ -180,11 +185,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             {/* Features with modern styling */}
             <ul className="space-y-3 mb-6 flex-1">
               {features.map((feature, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-sm text-muted-foreground group/item">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-success/10 flex items-center justify-center">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-success" />
+                <li key={idx} className="flex items-center gap-3 text-sm text-slate-400 group/item">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                   </div>
-                  <span className="group-hover/item:text-foreground transition-colors">{feature}</span>
+                  <span className="group-hover/item:text-white transition-colors">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -347,23 +352,37 @@ export const ServicesHubModern: React.FC = () => {
 
   return (
     <div className="space-y-10">
-      {/* Modern Header */}
+      {/* Ultra-Modern Futuristic Header */}
       <div className="relative">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          <div className="space-y-3">
+          <div className="space-y-4">
+            <motion.div 
+              className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gradient-to-r from-emerald-500/20 via-teal-500/20 to-emerald-500/20 border border-emerald-500/30 backdrop-blur-sm"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+            >
+              <Rocket className="w-4 h-4 text-emerald-400" />
+              <span className="text-emerald-300 text-sm font-semibold">MARKETPLACE PREMIUM</span>
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            </motion.div>
+            
             <div className="flex items-center gap-4">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary to-accent blur-xl opacity-40" />
-                <div className="relative p-3 rounded-2xl bg-gradient-to-br from-primary to-accent shadow-lg">
-                  <Zap className="h-6 w-6 text-primary-foreground" />
+              <motion.div 
+                className="relative"
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 blur-xl opacity-60" />
+                <div className="relative p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-xl shadow-emerald-500/30">
+                  <Zap className="h-7 w-7 text-white" />
                 </div>
-              </div>
+              </motion.div>
               <div>
-                <h2 className="text-3xl font-black text-foreground tracking-tight">
+                <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
                   Nossos Serviços
                 </h2>
-                <p className="text-muted-foreground text-base">
-                  Contadores especializados na Reforma Tributária
+                <p className="text-slate-400 text-base md:text-lg">
+                  Contadores <span className="text-emerald-400 font-semibold">especializados</span> na Reforma Tributária
                 </p>
               </div>
             </div>
@@ -373,36 +392,66 @@ export const ServicesHubModern: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-3 px-5 py-3 rounded-2xl bg-gradient-to-r from-success/10 to-emerald-500/10 border border-success/20"
+              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 backdrop-blur-xl"
             >
-              <div className="p-2 rounded-xl bg-success/20">
-                <Sparkles className="h-5 w-5 text-success" />
-              </div>
+              <motion.div 
+                className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg"
+                animate={{ rotate: [0, 10, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <Sparkles className="h-5 w-5 text-white" />
+              </motion.div>
               <div>
-                <p className="text-sm font-bold text-success">Descontos Ativos</p>
-                <p className="text-xs text-success/70">Até 30% em todos os serviços</p>
+                <span className="text-white font-bold text-base">Descontos Ativados!</span>
+                <p className="text-emerald-300 text-sm font-medium">Até 30% OFF em todos os serviços</p>
+              </div>
+            </motion.div>
+          )}
+          
+          {!isSubscribed && (
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 backdrop-blur-xl"
+            >
+              <motion.div 
+                className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg"
+                animate={{ scale: [1, 1.1, 1] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                <Crown className="h-5 w-5 text-white" />
+              </motion.div>
+              <div>
+                <span className="text-white font-bold text-base">Assine e Economize</span>
+                <p className="text-amber-300 text-sm font-medium">Até 30% de desconto</p>
               </div>
             </motion.div>
           )}
         </div>
       </div>
 
-      {/* Trust Indicators - Modern Pills */}
-      <div className="flex flex-wrap items-center gap-3">
+      {/* Trust Indicators - Futuristic Pills */}
+      <div className="flex flex-wrap items-center justify-center gap-3">
         {[
-          { icon: Shield, text: 'Pagamento Seguro', color: 'text-success' },
-          { icon: BadgeCheck, text: 'Contadores Verificados', color: 'text-primary' },
-          { icon: Clock, text: 'Suporte 24h', color: 'text-accent' },
-          { icon: Star, text: '4.9/5 Avaliação', color: 'text-amber-500', fill: true },
-          { icon: Users, text: '+10.000 Clientes', color: 'text-violet-500' },
+          { icon: Shield, text: 'Pagamento Seguro', color: 'from-emerald-500 to-teal-500' },
+          { icon: BadgeCheck, text: 'Contadores Verificados', color: 'from-violet-500 to-purple-500' },
+          { icon: Clock, text: 'Suporte 24h', color: 'from-cyan-500 to-blue-500' },
+          { icon: Star, text: '4.9/5 Avaliação', color: 'from-amber-500 to-orange-500', fill: true },
+          { icon: Users, text: '+10.000 Clientes', color: 'from-pink-500 to-rose-500' },
         ].map((item, idx) => (
-          <div 
+          <motion.div 
             key={idx}
-            className="flex items-center gap-2 px-4 py-2 rounded-full bg-card border border-border/50 text-sm shadow-sm hover:shadow-md transition-shadow"
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: idx * 0.1 }}
+            whileHover={{ scale: 1.05, y: -2 }}
+            className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm backdrop-blur-xl cursor-pointer group"
           >
-            <item.icon className={`h-4 w-4 ${item.color} ${item.fill ? 'fill-current' : ''}`} />
-            <span className="text-muted-foreground font-medium">{item.text}</span>
-          </div>
+            <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
+              <item.icon className={`h-3.5 w-3.5 text-white ${item.fill ? 'fill-current' : ''}`} />
+            </div>
+            <span className="text-white/90 font-medium">{item.text}</span>
+          </motion.div>
         ))}
       </div>
 
