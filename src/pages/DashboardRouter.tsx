@@ -14,7 +14,6 @@ import { logAuditEvent } from '@/hooks/useAuditLog';
  * - Parceiro → /parceiro
  * - Empresa (user default) → /empresa
  * 
- * If user has multiple roles, redirect to profile selector.
  * Priority order ensures users with multiple roles go to the most appropriate panel.
  */
 const DashboardRouter = () => {
@@ -73,7 +72,7 @@ const DashboardRouter = () => {
         await logAuditEvent({
           userId: user.id,
           userEmail: user.email,
-          actionType: 'route_access_allowed',
+          actionType: 'dashboard_route',
           routeAttempted: '/dashboard',
           metadata: { 
             available_profiles: availableProfiles, 
@@ -81,13 +80,12 @@ const DashboardRouter = () => {
           }
         });
 
-        // If multiple roles, go to profile selector
+        // If user has 3+ profiles (excluding the default empresa), go to profile selector
         if (availableProfilesCount > 2) {
           navigate('/selecionar-perfil', { replace: true });
           return;
         }
 
-        // Single role - route directly
         // Priority-based routing: admin > contador > partner > affiliate > autonomo > empresa
         if (hasRole('admin')) {
           navigate('/admin', { replace: true });
@@ -99,13 +97,11 @@ const DashboardRouter = () => {
           return;
         }
 
-        // Check if user is a partner (special access via credit_repair_partner_users)
         if (isPartner) {
           navigate('/parceiro', { replace: true });
           return;
         }
 
-        // Check if user is an affiliate (has record in affiliates table)
         if (isAffiliate || hasRole('affiliate')) {
           navigate('/afiliado/painel', { replace: true });
           return;
@@ -116,12 +112,11 @@ const DashboardRouter = () => {
           return;
         }
 
-        // Check if user has any specific role
+        // Check if user only has 'user' role (default)
         const hasAnySpecificRole = roles.length > 0 && !roles.every(r => r === 'user');
         
-        // If user only has 'user' role (default), check if they need onboarding
+        // If user only has 'user' role, check if they need onboarding
         if (!hasAnySpecificRole) {
-          // Check if user has company data (completed onboarding)
           const { data: companyData } = await supabase
             .from('companies')
             .select('id')
@@ -129,7 +124,6 @@ const DashboardRouter = () => {
             .maybeSingle();
 
           if (!companyData) {
-            // No company data - send to welcome page to choose profile
             navigate('/bem-vindo', { replace: true });
             return;
           }
@@ -139,7 +133,6 @@ const DashboardRouter = () => {
         navigate('/empresa', { replace: true });
       } catch (error) {
         console.error('Error determining destination:', error);
-        // Fallback to empresa panel on error
         navigate('/empresa', { replace: true });
       } finally {
         setIsChecking(false);
@@ -150,10 +143,10 @@ const DashboardRouter = () => {
   }, [user, loading, hasRole, roles, navigate, checkAffiliateStatus, checkPartnerStatus]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950">
       <div className="text-center space-y-4">
-        <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-        <p className="text-muted-foreground">Redirecionando para seu painel...</p>
+        <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+        <p className="text-white/60 font-medium">Redirecionando para seu painel...</p>
       </div>
     </div>
   );

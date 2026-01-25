@@ -8,6 +8,7 @@ export type AuditActionType =
   | 'logout'
   | 'route_access_allowed'
   | 'route_access_denied'
+  | 'dashboard_route'
   | 'admin_action'
   | 'role_change'
   | 'profile_update'
