@@ -4,13 +4,22 @@ import { supabase } from '@/integrations/supabase/client';
 import { PlanType } from '@/lib/stripe';
 import { isQAUser, getQAFlags, QAFlags } from '@/lib/qaMode';
 
-type AppRole = 'admin' | 'contador' | 'user' | 'autonomo';
+// All app roles including affiliate
+type AppRole = 'admin' | 'contador' | 'user' | 'autonomo' | 'affiliate';
 
 interface SubscriptionInfo {
   subscribed: boolean;
   plan: PlanType | null;
   subscriptionEnd: string | null;
   isPastDue: boolean;
+}
+
+// Extended user status for routing decisions
+interface UserStatus {
+  isAffiliate: boolean;
+  isPartner: boolean;
+  affiliateId: string | null;
+  partnerId: string | null;
 }
 
 interface AuthContextType {
@@ -20,6 +29,7 @@ interface AuthContextType {
   roles: AppRole[];
   profile: any | null;
   subscription: SubscriptionInfo;
+  userStatus: UserStatus;
   isQAMode: boolean;
   qaFlags: QAFlags;
   signUp: (email: string, password: string, fullName: string) => Promise<{ error: any }>;
@@ -28,6 +38,8 @@ interface AuthContextType {
   hasRole: (role: AppRole) => boolean;
   checkSubscription: () => Promise<void>;
   refreshUserData: () => Promise<void>;
+  checkAffiliateStatus: () => Promise<boolean>;
+  checkPartnerStatus: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -51,6 +63,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     plan: null,
     subscriptionEnd: null,
     isPastDue: false,
+  });
+  const [userStatus, setUserStatus] = useState<UserStatus>({
+    isAffiliate: false,
+    isPartner: false,
+    affiliateId: null,
+    partnerId: null,
   });
 
   const fetchUserData = async (userId: string) => {
@@ -169,6 +187,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setRoles([]);
           setProfile(null);
           setSubscription({ subscribed: false, plan: null, subscriptionEnd: null, isPastDue: false });
+          setUserStatus({ isAffiliate: false, isPartner: false, affiliateId: null, partnerId: null });
         }
         setLoading(false);
       }
@@ -239,9 +258,68 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setRoles([]);
     setProfile(null);
     setSubscription({ subscribed: false, plan: null, subscriptionEnd: null, isPastDue: false });
+    setUserStatus({ isAffiliate: false, isPartner: false, affiliateId: null, partnerId: null });
   };
 
   const hasRole = (role: AppRole) => roles.includes(role);
+
+  // Check if user is an affiliate (has record in affiliates table)
+  const checkAffiliateStatus = async (): Promise<boolean> => {
+    if (!user?.id) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('affiliates')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error checking affiliate status:', error);
+        return false;
+      }
+      
+      const isAffiliate = !!data;
+      setUserStatus(prev => ({ 
+        ...prev, 
+        isAffiliate, 
+        affiliateId: data?.id || null 
+      }));
+      return isAffiliate;
+    } catch (error) {
+      console.error('Error checking affiliate status:', error);
+      return false;
+    }
+  };
+
+  // Check if user is a partner (has record in credit_repair_partner_users table)
+  const checkPartnerStatus = async (): Promise<boolean> => {
+    if (!user?.id) return false;
+    
+    try {
+      const { data, error } = await supabase
+        .from('credit_repair_partner_users')
+        .select('partner_id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      
+      if (error) {
+        console.error('Error checking partner status:', error);
+        return false;
+      }
+      
+      const isPartner = !!data;
+      setUserStatus(prev => ({ 
+        ...prev, 
+        isPartner, 
+        partnerId: data?.partner_id || null 
+      }));
+      return isPartner;
+    } catch (error) {
+      console.error('Error checking partner status:', error);
+      return false;
+    }
+  };
 
   // QA Mode detection
   const isQAMode = isQAUser(user?.email);
@@ -255,6 +333,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       roles,
       profile,
       subscription,
+      userStatus,
       isQAMode,
       qaFlags,
       signUp,
@@ -263,6 +342,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       hasRole,
       checkSubscription,
       refreshUserData,
+      checkAffiliateStatus,
+      checkPartnerStatus,
     }}>
       {children}
     </AuthContext.Provider>
