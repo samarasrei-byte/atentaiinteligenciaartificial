@@ -1175,9 +1175,9 @@ export default function PartnerPanel() {
       </div>
 
       {/* Main Content */}
-      <main className={`flex-1 transition-all duration-300 min-w-0 overflow-y-auto overflow-x-hidden h-screen ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`flex-1 flex flex-col min-h-screen transition-all duration-300 min-w-0 overflow-x-hidden ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Header */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 lg:px-8 py-4">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50 px-4 lg:px-8 py-4 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/20 to-emerald-500/20 flex items-center justify-center">
@@ -1210,7 +1210,7 @@ export default function PartnerPanel() {
           </div>
         </header>
 
-        <div className="p-4 lg:p-8">
+        <div className="flex-1 p-4 lg:p-8 overflow-y-auto">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
