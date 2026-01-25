@@ -39,33 +39,32 @@ const DashboardRouter = () => {
           checkPartnerStatus()
         ]);
 
-        // Count available profiles
-        let availableProfilesCount = 0;
+        // Count special profiles (NOT including empresa/user as it's always available as fallback)
+        let specialProfilesCount = 0;
         const availableProfiles: string[] = [];
 
         if (hasRole('admin')) {
-          availableProfilesCount++;
+          specialProfilesCount++;
           availableProfiles.push('admin');
         }
         if (hasRole('contador')) {
-          availableProfilesCount++;
+          specialProfilesCount++;
           availableProfiles.push('contador');
         }
         if (isPartner) {
-          availableProfilesCount++;
+          specialProfilesCount++;
           availableProfiles.push('parceiro');
         }
         if (isAffiliate || hasRole('affiliate')) {
-          availableProfilesCount++;
+          specialProfilesCount++;
           availableProfiles.push('afiliado');
         }
         if (hasRole('autonomo')) {
-          availableProfilesCount++;
+          specialProfilesCount++;
           availableProfiles.push('autonomo');
         }
         
-        // Always count empresa/user as available
-        availableProfilesCount++;
+        // Add empresa as last option
         availableProfiles.push('empresa');
 
         // Log the routing decision
@@ -76,12 +75,12 @@ const DashboardRouter = () => {
           routeAttempted: '/dashboard',
           metadata: { 
             available_profiles: availableProfiles, 
-            profile_count: availableProfilesCount 
+            profile_count: specialProfilesCount 
           }
         });
 
-        // If user has 3+ profiles (excluding the default empresa), go to profile selector
-        if (availableProfilesCount > 2) {
+        // If user has 2+ special profiles, go to profile selector to let them choose
+        if (specialProfilesCount >= 2) {
           navigate('/selecionar-perfil', { replace: true });
           return;
         }
