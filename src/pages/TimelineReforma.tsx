@@ -24,6 +24,7 @@ import {
 import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { FreeToolBadge } from "@/components/ui/free-tool-badge";
 
 interface TimelineEvent {
   date: string;
@@ -237,9 +238,12 @@ export default function TimelineReforma() {
         <main className="container mx-auto px-4 py-8">
         {/* Hero Section */}
         <section className="text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm mb-4">
-            <Calendar className="w-4 h-4" />
-            <span className="font-medium">Lei Complementar 214/2025</span>
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm">
+              <Calendar className="w-4 h-4" />
+              <span className="font-medium">Lei Complementar 214/2025</span>
+            </div>
+            <FreeToolBadge variant="compact" />
           </div>
           
           <h1 className="text-3xl md:text-5xl font-bold text-foreground mb-4">
@@ -247,9 +251,13 @@ export default function TimelineReforma() {
             <span className="text-primary">Reforma Tributária</span>
           </h1>
           
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-8">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-4">
             Acompanhe todas as datas importantes da transição tributária brasileira, 
             de 2025 a 2033.
+          </p>
+          
+          <p className="text-sm text-emerald-600/80 max-w-lg mx-auto mb-8">
+            ✓ Ferramenta educacional gratuita — sem custo, sem cartão
           </p>
 
           {/* Countdown Card */}

@@ -9,6 +9,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Bell, Coins, Receipt, FileText, Cigarette, Calendar } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { FreeToolBadge } from '@/components/ui/free-tool-badge';
 
 const FerramentasLC214 = () => {
   return (
@@ -18,15 +19,21 @@ const FerramentasLC214 = () => {
           <div className="max-w-5xl mx-auto">
             {/* Hero Section */}
             <div className="text-center mb-8">
-              <Badge className="bg-primary/20 text-primary mb-4">
-                <FileText className="h-3 w-3 mr-1" />
-                LC 214/2025
-              </Badge>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Badge className="bg-primary/20 text-primary">
+                  <FileText className="h-3 w-3 mr-1" />
+                  LC 214/2025
+                </Badge>
+                <FreeToolBadge variant="compact" />
+              </div>
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-3">
                 Ferramentas da Reforma Tributária
               </h1>
-              <p className="text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-muted-foreground max-w-2xl mx-auto mb-4">
                 Simule o cashback, split payment, imposto seletivo e acompanhe alertas fiscais.
+              </p>
+              <p className="text-sm text-emerald-600/80 max-w-lg mx-auto">
+                ✓ Ferramentas educacionais gratuitas para entender a Reforma Tributária 2026
               </p>
             </div>
 
