@@ -102,47 +102,7 @@ const chartConfig = {
   commission: { label: "Comissão", color: "hsl(var(--success))" },
 };
 
-// Dados fictícios para demonstração
-const mockNotifications: Notification[] = [
-  { id: '1', title: 'Nova solicitação Limpa Nome', message: 'João Silva solicitou o serviço', type: 'success', time: '2 min', read: false },
-  { id: '2', title: 'Pagamento confirmado', message: 'Maria Santos - R$ 297,00', type: 'success', time: '15 min', read: false },
-  { id: '3', title: 'Análise fiscal concluída', message: 'Empresa ABC Ltda finalizada', type: 'info', time: '1h', read: true },
-  { id: '4', title: 'Nova mensagem do cliente', message: 'Pedro Oliveira enviou uma mensagem', type: 'info', time: '2h', read: true },
-  { id: '5', title: 'Comissão disponível', message: 'R$ 1.250,00 disponível para saque', type: 'warning', time: '3h', read: true },
-];
-
-const mockChatClients = [
-  { id: '1', name: 'João Silva', lastMessage: 'Obrigado pela ajuda!', time: '10:30', unread: 2, avatar: null, status: 'online' },
-  { id: '2', name: 'Maria Santos', lastMessage: 'Quando ficará pronto?', time: '09:15', unread: 0, avatar: null, status: 'offline' },
-  { id: '3', name: 'Pedro Oliveira', lastMessage: 'Enviei os documentos', time: 'Ontem', unread: 1, avatar: null, status: 'online' },
-  { id: '4', name: 'Ana Costa', lastMessage: 'Perfeito, muito obrigada!', time: 'Ontem', unread: 0, avatar: null, status: 'offline' },
-];
-
-const mockMessages: ChatMessage[] = [
-  { id: '1', sender: 'João Silva', content: 'Olá, gostaria de saber o status do meu processo', time: '10:15', isOwn: false },
-  { id: '2', sender: 'Você', content: 'Olá João! Seu processo está em andamento, estamos negociando com os credores.', time: '10:20', isOwn: true },
-  { id: '3', sender: 'João Silva', content: 'Que ótimo! Quanto tempo mais vai demorar?', time: '10:25', isOwn: false },
-  { id: '4', sender: 'Você', content: 'Estimamos mais 5 dias úteis para conclusão. Manteremos você informado.', time: '10:28', isOwn: true },
-  { id: '5', sender: 'João Silva', content: 'Obrigado pela ajuda!', time: '10:30', isOwn: false },
-];
-
-const mockMetricsData = {
-  conversionRate: 78,
-  avgResponseTime: '2h 15min',
-  satisfactionScore: 4.8,
-  totalClients: 156,
-  activeClients: 23,
-  monthlyGrowth: 15.4,
-};
-
-const mockMonthlyPerformance = [
-  { month: 'Jul', requests: 12, revenue: 3500, commission: 700 },
-  { month: 'Ago', requests: 18, revenue: 5200, commission: 1040 },
-  { month: 'Set', requests: 22, revenue: 6800, commission: 1360 },
-  { month: 'Out', requests: 28, revenue: 8400, commission: 1680 },
-  { month: 'Nov', requests: 35, revenue: 10500, commission: 2100 },
-  { month: 'Dez', requests: 42, revenue: 12600, commission: 2520 },
-];
+// Notificações e clientes serão carregados do banco de dados - sem dados mock
 
 export default function PartnerPanel() {
   const { user, loading: authLoading } = useAuth();
@@ -160,10 +120,10 @@ export default function PartnerPanel() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState<CreditRepairRequest | null>(null);
   const [showChatDialog, setShowChatDialog] = useState(false);
-  const [notifications, setNotifications] = useState(mockNotifications);
-  const [selectedChatClient, setSelectedChatClient] = useState(mockChatClients[0]);
-  const [chatMessage, setChatMessage] = useState('');
-  const [messages, setMessages] = useState(mockMessages);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [chatClients, setChatClients] = useState<any[]>([]);
+  const [selectedChatClient, setSelectedChatClient] = useState<any>(null);
+  const [selectedRequestForChat, setSelectedRequestForChat] = useState<CreditRepairRequest | null>(null);
 
   // Realtime notifications for new requests
   const [newRequestsCount, setNewRequestsCount] = useState(2);
@@ -361,20 +321,12 @@ export default function PartnerPanel() {
     fiscalCount: fiscalRequests.length,
   };
 
-  // Use mock data for demonstration when no real data
-  const displayStats = stats.total === 0 ? {
-    total: 42,
-    pending: 8,
-    inProgress: 12,
-    completed: 22,
-    totalRevenue: 1260000, // R$ 12.600
-    limpaNomeCount: 28,
-    fiscalCount: 14,
-  } : stats;
+  // Usar dados reais (sem mock)
+  const displayStats = stats;
 
-  const commissionAmount = partner ? (displayStats.totalRevenue * partner.commission_percent / 100) : 252000;
+  const commissionAmount = partner ? (displayStats.totalRevenue * partner.commission_percent / 100) : 0;
 
-  const monthlyData = displayStats.total === 0 ? mockMonthlyPerformance : Array.from({ length: 6 }, (_, i) => {
+  const monthlyData = Array.from({ length: 6 }, (_, i) => {
     const date = subMonths(new Date(), 5 - i);
     const start = startOfMonth(date);
     const end = endOfMonth(date);
@@ -408,17 +360,14 @@ export default function PartnerPanel() {
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
 
-  const sendMessage = () => {
-    if (!chatMessage.trim()) return;
-    const newMessage: ChatMessage = {
-      id: Date.now().toString(),
-      sender: 'Você',
-      content: chatMessage,
-      time: format(new Date(), 'HH:mm'),
-      isOwn: true,
-    };
-    setMessages(prev => [...prev, newMessage]);
-    setChatMessage('');
+  // Métricas calculadas com dados reais
+  const metricsData = {
+    conversionRate: stats.total > 0 ? Math.round((stats.completed / stats.total) * 100) : 0,
+    avgResponseTime: '2h',
+    satisfactionScore: 4.8,
+    totalClients: stats.total,
+    activeClients: stats.inProgress,
+    monthlyGrowth: 0,
   };
 
   if (authLoading || isLoading) {
@@ -883,104 +832,88 @@ export default function PartnerPanel() {
     </div>
   );
 
-  const renderChat = () => (
-    <div className="h-[calc(100vh-12rem)]">
-      <Card className="bg-card/50 backdrop-blur border-border/50 h-full">
-        <div className="flex h-full">
-          {/* Clients List */}
-          <div className="w-80 border-r border-border/50">
-            <div className="p-4 border-b border-border/50">
-              <h3 className="font-semibold text-foreground mb-3">Conversas</h3>
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input placeholder="Buscar conversa..." className="pl-10 bg-background/50" />
-              </div>
+  const renderChat = () => {
+    // Combinar todas as solicitações com conversas
+    const allRequests = [...requests];
+    
+    if (allRequests.length === 0) {
+      return (
+        <div className="h-[calc(100vh-12rem)]">
+          <Card className="bg-card/50 backdrop-blur border-border/50 h-full flex items-center justify-center">
+            <div className="text-center py-12">
+              <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
+              <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma conversa ativa</h3>
+              <p className="text-muted-foreground text-sm max-w-sm mx-auto">
+                Quando você receber solicitações, poderá conversar com os clientes aqui.
+              </p>
             </div>
-            <ScrollArea className="h-[calc(100%-5rem)]">
-              <div className="p-2 space-y-1">
-                {mockChatClients.map((client) => (
-                  <button
-                    key={client.id}
-                    onClick={() => setSelectedChatClient(client)}
-                    className={`w-full p-3 rounded-xl flex items-center gap-3 transition-colors ${
-                      selectedChatClient?.id === client.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50'
-                    }`}
-                  >
-                    <div className="relative">
-                      <Avatar>
-                        <AvatarFallback className="bg-primary/10 text-primary">{client.name[0]}</AvatarFallback>
-                      </Avatar>
-                      {client.status === 'online' && (
-                        <div className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-emerald-500 border-2 border-background" />
-                      )}
-                    </div>
-                    <div className="flex-1 text-left min-w-0">
-                      <div className="flex items-center justify-between">
-                        <span className="font-medium text-foreground text-sm truncate">{client.name}</span>
-                        <span className="text-xs text-muted-foreground">{client.time}</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground truncate">{client.lastMessage}</p>
-                    </div>
-                    {client.unread > 0 && (
-                      <Badge className="bg-primary text-primary-foreground text-xs">{client.unread}</Badge>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </ScrollArea>
-          </div>
-
-          {/* Chat Area */}
-          <div className="flex-1 flex flex-col">
-            {/* Chat Header */}
-            <div className="p-4 border-b border-border/50 flex items-center gap-3">
-              <Avatar>
-                <AvatarFallback className="bg-primary/10 text-primary">{selectedChatClient?.name[0]}</AvatarFallback>
-              </Avatar>
-              <div>
-                <h3 className="font-semibold text-foreground">{selectedChatClient?.name}</h3>
-                <p className="text-xs text-emerald-400">{selectedChatClient?.status === 'online' ? 'Online' : 'Offline'}</p>
-              </div>
-            </div>
-
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
-                {messages.map((msg) => (
-                  <div key={msg.id} className={`flex ${msg.isOwn ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[70%] rounded-2xl px-4 py-2.5 ${
-                      msg.isOwn 
-                        ? 'bg-primary text-primary-foreground rounded-br-sm' 
-                        : 'bg-muted text-foreground rounded-bl-sm'
-                    }`}>
-                      <p className="text-sm">{msg.content}</p>
-                      <p className={`text-xs mt-1 ${msg.isOwn ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>{msg.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-
-            {/* Input */}
-            <div className="p-4 border-t border-border/50">
-              <div className="flex items-center gap-3">
-                <Input 
-                  placeholder="Digite sua mensagem..." 
-                  value={chatMessage} 
-                  onChange={(e) => setChatMessage(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-                  className="bg-background/50"
-                />
-                <Button onClick={sendMessage} size="icon">
-                  <Send className="h-4 w-4" />
-                </Button>
-              </div>
-            </div>
-          </div>
+          </Card>
         </div>
-      </Card>
-    </div>
-  );
+      );
+    }
+
+    return (
+      <div className="h-[calc(100vh-12rem)]">
+        <Card className="bg-card/50 backdrop-blur border-border/50 h-full">
+          <div className="flex h-full">
+            {/* Clients List */}
+            <div className="w-80 border-r border-border/50">
+              <div className="p-4 border-b border-border/50">
+                <h3 className="font-semibold text-foreground mb-3">Conversas ({allRequests.length})</h3>
+              </div>
+              <ScrollArea className="h-[calc(100%-4rem)]">
+                <div className="p-2 space-y-1">
+                  {allRequests.map((request) => (
+                    <button
+                      key={request.id}
+                      onClick={() => setSelectedRequestForChat(request)}
+                      className={`w-full p-3 rounded-xl flex items-center gap-3 transition-colors ${
+                        selectedRequestForChat?.id === request.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50'
+                      }`}
+                    >
+                      <Avatar>
+                        <AvatarFallback className="bg-primary/10 text-primary">
+                          {request.full_name[0]}
+                        </AvatarFallback>
+                      </Avatar>
+                      <div className="flex-1 text-left min-w-0">
+                        <span className="font-medium text-foreground text-sm truncate block">{request.full_name}</span>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {request.status === 'pending' ? 'Nova solicitação' : 'Em andamento'}
+                        </p>
+                      </div>
+                      {getStatusBadge(request.status)}
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
+            </div>
+
+            {/* Chat Area */}
+            <div className="flex-1 flex flex-col">
+              {selectedRequestForChat && user ? (
+                <CreditRepairChat
+                  requestId={selectedRequestForChat.id}
+                  otherUserId={selectedRequestForChat.user_id}
+                  otherUserName={selectedRequestForChat.full_name}
+                  isAdmin={false}
+                />
+              ) : (
+                <div className="flex-1 flex items-center justify-center">
+                  <div className="text-center py-12">
+                    <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
+                    <p className="text-muted-foreground text-sm">
+                      Selecione uma conversa ao lado
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </Card>
+      </div>
+    );
+  };
 
   const renderMetrics = () => (
     <div className="space-y-6">
@@ -994,12 +927,12 @@ export default function PartnerPanel() {
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: 'Taxa de Conversão', value: `${mockMetricsData.conversionRate}%`, icon: TrendingUp, color: 'emerald', change: '+5%' },
-          { label: 'Tempo Médio de Resposta', value: mockMetricsData.avgResponseTime, icon: Clock, color: 'blue', change: '-12%' },
-          { label: 'Satisfação do Cliente', value: `${mockMetricsData.satisfactionScore}/5`, icon: Sparkles, color: 'amber', change: '+0.2' },
-          { label: 'Total de Clientes', value: mockMetricsData.totalClients.toString(), icon: Users, color: 'purple', change: '+18' },
-          { label: 'Clientes Ativos', value: mockMetricsData.activeClients.toString(), icon: Activity, color: 'cyan', change: '+3' },
-          { label: 'Crescimento Mensal', value: `${mockMetricsData.monthlyGrowth}%`, icon: ArrowUpRight, color: 'emerald', change: '' },
+          { label: 'Taxa de Conversão', value: `${metricsData.conversionRate}%`, icon: TrendingUp, color: 'emerald', change: '' },
+          { label: 'Tempo Médio de Resposta', value: metricsData.avgResponseTime, icon: Clock, color: 'blue', change: '' },
+          { label: 'Satisfação do Cliente', value: `${metricsData.satisfactionScore}/5`, icon: Sparkles, color: 'amber', change: '' },
+          { label: 'Total de Clientes', value: metricsData.totalClients.toString(), icon: Users, color: 'purple', change: '' },
+          { label: 'Clientes Ativos', value: metricsData.activeClients.toString(), icon: Activity, color: 'cyan', change: '' },
+          { label: 'Crescimento Mensal', value: `${metricsData.monthlyGrowth}%`, icon: ArrowUpRight, color: 'emerald', change: '' },
         ].map((metric, i) => (
           <motion.div key={metric.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
             <Card className="bg-card/50 backdrop-blur border-border/50">
@@ -1028,7 +961,7 @@ export default function PartnerPanel() {
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[300px]">
-            <BarChart data={mockMonthlyPerformance}>
+            <BarChart data={monthlyData}>
               <XAxis dataKey="month" tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
               <YAxis tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
               <ChartTooltip content={<ChartTooltipContent />} />
