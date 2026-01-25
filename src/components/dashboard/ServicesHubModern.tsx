@@ -72,7 +72,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       <div className={`
         relative h-full rounded-3xl overflow-hidden group cursor-pointer
-        ${popular ? 'p-[2px] bg-gradient-to-br from-emerald-400 via-teal-400 to-cyan-400' : 'p-[1px] bg-gradient-to-br from-white/20 to-white/5'}
+        ${popular ? 'p-[2px] bg-gradient-to-br from-primary via-success to-info' : 'p-[1px] bg-gradient-to-br from-border to-border/50'}
       `}>
         {/* Animated glow effect on hover */}
         <motion.div 
@@ -82,17 +82,17 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         />
         
         <Card className={`
-          relative h-full bg-gradient-to-br from-slate-900/95 via-slate-800/95 to-slate-900/95 backdrop-blur-xl border-0 transition-all duration-300 rounded-[22px]
-          ${popular ? 'shadow-2xl shadow-emerald-500/20' : 'shadow-xl shadow-black/20'}
+          relative h-full bg-card border-0 transition-all duration-300 rounded-[22px]
+          ${popular ? 'shadow-2xl shadow-primary/20' : 'shadow-lg'}
         `}>
           {/* Popular ribbon with glow */}
           {popular && (
             <div className="absolute -top-1 -right-1 z-10">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 to-teal-400 blur-lg opacity-70" />
+                <div className="absolute inset-0 bg-gradient-to-r from-primary to-success blur-lg opacity-70" />
                 <motion.div 
-                  className="relative bg-gradient-to-r from-emerald-400 to-teal-400 text-slate-900 text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5"
-                  animate={{ boxShadow: ['0 0 20px rgba(52,211,153,0.3)', '0 0 40px rgba(52,211,153,0.6)', '0 0 20px rgba(52,211,153,0.3)'] }}
+                  className="relative bg-gradient-to-r from-primary to-success text-primary-foreground text-xs font-black px-4 py-1.5 rounded-full shadow-lg flex items-center gap-1.5"
+                  animate={{ boxShadow: ['0 0 20px rgba(var(--primary),0.3)', '0 0 40px rgba(var(--primary),0.6)', '0 0 20px rgba(var(--primary),0.3)'] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 >
                   <Star className="h-3 w-3 fill-current" />
@@ -105,7 +105,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
           {/* Badge with glow */}
           {badge && !popular && (
             <div className="absolute top-4 right-4 z-10">
-              <Badge className="bg-gradient-to-r from-amber-500/30 to-orange-500/30 text-amber-300 border-amber-500/40 text-xs font-bold shadow-lg shadow-amber-500/20 backdrop-blur-sm">
+              <Badge className="bg-accent/20 text-accent-foreground border-accent/40 text-xs font-bold shadow-lg">
                 {badge}
               </Badge>
             </div>
@@ -123,10 +123,10 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <Icon className="h-7 w-7 text-white relative z-10" />
               </motion.div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-lg font-bold text-white leading-tight mb-1 group-hover:text-emerald-300 transition-colors">
+                <h3 className="text-lg font-bold text-foreground leading-tight mb-1 group-hover:text-primary transition-colors">
                   {title}
                 </h3>
-                <p className="text-sm text-white/70 line-clamp-2">
+                <p className="text-sm text-muted-foreground line-clamp-2">
                   {description}
                 </p>
               </div>
@@ -135,45 +135,45 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             {/* Pricing Card - Futuristic */}
             <div className={`
               relative mb-5 p-4 rounded-2xl overflow-hidden
-              ${basePrice === 0 ? 'bg-gradient-to-br from-amber-500/15 to-orange-500/10 border border-amber-500/30' : 
-                isSubscribed ? 'bg-gradient-to-br from-emerald-500/15 to-teal-500/10 border border-emerald-500/30' : 
-                'bg-gradient-to-br from-white/5 to-white/[0.02] border border-white/10'}
+              ${basePrice === 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200' : 
+                isSubscribed ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200' : 
+                'bg-muted/50 border border-border'}
             `}>
               {basePrice === 0 ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl font-black bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
+                    <span className="text-3xl font-black bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
                       GRÁTIS
                     </span>
-                    <Badge className="bg-amber-500/30 text-amber-300 border-amber-500/40 text-xs font-bold animate-pulse">
+                    <Badge className="bg-amber-100 text-amber-700 border-amber-300 text-xs font-bold animate-pulse">
                       💰 Success Fee
                     </Badge>
                   </div>
-                  <p className="text-xs text-amber-300 font-medium">
+                  <p className="text-xs text-amber-700 font-medium">
                     Pague apenas 50% do valor recuperado
                   </p>
                 </div>
               ) : isSubscribed ? (
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-3">
-                    <span className="text-3xl font-black text-emerald-400">{formatPrice(discountedPrice)}</span>
-                    <span className="text-base text-slate-500 line-through">{formatPrice(basePrice)}</span>
+                    <span className="text-3xl font-black text-success">{formatPrice(discountedPrice)}</span>
+                    <span className="text-base text-muted-foreground line-through">{formatPrice(basePrice)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 text-xs font-bold">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 text-success text-xs font-bold">
                       <Percent className="h-3.5 w-3.5" />
                       {discountPercent}% OFF
                     </div>
-                    <span className="text-xs text-emerald-400/70">Desconto ativo</span>
+                    <span className="text-xs text-success/70">Desconto ativo</span>
                   </div>
                 </div>
               ) : (
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black text-white">{formatPrice(basePrice)}</span>
+                    <span className="text-3xl font-black text-foreground">{formatPrice(basePrice)}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-medium">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 text-accent-foreground text-xs font-medium">
                       <Crown className="h-3.5 w-3.5" />
                       {formatPrice(discountedPrice)} p/ assinantes
                     </div>
@@ -185,11 +185,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             {/* Features with modern styling */}
             <ul className="space-y-3 mb-6 flex-1">
               {features.map((feature, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-sm text-white/80 group/item">
-                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                <li key={idx} className="flex items-center gap-3 text-sm text-muted-foreground group/item">
+                  <div className="flex-shrink-0 w-5 h-5 rounded-full bg-success/10 flex items-center justify-center">
+                    <CheckCircle2 className="h-3.5 w-3.5 text-success" />
                   </div>
-                  <span className="group-hover/item:text-white transition-colors">{feature}</span>
+                  <span className="group-hover/item:text-foreground transition-colors">{feature}</span>
                 </li>
               ))}
             </ul>
@@ -372,17 +372,17 @@ export const ServicesHubModern: React.FC = () => {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 transition={{ type: "spring", stiffness: 300 }}
               >
-                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 blur-xl opacity-60" />
-                <div className="relative p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-xl shadow-emerald-500/30">
-                  <Zap className="h-7 w-7 text-white" />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary to-success blur-xl opacity-40" />
+                <div className="relative p-4 rounded-2xl bg-gradient-to-br from-primary to-success shadow-xl">
+                  <Zap className="h-7 w-7 text-primary-foreground" />
                 </div>
               </motion.div>
               <div>
-                <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+                <h2 className="text-3xl md:text-4xl font-black text-foreground tracking-tight">
                   Nossos Serviços
                 </h2>
-                <p className="text-white/70 text-base md:text-lg">
-                  Contadores <span className="text-emerald-400 font-semibold">especializados</span> na Reforma Tributária
+                <p className="text-muted-foreground text-base md:text-lg">
+                  Contadores <span className="text-primary font-semibold">especializados</span> na Reforma Tributária
                 </p>
               </div>
             </div>
@@ -392,18 +392,18 @@ export const ServicesHubModern: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 backdrop-blur-xl"
+              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-success/10 border border-success/30"
             >
               <motion.div 
-                className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg"
+                className="p-3 rounded-xl bg-gradient-to-br from-success to-primary shadow-lg"
                 animate={{ rotate: [0, 10, -10, 0] }}
                 transition={{ duration: 3, repeat: Infinity }}
               >
-                <Sparkles className="h-5 w-5 text-white" />
+                <Sparkles className="h-5 w-5 text-success-foreground" />
               </motion.div>
               <div>
-                <span className="text-white font-bold text-base">Descontos Ativados!</span>
-                <p className="text-emerald-300 text-sm font-medium">Até 30% OFF em todos os serviços</p>
+                <span className="text-foreground font-bold text-base">Descontos Ativados!</span>
+                <p className="text-success text-sm font-medium">Até 30% OFF em todos os serviços</p>
               </div>
             </motion.div>
           )}
@@ -412,18 +412,18 @@ export const ServicesHubModern: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-gradient-to-r from-amber-500/20 to-orange-500/20 border border-amber-500/30 backdrop-blur-xl"
+              className="flex items-center gap-3 px-6 py-4 rounded-2xl bg-accent/10 border border-accent/30"
             >
               <motion.div 
-                className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg"
+                className="p-3 rounded-xl bg-gradient-to-br from-accent to-amber-500 shadow-lg"
                 animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
-                <Crown className="h-5 w-5 text-white" />
+                <Crown className="h-5 w-5 text-accent-foreground" />
               </motion.div>
               <div>
-                <span className="text-white font-bold text-base">Assine e Economize</span>
-                <p className="text-amber-300 text-sm font-medium">Até 30% de desconto</p>
+                <span className="text-foreground font-bold text-base">Assine e Economize</span>
+                <p className="text-amber-600 text-sm font-medium">Até 30% de desconto</p>
               </div>
             </motion.div>
           )}
@@ -445,12 +445,12 @@ export const ServicesHubModern: React.FC = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: idx * 0.1 }}
             whileHover={{ scale: 1.05, y: -2 }}
-            className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 text-sm backdrop-blur-xl cursor-pointer group"
+            className="flex items-center gap-2.5 px-5 py-2.5 rounded-full bg-card border border-border text-sm shadow-sm cursor-pointer group"
           >
             <div className={`w-7 h-7 rounded-lg bg-gradient-to-br ${item.color} flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform`}>
               <item.icon className={`h-3.5 w-3.5 text-white ${item.fill ? 'fill-current' : ''}`} />
             </div>
-            <span className="text-white/90 font-medium">{item.text}</span>
+            <span className="text-foreground font-medium">{item.text}</span>
           </motion.div>
         ))}
       </div>

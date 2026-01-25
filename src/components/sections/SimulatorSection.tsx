@@ -131,16 +131,16 @@ export function SimulatorSection() {
   };
 
   return (
-    <section ref={containerRef} id="simulator" className="py-20 md:py-32 relative overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
-      {/* Futuristic Animated Background */}
+    <section ref={containerRef} id="simulator" className="py-20 md:py-32 relative overflow-hidden bg-gradient-to-b from-muted/30 via-background to-background">
+      {/* Clean Light Background with Subtle Accents */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        {/* Animated mesh gradient */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-violet-600/15 via-transparent to-transparent" />
+        {/* Soft gradient overlays */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-accent/5 via-transparent to-transparent" />
         
-        {/* Floating orbs with parallax */}
+        {/* Floating orbs with parallax - much lighter */}
         <motion.div 
-          className="absolute top-20 left-[10%] w-96 h-96 bg-gradient-to-br from-cyan-500/30 to-blue-600/20 rounded-full blur-[100px]"
+          className="absolute top-20 left-[10%] w-96 h-96 bg-gradient-to-br from-primary/10 to-info/5 rounded-full blur-[100px]"
           style={{ y: y1 }}
           animate={{ 
             scale: [1, 1.2, 1],
@@ -149,7 +149,7 @@ export function SimulatorSection() {
           transition={{ duration: 8, repeat: Infinity, ease: "easeInOut" }}
         />
         <motion.div 
-          className="absolute bottom-20 right-[10%] w-80 h-80 bg-gradient-to-br from-violet-500/30 to-purple-600/20 rounded-full blur-[80px]"
+          className="absolute bottom-20 right-[10%] w-80 h-80 bg-gradient-to-br from-accent/10 to-success/5 rounded-full blur-[80px]"
           style={{ y: y2 }}
           animate={{ 
             scale: [1.2, 1, 1.2],
@@ -157,19 +157,9 @@ export function SimulatorSection() {
           }}
           transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
         />
-        <motion.div 
-          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-br from-emerald-500/10 to-teal-500/5 rounded-full blur-[120px]"
-          animate={{ 
-            rotate: 360 
-          }}
-          transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
-        />
         
-        {/* Grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
-        
-        {/* Scanline effect */}
-        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.05)_50%)] bg-[size:100%_4px] opacity-30" />
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -183,53 +173,43 @@ export function SimulatorSection() {
           <div className="text-center mb-12">
             {/* Futuristic badge */}
             <motion.div 
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-cyan-500/20 border border-cyan-500/30 text-cyan-400 text-sm font-semibold mb-6 backdrop-blur-sm"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 border border-primary/30 text-primary text-sm font-semibold mb-6"
               initial={{ scale: 0.8, opacity: 0 }}
               whileInView={{ scale: 1, opacity: 1 }}
               viewport={{ once: true }}
-              animate={{ 
-                boxShadow: ['0 0 20px rgba(34,211,238,0.2)', '0 0 40px rgba(34,211,238,0.4)', '0 0 20px rgba(34,211,238,0.2)']
-              }}
-              transition={{ duration: 2, repeat: Infinity }}
             >
               <Calculator className="w-4 h-4" />
               <span>SIMULADOR INTELIGENTE</span>
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
             </motion.div>
             
             <h2 className="text-3xl md:text-5xl lg:text-6xl font-black mb-6 tracking-tight">
-              <span className="text-white">Compare Seus Impostos</span>
+              <span className="text-foreground">Compare Seus Impostos</span>
               <br />
-              <span className="bg-gradient-to-r from-cyan-400 via-violet-400 to-fuchsia-400 bg-clip-text text-transparent animate-gradient-x">
+              <span className="bg-gradient-to-r from-primary via-info to-accent bg-clip-text text-transparent">
                 Antes e Depois
               </span>
             </h2>
-            <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
-              Descubra como a <span className="text-cyan-400 font-semibold">Reforma Tributária 2026</span> vai impactar seu negócio.
+            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              Descubra como a <span className="text-primary font-semibold">Reforma Tributária 2026</span> vai impactar seu negócio.
               <br className="hidden md:block" />
               Simulação com alíquotas oficiais IBS, CBS e IS.
             </p>
           </div>
 
           {/* Futuristic Card */}
-          <Card className="overflow-hidden border-0 bg-gradient-to-br from-slate-900/90 via-slate-800/90 to-slate-900/90 backdrop-blur-xl shadow-2xl shadow-cyan-500/10 rounded-3xl">
-            {/* Glowing border effect */}
-            <div className="absolute inset-0 rounded-3xl bg-gradient-to-r from-cyan-500/20 via-violet-500/20 to-cyan-500/20 blur-sm -z-10" />
-            
-            <CardHeader className="bg-gradient-to-r from-cyan-500/10 via-transparent to-violet-500/10 border-b border-white/5 pb-6">
-              <CardTitle className="flex items-center gap-4 text-white">
+          <Card className="overflow-hidden border border-border bg-card shadow-xl rounded-3xl">
+            <CardHeader className="bg-gradient-to-r from-primary/5 via-transparent to-accent/5 border-b border-border pb-6">
+              <CardTitle className="flex items-center gap-4 text-foreground">
                 <motion.div 
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-violet-600 flex items-center justify-center shadow-lg shadow-cyan-500/30"
-                  animate={{ 
-                    boxShadow: ['0 10px 30px rgba(34,211,238,0.3)', '0 10px 50px rgba(34,211,238,0.5)', '0 10px 30px rgba(34,211,238,0.3)']
-                  }}
-                  transition={{ duration: 3, repeat: Infinity }}
+                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-info flex items-center justify-center shadow-lg"
+                  whileHover={{ scale: 1.05 }}
                 >
-                  <Calculator className="w-7 h-7 text-white" />
+                  <Calculator className="w-7 h-7 text-primary-foreground" />
                 </motion.div>
                 <div>
                   <span className="text-xl md:text-2xl font-bold">Simulador de Impacto Tributário</span>
-                  <CardDescription className="text-white/60 mt-1">
+                  <CardDescription className="text-muted-foreground mt-1">
                     Preencha os dados e veja a estimativa em tempo real
                   </CardDescription>
                 </div>
@@ -240,12 +220,12 @@ export function SimulatorSection() {
                 {/* Input Fields - Row 1 */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="revenue" className="flex items-center justify-between text-white">
+                    <Label htmlFor="revenue" className="flex items-center justify-between text-foreground">
                       <span>Faturamento {revenueType === "monthly" ? "Mensal" : "Anual"}</span>
                       <button
                         type="button"
                         onClick={() => setRevenueType(prev => prev === "monthly" ? "annual" : "monthly")}
-                        className="text-xs text-cyan-400 hover:underline font-medium"
+                        className="text-xs text-primary hover:underline font-medium"
                       >
                         {revenueType === "monthly" ? "Usar anual?" : "Usar mensal?"}
                       </button>
@@ -255,10 +235,10 @@ export function SimulatorSection() {
                       placeholder={revenueType === "monthly" ? "R$ 0,00" : "R$ 0,00 (anual)"}
                       value={revenue}
                       onChange={handleRevenueChange}
-                      className="h-12 bg-slate-800/50 border-white/20 text-white placeholder:text-slate-500"
+                      className="h-12 bg-background border-input text-foreground placeholder:text-muted-foreground"
                     />
                     {revenueType === "annual" && (
-                      <p className="text-xs text-white/60">
+                      <p className="text-xs text-muted-foreground">
                         Faturamento anual é mais preciso para enquadramento tributário
                       </p>
                     )}
@@ -329,9 +309,9 @@ export function SimulatorSection() {
                 {/* Row 2 - Sector and Regime */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label className="text-white">Setor de Atuação</Label>
+                    <Label className="text-foreground">Setor de Atuação</Label>
                     <Select value={sector} onValueChange={(value) => { setSector(value); setState(""); }}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-white/20 text-white">
+                      <SelectTrigger className="h-12 bg-background border-input text-foreground">
                         <SelectValue placeholder="Selecione o setor" />
                       </SelectTrigger>
                       <SelectContent>
@@ -344,9 +324,9 @@ export function SimulatorSection() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label className="text-white">Regime Tributário</Label>
+                    <Label className="text-foreground">Regime Tributário</Label>
                     <Select value={companyType} onValueChange={setCompanyType}>
-                      <SelectTrigger className="h-12 bg-slate-800/50 border-white/20 text-white">
+                      <SelectTrigger className="h-12 bg-background border-input text-foreground">
                         <SelectValue placeholder="Selecione o regime" />
                       </SelectTrigger>
                       <SelectContent>
@@ -364,12 +344,12 @@ export function SimulatorSection() {
                 {showStateSelector && (
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label className="flex items-center gap-2 text-white">
+                      <Label className="flex items-center gap-2 text-foreground">
                         <MapPin className="w-4 h-4" />
                         Estado (ICMS)
                       </Label>
                       <Select value={state || "default"} onValueChange={(value) => setState(value === "default" ? "" : value)}>
-                        <SelectTrigger className="h-12 bg-slate-800/50 border-white/20 text-white">
+                        <SelectTrigger className="h-12 bg-background border-input text-foreground">
                           <SelectValue placeholder="Selecione o estado (opcional)" />
                         </SelectTrigger>
                         <SelectContent>
