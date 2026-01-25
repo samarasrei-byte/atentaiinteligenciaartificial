@@ -344,95 +344,53 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-slate-950">
-      {/* Animated Background */}
+      {/* Clean Background - g8prospect inspired */}
       <div className="absolute inset-0">
-        {/* Gradient orbs - more subtle and professional */}
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.15, 1],
-            opacity: [0.15, 0.25, 0.15],
-          }}
-          transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[180px]" 
-        />
-        <motion.div 
-          animate={{ 
-            scale: [1.15, 1, 1.15],
-            opacity: [0.1, 0.2, 0.1],
-          }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-cyan-500/15 rounded-full blur-[150px]" 
-        />
+        {/* Single subtle gradient */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/10 to-transparent rounded-full blur-[100px]" />
         
-        {/* Grid pattern overlay - more subtle */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.015)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.015)_1px,transparent_1px)] bg-[size:80px_80px]" />
+        {/* Minimal grid pattern */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
       </div>
 
-      {/* Back Button */}
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="absolute top-6 left-6 z-20"
-      >
+      {/* Back Button - More prominent */}
+      <div className="absolute top-6 left-6 z-20">
         <Button
           variant="ghost"
           size="sm"
-          className="text-slate-400 hover:text-white hover:bg-white/5 gap-2"
+          className="text-slate-400 hover:text-white hover:bg-white/10 gap-2 transition-all"
           onClick={() => navigate('/')}
         >
           <ArrowLeft className="h-4 w-4" />
           Voltar
         </Button>
-      </motion.div>
+      </div>
 
-      {/* Main Content */}
+      {/* Main Content - Centered and Clean */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="w-full max-w-md"
-        >
-          {/* Logo & Title */}
-          <div className="text-center mb-10">
-            {/* Logo with enhanced contrast */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
-              className="relative mb-8"
-            >
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-20 h-20 bg-primary/30 rounded-full blur-2xl" />
-              </div>
+        <div className="w-full max-w-[420px]">
+          {/* Logo & Title - Simplified */}
+          <div className="text-center mb-8">
+            {/* Logo with strong contrast */}
+            <div className="mb-6">
               <img 
                 src="/logo-atentai.png" 
                 alt="AtentAI" 
-                className="h-14 w-auto mx-auto relative z-10 drop-shadow-[0_0_30px_rgba(45,212,191,0.4)]"
+                className="h-12 w-auto mx-auto drop-shadow-[0_0_20px_rgba(45,212,191,0.5)]"
               />
-            </motion.div>
+            </div>
             
-            <motion.h1 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-3xl md:text-4xl font-bold text-white mb-3 tracking-tight"
-            >
+            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
               {mode === 'login' 
-                ? 'Seu painel tributário' 
-                : 'Comece a economizar'}
-            </motion.h1>
+                ? 'Acesse seu painel' 
+                : 'Crie sua conta'}
+            </h1>
             
-            <motion.p 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-              className="text-slate-400 text-base"
-            >
+            <p className="text-slate-400 text-sm">
               {mode === 'login' 
-                ? 'Acesse simulações, análises e economias personalizadas' 
-                : 'Crie sua conta gratuita e descubra oportunidades fiscais'}
-            </motion.p>
+                ? 'Análises tributárias personalizadas para seu negócio' 
+                : 'Descubra quanto você pode economizar'}
+            </p>
           </div>
 
           {/* Auth Card */}
@@ -722,7 +680,7 @@ const Auth = () => {
               </div>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Forgot Password Modal */}
