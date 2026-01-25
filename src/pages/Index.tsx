@@ -41,54 +41,56 @@ const Index = () => {
       <Header onNavigate={scrollToSection} />
       
       <main className="animate-page-enter">
-        {/* 1. Hero - Primeira impressão */}
+        {/* 1. HERO - Primeira impressão: O que é, para quem, CTA forte */}
         <HeroSection onNavigate={scrollToSection} />
         
-        {/* 2. Features - O que oferecemos */}
+        {/* 2. FEATURES - O que oferecemos (benefícios claros) */}
         <FeaturesSection />
         
-        {/* 3. Stats - Prova social com números */}
+        {/* 3. STATS - Prova social com números (credibilidade) */}
         <StatsSection />
         
-        {/* 4. MARKETPLACE - Nossos Serviços (NOVO) */}
+        {/* 4. PROFILES - Para quem é (PF, CNPJ, Autônomo, Parceiro) */}
+        <ProfilesSection />
+        
+        {/* 5. MARKETPLACE - Serviços em destaque com preço e CTA direto */}
         <section id="servicos" className="py-20 bg-muted/30">
           <div className="container mx-auto px-4">
             <ServicesHubModern />
           </div>
         </section>
         
-        {/* 5. Módulo Fiscal - Serviço premium de alta conversão */}
+        {/* 6. MÓDULO FISCAL - Serviço premium de alta conversão */}
         <section id="fiscal">
           <FiscalModuleSection />
         </section>
         
-        {/* 6. Depoimentos do Módulo Fiscal */}
+        {/* 7. FISCAL TESTIMONIALS - Prova social do módulo fiscal */}
         <FiscalTestimonialsSection />
         
-        {/* 7. Limpa Nome - Serviço secundário */}
+        {/* 8. LIMPA NOME - Serviço secundário com atendimento humano */}
         <section id="limpa-nome">
           <LimpaNomeSection />
         </section>
         
-        {/* 8. Cases de Sucesso - Prova social */}
+        {/* 9. SUCCESS CASES - Cases de sucesso (prova social) */}
         <SuccessCasesSection />
         
-        {/* 9. Simulador - Engajamento interativo */}
+        {/* 10. SIMULATOR - Engajamento interativo (CTA intermediário) */}
         <SimulatorSection />
         
-        {/* 10. IA - Diferencial tecnológico */}
+        {/* 11. AI SECTION - Diferencial tecnológico */}
         <AISection />
         
-        {/* 11. Perfis - Segmentação */}
-        <ProfilesSection />
+        {/* 12. PRICING - Conversão (CTA final de decisão) */}
+        <section id="pricing">
+          <PricingSection />
+        </section>
         
-        {/* 12. Pricing - Conversão */}
-        <PricingSection />
-        
-        {/* 13. FAQ - Objeções */}
+        {/* 13. FAQ - Objeções resolvidas */}
         <FAQSection />
         
-        {/* 14. Depoimentos - Prova social final */}
+        {/* 14. TESTIMONIALS - Prova social final */}
         <TestimonialsSection />
       </main>
 

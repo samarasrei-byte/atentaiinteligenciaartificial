@@ -1162,7 +1162,7 @@ export default function PartnerPanel() {
   );
 
   return (
-    <div className="dashboard-layout overflow-hidden">
+    <div className="dashboard-layout">
       {/* Sidebar */}
       <div className="hidden lg:block flex-shrink-0">
         <AppSidebar 

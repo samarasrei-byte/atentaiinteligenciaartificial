@@ -176,37 +176,54 @@
     text-wrap: balance;
   }
 
-  /* Dashboard Layout Master - Garante que não haja espaço em branco no rodapé */
+  /* Dashboard Layout Master - Unified layout for all panels - no footer whitespace */
   .dashboard-layout {
     @apply min-h-screen flex w-full bg-background;
-    min-height: 100vh;
-    min-height: 100dvh; /* Dynamic viewport height for mobile */
+    min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
   }
 
   .dashboard-main {
     @apply flex-1 flex flex-col w-full min-w-0;
-    min-height: 100vh;
     min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
   }
 
   .dashboard-header {
     @apply sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4;
     flex-shrink: 0;
+    min-height: 64px;
   }
 
   .dashboard-content {
     @apply p-4 lg:p-6 space-y-6;
-    flex: 1 1 auto;
+    flex: 1 1 0%;
     overflow-y: auto;
-    min-height: 0; /* Prevents flex item from overflowing */
+    overflow-x: hidden;
+    min-height: 0;
+  }
+
+  /* Ensure content has proper padding at bottom */
+  .dashboard-content > *:last-child {
+    margin-bottom: 0;
+  }
+  
+  .dashboard-content::after {
+    content: '';
+    display: block;
+    height: 1.5rem;
+    flex-shrink: 0;
   }
 
   /* Ensure no footer whitespace - content fills viewport */
   .dashboard-fill {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
     min-height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
   }
 }
 
