@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
-import AppSidebar from '@/components/layout/AppSidebar';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { RevenueChart } from '@/components/dashboard/RevenueChart';
@@ -268,10 +268,10 @@ const AdminPanel = () => {
     <div className="dashboard-layout">
       {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
       <div className="hidden lg:block">
-        <AppSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} variant="admin" activeTab={activeTab} onTabChange={handleTabChange} />
+        <AdminSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
       <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <AppSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} variant="admin" activeTab={activeTab} onTabChange={handleTabChange} />
+        <AdminSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
       
       <main className={`dashboard-main transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
