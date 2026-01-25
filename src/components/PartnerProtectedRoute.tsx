@@ -4,8 +4,9 @@ import { Loader2, ShieldX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logAuditEvent } from '@/hooks/useAuditLog';
 
 interface PartnerProtectedRouteProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function PartnerProtectedRoute({ children }: PartnerProtectedRouteProps) 
   const location = useLocation();
   const [isPartner, setIsPartner] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(true);
+  const loggedRef = useRef(false);
 
   useEffect(() => {
     const checkPartnerAccess = async () => {
@@ -57,6 +59,22 @@ export function PartnerProtectedRoute({ children }: PartnerProtectedRouteProps) 
       checkPartnerAccess();
     }
   }, [user, loading, hasRole]);
+
+  // Log access attempt once
+  useEffect(() => {
+    if (!isChecking && isPartner !== null && user && !loggedRef.current) {
+      loggedRef.current = true;
+      logAuditEvent({
+        userId: user.id,
+        userEmail: user.email,
+        actionType: isPartner ? 'route_access_allowed' : 'route_access_denied',
+        routeAttempted: location.pathname,
+        success: isPartner,
+        failureReason: isPartner ? undefined : 'Not a partner',
+        metadata: { access_type: 'partner_panel' }
+      });
+    }
+  }, [isChecking, isPartner, user, location.pathname]);
 
   if (loading || isChecking) {
     return (

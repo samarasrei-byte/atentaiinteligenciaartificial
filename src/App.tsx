@@ -16,6 +16,7 @@ import QaModeIndicator from "@/components/qa/QaModeIndicator";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import DashboardRouter from "./pages/DashboardRouter";
+import ProfileSelector from "./pages/ProfileSelector";
 import EmpresaPanel from "./pages/EmpresaPanel";
 import AutonomoPanel from "./pages/AutonomoPanel";
 import ContadorPanel from "./pages/ContadorPanel";
@@ -185,6 +186,11 @@ const App = () => (
               <Route path="/dashboard" element={
                 <ProtectedRoute>
                   <DashboardRouter />
+                </ProtectedRoute>
+              } />
+              <Route path="/selecionar-perfil" element={
+                <ProtectedRoute>
+                  <ProfileSelector />
                 </ProtectedRoute>
               } />
               <Route path="/empresa" element={

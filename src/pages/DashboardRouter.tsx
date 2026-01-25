@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
+import { logAuditEvent } from '@/hooks/useAuditLog';
 
 /**
  * Smart router that redirects users to their appropriate panel based on role:
@@ -13,6 +14,7 @@ import { Loader2 } from 'lucide-react';
  * - Parceiro → /parceiro
  * - Empresa (user default) → /empresa
  * 
+ * If user has multiple roles, redirect to profile selector.
  * Priority order ensures users with multiple roles go to the most appropriate panel.
  */
 const DashboardRouter = () => {
@@ -38,6 +40,54 @@ const DashboardRouter = () => {
           checkPartnerStatus()
         ]);
 
+        // Count available profiles
+        let availableProfilesCount = 0;
+        const availableProfiles: string[] = [];
+
+        if (hasRole('admin')) {
+          availableProfilesCount++;
+          availableProfiles.push('admin');
+        }
+        if (hasRole('contador')) {
+          availableProfilesCount++;
+          availableProfiles.push('contador');
+        }
+        if (isPartner) {
+          availableProfilesCount++;
+          availableProfiles.push('parceiro');
+        }
+        if (isAffiliate || hasRole('affiliate')) {
+          availableProfilesCount++;
+          availableProfiles.push('afiliado');
+        }
+        if (hasRole('autonomo')) {
+          availableProfilesCount++;
+          availableProfiles.push('autonomo');
+        }
+        
+        // Always count empresa/user as available
+        availableProfilesCount++;
+        availableProfiles.push('empresa');
+
+        // Log the routing decision
+        await logAuditEvent({
+          userId: user.id,
+          userEmail: user.email,
+          actionType: 'route_access_allowed',
+          routeAttempted: '/dashboard',
+          metadata: { 
+            available_profiles: availableProfiles, 
+            profile_count: availableProfilesCount 
+          }
+        });
+
+        // If multiple roles, go to profile selector
+        if (availableProfilesCount > 2) {
+          navigate('/selecionar-perfil', { replace: true });
+          return;
+        }
+
+        // Single role - route directly
         // Priority-based routing: admin > contador > partner > affiliate > autonomo > empresa
         if (hasRole('admin')) {
           navigate('/admin', { replace: true });

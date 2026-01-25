@@ -4,8 +4,9 @@ import { Loader2, ShieldX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { logAuditEvent } from '@/hooks/useAuditLog';
 
 interface AffiliateProtectedRouteProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export function AffiliateProtectedRoute({ children }: AffiliateProtectedRoutePro
   const location = useLocation();
   const [isAffiliate, setIsAffiliate] = useState<boolean | null>(null);
   const [isChecking, setIsChecking] = useState(true);
+  const loggedRef = useRef(false);
 
   useEffect(() => {
     const checkAffiliateAccess = async () => {
@@ -57,6 +59,22 @@ export function AffiliateProtectedRoute({ children }: AffiliateProtectedRoutePro
       checkAffiliateAccess();
     }
   }, [user, loading, hasRole]);
+
+  // Log access attempt once
+  useEffect(() => {
+    if (!isChecking && isAffiliate !== null && user && !loggedRef.current) {
+      loggedRef.current = true;
+      logAuditEvent({
+        userId: user.id,
+        userEmail: user.email,
+        actionType: isAffiliate ? 'route_access_allowed' : 'route_access_denied',
+        routeAttempted: location.pathname,
+        success: isAffiliate,
+        failureReason: isAffiliate ? undefined : 'Not an affiliate',
+        metadata: { access_type: 'affiliate_panel' }
+      });
+    }
+  }, [isChecking, isAffiliate, user, location.pathname]);
 
   if (loading || isChecking) {
     return (

@@ -504,6 +504,51 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_logs: {
+        Row: {
+          action_type: string
+          created_at: string
+          failure_reason: string | null
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
+          route_attempted: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action_type: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          route_attempted?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action_type?: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
+          route_attempted?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       autonomo_financial_goals: {
         Row: {
           completed_at: string | null

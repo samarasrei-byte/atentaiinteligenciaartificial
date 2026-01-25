@@ -3,6 +3,7 @@ import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { PlanType } from '@/lib/stripe';
 import { isQAUser, getQAFlags, QAFlags } from '@/lib/qaMode';
+import { logAuditEvent } from '@/hooks/useAuditLog';
 
 // All app roles including affiliate
 type AppRole = 'admin' | 'contador' | 'user' | 'autonomo' | 'affiliate';
@@ -252,6 +253,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const signOut = async () => {
+    // Log logout before clearing state
+    if (user) {
+      await logAuditEvent({
+        userId: user.id,
+        userEmail: user.email,
+        actionType: 'logout',
+        success: true,
+        metadata: { session_ended: true }
+      });
+    }
+    
     await supabase.auth.signOut();
     setUser(null);
     setSession(null);

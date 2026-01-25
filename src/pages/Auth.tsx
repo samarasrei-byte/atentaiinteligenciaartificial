@@ -11,6 +11,7 @@ import { Mail, Lock, User, Loader2, Building2, ArrowLeft, Briefcase, Calculator,
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { logAuditEvent } from '@/hooks/useAuditLog';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
@@ -175,12 +176,34 @@ const Auth = () => {
         } else if (error.message.includes('Email not confirmed')) {
           message = 'Por favor, confirme seu email antes de fazer login';
         }
+        
+        // Log failed login attempt
+        await logAuditEvent({
+          userEmail: email,
+          actionType: 'login_failed',
+          routeAttempted: '/auth',
+          success: false,
+          failureReason: message,
+          metadata: { error_type: error.message }
+        });
+        
         toast({
           variant: 'destructive',
           title: 'Erro',
           description: message,
         });
       } else {
+        // Log successful login
+        const { data: sessionData } = await supabase.auth.getSession();
+        await logAuditEvent({
+          userId: sessionData.session?.user?.id,
+          userEmail: email,
+          actionType: 'login_success',
+          routeAttempted: '/auth',
+          success: true,
+          metadata: { login_method: 'email_password' }
+        });
+        
         toast({
           title: 'Bem-vindo!',
           description: 'Login realizado com sucesso',
