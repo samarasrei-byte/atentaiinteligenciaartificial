@@ -115,10 +115,10 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <Button 
                 variant="accent" 
                 size="lg" 
-                onClick={() => navigate('/trial')}
+                onClick={() => navigate('/auth')}
                 className="w-full sm:w-auto group text-lg px-10 py-7 shadow-2xl shadow-accent/40 hover:shadow-accent/60 transition-all duration-300 font-bold"
               >
-                Começar Gratuitamente
+                Começar Agora
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
             </motion.div>

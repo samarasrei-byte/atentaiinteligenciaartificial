@@ -64,13 +64,13 @@ export function Header({ onNavigate }: HeaderProps) {
           </nav>
 
           {/* CTA Buttons */}
-          <div className="hidden md:flex items-center gap-2">
-            <Button variant="outline" size="sm" asChild className="border-primary text-primary hover:bg-primary/10">
+          <div className="hidden md:flex items-center gap-3">
+            <Button variant="outline" size="sm" asChild className="border-primary/50 text-primary hover:bg-primary/10">
               <Link to="/planos-perfil" className="flex items-center gap-2">
                 Ver Planos
               </Link>
             </Button>
-            <Button size="sm" asChild className="bg-primary hover:bg-primary/90">
+            <Button size="sm" asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
               <Link to="/auth" className="flex items-center gap-2">
                 <LogIn className="w-4 h-4" />
                 Entrar

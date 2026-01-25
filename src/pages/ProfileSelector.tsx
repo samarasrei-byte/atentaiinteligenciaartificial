@@ -162,65 +162,72 @@ const ProfileSelector = () => {
 
   if (loading || isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-          <p className="text-white/60">Carregando seus perfis...</p>
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+          <p className="text-white/60 font-medium">Carregando seus perfis...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <User className="h-8 w-8 text-primary" />
-            <h1 className="text-3xl font-bold text-white">Selecionar Perfil</h1>
-          </div>
-          <p className="text-white/60">
+    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background */}
+      <div className="absolute inset-0">
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[150px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-accent/15 rounded-full blur-[120px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      </div>
+
+      <div className="relative z-10 w-full max-w-2xl">
+        <div className="text-center mb-10">
+          <img 
+            src="/logo-atentai.png" 
+            alt="AtentAI" 
+            className="h-14 w-auto mx-auto mb-6"
+          />
+          <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">Selecionar Perfil</h1>
+          <p className="text-white/60 text-lg">
             Você possui acesso a múltiplos perfis. Escolha qual deseja acessar:
           </p>
         </div>
 
         <div className="grid gap-4">
           {availableProfiles.map((profile) => (
-            <Card 
+            <div 
               key={profile.id}
-              className="bg-white/5 border-white/10 hover:bg-white/10 transition-all duration-300 cursor-pointer group"
               onClick={() => handleSelectProfile(profile)}
+              className="group relative rounded-2xl bg-white/5 backdrop-blur-sm border border-white/10 p-6 cursor-pointer transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-[1.02]"
             >
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 rounded-xl ${profile.color} text-white`}>
-                    {profile.icon}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <CardTitle className="text-lg text-white">
-                        {profile.label}
-                      </CardTitle>
-                      <Badge variant="outline" className="border-white/20 text-white/60 text-xs">
-                        Disponível
-                      </Badge>
-                    </div>
-                    <CardDescription className="text-white/50 mt-1">
-                      {profile.description}
-                    </CardDescription>
-                  </div>
-                  <ChevronRight className="h-5 w-5 text-white/30 group-hover:text-white/60 transition-colors" />
+              <div className="flex items-center gap-4">
+                <div className={`p-4 rounded-xl ${profile.color} text-white shadow-lg`}>
+                  {profile.icon}
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex-1">
+                  <div className="flex items-center gap-3">
+                    <h3 className="text-lg font-semibold text-white">
+                      {profile.label}
+                    </h3>
+                    <Badge variant="outline" className="border-white/20 text-white/60 text-xs">
+                      Disponível
+                    </Badge>
+                  </div>
+                  <p className="text-white/50 mt-1">
+                    {profile.description}
+                  </p>
+                </div>
+                <ChevronRight className="h-6 w-6 text-white/30 group-hover:text-white/60 group-hover:translate-x-1 transition-all" />
+              </div>
+            </div>
           ))}
         </div>
 
-        <div className="mt-8 text-center">
+        <div className="mt-10 text-center">
           <Button
             variant="ghost"
             onClick={() => navigate('/')}
-            className="text-white/40 hover:text-white/60"
+            className="text-white/40 hover:text-white/60 hover:bg-white/5"
           >
             Voltar para o início
           </Button>

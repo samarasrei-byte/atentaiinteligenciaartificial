@@ -48,10 +48,10 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center space-y-4">
-          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Verificando permissões...</p>
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+          <p className="text-white/60 font-medium">Verificando permissões...</p>
         </div>
       </div>
     );
@@ -64,31 +64,35 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
   
   if (!hasAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4">
-        <Card className="max-w-md w-full">
-          <CardHeader className="text-center">
-            <div className="mx-auto w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4">
-              <ShieldX className="h-6 w-6 text-destructive" />
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
+        {/* Background effects */}
+        <div className="absolute inset-0">
+          <div className="absolute top-1/4 left-1/4 w-[400px] h-[400px] bg-red-500/10 rounded-full blur-[150px]" />
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
+        </div>
+        
+        <div className="relative z-10 max-w-md w-full">
+          <div className="rounded-3xl bg-white/5 backdrop-blur-xl border border-white/10 p-8 text-center">
+            <div className="mx-auto w-16 h-16 bg-red-500/20 rounded-2xl flex items-center justify-center mb-6">
+              <ShieldX className="h-8 w-8 text-red-400" />
             </div>
-            <CardTitle>Acesso Restrito</CardTitle>
-            <CardDescription>
-              Este painel é exclusivo para usuários com perfil de <strong>{roleLabels[requiredRole]}</strong>.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <p className="text-sm text-muted-foreground text-center">
+            <h2 className="text-2xl font-bold text-white mb-3">Acesso Restrito</h2>
+            <p className="text-white/60 mb-6">
+              Este painel é exclusivo para usuários com perfil de <strong className="text-white">{roleLabels[requiredRole]}</strong>.
+            </p>
+            <p className="text-sm text-white/40 mb-8">
               Você não possui as permissões necessárias para acessar esta área.
             </p>
-            <div className="flex flex-col gap-2">
-              <Button asChild className="w-full">
+            <div className="flex flex-col gap-3">
+              <Button asChild className="w-full h-12 rounded-xl font-semibold">
                 <Link to="/dashboard">Ir para meu Painel</Link>
               </Button>
-              <Button variant="outline" asChild className="w-full">
+              <Button variant="outline" asChild className="w-full h-12 rounded-xl border-white/20 text-white/80 hover:bg-white/10">
                 <Link to="/">Voltar ao Início</Link>
               </Button>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     );
   }
