@@ -86,6 +86,8 @@ import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
 import TestLogin from "./pages/TestLogin";
 import PartnerGuilhermePage from "./pages/PartnerGuilhermePage";
 import MarketplaceServicePage from "./pages/MarketplaceServicePage";
+import SobrePage from "./pages/SobrePage";
+import SuportePage from "./pages/SuportePage";
 
 const queryClient = new QueryClient();
 
@@ -103,6 +105,8 @@ const App = () => (
               <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
+              <Route path="/sobre" element={<SobrePage />} />
+              <Route path="/suporte" element={<SuportePage />} />
               <Route path="/comecar" element={<UserTypeSelection />} />
               <Route path="/trial" element={<TrialOnboarding />} />
               <Route path="/trial-success" element={<TrialSuccess />} />
