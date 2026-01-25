@@ -19,7 +19,7 @@ import {
 } from 'lucide-react';
 import { MaskedInput } from '@/components/ui/masked-input';
 
-// ==================== ANIMATED COUNTER ====================
+// ==================== ANIMATED COUNTER (STABLE - NO LAYOUT SHIFT) ====================
 const AnimatedCounter = ({ 
   end, 
   duration = 2500, 
@@ -35,12 +35,13 @@ const AnimatedCounter = ({
 }) => {
   const [count, setCount] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
+  const [hasAnimated, setHasAnimated] = useState(false);
   const ref = useRef<HTMLSpanElement>(null);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting) {
+        if (entry.isIntersecting && !hasAnimated) {
           setIsVisible(true);
         }
       },
@@ -49,21 +50,34 @@ const AnimatedCounter = ({
 
     if (ref.current) observer.observe(ref.current);
     return () => observer.disconnect();
-  }, []);
+  }, [hasAnimated]);
 
   useEffect(() => {
-    if (!isVisible) return;
+    if (!isVisible || hasAnimated) return;
     
     let startTime: number;
+    let animationId: number;
+    
     const animate = (timestamp: number) => {
       if (!startTime) startTime = timestamp;
       const progress = Math.min((timestamp - startTime) / duration, 1);
       const easeOut = 1 - Math.pow(1 - progress, 4);
       setCount(easeOut * end);
-      if (progress < 1) requestAnimationFrame(animate);
+      
+      if (progress < 1) {
+        animationId = requestAnimationFrame(animate);
+      } else {
+        setHasAnimated(true);
+        setCount(end); // Ensure final value is exact
+      }
     };
-    requestAnimationFrame(animate);
-  }, [end, duration, isVisible]);
+    
+    animationId = requestAnimationFrame(animate);
+    
+    return () => {
+      if (animationId) cancelAnimationFrame(animationId);
+    };
+  }, [end, duration, isVisible, hasAnimated]);
 
   const formatNumber = (num: number) => {
     if (decimals > 0) {
@@ -72,7 +86,18 @@ const AnimatedCounter = ({
     return Math.floor(num).toLocaleString('pt-BR');
   };
 
-  return <span ref={ref}>{prefix}{formatNumber(count)}{suffix}</span>;
+  // Use fixed width to prevent layout shift on mobile
+  const displayValue = `${prefix}${formatNumber(count)}${suffix}`;
+
+  return (
+    <span 
+      ref={ref} 
+      className="inline-block tabular-nums"
+      style={{ fontVariantNumeric: 'tabular-nums' }}
+    >
+      {displayValue}
+    </span>
+  );
 };
 
 // ==================== GLASSMORPHISM BUTTON ====================
@@ -401,15 +426,15 @@ export default function AffiliateOnboarding() {
         <div className="absolute inset-0 opacity-[0.015] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9IjMwMCIgaGVpZ2h0PSIzMDAiIGZpbHRlcj0idXJsKCNhKSIgb3BhY2l0eT0iMC40Ii8+PC9zdmc+')]" />
       </div>
 
-      {/* ==================== HEADER ==================== */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur-2xl border-b border-white/5">
+      {/* ==================== HEADER (WHITE/LIGHT THEME) ==================== */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-2xl border-b border-slate-200/50 shadow-sm">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-between h-16">
             <Link to="/" className="flex items-center gap-2 group">
               <motion.img 
                 src="/logo-atentai.png" 
                 alt="AtentAI" 
-                className="h-10 w-auto drop-shadow-2xl transition-all duration-300 group-hover:brightness-125"
+                className="h-10 w-auto drop-shadow-sm transition-all duration-300 group-hover:brightness-110"
                 whileHover={{ scale: 1.05 }}
               />
             </Link>
@@ -418,21 +443,19 @@ export default function AffiliateOnboarding() {
                 variant="ghost" 
                 size="sm" 
                 asChild 
-                className="text-white/60 hover:text-white hover:bg-white/5"
+                className="text-slate-600 hover:text-slate-900 hover:bg-slate-100"
               >
                 <Link to="/">
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Voltar
                 </Link>
               </Button>
-              <GlassButton 
-                variant="secondary" 
-                size="default"
+              <Button 
                 onClick={() => navigate('/auth')}
-                className="hidden sm:flex"
+                className="hidden sm:flex bg-slate-900 hover:bg-slate-800 text-white rounded-full px-5 py-2 font-semibold shadow-lg hover:shadow-xl transition-all"
               >
                 Já sou afiliado
-              </GlassButton>
+              </Button>
             </div>
           </div>
         </div>
@@ -448,18 +471,18 @@ export default function AffiliateOnboarding() {
               transition={{ duration: 0.8, ease: "easeOut" }}
               className="text-center max-w-5xl mx-auto"
             >
-              {/* Live badge */}
+              {/* Live badge - HIGH CONTRAST FOR READABILITY */}
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-sm mb-8"
+                className="inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-emerald-500/20 border-2 border-emerald-400/50 text-emerald-300 text-sm mb-8 shadow-lg shadow-emerald-500/10"
               >
-                <span className="relative flex h-2.5 w-2.5">
+                <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400"></span>
                 </span>
-                <span className="font-semibold">285 afiliados ativos agora</span>
+                <span className="font-bold text-base tracking-wide text-white">285 afiliados ativos agora</span>
               </motion.div>
               
               {/* Main headline */}
