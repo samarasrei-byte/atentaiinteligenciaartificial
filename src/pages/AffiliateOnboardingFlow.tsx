@@ -36,36 +36,36 @@ const SERVICES_INFO = [
     icon: '🛡️',
     name: 'Limpa Nome PF',
     description: 'Regularização para Pessoa Física (CPF)',
-    commission: 'R$ 136 por venda (20%)',
-    basePrice: 'Preço: R$ 680,00'
+    commission: 'R$ 156 por venda (20%)',
+    basePrice: 'Preço: R$ 780,00'
   },
   {
     icon: '🏢',
     name: 'Limpa Nome CNPJ',
     description: 'Regularização para Empresas (CNPJ)',
-    commission: 'R$ 178 por venda (20%)',
-    basePrice: 'Preço: R$ 890,00'
+    commission: 'R$ 194 por venda (20%)',
+    basePrice: 'Preço: R$ 970,00'
   },
   {
     icon: '📄',
     name: 'Declaração de IR Simples',
     description: 'Para CLT com poucos rendimentos',
-    commission: 'R$ 30 por venda (20%)',
-    basePrice: 'Preço: R$ 150,00'
+    commission: 'R$ 40 por venda (20%)',
+    basePrice: 'Preço: R$ 200,00'
   },
   {
     icon: '📊',
     name: 'Declaração de IR Completo',
     description: 'Para autônomos e investidores',
-    commission: 'R$ 70 por venda (20%)',
-    basePrice: 'Preço: R$ 350,00'
+    commission: 'R$ 84 por venda (20%)',
+    basePrice: 'Preço: R$ 420,00'
   },
   {
     icon: '🏗️',
     name: 'Abertura de Empresa',
     description: 'Abertura completa de CNPJ',
-    commission: 'R$ 75 por venda (15%)',
-    basePrice: 'Preço: R$ 500,00'
+    commission: 'R$ 117 por venda (15%)',
+    basePrice: 'Preço: R$ 780,00'
   }
 ];
 

@@ -1,3 +1,17 @@
+/**
+ * STRIPE CONFIGURATION - Pricing & Plans
+ * 
+ * OFFICIAL PRICE TABLE (Updated 2025-01-25):
+ * - Consulta com Contador: R$ 150,00 (20% off for subscribers)
+ * - Abertura de Empresa: R$ 780,00 (15% off for subscribers)
+ * - Análise Fiscal: GRÁTIS (Success Fee 50%)
+ * - Emissão de Certidões: R$ 80,00 (10% off for subscribers)
+ * - IR Simples: R$ 200,00 (20% off for subscribers)
+ * - IR Completo: R$ 420,00 (20% off for subscribers)
+ * - Limpa Nome PF: R$ 780,00 (10% off for subscribers)
+ * - Limpa Nome CNPJ: R$ 970,00 (10% off for subscribers)
+ */
+
 // Stripe plan configuration
 export const STRIPE_PLANS = {
   simulator: {
@@ -84,9 +98,9 @@ export const SUBSCRIBER_DISCOUNTS = {
   company_opening: {
     name: 'Abertura de Empresa',
     description: 'Abertura completa de CNPJ com suporte contábil',
-    basePrice: 50000, // cents (R$500,00) - price varies
+    basePrice: 78000, // cents (R$780,00)
     discount: 0.15, // 15% off for subscribers
-    discountedPrice: 42500, // cents (R$425,00)
+    discountedPrice: 66300, // cents (R$663,00)
     icon: 'Building2',
   },
   certificate: {
@@ -100,17 +114,17 @@ export const SUBSCRIBER_DISCOUNTS = {
   ir_simples: {
     name: 'Declaração IR Simples',
     description: 'Para CLT com poucos rendimentos e sem investimentos',
-    basePrice: 15000, // cents (R$150,00)
+    basePrice: 20000, // cents (R$200,00)
     discount: 0.20, // 20% off for subscribers
-    discountedPrice: 12000, // cents (R$120,00)
+    discountedPrice: 16000, // cents (R$160,00)
     icon: 'FileText',
   },
   ir_completo: {
     name: 'Declaração IR Completo',
     description: 'Para autônomos, investidores ou múltiplas fontes de renda',
-    basePrice: 35000, // cents (R$350,00)
+    basePrice: 42000, // cents (R$420,00)
     discount: 0.20, // 20% off for subscribers
-    discountedPrice: 28000, // cents (R$280,00)
+    discountedPrice: 33600, // cents (R$336,00)
     icon: 'FileSpreadsheet',
   },
   fiscal_analysis: {
@@ -133,20 +147,20 @@ export const SUBSCRIBER_DISCOUNTS = {
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
     description: 'Regularize seu CPF e limpe restrições com consultoria especializada',
-    basePrice: 68000, // cents (R$680,00)
+    basePrice: 78000, // cents (R$780,00)
     discount: 0.10, // 10% off for subscribers
-    discountedPrice: 61200, // cents (R$612,00)
+    discountedPrice: 70200, // cents (R$702,00)
     icon: 'User',
-    installments: 4, // 4x de R$170 sem juros
+    installments: 4, // 4x de R$195 sem juros
   },
   credit_repair_pj: {
     name: 'Limpa Nome Empresa (CNPJ)',
     description: 'Regularize seu CNPJ e limpe restrições com consultoria especializada',
-    basePrice: 89000, // cents (R$890,00)
+    basePrice: 97000, // cents (R$970,00)
     discount: 0.10, // 10% off for subscribers
-    discountedPrice: 80100, // cents (R$801,00)
+    discountedPrice: 87300, // cents (R$873,00)
     icon: 'Building2',
-    installments: 4, // 4x de R$222,50 sem juros
+    installments: 4, // 4x de R$242,50 sem juros
   },
 } as const;
 

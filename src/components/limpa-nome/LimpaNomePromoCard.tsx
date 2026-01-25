@@ -30,7 +30,7 @@ const plans = {
     id: 'pf',
     name: 'Pessoa Física',
     description: 'CPF',
-    basePrice: 68000, // R$ 680,00 em centavos
+    basePrice: 78000, // R$ 780,00 em centavos
     icon: User,
     iconColor: 'text-blue-500',
     bgColor: 'bg-blue-500/10',
@@ -40,7 +40,7 @@ const plans = {
     id: 'pj',
     name: 'Empresa (CNPJ)',
     description: 'CNPJ',
-    basePrice: 89000, // R$ 890,00 em centavos
+    basePrice: 97000, // R$ 970,00 em centavos
     icon: Building2,
     iconColor: 'text-emerald-500',
     bgColor: 'bg-emerald-500/10',

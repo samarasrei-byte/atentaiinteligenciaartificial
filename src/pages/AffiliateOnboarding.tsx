@@ -190,7 +190,7 @@ const GlassCard = ({
 const SERVICES = [
   { 
     name: 'Limpa Nome PF', 
-    price: 680, // R$ 680,00 - Padronizado
+    price: 780, // R$ 780,00
     commission: 20, 
     icon: Shield,
     gradient: 'from-cyan-500 to-blue-600',
@@ -199,7 +199,7 @@ const SERVICES = [
   },
   { 
     name: 'Limpa Nome CNPJ', 
-    price: 890, // R$ 890,00 - Padronizado
+    price: 970, // R$ 970,00
     commission: 20, 
     icon: Building2,
     gradient: 'from-emerald-500 to-teal-600',
@@ -217,7 +217,7 @@ const SERVICES = [
   },
   { 
     name: 'Abertura Empresa', 
-    price: 500, // R$ 500,00
+    price: 780, // R$ 780,00
     commission: 15, 
     icon: Briefcase,
     gradient: 'from-amber-500 to-orange-600',
@@ -226,7 +226,7 @@ const SERVICES = [
   },
   { 
     name: 'IR Simples', 
-    price: 150, // R$ 150,00
+    price: 200, // R$ 200,00
     commission: 20, 
     icon: FileText,
     gradient: 'from-rose-500 to-pink-600',
@@ -235,7 +235,7 @@ const SERVICES = [
   },
   { 
     name: 'IR Completo', 
-    price: 350, // R$ 350,00
+    price: 420, // R$ 420,00
     commission: 20, 
     icon: FileText,
     gradient: 'from-indigo-500 to-blue-600',
