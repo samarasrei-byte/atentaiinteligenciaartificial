@@ -132,7 +132,7 @@ export function FiscalModuleSection() {
             </span>
           </h2>
           
-          <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto px-4 mb-4">
+          <p className="text-base sm:text-lg lg:text-xl text-white/80 max-w-3xl mx-auto px-4 mb-4">
             Análise executada por empresa parceira do AtentAI, reconhecida como
             <span className="text-emerald-400 font-semibold"> a melhor empresa de Inteligência Fiscal do Brasil</span>
           </p>
@@ -221,7 +221,7 @@ export function FiscalModuleSection() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={isInView ? { opacity: 1, x: 0 } : {}}
                     transition={{ delay: 0.4 + i * 0.1 }}
-                    className="flex items-center gap-3 text-slate-300 text-sm sm:text-base"
+                    className="flex items-center gap-3 text-white/80 text-sm sm:text-base"
                   >
                     <div className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" />
                     {point}
@@ -245,7 +245,7 @@ export function FiscalModuleSection() {
                     <benefit.icon className="h-5 sm:h-6 w-5 sm:w-6 text-white" />
                   </div>
                   <p className="font-bold text-white text-sm sm:text-base mb-1">{benefit.text}</p>
-                  <p className="text-slate-300 text-xs sm:text-sm">{benefit.desc}</p>
+                  <p className="text-white/70 text-xs sm:text-sm">{benefit.desc}</p>
                 </motion.div>
               ))}
             </div>
@@ -280,7 +280,7 @@ export function FiscalModuleSection() {
                 <ArrowRight className="h-4 sm:h-5 w-4 sm:w-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
               
-              <p className="text-slate-400 text-xs sm:text-sm flex items-center gap-2">
+              <p className="text-white/70 text-xs sm:text-sm flex items-center gap-2">
                 <CheckCircle2 className="h-3.5 sm:h-4 w-3.5 sm:w-4 text-emerald-400 flex-shrink-0" />
                 Análise em até 48h úteis • Sem compromisso
               </p>

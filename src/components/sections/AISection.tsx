@@ -357,7 +357,7 @@ export function AISection() {
                 Disponível 24h
               </span>
             </h2>
-            <p className="text-base md:text-lg text-slate-400 max-w-3xl mx-auto px-4 leading-relaxed">
+            <p className="text-base md:text-lg text-white/70 max-w-3xl mx-auto px-4 leading-relaxed">
               O <span className="text-violet-400 font-semibold">AtentAI</span> foi treinado com toda a legislação da Reforma Tributária 2026.
               <br className="hidden md:block" />
               Pergunte sobre IBS, CBS, IS e receba <span className="text-fuchsia-400 font-semibold">respostas instantâneas</span>.
@@ -393,7 +393,7 @@ export function AISection() {
                       </div>
                     </div>
                     <h3 className="font-bold text-lg mb-2 text-white">{item.title}</h3>
-                    <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
+                    <p className="text-sm text-white/70 leading-relaxed">{item.description}</p>
                   </CardContent>
                 </Card>
               </motion.div>
@@ -426,7 +426,7 @@ export function AISection() {
                     <h4 className="text-xl md:text-2xl font-black mb-3 bg-gradient-to-r from-amber-400 to-orange-400 bg-clip-text text-transparent">
                       O regime tributário errado pode tirar até 27% do seu lucro!
                     </h4>
-                    <p className="text-base text-slate-400 leading-relaxed">
+                    <p className="text-base text-white/70 leading-relaxed">
                       Muitas empresas estão no Simples Nacional sem saber que o Lucro Presumido seria mais vantajoso — ou o contrário. 
                       A <span className="text-amber-400 font-semibold">AtentAI</span> analisa seu enquadramento e mostra qual regime é mais lucrativo.
                     </p>
@@ -463,7 +463,7 @@ export function AISection() {
                   </motion.div>
                   <div>
                     <CardTitle className="text-lg md:text-xl text-white font-bold">AtentAI</CardTitle>
-                    <CardDescription className="flex items-center gap-2 text-sm text-slate-400">
+                    <CardDescription className="flex items-center gap-2 text-sm text-white/60">
                       <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                       Demonstração • <span className="text-violet-400 font-medium">Assine para IA completa</span>
                     </CardDescription>
@@ -541,7 +541,7 @@ export function AISection() {
                       )}
                     </Button>
                   </form>
-                  <p className="text-[10px] md:text-xs text-slate-500 text-center mt-2">
+                  <p className="text-[10px] md:text-xs text-white/50 text-center mt-2">
                     Demonstração com respostas pré-definidas. <button onClick={() => navigate('/pricing')} className="text-violet-400 underline hover:no-underline">Assine para IA completa</button>.
                   </p>
                 </div>
@@ -555,7 +555,7 @@ export function AISection() {
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <CardTitle className="text-lg md:text-xl text-white">AtentAI Premium</CardTitle>
-                <CardDescription className="text-slate-400">
+                <CardDescription className="text-white/60">
                   Desbloqueie todo o potencial do AtentAI
                 </CardDescription>
               </CardHeader>
@@ -569,14 +569,14 @@ export function AISection() {
                   ))}
                 </div>
 
-                <div className="p-3 bg-slate-800/50 rounded-lg text-xs md:text-sm text-slate-400">
+                <div className="p-3 bg-slate-800/50 rounded-lg text-xs md:text-sm text-white/60">
                   <p>Premium: <strong className="text-white">Perguntas ilimitadas</strong></p>
                 </div>
 
                 <div className="pt-4 border-t border-white/10">
                   <div className="flex items-baseline gap-2 mb-4">
                     <span className="text-3xl md:text-4xl font-bold text-white">{formatPrice(plan.price)}</span>
-                    <span className="text-slate-400 text-sm">/mês</span>
+                    <span className="text-white/60 text-sm">/mês</span>
                   </div>
                   
                   {isPremium ? (
@@ -601,7 +601,7 @@ export function AISection() {
                   )}
                 </div>
 
-                <p className="text-[10px] md:text-xs text-slate-500 text-center">
+                <p className="text-[10px] md:text-xs text-white/50 text-center">
                   Cancele a qualquer momento. Sem compromisso.
                 </p>
               </CardContent>

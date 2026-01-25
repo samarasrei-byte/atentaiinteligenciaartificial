@@ -204,7 +204,7 @@ export function SimulatorSection() {
                 Antes e Depois
               </span>
             </h2>
-            <p className="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-lg md:text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
               Descubra como a <span className="text-cyan-400 font-semibold">Reforma Tributária 2026</span> vai impactar seu negócio.
               <br className="hidden md:block" />
               Simulação com alíquotas oficiais IBS, CBS e IS.
@@ -229,7 +229,7 @@ export function SimulatorSection() {
                 </motion.div>
                 <div>
                   <span className="text-xl md:text-2xl font-bold">Simulador de Impacto Tributário</span>
-                  <CardDescription className="text-slate-400 mt-1">
+                  <CardDescription className="text-white/60 mt-1">
                     Preencha os dados e veja a estimativa em tempo real
                   </CardDescription>
                 </div>
@@ -258,7 +258,7 @@ export function SimulatorSection() {
                       className="h-12 bg-slate-800/50 border-white/20 text-white placeholder:text-slate-500"
                     />
                     {revenueType === "annual" && (
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-white/60">
                         Faturamento anual é mais preciso para enquadramento tributário
                       </p>
                     )}
@@ -478,27 +478,27 @@ export function SimulatorSection() {
                         <div className="space-y-3 text-sm">
                           {result.beforeTaxes.icms > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-slate-400">ICMS</span>
+                              <span className="text-white/70">ICMS</span>
                               <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.icms)}</span>
                             </div>
                           )}
                           {result.beforeTaxes.iss > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-slate-400">ISS</span>
+                              <span className="text-white/70">ISS</span>
                               <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.iss)}</span>
                             </div>
                           )}
                           <div className="flex justify-between">
-                            <span className="text-slate-400">PIS</span>
+                            <span className="text-white/70">PIS</span>
                             <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.pis)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-slate-400">COFINS</span>
+                            <span className="text-white/70">COFINS</span>
                             <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.cofins)}</span>
                           </div>
                           {result.beforeTaxes.ipi > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-slate-400">IPI</span>
+                              <span className="text-white/70">IPI</span>
                               <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.ipi)}</span>
                             </div>
                           )}
@@ -517,16 +517,16 @@ export function SimulatorSection() {
                         </h4>
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-slate-400">IBS (Estadual/Municipal)</span>
+                            <span className="text-white/70">IBS (Estadual/Municipal)</span>
                             <span className="font-medium text-white">{formatCurrency(result.afterTaxes.ibs)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-slate-400">CBS (Federal)</span>
+                            <span className="text-white/70">CBS (Federal)</span>
                             <span className="font-medium text-white">{formatCurrency(result.afterTaxes.cbs)}</span>
                           </div>
                           {result.afterTaxes.is > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-slate-400">IS (Seletivo)</span>
+                              <span className="text-white/70">IS (Seletivo)</span>
                               <span className="font-medium text-white">{formatCurrency(result.afterTaxes.is)}</span>
                             </div>
                           )}
@@ -542,14 +542,14 @@ export function SimulatorSection() {
                     <Card variant="gradient" className={`p-6 bg-slate-800/50 border-white/10 ${!hasAccess ? 'opacity-20 blur-sm pointer-events-none select-none' : ''}`}>
                       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="text-center md:text-left">
-                          <p className="text-sm text-slate-400 mb-1">Diferença Estimada</p>
+                          <p className="text-sm text-white/60 mb-1">Diferença Estimada</p>
                           <div className="flex items-center gap-2">
                             {result.difference > 0 ? (
                               <TrendingUp className="w-6 h-6 text-red-400" />
                             ) : result.difference < 0 ? (
                               <TrendingDown className="w-6 h-6 text-emerald-400" />
                             ) : (
-                              <Minus className="w-6 h-6 text-slate-400" />
+                              <Minus className="w-6 h-6 text-white/60" />
                             )}
                             <span className={`text-2xl md:text-3xl font-bold ${
                               result.difference > 0 ? "text-red-400" : 
@@ -560,13 +560,13 @@ export function SimulatorSection() {
                             <span className={`text-sm font-medium px-2 py-1 rounded-full ${
                               result.difference > 0 ? "bg-red-500/20 text-red-400" :
                               result.difference < 0 ? "bg-emerald-500/20 text-emerald-400" :
-                              "bg-slate-700 text-slate-400"
+                              "bg-slate-700 text-white/60"
                             }`}>
                               {result.percentChange > 0 ? "+" : ""}{result.percentChange.toFixed(1)}%
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-slate-400 text-center md:text-right max-w-xs">
+                        <p className="text-sm text-white/60 text-center md:text-right max-w-xs">
                           {result.difference < 0 
                             ? "Você pode economizar com a reforma! Consulte um contador para otimizar ainda mais."
                             : result.difference > 0
@@ -578,7 +578,7 @@ export function SimulatorSection() {
                     </Card>
 
                     {/* Disclaimer */}
-                    <p className={`text-xs text-slate-500 text-center ${!hasAccess ? 'opacity-20' : ''}`}>
+                    <p className={`text-xs text-white/50 text-center ${!hasAccess ? 'opacity-20' : ''}`}>
                       * Simulação baseada na LC 214/2025 e alíquotas de referência (IBS 17,7% + CBS 8,8% = 26,5%). 
                       Valores reais podem variar de acordo com regimes especiais, créditos tributários e regulamentações específicas.
                     </p>

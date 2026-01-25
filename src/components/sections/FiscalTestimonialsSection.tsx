@@ -99,7 +99,7 @@ export function FiscalTestimonialsSection() {
             </span>
           </h2>
           
-          <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
+          <p className="text-base sm:text-lg lg:text-xl text-white/80 max-w-2xl mx-auto mb-6 sm:mb-8 px-4">
             Veja histórias reais de empresas que identificaram valores perdidos através do nosso Módulo Fiscal
           </p>
 
@@ -146,7 +146,7 @@ export function FiscalTestimonialsSection() {
                     <TrendingUp className="w-5 sm:w-6 h-5 sm:h-6 text-emerald-400" />
                   </div>
                   <div>
-                    <p className="text-xs sm:text-sm text-slate-400">Valor Recuperado</p>
+                    <p className="text-xs sm:text-sm text-white/70">Valor Recuperado</p>
                     <p className="text-xl sm:text-2xl font-bold text-emerald-400">
                       R$ {testimonial.recovered.toLocaleString('pt-BR')}
                     </p>
@@ -163,7 +163,7 @@ export function FiscalTestimonialsSection() {
                     />
                     <div>
                       <h4 className="font-semibold text-white text-sm sm:text-base">{testimonial.name}</h4>
-                      <div className="flex items-center gap-2 text-xs sm:text-sm text-slate-400">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-white/70">
                         <Building2 className="w-3.5 sm:w-4 h-3.5 sm:h-4" />
                         <span>{testimonial.company}</span>
                       </div>
@@ -191,7 +191,7 @@ export function FiscalTestimonialsSection() {
           transition={{ delay: 0.5, duration: 0.5 }}
           className="text-center mt-10 sm:mt-12"
         >
-          <p className="text-slate-400 mb-4 text-sm sm:text-base">
+          <p className="text-white/70 mb-4 text-sm sm:text-base">
             Sua empresa pode ser a próxima a descobrir valores esquecidos
           </p>
           <a
