@@ -14,6 +14,7 @@ import { FiscalTestimonialsSection } from "@/components/sections/FiscalTestimoni
 import { FAQSection } from "@/components/sections/FAQSection";
 import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
 import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
+import { ServicesHubModern } from "@/components/dashboard/ServicesHubModern";
 
 const Index = () => {
   const scrollToSection = (section: string) => {
@@ -49,38 +50,45 @@ const Index = () => {
         {/* 3. Stats - Prova social com números */}
         <StatsSection />
         
-        {/* 4. Módulo Fiscal - Serviço premium de alta conversão */}
+        {/* 4. MARKETPLACE - Nossos Serviços (NOVO) */}
+        <section id="servicos" className="py-20 bg-muted/30">
+          <div className="container mx-auto px-4">
+            <ServicesHubModern />
+          </div>
+        </section>
+        
+        {/* 5. Módulo Fiscal - Serviço premium de alta conversão */}
         <section id="fiscal">
           <FiscalModuleSection />
         </section>
         
-        {/* 5. Depoimentos do Módulo Fiscal */}
+        {/* 6. Depoimentos do Módulo Fiscal */}
         <FiscalTestimonialsSection />
         
-        {/* 6. Limpa Nome - Serviço secundário */}
+        {/* 7. Limpa Nome - Serviço secundário */}
         <section id="limpa-nome">
           <LimpaNomeSection />
         </section>
         
-        {/* 7. Cases de Sucesso - Prova social */}
+        {/* 8. Cases de Sucesso - Prova social */}
         <SuccessCasesSection />
         
-        {/* 8. Simulador - Engajamento interativo */}
+        {/* 9. Simulador - Engajamento interativo */}
         <SimulatorSection />
         
-        {/* 9. IA - Diferencial tecnológico */}
+        {/* 10. IA - Diferencial tecnológico */}
         <AISection />
         
-        {/* 10. Perfis - Segmentação */}
+        {/* 11. Perfis - Segmentação */}
         <ProfilesSection />
         
-        {/* 11. Pricing - Conversão */}
+        {/* 12. Pricing - Conversão */}
         <PricingSection />
         
-        {/* 12. FAQ - Objeções */}
+        {/* 13. FAQ - Objeções */}
         <FAQSection />
         
-        {/* 13. Depoimentos - Prova social final */}
+        {/* 14. Depoimentos - Prova social final */}
         <TestimonialsSection />
       </main>
 

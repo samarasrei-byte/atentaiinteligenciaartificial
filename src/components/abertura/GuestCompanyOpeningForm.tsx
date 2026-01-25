@@ -26,11 +26,13 @@ import {
   Loader2,
   Shield,
   Mail,
-  Lock
+  Lock,
+  Tag
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
 import { formatCurrency, parseCurrencyInput, formatCurrencyInput } from '@/lib/taxConstants';
+import { AffiliateCouponInput, calculateAffiliateCouponDiscount, AppliedAffiliateCoupon } from '@/components/pricing/AffiliateCouponInput';
 
 interface GuestCompanyOpeningFormProps {
   onBack?: () => void;
@@ -89,6 +91,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recommendation, setRecommendation] = useState<Recommendation | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedAffiliateCoupon | null>(null);
   const [profileData, setProfileData] = useState<ProfileData>({
     fullName: '',
     cpf: '',
@@ -103,6 +106,12 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
     city: '',
     state: '',
   });
+
+  // Calculate final price with coupon
+  const getDiscountedPrice = () => {
+    if (!recommendation) return { discountCents: 0, finalPriceCents: 0 };
+    return calculateAffiliateCouponDiscount(recommendation.priceCents, appliedCoupon);
+  };
 
   const totalSteps = 5;
   const progress = (step / totalSteps) * 100;
@@ -629,15 +638,48 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
                   </div>
                 </div>
 
+                {/* Affiliate Coupon Input */}
+                <div className="space-y-2">
+                  <Label className="flex items-center gap-2 text-white/80">
+                    <Tag className="h-4 w-4 text-primary" />
+                    Cupom de Desconto
+                  </Label>
+                  <AffiliateCouponInput
+                    serviceType="company_opening"
+                    onCouponApplied={setAppliedCoupon}
+                    onCouponRemoved={() => setAppliedCoupon(null)}
+                    appliedCoupon={appliedCoupon}
+                  />
+                </div>
+
                 {/* Price */}
                 <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30">
-                  <div className="flex items-center justify-between mb-2">
+                  {appliedCoupon && (
+                    <div className="flex items-center justify-between mb-2 pb-2 border-b border-white/10">
+                      <span className="text-white/70">Preço original:</span>
+                      <span className="text-lg text-white/50 line-through">
+                        {formatCurrency(recommendation.priceCents / 100)}
+                      </span>
+                    </div>
+                  )}
+                  {appliedCoupon && (
+                    <div className="flex items-center justify-between mb-2 text-emerald-400">
+                      <span className="flex items-center gap-2">
+                        <Tag className="h-4 w-4" />
+                        Desconto ({appliedCoupon.code}):
+                      </span>
+                      <span className="font-semibold">
+                        -{formatCurrency(getDiscountedPrice().discountCents / 100)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between">
                     <span className="text-white">Total a pagar:</span>
                     <span className="text-3xl font-bold text-white">
-                      {formatCurrency(recommendation.priceCents / 100)}
+                      {formatCurrency(getDiscountedPrice().finalPriceCents / 100)}
                     </span>
                   </div>
-                  <p className="text-xs text-white/60">
+                  <p className="text-xs text-white/60 mt-2">
                     Pagamento seguro via Stripe
                   </p>
                 </div>
@@ -687,7 +729,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
               </Button>
             )}
 
-            {step === 5 && (
+            {step === 5 && recommendation && (
               <Button
                 onClick={handlePayment}
                 disabled={isSubmitting}
@@ -701,7 +743,12 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
                 ) : (
                   <>
                     <CreditCard className="h-4 w-4 mr-2" />
-                    Pagar {formatCurrency(recommendation.priceCents / 100)}
+                    Pagar {formatCurrency(getDiscountedPrice().finalPriceCents / 100)}
+                    {appliedCoupon && (
+                      <Badge className="ml-2 bg-emerald-500/20 text-emerald-300 text-xs">
+                        Desconto!
+                      </Badge>
+                    )}
                   </>
                 )}
               </Button>
