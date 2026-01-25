@@ -1274,7 +1274,7 @@ export default function AffiliatePanel() {
       </aside>
 
       {/* Main Content */}
-      <main className="dashboard-main">
+      <main className="dashboard-main lg:ml-0">
         {/* Top Bar */}
         <header className="dashboard-header">
           <div className="flex items-center justify-between px-6 py-4">

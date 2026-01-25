@@ -140,9 +140,9 @@ export function LimpaNomeSection() {
         <div className="container mx-auto px-4 relative z-10">
           {/* Header - New Human-Focused Messaging */}
           <div className="text-center mb-12">
-            <Badge className="mb-6 bg-slate-900/90 backdrop-blur-sm text-pink-400 font-bold border-2 border-pink-500/50 px-6 py-2.5 shadow-lg shadow-pink-500/20">
-              <Heart className="h-4 w-4 mr-2 text-pink-400" />
-              ATENDIMENTO HUMANO • PARCEIROS ESPECIALIZADOS
+            <Badge className="mb-6 bg-gradient-to-r from-pink-900/95 to-rose-900/95 backdrop-blur-sm text-white font-bold border-2 border-pink-400 px-6 py-3 shadow-xl shadow-pink-500/30 text-sm tracking-wide">
+              <Heart className="h-5 w-5 mr-2 text-pink-300 animate-pulse" />
+              <span className="drop-shadow-[0_0_3px_rgba(236,72,153,0.8)]">ATENDIMENTO HUMANO • PARCEIROS ESPECIALIZADOS</span>
             </Badge>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
               <span className="text-white">Limpe seu nome com</span>
