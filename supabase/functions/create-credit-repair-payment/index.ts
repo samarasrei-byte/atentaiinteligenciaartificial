@@ -7,7 +7,6 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Security headers for all responses
 const securityHeaders = {
   "X-Content-Type-Options": "nosniff",
   "X-Frame-Options": "DENY",
@@ -21,8 +20,17 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-CREDIT-REPAIR-PAYMENT] ${step}${detailsStr}`);
 };
 
+// =====================================================
+// CENTRALIZED PRICING - Single Source of Truth
+// These MUST match src/lib/servicePricing.ts
+// =====================================================
+const CREDIT_REPAIR_PRICES = {
+  pf: { baseCents: 68000, subscriberDiscount: 10 }, // R$ 680,00 → R$ 612,00
+  pj: { baseCents: 89000, subscriberDiscount: 10 }, // R$ 890,00 → R$ 801,00
+};
+
 // Rate limiting configuration
-const RATE_LIMIT_MAX_REQUESTS = 10; // 10 requests per minute for payment endpoints
+const RATE_LIMIT_MAX_REQUESTS = 10;
 const RATE_LIMIT_WINDOW_SECONDS = 60;
 
 interface RateLimitResult {
@@ -47,7 +55,6 @@ async function checkRateLimit(
 
     if (error) {
       logStep("Rate limit check error", { error: error.message });
-      // Allow request on error to avoid blocking legitimate users
       return { allowed: true, remaining: RATE_LIMIT_MAX_REQUESTS, reset_at: new Date().toISOString() };
     }
 
@@ -58,8 +65,44 @@ async function checkRateLimit(
   }
 }
 
+// Check if user has active subscription via Stripe
+async function checkSubscription(stripe: Stripe, email: string): Promise<{ isSubscriber: boolean; plan: string | null }> {
+  try {
+    const customers = await stripe.customers.list({ email, limit: 1 });
+    if (customers.data.length === 0) {
+      return { isSubscriber: false, plan: null };
+    }
+
+    const customerId = customers.data[0].id;
+    const subscriptions = await stripe.subscriptions.list({
+      customer: customerId,
+      status: "active",
+      limit: 1,
+    });
+
+    if (subscriptions.data.length > 0) {
+      const subscription = subscriptions.data[0];
+      const productId = subscription.items.data[0].price.product as string;
+      return { isSubscriber: true, plan: productId };
+    }
+
+    return { isSubscriber: false, plan: null };
+  } catch (error) {
+    logStep("Error checking subscription", { error: String(error) });
+    return { isSubscriber: false, plan: null };
+  }
+}
+
+// Determine service type (PF or PJ) from request
+function getServiceType(request: any): 'pf' | 'pj' {
+  // Check if service_price_cents matches PJ price, otherwise default to PF
+  if (request.service_price_cents >= 89000) {
+    return 'pj';
+  }
+  return 'pf';
+}
+
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: { ...corsHeaders, ...securityHeaders } });
   }
@@ -73,50 +116,44 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    // Authenticate user
     const authHeader = req.headers.get("Authorization");
-    if (!authHeader) throw new Error("No authorization header provided");
+    if (!authHeader) {
+      throw new Error("Authorization header required");
+    }
 
     const token = authHeader.replace("Bearer ", "");
     const { data: userData, error: userError } = await supabaseClient.auth.getUser(token);
-    if (userError) throw new Error(`Authentication error: ${userError.message}`);
     
+    if (userError || !userData?.user) {
+      throw new Error("User authentication failed");
+    }
+
     const user = userData.user;
-    if (!user?.email) throw new Error("User not authenticated or email not available");
     logStep("User authenticated", { userId: user.id, email: user.email });
 
     // Rate limiting check
     const rateLimitResult = await checkRateLimit(supabaseClient, user.id, 'create-credit-repair-payment');
-    logStep("Rate limit check", { 
-      allowed: rateLimitResult.allowed, 
-      remaining: rateLimitResult.remaining 
-    });
-
     if (!rateLimitResult.allowed) {
       logStep("Rate limit exceeded", { userId: user.id });
       return new Response(
         JSON.stringify({ 
-          error: "Muitas tentativas. Por favor, aguarde antes de tentar novamente.",
+          error: "Muitas tentativas. Aguarde antes de tentar novamente.",
           retry_after: rateLimitResult.retry_after 
         }),
         {
-          headers: { 
-            ...corsHeaders, 
-            ...securityHeaders,
-            "Content-Type": "application/json",
-            "Retry-After": String(rateLimitResult.retry_after || 60)
-          },
+          headers: { ...corsHeaders, ...securityHeaders, "Content-Type": "application/json" },
           status: 429,
         }
       );
     }
 
-    // Get request body
     const { requestId } = await req.json();
-    if (!requestId) throw new Error("Request ID is required");
+    if (!requestId) {
+      throw new Error("Request ID is required");
+    }
     logStep("Request ID received", { requestId });
 
-    // Get the credit repair request
+    // Fetch request details
     const { data: request, error: requestError } = await supabaseClient
       .from("credit_repair_requests")
       .select("*")
@@ -125,25 +162,58 @@ serve(async (req) => {
       .single();
 
     if (requestError || !request) {
-      throw new Error("Credit repair request not found");
+      throw new Error("Credit repair request not found or unauthorized");
     }
-    logStep("Request found", { finalPrice: request.final_price_cents });
 
-    // Initialize Stripe
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+    logStep("Request found", { 
+      id: request.id,
+      servicePriceCents: request.service_price_cents,
+      status: request.status
+    });
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
+      apiVersion: "2025-08-27.basil",
+    });
 
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: user.email, limit: 1 });
-    let customerId: string | undefined;
+    // =====================================================
+    // SERVER-SIDE VALIDATION: Check subscription status
+    // CRITICAL: Never trust frontend price calculations
+    // =====================================================
+    const { isSubscriber, plan } = await checkSubscription(stripe, user.email || '');
+    logStep("Subscription status", { isSubscriber, plan });
+
+    // Determine service type and get centralized price
+    const serviceType = getServiceType(request);
+    const priceConfig = CREDIT_REPAIR_PRICES[serviceType];
+    const basePriceCents = priceConfig.baseCents;
+    
+    // Calculate final price SERVER-SIDE
+    let finalPriceCents = basePriceCents;
+    let discountApplied = 0;
+    
+    if (isSubscriber) {
+      discountApplied = Math.round(basePriceCents * (priceConfig.subscriberDiscount / 100));
+      finalPriceCents = basePriceCents - discountApplied;
+      logStep("Subscriber discount applied", { 
+        originalPrice: basePriceCents, 
+        discount: discountApplied, 
+        finalPrice: finalPriceCents,
+        discountPercent: priceConfig.subscriberDiscount
+      });
+    }
+
+    // Check for existing Stripe customer
+    const customers = await stripe.customers.list({ email: user.email || '', limit: 1 });
+    let customerId;
     if (customers.data.length > 0) {
       customerId = customers.data[0].id;
-      logStep("Found existing Stripe customer", { customerId });
+      logStep("Found existing customer", { customerId });
     }
 
-    // Create checkout session with 4x installments
+    const bureauxCount = request.bureaus_selected?.length || 8;
+    const productDescription = `Regularização em ${bureauxCount} plataformas: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot, Registrato, CADIN${isSubscriber ? ` | ${priceConfig.subscriberDiscount}% OFF para assinante!` : ''}`;
+
+    // Create checkout session with SERVER-VALIDATED price and 4x installments
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
@@ -152,13 +222,14 @@ serve(async (req) => {
           price_data: {
             currency: "brl",
             product_data: {
-              name: "Limpa Nome Completo",
-              description: `Regularização em ${request.bureaus_selected?.length || 8} plataformas: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot, Registrato, CADIN`,
+              name: `Limpa Nome ${serviceType === 'pj' ? 'Empresa (CNPJ)' : 'Pessoa Física'}${isSubscriber ? ' (Desconto Assinante)' : ''}`,
+              description: productDescription,
               metadata: {
                 request_id: requestId,
+                service_type: serviceType,
               },
             },
-            unit_amount: request.final_price_cents,
+            unit_amount: finalPriceCents, // SERVER-CALCULATED PRICE
           },
           quantity: 1,
         },
@@ -178,18 +249,50 @@ serve(async (req) => {
         request_id: requestId,
         user_id: user.id,
         service_type: "credit_repair",
+        plan_type: serviceType,
+        original_price_cents: basePriceCents.toString(),
+        discount_applied_cents: discountApplied.toString(),
+        final_price_cents: finalPriceCents.toString(),
+        is_subscriber: isSubscriber.toString(),
       },
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    logStep("Checkout session created", { 
+      sessionId: session.id, 
+      basePriceCents,
+      discountApplied,
+      finalPriceCents,
+      isSubscriber,
+      serviceType
+    });
 
-    // Update request with session ID
-    await supabaseClient
+    // Update request with SERVER-VALIDATED prices
+    const { error: updateError } = await supabaseClient
       .from("credit_repair_requests")
-      .update({ stripe_session_id: session.id })
+      .update({
+        stripe_session_id: session.id,
+        service_price_cents: basePriceCents,
+        final_price_cents: finalPriceCents,
+        discount_applied: isSubscriber,
+        payment_status: "pending",
+      })
       .eq("id", requestId);
 
-    return new Response(JSON.stringify({ url: session.url }), {
+    if (updateError) {
+      logStep("Warning: Failed to update request", { error: updateError.message });
+    }
+
+    return new Response(JSON.stringify({ 
+      url: session.url,
+      sessionId: session.id,
+      originalPrice: basePriceCents,
+      discountApplied,
+      finalPrice: finalPriceCents,
+      isSubscriber,
+      serviceType,
+      installments: 4,
+      installmentValue: Math.round(finalPriceCents / 4),
+    }), {
       headers: { ...corsHeaders, ...securityHeaders, "Content-Type": "application/json" },
       status: 200,
     });
