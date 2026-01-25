@@ -26,9 +26,12 @@ interface ServiceConfig {
   description: string;
   price: number;
   priceLabel: string;
+  discountedPrice?: string;
+  subscriberDiscount?: number;
   icon: any;
   color: string;
   features: string[];
+  pitch?: string;
   requiresAuth: boolean;
   successFee?: boolean;
 }
@@ -37,79 +40,141 @@ const serviceConfigs: Record<string, ServiceConfig> = {
   'consulta-contador': {
     key: 'consultation',
     title: 'Consulta com Contador',
-    description: 'Tire suas dúvidas tributárias com um contador especializado em poucos minutos.',
+    description: 'Fale direto com um contador especialista. Orientação personalizada para o seu caso, com segurança e clareza.',
     price: 15000,
     priceLabel: 'R$ 150,00',
+    discountedPrice: 'R$ 120,00',
+    subscriberDiscount: 20,
     icon: MessageSquare,
     color: 'primary',
-    features: ['Atendimento em até 24h', 'Contador especializado', 'Relatório por escrito', 'Acompanhamento da dúvida'],
+    features: [
+      'Atendimento em até 24h',
+      'Contador especializado',
+      'Chat em tempo real',
+      'Envio de documentos',
+      'Orientação personalizada'
+    ],
+    pitch: '👉 Mais barato que um erro fiscal.',
     requiresAuth: true,
   },
   'abertura-empresa': {
     key: 'company_opening',
     title: 'Abertura de Empresa',
-    description: 'Abertura completa do seu CNPJ com todo suporte contábil necessário.',
+    description: 'Você não recebe apenas um CNPJ — você recebe decisão estratégica. Analisamos o melhor regime e cuidamos de tudo.',
     price: 50000,
     priceLabel: 'R$ 500,00',
+    discountedPrice: 'R$ 425,00',
+    subscriberDiscount: 15,
     icon: Building2,
     color: 'blue',
-    features: ['CNPJ em até 7 dias', 'Alvará e licenças', 'Inscrição estadual/municipal', 'Certificado digital'],
+    features: [
+      'Análise do melhor regime tributário',
+      'CNPJ em até 7 dias',
+      'Alvará e licenças',
+      'Inscrição estadual/municipal',
+      'Certificado digital',
+      'Acompanhamento completo'
+    ],
+    pitch: '👉 Abrir certo é mais barato do que corrigir depois.',
     requiresAuth: true,
   },
   'emissao-certidao': {
     key: 'certificate',
     title: 'Emissão de Certidão',
-    description: 'Certidões negativas de débitos fiscais para sua empresa ou CPF.',
+    description: 'Certidões oficiais, válidas e verificáveis. Tudo pronto, revisado por contador, sem dor de cabeça.',
     price: 8000,
     priceLabel: 'R$ 80,00',
+    discountedPrice: 'R$ 72,00',
+    subscriberDiscount: 10,
     icon: FileCheck,
     color: 'green',
-    features: ['Certidão negativa federal', 'Certidão estadual', 'Certidão municipal', 'Entrega digital'],
+    features: [
+      'Certidão negativa federal',
+      'Certidão estadual',
+      'Certidão municipal',
+      'Revisão por contador',
+      'Entrega digital rápida'
+    ],
+    pitch: '👉 Mais rápido que fazer sozinho. Mais seguro que tentar sem ajuda.',
     requiresAuth: true,
   },
   'declaracao-ir-simples': {
     key: 'ir_simples',
     title: 'Declaração IR Simples',
-    description: 'Para CLT com poucos rendimentos e sem investimentos complexos.',
+    description: 'Sua declaração feita por contador especializado, enviada corretamente à Receita e com comprovante.',
     price: 15000,
     priceLabel: 'R$ 150,00',
+    discountedPrice: 'R$ 120,00',
+    subscriberDiscount: 20,
     icon: FileText,
     color: 'amber',
-    features: ['Preenchimento completo', 'Revisão de deduções', 'Envio à Receita', 'Recibo de entrega'],
+    features: [
+      'Preenchimento completo',
+      'Revisão de deduções',
+      'Envio à Receita Federal',
+      'Recibo de entrega',
+      'Evite multas e retrabalho'
+    ],
+    pitch: '👉 Tranquilidade custa menos do que uma multa.',
     requiresAuth: true,
   },
   'declaracao-ir-completo': {
     key: 'ir_completo',
     title: 'Declaração IR Completo',
-    description: 'Para autônomos, investidores ou quem tem múltiplas fontes de renda.',
+    description: 'Análise de todas as fontes de renda com otimização fiscal legal. Ideal para autônomos e investidores.',
     price: 35000,
     priceLabel: 'R$ 350,00',
+    discountedPrice: 'R$ 280,00',
+    subscriberDiscount: 20,
     icon: FileSpreadsheet,
     color: 'orange',
-    features: ['Todos os rendimentos', 'Bens e investimentos', 'Ganho de capital', 'Otimização fiscal'],
+    features: [
+      'Todas as fontes de renda',
+      'Bens e investimentos',
+      'Ganho de capital',
+      'Otimização fiscal legal',
+      'Acompanhamento do envio'
+    ],
+    pitch: '👉 Pagar menos imposto começa com declarar certo.',
     requiresAuth: true,
   },
   'analise-fiscal': {
     key: 'fiscal_analysis',
-    title: 'Análise Fiscal Especializada',
-    description: 'Análise 100% gratuita. Você só paga se identificarmos economia para sua empresa.',
+    title: 'Análise Fiscal Inteligente',
+    description: 'Análise 100% gratuita. Só cobramos se encontrarmos economia real — e apenas sobre o valor recuperado.',
     price: 0,
-    priceLabel: 'Grátis (pague só no êxito)',
+    priceLabel: 'Grátis',
     icon: Scale,
     color: 'emerald',
-    features: ['Análise sem custo', 'Identificação de créditos', 'Recuperação de impostos', 'Pagamento apenas no êxito (50%)'],
+    features: [
+      'Análise sem custo inicial',
+      'Identificação de créditos',
+      'Recuperação de impostos',
+      'Pagamento apenas no êxito (50%)',
+      'Sem risco para você'
+    ],
+    pitch: '👉 Ou você ganha, ou não paga. Simples assim.',
     requiresAuth: false,
     successFee: true,
   },
   'consultoria-empresarial': {
     key: 'business_consulting',
     title: 'Consultoria Empresarial',
-    description: 'Consultoria estratégica para planejamento tributário e otimização fiscal.',
+    description: 'Análise tributária completa com planejamento estratégico e relatório personalizado para reduzir custos.',
     price: 45000,
     priceLabel: 'R$ 450,00',
+    discountedPrice: 'R$ 360,00',
+    subscriberDiscount: 20,
     icon: Briefcase,
     color: 'purple',
-    features: ['Diagnóstico completo', 'Planejamento tributário', 'Otimização de custos', 'Acompanhamento mensal'],
+    features: [
+      'Diagnóstico tributário completo',
+      'Planejamento estratégico',
+      'Relatório personalizado',
+      'Orientação prática aplicada',
+      'Redução de custos'
+    ],
+    pitch: '👉 Uma boa decisão hoje pode economizar muito amanhã.',
     requiresAuth: true,
   },
 };
@@ -268,9 +333,23 @@ export default function MarketplaceServicePage() {
                       </div>
                     ) : (
                       <div>
-                        <p className="text-3xl font-bold text-slate-900">{serviceConfig.priceLabel}</p>
-                        {isSubscriber && (
-                          <Badge className="bg-primary/10 text-primary mt-2">Desconto de assinante aplicado</Badge>
+                        {isSubscriber && serviceConfig.discountedPrice ? (
+                          <>
+                            <p className="text-sm text-slate-500 line-through">{serviceConfig.priceLabel}</p>
+                            <p className="text-3xl font-bold text-primary">{serviceConfig.discountedPrice}</p>
+                            <Badge className="bg-primary/10 text-primary mt-2">
+                              {serviceConfig.subscriberDiscount}% OFF para assinantes
+                            </Badge>
+                          </>
+                        ) : (
+                          <>
+                            <p className="text-3xl font-bold text-slate-900">{serviceConfig.priceLabel}</p>
+                            {serviceConfig.subscriberDiscount && (
+                              <p className="text-sm text-primary mt-1">
+                                Assinantes pagam {serviceConfig.discountedPrice} ({serviceConfig.subscriberDiscount}% OFF)
+                              </p>
+                            )}
+                          </>
                         )}
                       </div>
                     )}
@@ -287,13 +366,20 @@ export default function MarketplaceServicePage() {
                     ))}
                   </div>
 
+                  {/* Commercial Pitch */}
+                  {serviceConfig.pitch && (
+                    <div className="mt-4 p-3 bg-primary/5 rounded-lg border border-primary/20">
+                      <p className="text-sm font-medium text-primary">{serviceConfig.pitch}</p>
+                    </div>
+                  )}
+
                   {/* Trust Badge */}
                   <div className="mt-6 p-4 bg-primary/5 rounded-xl">
                     <div className="flex items-center gap-3">
                       <Shield className="h-8 w-8 text-primary" />
                       <div>
                         <p className="font-medium text-slate-900">Atendimento Humano</p>
-                        <p className="text-sm text-slate-600">Especialista dedicado ao seu caso</p>
+                        <p className="text-sm text-slate-600">Contadores verificados • Segurança jurídica</p>
                       </div>
                     </div>
                   </div>

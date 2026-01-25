@@ -29,38 +29,42 @@ export const SERVICE_PRICES = {
   IR_SIMPLES: {
     cents: 15000,
     formatted: 'R$ 150,00',
+    formattedWithDiscount: 'R$ 120,00',
     stripeKey: 'ir_simples',
-    subscriberDiscount: 10,
+    subscriberDiscount: 20,
   },
   IR_COMPLETO: {
     cents: 35000,
     formatted: 'R$ 350,00',
+    formattedWithDiscount: 'R$ 280,00',
     stripeKey: 'ir_completo',
-    subscriberDiscount: 10,
+    subscriberDiscount: 20,
   },
 
   // Company Opening
   ABERTURA_EMPRESA: {
     cents: 50000,
     formatted: 'R$ 500,00',
+    formattedWithDiscount: 'R$ 425,00',
     stripeKey: 'abertura_empresa',
-    subscriberDiscount: 10,
+    subscriberDiscount: 15,
   },
 
   // Certificates
   CERTIDAO: {
     cents: 8000,
     formatted: 'R$ 80,00',
+    formattedWithDiscount: 'R$ 72,00',
     stripeKey: 'certificate',
-    subscriberDiscount: 0,
+    subscriberDiscount: 10,
   },
 
   // Módulo Fiscal (Success Fee - Payment on Success)
   MODULO_FISCAL: {
     type: 'success_fee',
-    percentFee: 20,
-    minValue: 50000, // R$ 500 minimum
-    description: 'Pagamento no êxito - 20% do valor recuperado',
+    percentFee: 50,
+    minValue: 0,
+    description: 'Análise 100% gratuita. Pagamento apenas no êxito (50% do valor recuperado)',
     stripeKey: 'modulo_fiscal',
   },
 
@@ -68,8 +72,19 @@ export const SERVICE_PRICES = {
   CONSULTA_CONTADOR: {
     cents: 15000,
     formatted: 'R$ 150,00',
-    platformFee: 1500, // 10% platform fee
+    formattedWithDiscount: 'R$ 120,00',
+    platformFee: 1500,
     stripeKey: 'consultation',
+    subscriberDiscount: 20,
+  },
+
+  // Business Consulting
+  CONSULTORIA_EMPRESARIAL: {
+    cents: 45000,
+    formatted: 'R$ 450,00',
+    formattedWithDiscount: 'R$ 360,00',
+    stripeKey: 'business_consulting',
+    subscriberDiscount: 20,
   },
 } as const;
 
