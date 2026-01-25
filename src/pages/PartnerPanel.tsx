@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';
-import AppSidebar from '@/components/layout/AppSidebar';
+import PartnerSidebar from '@/components/layout/PartnerSidebar';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -467,10 +467,51 @@ export default function PartnerPanel() {
         return renderProfile();
       case 'settings':
         return renderSettings();
+      case 'services':
+        return renderServices();
       default:
         return renderOverview();
     }
   };
+
+  const renderServices = () => (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
+          <Sparkles className="h-5 w-5 text-primary" />
+          Serviços AtentAI
+        </h2>
+        <p className="text-sm text-muted-foreground">Contrate serviços adicionais para expandir sua operação</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {[
+          { title: 'Plano Premium', description: 'Acesso completo a todas as ferramentas de análise', price: 'R$ 97/mês', features: ['IA ilimitada', 'Relatórios avançados', 'Suporte prioritário'] },
+          { title: 'Marketing Digital', description: 'Aumente sua captação de clientes', price: 'R$ 297/mês', features: ['Landing page personalizada', 'Tráfego pago gerenciado', 'Material de vendas'] },
+          { title: 'Treinamento Avançado', description: 'Capacitação para sua equipe', price: 'R$ 497', features: ['5 horas de treinamento', 'Material didático', 'Certificado'] },
+        ].map((service, i) => (
+          <Card key={i} className="bg-card/50 backdrop-blur border-border/50 hover:border-primary/30 transition-all">
+            <CardHeader>
+              <CardTitle className="text-lg">{service.title}</CardTitle>
+              <CardDescription>{service.description}</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-2xl font-bold text-primary">{service.price}</p>
+              <ul className="space-y-2">
+                {service.features.map((feature, j) => (
+                  <li key={j} className="text-sm text-muted-foreground flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-emerald-400" />
+                    {feature}
+                  </li>
+                ))}
+              </ul>
+              <Button className="w-full">Contratar</Button>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
 
   const renderOverview = () => (
     <div className="space-y-6">
@@ -1165,12 +1206,13 @@ export default function PartnerPanel() {
     <div className="dashboard-layout">
       {/* Sidebar */}
       <div className="hidden lg:block flex-shrink-0">
-        <AppSidebar 
+        <PartnerSidebar 
           collapsed={collapsed} 
           onToggle={() => setCollapsed(!collapsed)} 
-          variant="partner"
           activeTab={activeTab}
           onTabChange={setActiveTab}
+          pendingCount={requests.filter(r => r.status === 'pending').length}
+          partnerName={partner?.company_name}
         />
       </div>
 
