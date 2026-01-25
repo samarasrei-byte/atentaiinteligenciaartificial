@@ -12,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
 import { MaskedInput } from '@/components/ui/masked-input';
 import { cleanDocument } from '@/lib/documentValidation';
+import { AffiliateCouponInput, calculateAffiliateCouponDiscount, AppliedAffiliateCoupon } from '@/components/pricing/AffiliateCouponInput';
 import { 
   ArrowLeft, 
   Shield, 
@@ -24,7 +25,8 @@ import {
   Users,
   Star,
   Zap,
-  FileText
+  FileText,
+  Tag
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -146,6 +148,7 @@ const LimpaNomePage = () => {
   
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedAffiliateCoupon | null>(null);
 
   // Hydrate form data from localStorage (from onboarding)
   useEffect(() => {
@@ -177,7 +180,14 @@ const LimpaNomePage = () => {
   const currentPlan = plans[selectedPlan];
   const subscriberDiscount = 0.10; // 10% discount
   const basePrice = currentPlan.basePrice;
-  const finalPrice = isSubscribed ? basePrice * (1 - subscriberDiscount) : basePrice;
+  const priceAfterSubscription = isSubscribed ? basePrice * (1 - subscriberDiscount) : basePrice;
+  
+  // Apply affiliate coupon discount
+  const { discountCents: couponDiscount, finalPriceCents } = calculateAffiliateCouponDiscount(
+    priceAfterSubscription,
+    appliedCoupon
+  );
+  const finalPrice = finalPriceCents;
   const installmentValue = Math.round(finalPrice / 4); // 4x sem juros
 
   const handleBureauToggle = (bureauId: string) => {
@@ -501,6 +511,28 @@ const LimpaNomePage = () => {
                         </div>
                       </div>
 
+                      {/* Affiliate Coupon Input */}
+                      <div className="space-y-2">
+                        <Label className="flex items-center gap-2">
+                          <Tag className="h-4 w-4 text-primary" />
+                          Cupom de Desconto
+                        </Label>
+                        <AffiliateCouponInput
+                          serviceType={selectedPlan === 'pf' ? 'credit_repair_pf' : 'credit_repair_pj'}
+                          onCouponApplied={setAppliedCoupon}
+                          onCouponRemoved={() => setAppliedCoupon(null)}
+                          appliedCoupon={appliedCoupon}
+                        />
+                        {appliedCoupon && (
+                          <div className="p-3 rounded-lg bg-success/10 border border-success/20">
+                            <div className="flex items-center justify-between">
+                              <span className="text-sm text-success font-medium">Desconto do cupom:</span>
+                              <span className="text-success font-bold">-{formatCurrency(couponDiscount)}</span>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
                       <Button 
                         type="submit" 
                         className="w-full h-14 text-lg font-semibold bg-gradient-to-r from-primary to-primary-glow hover:opacity-90 glow-primary"
@@ -514,12 +546,15 @@ const LimpaNomePage = () => {
                         ) : (
                           <>
                             <Shield className="h-5 w-5 mr-2" />
-                            Limpar Nome - 4x de {formatCurrency(Math.round(finalPrice / 4))}
+                            Limpar Nome - 4x de {formatCurrency(installmentValue)}
                           </>
                         )}
                       </Button>
                       <p className="text-center text-sm text-muted-foreground mt-2">
                         ou {formatCurrency(finalPrice)} à vista
+                        {appliedCoupon && (
+                          <span className="text-success ml-2">(cupom aplicado!)</span>
+                        )}
                       </p>
                     </form>
                   </CardContent>
