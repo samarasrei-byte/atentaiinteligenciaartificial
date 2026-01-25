@@ -4,6 +4,8 @@ import { Loader2, ShieldX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
+import { useEffect, useRef } from 'react';
+import { logAuditEvent } from '@/hooks/useAuditLog';
 
 type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate';
 
@@ -23,6 +25,26 @@ const roleLabels: Record<AppRole, string> = {
 export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
   const { user, loading, hasRole } = useAuth();
   const location = useLocation();
+  const loggedRef = useRef(false);
+
+  // Check if user has the required role OR is admin (admins can access all panels)
+  const hasAccess = hasRole(requiredRole) || hasRole('admin');
+
+  // Log access attempt once
+  useEffect(() => {
+    if (!loading && user && !loggedRef.current) {
+      loggedRef.current = true;
+      logAuditEvent({
+        userId: user.id,
+        userEmail: user.email,
+        actionType: hasAccess ? 'route_access_allowed' : 'route_access_denied',
+        routeAttempted: location.pathname,
+        success: hasAccess,
+        failureReason: hasAccess ? undefined : `Missing role: ${requiredRole}`,
+        metadata: { required_role: requiredRole, user_roles: user.user_metadata }
+      });
+    }
+  }, [loading, user, hasAccess, location.pathname, requiredRole]);
 
   if (loading) {
     return (
@@ -39,9 +61,6 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
   if (!user) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
-
-  // Check if user has the required role OR is admin (admins can access all panels)
-  const hasAccess = hasRole(requiredRole) || hasRole('admin');
   
   if (!hasAccess) {
     return (
