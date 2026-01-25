@@ -218,13 +218,13 @@ export default function LimpaNomeOnboarding() {
                           <p className="text-sm text-muted-foreground">Profissionais verificados</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 p-4 rounded-xl bg-muted/50 border border-border">
-                        <div className="p-3 rounded-full bg-rose-500/20">
-                          <Heart className="h-6 w-6 text-rose-500" />
+                      <div className="flex items-center gap-4 p-4 rounded-xl bg-slate-900/80 border-2 border-pink-500/40 shadow-lg shadow-pink-500/10">
+                        <div className="p-3 rounded-full bg-pink-500/20 border border-pink-500/30">
+                          <Heart className="h-6 w-6 text-pink-400" />
                         </div>
                         <div>
-                          <p className="font-medium text-foreground">Atendimento humano garantido</p>
-                          <p className="text-sm text-muted-foreground">Nada é automático</p>
+                          <p className="font-bold text-pink-400">ATENDIMENTO HUMANO GARANTIDO</p>
+                          <p className="text-sm text-foreground/80">Nada é automático – parceiros reais</p>
                         </div>
                       </div>
                     </div>
