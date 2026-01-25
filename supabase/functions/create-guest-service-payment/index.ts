@@ -64,53 +64,54 @@ const sanitizeString = (str: string | null | undefined): string | null => {
 };
 
 // Service configurations
+// OFFICIAL PRICES - Single Source of Truth (Updated 2025-01-25)
 const SERVICE_CONFIGS = {
   ir_simples: {
     name: 'Declaração IR Simples',
     description: 'Declaração de Imposto de Renda - Modalidade Simples',
-    basePriceCents: 15000,
+    basePriceCents: 20000, // R$ 200,00
     discountPercent: 20,
   },
   ir_completo: {
     name: 'Declaração IR Completo',
     description: 'Declaração de Imposto de Renda - Modalidade Completa',
-    basePriceCents: 29900,
+    basePriceCents: 42000, // R$ 420,00
     discountPercent: 20,
   },
   credit_repair: {
     name: 'Limpa Nome Completo',
     description: 'Regularização em 8 plataformas: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot, Registrato, CADIN',
-    basePriceCents: 97000,
-    discountPercent: 15,
+    basePriceCents: 97000, // R$ 970,00
+    discountPercent: 10,
   },
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
     description: 'Liminar coletiva para CPF - Exclusão permanente de apontamentos',
-    basePriceCents: 68000,
+    basePriceCents: 78000, // R$ 780,00
     discountPercent: 10,
   },
   credit_repair_pj: {
     name: 'Limpa Nome Empresa (CNPJ)',
     description: 'Liminar coletiva para CNPJ - Exclusão permanente de apontamentos',
-    basePriceCents: 89000,
+    basePriceCents: 97000, // R$ 970,00
     discountPercent: 10,
   },
   certificate: {
     name: 'Certidão',
     description: 'Emissão de Certidão',
-    basePriceCents: 8000,
+    basePriceCents: 8000, // R$ 80,00
     discountPercent: 10,
   },
   company_opening_mei: {
     name: 'Abertura de MEI',
     description: 'Abertura de Microempreendedor Individual com acompanhamento completo',
-    basePriceCents: 15000,
+    basePriceCents: 15000, // R$ 150,00 (MEI separado)
     discountPercent: 15,
   },
   company_opening_me: {
     name: 'Abertura de ME/LTDA',
     description: 'Abertura de Microempresa ou LTDA com análise tributária',
-    basePriceCents: 49900,
+    basePriceCents: 78000, // R$ 780,00
     discountPercent: 15,
   },
 };

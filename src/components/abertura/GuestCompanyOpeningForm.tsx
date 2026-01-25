@@ -173,7 +173,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
           'Processo de abertura simplificado',
         ],
         savings: 'Economia estimada de até 70% em impostos comparado a PF',
-        priceCents: 15000,
+        priceCents: 15000, // MEI é serviço separado a R$ 150
       };
     }
 
@@ -190,7 +190,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
           'Possibilidade de contratar funcionários',
         ],
         savings: 'Economia estimada de até 40% comparado ao Lucro Presumido',
-        priceCents: 49900,
+        priceCents: 78000, // R$ 780,00 - Preço oficial 2025
       };
     }
 
@@ -206,7 +206,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
         'Ideal para serviços com alta margem de custos',
       ],
       savings: 'Possibilidade de otimização com créditos tributários',
-      priceCents: 49900,
+      priceCents: 78000, // R$ 780,00 - Preço oficial 2025
     };
   };
 

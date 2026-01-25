@@ -53,8 +53,8 @@ export default function LimpaNomeLanding() {
   };
 
   const plans = {
-    pf: { price: 680, label: 'Pessoa Física', icon: User, description: 'Para CPF' },
-    pj: { price: 890, label: 'Empresa', icon: Building2, description: 'Para CNPJ' },
+    pf: { price: 780, label: 'Pessoa Física', icon: User, description: 'Para CPF' },
+    pj: { price: 970, label: 'Empresa', icon: Building2, description: 'Para CNPJ' },
   };
 
   const benefits = [

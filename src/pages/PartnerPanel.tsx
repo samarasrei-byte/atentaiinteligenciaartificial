@@ -667,9 +667,9 @@ export default function PartnerPanel() {
 
       <div className="space-y-3">
         {(filteredRequests.length > 0 ? filteredRequests : [
-          { id: '1', full_name: 'João Silva', email: 'joao@email.com', phone: '(11) 99999-1234', debt_amount_cents: 1500000, status: 'negotiating', payment_status: 'paid', final_price_cents: 29700, created_at: new Date().toISOString(), user_id: '1' },
-          { id: '2', full_name: 'Maria Santos', email: 'maria@email.com', phone: '(11) 98888-5678', debt_amount_cents: 850000, status: 'in_progress', payment_status: 'paid', final_price_cents: 29700, created_at: subDays(new Date(), 2).toISOString(), user_id: '2' },
-          { id: '3', full_name: 'Pedro Oliveira', email: 'pedro@email.com', phone: '(21) 97777-9012', debt_amount_cents: 2300000, status: 'pending', payment_status: 'pending', final_price_cents: 29700, created_at: subDays(new Date(), 5).toISOString(), user_id: '3' },
+          { id: '1', full_name: 'João Silva', email: 'joao@email.com', phone: '(11) 99999-1234', debt_amount_cents: 1500000, status: 'negotiating', payment_status: 'paid', final_price_cents: 78000, created_at: new Date().toISOString(), user_id: '1' },
+          { id: '2', full_name: 'Maria Santos', email: 'maria@email.com', phone: '(11) 98888-5678', debt_amount_cents: 850000, status: 'in_progress', payment_status: 'paid', final_price_cents: 78000, created_at: subDays(new Date(), 2).toISOString(), user_id: '2' },
+          { id: '3', full_name: 'Pedro Oliveira', email: 'pedro@email.com', phone: '(21) 97777-9012', debt_amount_cents: 2300000, status: 'pending', payment_status: 'pending', final_price_cents: 78000, created_at: subDays(new Date(), 5).toISOString(), user_id: '3' },
         ] as CreditRepairRequest[]).map((request, index) => (
           <motion.div key={request.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}>
             <Card className="bg-card/50 backdrop-blur border-border/50 hover:border-emerald-500/30 transition-all">
