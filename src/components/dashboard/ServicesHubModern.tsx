@@ -233,7 +233,7 @@ export const ServicesHubModern: React.FC = () => {
       ],
       gradient: 'from-primary/40 to-teal-500/40',
       iconGradient: 'from-primary to-teal-500',
-      onClick: () => navigate('/contadores'),
+      onClick: () => navigate('/contadores-publico'),
     },
     {
       title: 'Abertura de Empresa',
@@ -283,7 +283,7 @@ export const ServicesHubModern: React.FC = () => {
       ],
       gradient: 'from-violet-500/40 to-purple-500/40',
       iconGradient: 'from-violet-500 to-purple-500',
-      onClick: () => navigate('/certificates'),
+      onClick: () => navigate('/certidoes'),
     },
     {
       title: 'Declaração IR Simples',
@@ -332,7 +332,7 @@ export const ServicesHubModern: React.FC = () => {
       ],
       gradient: 'from-cyan-500/40 to-sky-500/40',
       iconGradient: 'from-cyan-500 to-sky-500',
-      onClick: () => navigate('/contadores'),
+      onClick: () => navigate('/contadores-publico'),
       badge: 'Premium',
     },
   ];
