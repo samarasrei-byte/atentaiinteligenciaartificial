@@ -17,6 +17,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { TransitionEvolutionChart, AccumulatedSavingsCalculator } from '@/components/simulator/TransitionCharts';
+import { FreeToolBadge } from '@/components/ui/free-tool-badge';
 
 /**
  * Cronograma de transição tributária conforme LC 214/2025
@@ -186,12 +187,24 @@ const TransicaoTributaria = () => {
       <main className="container mx-auto px-4 py-8 max-w-5xl">
         {/* Hero Section */}
         <div className="text-center mb-12">
+          <div className="flex items-center justify-center gap-3 mb-4">
+            <Badge className="bg-cyan-500/20 text-cyan-400 border-cyan-500/30">
+              <CalendarDays className="h-3 w-3 mr-1" />
+              EC 132/2023 + LC 214/2025
+            </Badge>
+            <Badge className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
+              ✓ Grátis
+            </Badge>
+          </div>
           <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
             Cronograma da Reforma Tributária
           </h1>
-          <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+          <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-4">
             Entenda como será a transição do sistema tributário brasileiro de 2026 a 2033, 
             conforme estabelecido pela EC 132/2023 e LC 214/2025.
+          </p>
+          <p className="text-sm text-emerald-400/80 max-w-lg mx-auto">
+            Ferramenta educacional gratuita — sem custo, sem cartão, sem compromisso
           </p>
         </div>
 
