@@ -15,7 +15,7 @@ import {
   ArrowRight, CheckCircle2, Zap, Gift, BarChart3, Clock,
   ArrowLeft, Star, BadgeCheck, Sparkles, HelpCircle, Quote, 
   MessageCircle, Rocket, DollarSign, Crown, Target, Coins,
-  Globe, Award, Play, Building2, Briefcase, User, ChevronRight
+  Globe, Award, Play, Building2, Briefcase, User, ChevronRight, FileText
 } from 'lucide-react';
 import { MaskedInput } from '@/components/ui/masked-input';
 
@@ -190,7 +190,7 @@ const GlassCard = ({
 const SERVICES = [
   { 
     name: 'Limpa Nome PF', 
-    price: 970, 
+    price: 680, // R$ 680,00 - Padronizado
     commission: 20, 
     icon: Shield,
     gradient: 'from-cyan-500 to-blue-600',
@@ -199,7 +199,7 @@ const SERVICES = [
   },
   { 
     name: 'Limpa Nome CNPJ', 
-    price: 1290, 
+    price: 890, // R$ 890,00 - Padronizado
     commission: 20, 
     icon: Building2,
     gradient: 'from-emerald-500 to-teal-600',
@@ -208,21 +208,39 @@ const SERVICES = [
   },
   { 
     name: 'Análise Fiscal', 
-    price: 4500, 
-    commission: 15, 
+    price: 0, // Gratuito - Taxa de êxito
+    commission: 50, // 50% do valor recuperado
     icon: BarChart3,
     gradient: 'from-violet-500 to-purple-600',
     bgGlow: 'violet',
-    description: 'Recuperação'
+    description: 'Taxa de êxito'
   },
   { 
     name: 'Abertura Empresa', 
-    price: 500, 
+    price: 500, // R$ 500,00
     commission: 15, 
     icon: Briefcase,
     gradient: 'from-amber-500 to-orange-600',
     bgGlow: 'amber',
     description: 'Novo CNPJ'
+  },
+  { 
+    name: 'IR Simples', 
+    price: 150, // R$ 150,00
+    commission: 20, 
+    icon: FileText,
+    gradient: 'from-rose-500 to-pink-600',
+    bgGlow: 'rose',
+    description: 'Pessoa Física'
+  },
+  { 
+    name: 'IR Completo', 
+    price: 350, // R$ 350,00
+    commission: 20, 
+    icon: FileText,
+    gradient: 'from-indigo-500 to-blue-600',
+    bgGlow: 'indigo',
+    description: 'Múltiplas fontes'
   },
 ];
 

@@ -148,12 +148,12 @@ export default function LimpaNomeLanding() {
           >
             {/* Trust Badge */}
             <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
-              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-rose-500/20 border border-rose-500/30 text-rose-400 text-xs sm:text-sm">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-rose-400"></span>
+              <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-slate-900/90 backdrop-blur-sm border-2 border-pink-500/50 text-pink-400 font-bold text-xs sm:text-sm shadow-lg shadow-pink-500/20">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-400"></span>
                 </span>
-                <span>Atendimento humano especializado</span>
+                <span>ATENDIMENTO HUMANO • PARCEIROS ESPECIALIZADOS</span>
               </div>
             </motion.div>
             

@@ -25,39 +25,46 @@ const BRAZILIAN_STATES = [
 
 const SERVICES_INFO = [
   {
-    icon: '🧠',
-    name: 'Inteligência Fiscal',
+    icon: '🔍',
+    name: 'Análise Fiscal Premium',
     description: 'Análise com IA para recuperação de créditos tributários',
-    commission: 'Até R$ 13.000 por caso',
-    basePrice: 'Taxa de êxito: 50% do valor recuperado',
+    commission: 'Até 50% do valor recuperado',
+    basePrice: 'Análise gratuita - Taxa de êxito',
     highlight: true
   },
   {
     icon: '🛡️',
-    name: 'Limpa Nome Premium',
-    description: 'Regularização rápida com equipe jurídica especializada',
-    commission: 'R$ 194 por venda',
-    basePrice: 'Preço: R$ 970,00'
-  },
-  {
-    icon: '📈',
-    name: 'Consultoria Empresarial',
-    description: 'Planejamento tributário personalizado',
-    commission: 'R$ 90 por venda',
-    basePrice: 'Preço: R$ 450,00'
-  },
-  {
-    icon: '📄',
-    name: 'Declaração de IR',
-    description: 'IR Simples ou Completo',
-    commission: 'R$ 30 a R$ 70',
-    basePrice: 'Preço: R$ 150 a R$ 350'
+    name: 'Limpa Nome PF',
+    description: 'Regularização para Pessoa Física (CPF)',
+    commission: 'R$ 136 por venda (20%)',
+    basePrice: 'Preço: R$ 680,00'
   },
   {
     icon: '🏢',
+    name: 'Limpa Nome CNPJ',
+    description: 'Regularização para Empresas (CNPJ)',
+    commission: 'R$ 178 por venda (20%)',
+    basePrice: 'Preço: R$ 890,00'
+  },
+  {
+    icon: '📄',
+    name: 'Declaração de IR Simples',
+    description: 'Para CLT com poucos rendimentos',
+    commission: 'R$ 30 por venda (20%)',
+    basePrice: 'Preço: R$ 150,00'
+  },
+  {
+    icon: '📊',
+    name: 'Declaração de IR Completo',
+    description: 'Para autônomos e investidores',
+    commission: 'R$ 70 por venda (20%)',
+    basePrice: 'Preço: R$ 350,00'
+  },
+  {
+    icon: '🏗️',
     name: 'Abertura de Empresa',
     description: 'Abertura completa de CNPJ',
-    commission: 'R$ 100 por venda',
+    commission: 'R$ 75 por venda (15%)',
     basePrice: 'Preço: R$ 500,00'
   }
 ];

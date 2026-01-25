@@ -140,8 +140,8 @@ export function LimpaNomeSection() {
         <div className="container mx-auto px-4 relative z-10">
           {/* Header - New Human-Focused Messaging */}
           <div className="text-center mb-12">
-            <Badge className="mb-6 bg-gradient-to-r from-rose-500/20 to-pink-500/20 text-rose-400 border-rose-500/30 px-6 py-2">
-              <Heart className="h-4 w-4 mr-2" />
+            <Badge className="mb-6 bg-slate-900/90 backdrop-blur-sm text-pink-400 font-bold border-2 border-pink-500/50 px-6 py-2.5 shadow-lg shadow-pink-500/20">
+              <Heart className="h-4 w-4 mr-2 text-pink-400" />
               ATENDIMENTO HUMANO • PARCEIROS ESPECIALIZADOS
             </Badge>
             <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
