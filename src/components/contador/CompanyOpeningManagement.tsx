@@ -78,10 +78,11 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
   },
 };
 
+// OFFICIAL PRICES - Single Source of Truth (Updated 2025-01-25)
 const PRICING_TEMPLATES = [
   { regime: 'mei', label: 'MEI', price: 15000, description: 'Abertura de MEI completa' },
-  { regime: 'me-simples', label: 'ME Simples Nacional', price: 80000, description: 'Abertura de ME no Simples Nacional' },
-  { regime: 'me-presumido', label: 'ME Lucro Presumido', price: 120000, description: 'Abertura de ME no Lucro Presumido' },
+  { regime: 'me-simples', label: 'ME Simples Nacional', price: 78000, description: 'Abertura de ME no Simples Nacional' },
+  { regime: 'me-presumido', label: 'ME Lucro Presumido', price: 78000, description: 'Abertura de ME no Lucro Presumido' },
 ];
 
 const CompanyOpeningManagement: React.FC = () => {

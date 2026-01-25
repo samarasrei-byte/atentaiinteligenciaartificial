@@ -155,8 +155,8 @@ export default function PartnerOnboarding() {
             debt_description: formData.debtTypes.join(', '),
             status: 'pending',
             payment_status: 'pending',
-            service_price_cents: selectedPlan === 'pj' ? 89000 : 68000,
-            final_price_cents: selectedPlan === 'pj' ? 89000 : 68000,
+            service_price_cents: selectedPlan === 'pj' ? 97000 : 78000,
+            final_price_cents: selectedPlan === 'pj' ? 97000 : 78000,
           })
           .select()
           .single();
