@@ -240,12 +240,12 @@ export function SimulatorSection() {
                 {/* Input Fields - Row 1 */}
                 <div className="grid md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="revenue" className="flex items-center justify-between">
+                    <Label htmlFor="revenue" className="flex items-center justify-between text-white">
                       <span>Faturamento {revenueType === "monthly" ? "Mensal" : "Anual"}</span>
                       <button
                         type="button"
                         onClick={() => setRevenueType(prev => prev === "monthly" ? "annual" : "monthly")}
-                        className="text-xs text-primary hover:underline font-medium"
+                        className="text-xs text-cyan-400 hover:underline font-medium"
                       >
                         {revenueType === "monthly" ? "Usar anual?" : "Usar mensal?"}
                       </button>
@@ -255,10 +255,10 @@ export function SimulatorSection() {
                       placeholder={revenueType === "monthly" ? "R$ 0,00" : "R$ 0,00 (anual)"}
                       value={revenue}
                       onChange={handleRevenueChange}
-                      className="h-12"
+                      className="h-12 bg-slate-800/50 border-white/20 text-white placeholder:text-slate-500"
                     />
                     {revenueType === "annual" && (
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-xs text-slate-400">
                         Faturamento anual é mais preciso para enquadramento tributário
                       </p>
                     )}
@@ -329,9 +329,9 @@ export function SimulatorSection() {
                 {/* Row 2 - Sector and Regime */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label>Setor de Atuação</Label>
+                    <Label className="text-white">Setor de Atuação</Label>
                     <Select value={sector} onValueChange={(value) => { setSector(value); setState(""); }}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 bg-slate-800/50 border-white/20 text-white">
                         <SelectValue placeholder="Selecione o setor" />
                       </SelectTrigger>
                       <SelectContent>
@@ -344,9 +344,9 @@ export function SimulatorSection() {
                     </Select>
                   </div>
                   <div className="space-y-2">
-                    <Label>Regime Tributário</Label>
+                    <Label className="text-white">Regime Tributário</Label>
                     <Select value={companyType} onValueChange={setCompanyType}>
-                      <SelectTrigger className="h-12">
+                      <SelectTrigger className="h-12 bg-slate-800/50 border-white/20 text-white">
                         <SelectValue placeholder="Selecione o regime" />
                       </SelectTrigger>
                       <SelectContent>
@@ -364,12 +364,12 @@ export function SimulatorSection() {
                 {showStateSelector && (
                   <div className="grid md:grid-cols-3 gap-4">
                     <div className="space-y-2">
-                      <Label className="flex items-center gap-2">
+                      <Label className="flex items-center gap-2 text-white">
                         <MapPin className="w-4 h-4" />
                         Estado (ICMS)
                       </Label>
                       <Select value={state || "default"} onValueChange={(value) => setState(value === "default" ? "" : value)}>
-                        <SelectTrigger className="h-12">
+                        <SelectTrigger className="h-12 bg-slate-800/50 border-white/20 text-white">
                           <SelectValue placeholder="Selecione o estado (opcional)" />
                         </SelectTrigger>
                         <SelectContent>
@@ -383,7 +383,7 @@ export function SimulatorSection() {
                       </Select>
                     </div>
                     <div className="md:col-span-2 flex items-end">
-                      <p className="text-sm text-muted-foreground">
+                      <p className="text-sm text-slate-400">
                         {state 
                           ? `Alíquota de ICMS para ${brazilianStates.find(s => s.value === state)?.label}: ${stateICMSRates[state]}%`
                           : "Selecione um estado para usar a alíquota de ICMS específica"
@@ -470,103 +470,103 @@ export function SimulatorSection() {
                     {/* Comparison Grid */}
                     <div className={`grid md:grid-cols-2 gap-6 ${!hasAccess ? 'opacity-20 blur-sm pointer-events-none select-none' : ''}`}>
                       {/* Before */}
-                      <Card variant="outlined" className="p-6">
-                        <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full bg-muted-foreground" />
+                      <Card variant="outlined" className="p-6 bg-slate-800/50 border-white/10">
+                        <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-white">
+                          <span className="w-3 h-3 rounded-full bg-slate-400" />
                           Sistema Atual
                         </h4>
                         <div className="space-y-3 text-sm">
                           {result.beforeTaxes.icms > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">ICMS</span>
-                              <span className="font-medium">{formatCurrency(result.beforeTaxes.icms)}</span>
+                              <span className="text-slate-400">ICMS</span>
+                              <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.icms)}</span>
                             </div>
                           )}
                           {result.beforeTaxes.iss > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">ISS</span>
-                              <span className="font-medium">{formatCurrency(result.beforeTaxes.iss)}</span>
+                              <span className="text-slate-400">ISS</span>
+                              <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.iss)}</span>
                             </div>
                           )}
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">PIS</span>
-                            <span className="font-medium">{formatCurrency(result.beforeTaxes.pis)}</span>
+                            <span className="text-slate-400">PIS</span>
+                            <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.pis)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">COFINS</span>
-                            <span className="font-medium">{formatCurrency(result.beforeTaxes.cofins)}</span>
+                            <span className="text-slate-400">COFINS</span>
+                            <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.cofins)}</span>
                           </div>
                           {result.beforeTaxes.ipi > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">IPI</span>
-                              <span className="font-medium">{formatCurrency(result.beforeTaxes.ipi)}</span>
+                              <span className="text-slate-400">IPI</span>
+                              <span className="font-medium text-white">{formatCurrency(result.beforeTaxes.ipi)}</span>
                             </div>
                           )}
-                          <div className="pt-3 border-t flex justify-between font-bold text-lg">
-                            <span>Total</span>
-                            <span>{formatCurrency(result.beforeTaxes.total)}</span>
+                          <div className="pt-3 border-t border-white/10 flex justify-between font-bold text-lg">
+                            <span className="text-white">Total</span>
+                            <span className="text-white">{formatCurrency(result.beforeTaxes.total)}</span>
                           </div>
                         </div>
                       </Card>
 
                       {/* After */}
-                      <Card variant="premium" className="p-6">
-                        <h4 className="font-bold text-lg mb-4 flex items-center gap-2">
-                          <span className="w-3 h-3 rounded-full bg-primary" />
+                      <Card variant="premium" className="p-6 bg-gradient-to-br from-cyan-900/50 to-violet-900/50 border-cyan-500/30">
+                        <h4 className="font-bold text-lg mb-4 flex items-center gap-2 text-white">
+                          <span className="w-3 h-3 rounded-full bg-cyan-400" />
                           Reforma 2026 (LC 214/2025)
                         </h4>
                         <div className="space-y-3 text-sm">
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">IBS (Estadual/Municipal)</span>
-                            <span className="font-medium">{formatCurrency(result.afterTaxes.ibs)}</span>
+                            <span className="text-slate-400">IBS (Estadual/Municipal)</span>
+                            <span className="font-medium text-white">{formatCurrency(result.afterTaxes.ibs)}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span className="text-muted-foreground">CBS (Federal)</span>
-                            <span className="font-medium">{formatCurrency(result.afterTaxes.cbs)}</span>
+                            <span className="text-slate-400">CBS (Federal)</span>
+                            <span className="font-medium text-white">{formatCurrency(result.afterTaxes.cbs)}</span>
                           </div>
                           {result.afterTaxes.is > 0 && (
                             <div className="flex justify-between">
-                              <span className="text-muted-foreground">IS (Seletivo)</span>
-                              <span className="font-medium">{formatCurrency(result.afterTaxes.is)}</span>
+                              <span className="text-slate-400">IS (Seletivo)</span>
+                              <span className="font-medium text-white">{formatCurrency(result.afterTaxes.is)}</span>
                             </div>
                           )}
-                          <div className="pt-3 border-t flex justify-between font-bold text-lg">
-                            <span>Total</span>
-                            <span className="text-primary">{formatCurrency(result.afterTaxes.total)}</span>
+                          <div className="pt-3 border-t border-white/10 flex justify-between font-bold text-lg">
+                            <span className="text-white">Total</span>
+                            <span className="text-cyan-400">{formatCurrency(result.afterTaxes.total)}</span>
                           </div>
                         </div>
                       </Card>
                     </div>
 
                     {/* Summary */}
-                    <Card variant="gradient" className={`p-6 ${!hasAccess ? 'opacity-20 blur-sm pointer-events-none select-none' : ''}`}>
+                    <Card variant="gradient" className={`p-6 bg-slate-800/50 border-white/10 ${!hasAccess ? 'opacity-20 blur-sm pointer-events-none select-none' : ''}`}>
                       <div className="flex flex-col md:flex-row items-center justify-between gap-4">
                         <div className="text-center md:text-left">
-                          <p className="text-sm text-muted-foreground mb-1">Diferença Estimada</p>
+                          <p className="text-sm text-slate-400 mb-1">Diferença Estimada</p>
                           <div className="flex items-center gap-2">
                             {result.difference > 0 ? (
-                              <TrendingUp className="w-6 h-6 text-destructive" />
+                              <TrendingUp className="w-6 h-6 text-red-400" />
                             ) : result.difference < 0 ? (
-                              <TrendingDown className="w-6 h-6 text-success" />
+                              <TrendingDown className="w-6 h-6 text-emerald-400" />
                             ) : (
-                              <Minus className="w-6 h-6 text-muted-foreground" />
+                              <Minus className="w-6 h-6 text-slate-400" />
                             )}
                             <span className={`text-2xl md:text-3xl font-bold ${
-                              result.difference > 0 ? "text-destructive" : 
-                              result.difference < 0 ? "text-success" : ""
+                              result.difference > 0 ? "text-red-400" : 
+                              result.difference < 0 ? "text-emerald-400" : "text-white"
                             }`}>
                               {result.difference > 0 ? "+" : ""}{formatCurrency(result.difference)}
                             </span>
                             <span className={`text-sm font-medium px-2 py-1 rounded-full ${
-                              result.difference > 0 ? "bg-destructive/10 text-destructive" :
-                              result.difference < 0 ? "bg-success/10 text-success" :
-                              "bg-muted text-muted-foreground"
+                              result.difference > 0 ? "bg-red-500/20 text-red-400" :
+                              result.difference < 0 ? "bg-emerald-500/20 text-emerald-400" :
+                              "bg-slate-700 text-slate-400"
                             }`}>
                               {result.percentChange > 0 ? "+" : ""}{result.percentChange.toFixed(1)}%
                             </span>
                           </div>
                         </div>
-                        <p className="text-sm text-muted-foreground text-center md:text-right max-w-xs">
+                        <p className="text-sm text-slate-400 text-center md:text-right max-w-xs">
                           {result.difference < 0 
                             ? "Você pode economizar com a reforma! Consulte um contador para otimizar ainda mais."
                             : result.difference > 0
@@ -578,7 +578,7 @@ export function SimulatorSection() {
                     </Card>
 
                     {/* Disclaimer */}
-                    <p className={`text-xs text-muted-foreground text-center ${!hasAccess ? 'opacity-20' : ''}`}>
+                    <p className={`text-xs text-slate-500 text-center ${!hasAccess ? 'opacity-20' : ''}`}>
                       * Simulação baseada na LC 214/2025 e alíquotas de referência (IBS 17,7% + CBS 8,8% = 26,5%). 
                       Valores reais podem variar de acordo com regimes especiais, créditos tributários e regulamentações específicas.
                     </p>
