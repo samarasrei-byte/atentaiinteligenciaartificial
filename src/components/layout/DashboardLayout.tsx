@@ -39,7 +39,7 @@ export function DashboardLayout({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background flex w-full">
+    <div className="dashboard-layout">
       {/* Mobile overlay */}
       {mobileMenuOpen && (
         <div
@@ -88,7 +88,7 @@ export function DashboardLayout({
       {/* Main Content Area - fills remaining space */}
       <main
         className={cn(
-          'flex-1 flex flex-col min-h-screen w-full min-w-0 transition-all duration-300',
+          'dashboard-main transition-all duration-300',
           showDefaultSidebar && !customSidebar && (sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64')
         )}
       >
@@ -96,7 +96,7 @@ export function DashboardLayout({
         {header ? (
           header
         ) : (
-          <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4 lg:hidden">
+          <header className="dashboard-header lg:hidden">
             <Button
               variant="ghost"
               size="icon"
@@ -108,7 +108,7 @@ export function DashboardLayout({
         )}
 
         {/* Content Area - flex-1 ensures it fills all available space */}
-        <div className="flex-1 p-4 lg:p-6 space-y-6">
+        <div className="dashboard-content">
           {children}
         </div>
       </main>

@@ -744,7 +744,7 @@ const EmpresaPanel = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex w-full overflow-x-hidden">
+    <div className="dashboard-layout overflow-x-hidden">
       {/* Mobile Sidebar Overlay */}
       {mobileMenuOpen && (
         <div 
@@ -779,11 +779,11 @@ const EmpresaPanel = () => {
       </div>
       
       <main className={cn(
-        'flex-1 flex flex-col min-h-screen transition-all duration-300 w-full min-w-0',
+        'dashboard-main transition-all duration-300',
         sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
       )}>
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4 shrink-0">
+        <header className="dashboard-header">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3" data-tour="welcome">
               {/* Mobile Menu Button */}
@@ -834,7 +834,7 @@ const EmpresaPanel = () => {
           </div>
         </header>
 
-        <div className="flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto">
+        <div className="dashboard-content">
           <PastDueAlert />
           {renderContent()}
         </div>

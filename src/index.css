@@ -179,18 +179,34 @@
   /* Dashboard Layout Master - Garante que não haja espaço em branco no rodapé */
   .dashboard-layout {
     @apply min-h-screen flex w-full bg-background;
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile */
   }
 
   .dashboard-main {
-    @apply flex-1 flex flex-col min-h-screen w-full min-w-0;
+    @apply flex-1 flex flex-col w-full min-w-0;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 
   .dashboard-header {
-    @apply sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4 shrink-0;
+    @apply sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4;
+    flex-shrink: 0;
   }
 
   .dashboard-content {
-    @apply flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto;
+    @apply p-4 lg:p-6 space-y-6;
+    flex: 1 1 auto;
+    overflow-y: auto;
+    min-height: 0; /* Prevents flex item from overflowing */
+  }
+
+  /* Ensure no footer whitespace - content fills viewport */
+  .dashboard-fill {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
   }
 }
 

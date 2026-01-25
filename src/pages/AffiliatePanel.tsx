@@ -1181,7 +1181,7 @@ export default function AffiliatePanel() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex w-full">
+    <div className="dashboard-layout">
       {/* Mobile Sidebar Overlay */}
       <AnimatePresence>
         {sidebarOpen && (
@@ -1274,9 +1274,9 @@ export default function AffiliatePanel() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen">
+      <main className="dashboard-main">
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border/50 shrink-0">
+        <header className="dashboard-header">
           <div className="flex items-center justify-between px-6 py-4">
             <div className="flex items-center gap-4">
               <Button
@@ -1305,7 +1305,7 @@ export default function AffiliatePanel() {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 p-6 overflow-y-auto">
+        <div className="dashboard-content">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeSection}
