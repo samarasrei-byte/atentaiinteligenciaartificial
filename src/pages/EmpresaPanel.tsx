@@ -779,11 +779,11 @@ const EmpresaPanel = () => {
       </div>
       
       <main className={cn(
-        'flex-1 transition-all duration-300 w-full min-w-0',
+        'flex-1 flex flex-col min-h-screen transition-all duration-300 w-full min-w-0',
         sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
       )}>
         {/* Top Bar */}
-        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4">
+        <header className="sticky top-0 z-30 bg-background/80 backdrop-blur-xl border-b border-border px-4 lg:px-6 py-4 shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3" data-tour="welcome">
               {/* Mobile Menu Button */}
@@ -834,7 +834,7 @@ const EmpresaPanel = () => {
           </div>
         </header>
 
-        <div className="p-4 lg:p-6 space-y-6">
+        <div className="flex-1 p-4 lg:p-6 space-y-6 overflow-y-auto">
           <PastDueAlert />
           {renderContent()}
         </div>
