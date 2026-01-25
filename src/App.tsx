@@ -85,6 +85,7 @@ import LimpaNomeLanding from "./pages/LimpaNomeLanding";
 import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
 import TestLogin from "./pages/TestLogin";
 import PartnerGuilhermePage from "./pages/PartnerGuilhermePage";
+import PartnerGuilhermePanel from "./pages/PartnerGuilhermePanel";
 import MarketplaceServicePage from "./pages/MarketplaceServicePage";
 import SobrePage from "./pages/SobrePage";
 import SuportePage from "./pages/SuportePage";
@@ -131,6 +132,7 @@ const App = () => (
               <Route path="/servicos" element={<ServicosPage />} />
               <Route path="/marketplace/:serviceSlug" element={<MarketplaceServicePage />} />
               <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
+              <Route path="/parceiroatentaigb" element={<PartnerGuilhermePanel />} />
               <Route path="/ir" element={<IRPage />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
