@@ -31,6 +31,7 @@ export function Footer({ onNavigate }: FooterProps) {
 
   // Platform Navigation
   const platformLinks = [
+    { label: "AtentAI", to: "/", icon: Calculator },
     { label: "Simulador", to: "/simulador", icon: Calculator },
     { label: "Marketplace", to: "/servicos", icon: Briefcase },
     { label: "Limpa Nome PF", to: "/limpa-nome", icon: CreditCard },
@@ -49,10 +50,11 @@ export function Footer({ onNavigate }: FooterProps) {
 
   // Partner & Affiliate
   const partnerLinks = [
+    { label: "Contadores", to: "/contadores-publico", highlight: false },
     { label: "Seja Afiliado", to: "/afiliado/cadastro", highlight: true },
     { label: "Seja Parceiro", to: "/parceiro/onboarding", highlight: true },
-    { label: "Login Parceiro", to: "/parceiro/login" },
-    { label: "Login Afiliado", to: "/auth" },
+    { label: "Login Parceiro", to: "/parceiro/login", highlight: false },
+    { label: "Login Afiliado", to: "/auth", highlight: false },
   ];
 
   // Legal & Support

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { PublicLayout } from '@/components/layout/PublicLayout';
 import { 
   ArrowLeft, 
   CalendarDays, 
@@ -162,6 +163,7 @@ const TransicaoTributaria = () => {
   };
 
   return (
+    <PublicLayout>
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
       {/* Header */}
       <header className="border-b border-slate-700 bg-slate-800/50 backdrop-blur-sm">
@@ -424,6 +426,7 @@ const TransicaoTributaria = () => {
         </div>
       </main>
     </div>
+    </PublicLayout>
   );
 };
 
