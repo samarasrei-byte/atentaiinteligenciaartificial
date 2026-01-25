@@ -391,17 +391,17 @@ export function LimpaNomeSection() {
                         <Star key={i} className="h-5 w-5 fill-amber-400 text-amber-400" />
                       ))}
                     </div>
-                    <span className="text-sm text-white/60 font-medium">
+                    <span className="text-sm text-white/80 font-medium">
                       4.9/5 • Avaliação dos clientes
                     </span>
                   </div>
 
                   {/* Price */}
                   <div className="mb-6">
-                    <p className="text-sm text-white/50 mb-2">Investimento único - {currentPlan.name}</p>
+                    <p className="text-sm text-white/70 mb-2">Investimento único - {currentPlan.name}</p>
                     <div className="flex items-baseline gap-3">
                       {isSubscribed && (
-                        <span className="text-2xl text-white/40 line-through">
+                        <span className="text-2xl text-white/50 line-through">
                           R$ {formatPrice(basePrice)}
                         </span>
                       )}
@@ -418,8 +418,8 @@ export function LimpaNomeSection() {
                         10% de desconto aplicado
                       </Badge>
                     ) : (
-                      <p className="text-sm text-white/50 mt-2">
-                        ou até <span className="font-semibold text-white/70">12x de R$ {formatPrice(Math.round(discountedPrice / 12))}</span>
+                      <p className="text-sm text-white/70 mt-2">
+                        ou até <span className="font-semibold text-white">12x de R$ {formatPrice(Math.round(discountedPrice / 12))}</span>
                       </p>
                     )}
                   </div>
@@ -434,7 +434,7 @@ export function LimpaNomeSection() {
                       {currentPlan.included.map((item, index) => (
                         <div key={index} className="flex items-center gap-2">
                           <CheckCircle className="h-4 w-4 text-emerald-400 flex-shrink-0" />
-                          <span className="text-sm text-white/70">{item}</span>
+                          <span className="text-sm text-white/90">{item}</span>
                         </div>
                       ))}
                     </div>
@@ -452,7 +452,7 @@ export function LimpaNomeSection() {
                   </Button>
 
                   {/* Microcopy - Very Important */}
-                  <p className="text-xs text-center text-white/40 mt-4">
+                  <p className="text-xs text-center text-white/60 mt-4">
                     {currentPlan.microcopy}
                   </p>
 
@@ -464,10 +464,10 @@ export function LimpaNomeSection() {
                       </div>
                       <div>
                         <p className="font-semibold text-sm text-white">Atendimento 100% Humano</p>
-                        <p className="text-xs text-white/50">Análise feita por pessoas reais</p>
+                        <p className="text-xs text-white/70">Análise feita por pessoas reais</p>
                       </div>
                     </div>
-                    <p className="text-xs text-white/50">
+                    <p className="text-xs text-white/70">
                       Seu caso será analisado por especialistas em parceria com profissionais confiáveis. 
                       Nada é automático – você receberá atenção personalizada.
                     </p>
@@ -475,18 +475,18 @@ export function LimpaNomeSection() {
 
                   {/* Trust Badge */}
                   <div className="mt-6 pt-6 border-t border-white/10">
-                    <div className="flex items-center justify-center gap-4 text-sm text-white/60">
+                    <div className="flex items-center justify-center gap-4 text-sm text-white/80">
                       <div className="flex items-center gap-1">
                         <Shield className="h-4 w-4 text-emerald-400" />
                         Pagamento seguro
                       </div>
-                      <div className="w-1 h-1 rounded-full bg-white/20" />
+                      <div className="w-1 h-1 rounded-full bg-white/30" />
                       <div className="flex items-center gap-1">
                         <Users className="h-4 w-4 text-cyan-400" />
                         Parceiros Verificados
                       </div>
                     </div>
-                    <p className="text-center text-xs text-white/40 mt-3">
+                    <p className="text-center text-xs text-white/60 mt-3">
                       🔒 Garantia de resultado ou seu dinheiro de volta
                     </p>
                   </div>

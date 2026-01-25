@@ -126,7 +126,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 <h3 className="text-lg font-bold text-white leading-tight mb-1 group-hover:text-emerald-300 transition-colors">
                   {title}
                 </h3>
-                <p className="text-sm text-slate-400 line-clamp-2">
+                <p className="text-sm text-white/70 line-clamp-2">
                   {description}
                 </p>
               </div>
@@ -149,7 +149,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                       💰 Success Fee
                     </Badge>
                   </div>
-                  <p className="text-xs text-amber-400/80 font-medium">
+                  <p className="text-xs text-amber-300 font-medium">
                     Pague apenas 50% do valor recuperado
                   </p>
                 </div>
@@ -185,7 +185,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             {/* Features with modern styling */}
             <ul className="space-y-3 mb-6 flex-1">
               {features.map((feature, idx) => (
-                <li key={idx} className="flex items-center gap-3 text-sm text-slate-400 group/item">
+                <li key={idx} className="flex items-center gap-3 text-sm text-white/80 group/item">
                   <div className="flex-shrink-0 w-5 h-5 rounded-full bg-emerald-500/20 flex items-center justify-center">
                     <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
                   </div>
@@ -381,7 +381,7 @@ export const ServicesHubModern: React.FC = () => {
                 <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
                   Nossos Serviços
                 </h2>
-                <p className="text-slate-400 text-base md:text-lg">
+                <p className="text-white/70 text-base md:text-lg">
                   Contadores <span className="text-emerald-400 font-semibold">especializados</span> na Reforma Tributária
                 </p>
               </div>
