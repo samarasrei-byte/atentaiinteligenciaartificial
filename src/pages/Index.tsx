@@ -54,8 +54,14 @@ const Index = () => {
         <ProfilesSection />
         
         {/* 5. MARKETPLACE - Serviços em destaque com preço e CTA direto */}
-        <section id="servicos" className="py-20 bg-muted/30">
-          <div className="container mx-auto px-4">
+        <section id="servicos" className="py-20 relative overflow-hidden bg-gradient-to-br from-emerald-950 via-slate-950 to-teal-950">
+          {/* Futuristic Background */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(16,185,129,0.15)_0%,transparent_50%)]" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_70%,rgba(20,184,166,0.15)_0%,transparent_50%)]" />
+            <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+          </div>
+          <div className="container mx-auto px-4 relative z-10">
             <ServicesHubModern />
           </div>
         </section>
