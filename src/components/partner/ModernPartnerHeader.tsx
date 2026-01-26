@@ -54,7 +54,7 @@ export function ModernPartnerHeader({
                 Parceiro Ativo
               </Badge>
             </div>
-            <p className="text-slate-400 text-sm">
+            <p className="text-slate-300 text-sm">
               Painel de Gerenciamento de Serviços
             </p>
           </div>
@@ -84,7 +84,7 @@ export function ModernPartnerHeader({
             variant="ghost" 
             size="icon"
             onClick={onRefresh}
-            className="text-slate-400 hover:text-white hover:bg-slate-800"
+            className="text-slate-300 hover:text-white hover:bg-slate-800"
           >
             <RefreshCw className="h-5 w-5" />
           </Button>
