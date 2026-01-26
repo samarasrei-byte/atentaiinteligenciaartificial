@@ -87,9 +87,9 @@ export function PartnerProtectedRoute({ children }: PartnerProtectedRouteProps) 
     );
   }
 
-  // Not authenticated - redirect to partner login
+  // Not authenticated - redirect to partner login (dedicated login page)
   if (!user) {
-    return <Navigate to="/auth" state={{ from: location }} replace />;
+    return <Navigate to="/parceiro/login" state={{ from: location }} replace />;
   }
 
   // Not a partner - show access denied
