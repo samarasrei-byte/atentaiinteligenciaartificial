@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -373,7 +374,41 @@ export function PowerAICalculator() {
                       : 'bg-muted'
                 }`}
               >
-                <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <ReactMarkdown
+                    components={{
+                      table: ({ node, ...props }) => (
+                        <table className="w-full border-collapse text-xs my-2" {...props} />
+                      ),
+                      th: ({ node, ...props }) => (
+                        <th className="border border-border bg-muted/50 px-2 py-1 text-left font-medium" {...props} />
+                      ),
+                      td: ({ node, ...props }) => (
+                        <td className="border border-border px-2 py-1" {...props} />
+                      ),
+                      p: ({ node, ...props }) => (
+                        <p className="my-1 leading-relaxed" {...props} />
+                      ),
+                      ul: ({ node, ...props }) => (
+                        <ul className="my-1 pl-4 list-disc" {...props} />
+                      ),
+                      li: ({ node, ...props }) => (
+                        <li className="my-0.5" {...props} />
+                      ),
+                      strong: ({ node, ...props }) => (
+                        <strong className="font-semibold text-foreground" {...props} />
+                      ),
+                      h2: ({ node, ...props }) => (
+                        <h2 className="text-base font-bold mt-3 mb-1" {...props} />
+                      ),
+                      h3: ({ node, ...props }) => (
+                        <h3 className="text-sm font-bold mt-2 mb-1" {...props} />
+                      ),
+                    }}
+                  >
+                    {message.content}
+                  </ReactMarkdown>
+                </div>
               </div>
               {message.role === 'user' && (
                 <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center flex-shrink-0">
