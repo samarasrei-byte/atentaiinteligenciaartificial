@@ -2342,6 +2342,10 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: number
       }
+      is_valid_contador_assignment: {
+        Args: { p_contador_id: string; p_request_user_id: string }
+        Returns: boolean
+      }
       validate_affiliate_coupon: {
         Args: { p_code: string; p_service_type?: string }
         Returns: Json
