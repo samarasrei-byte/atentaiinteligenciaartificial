@@ -28,6 +28,7 @@ import {
 import { format, subMonths, startOfMonth, endOfMonth, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
+import { ModernPartnerChatDemo } from '@/components/limpa-nome/ModernPartnerChatDemo';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PartnerWithdrawalSystem } from '@/components/partner/PartnerWithdrawalSystem';
 import { PartnerStripeConnectSetup } from '@/components/partner/PartnerStripeConnectSetup';
@@ -836,81 +837,111 @@ export default function PartnerPanel() {
     // Combinar todas as solicitações com conversas
     const allRequests = [...requests];
     
+    // Se não há solicitações reais, mostrar demo ultra-moderno com dados mockados
     if (allRequests.length === 0) {
       return (
-        <div className="h-[calc(100vh-12rem)]">
-          <Card className="bg-card/50 backdrop-blur border-border/50 h-full flex items-center justify-center">
-            <div className="text-center py-12">
-              <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-50" />
-              <h3 className="text-lg font-semibold text-foreground mb-2">Nenhuma conversa ativa</h3>
-              <p className="text-muted-foreground text-sm max-w-sm mx-auto">
-                Quando você receber solicitações, poderá conversar com os clientes aqui.
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-emerald-500/20">
+                  <MessageCircle className="h-5 w-5 text-emerald-400" />
+                </div>
+                Chat com Clientes
+              </h2>
+              <p className="text-sm text-muted-foreground mt-1">
+                Simulação do fluxo de atendimento Limpa Nome
               </p>
             </div>
-          </Card>
+            <Badge variant="outline" className="bg-purple-500/10 text-purple-400 border-purple-500/20">
+              <Sparkles className="h-3 w-3 mr-1" />
+              Demo Interativo
+            </Badge>
+          </div>
+          <ModernPartnerChatDemo showDemo={true} />
         </div>
       );
     }
 
+    // Se há solicitações reais, mostrar interface real com opção de selecionar
     return (
-      <div className="h-[calc(100vh-12rem)]">
-        <Card className="bg-card/50 backdrop-blur border-border/50 h-full">
-          <div className="flex h-full">
-            {/* Clients List */}
-            <div className="w-80 border-r border-border/50">
-              <div className="p-4 border-b border-border/50">
-                <h3 className="font-semibold text-foreground mb-3">Conversas ({allRequests.length})</h3>
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+              <div className="p-2 rounded-xl bg-emerald-500/20">
+                <MessageCircle className="h-5 w-5 text-emerald-400" />
               </div>
-              <ScrollArea className="h-[calc(100%-4rem)]">
-                <div className="p-2 space-y-1">
-                  {allRequests.map((request) => (
-                    <button
-                      key={request.id}
-                      onClick={() => setSelectedRequestForChat(request)}
-                      className={`w-full p-3 rounded-xl flex items-center gap-3 transition-colors ${
-                        selectedRequestForChat?.id === request.id ? 'bg-primary/10 border border-primary/20' : 'hover:bg-muted/50'
-                      }`}
-                    >
-                      <Avatar>
-                        <AvatarFallback className="bg-primary/10 text-primary">
-                          {request.full_name[0]}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 text-left min-w-0">
-                        <span className="font-medium text-foreground text-sm truncate block">{request.full_name}</span>
-                        <p className="text-xs text-muted-foreground truncate">
-                          {request.status === 'pending' ? 'Nova solicitação' : 'Em andamento'}
-                        </p>
-                      </div>
-                      {getStatusBadge(request.status)}
-                    </button>
-                  ))}
-                </div>
-              </ScrollArea>
-            </div>
-
-            {/* Chat Area */}
-            <div className="flex-1 flex flex-col">
-              {selectedRequestForChat && user ? (
-                <CreditRepairChat
-                  requestId={selectedRequestForChat.id}
-                  otherUserId={selectedRequestForChat.user_id}
-                  otherUserName={selectedRequestForChat.full_name}
-                  isAdmin={false}
-                />
-              ) : (
-                <div className="flex-1 flex items-center justify-center">
-                  <div className="text-center py-12">
-                    <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-                    <p className="text-muted-foreground text-sm">
-                      Selecione uma conversa ao lado
-                    </p>
-                  </div>
-                </div>
-              )}
-            </div>
+              Chat com Clientes
+            </h2>
+            <p className="text-sm text-muted-foreground mt-1">
+              {allRequests.length} conversas ativas
+            </p>
           </div>
-        </Card>
+        </div>
+
+        <div className="h-[calc(100vh-14rem)] flex rounded-2xl overflow-hidden border border-slate-700/50 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800">
+          {/* Clients List */}
+          <div className="w-80 border-r border-slate-700/50 flex flex-col bg-slate-900/50">
+            <div className="p-4 border-b border-slate-700/50">
+              <h3 className="font-bold text-white flex items-center gap-2">
+                <div className="p-1.5 rounded-lg bg-emerald-500/20">
+                  <MessageCircle className="h-4 w-4 text-emerald-400" />
+                </div>
+                Conversas ({allRequests.length})
+              </h3>
+            </div>
+            <ScrollArea className="flex-1">
+              <div className="p-2 space-y-1">
+                {allRequests.map((request) => (
+                  <button
+                    key={request.id}
+                    onClick={() => setSelectedRequestForChat(request)}
+                    className={`w-full p-3 rounded-xl flex items-center gap-3 transition-all ${
+                      selectedRequestForChat?.id === request.id 
+                        ? 'bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30' 
+                        : 'hover:bg-slate-800/50 border border-transparent'
+                    }`}
+                  >
+                    <Avatar className="h-10 w-10 border-2 border-slate-700">
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white">
+                        {request.full_name[0]}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1 text-left min-w-0">
+                      <span className="font-medium text-white text-sm truncate block">{request.full_name}</span>
+                      <p className="text-xs text-slate-400 truncate">
+                        {request.status === 'pending' ? 'Nova solicitação' : 'Em andamento'}
+                      </p>
+                    </div>
+                    {getStatusBadge(request.status)}
+                  </button>
+                ))}
+              </div>
+            </ScrollArea>
+          </div>
+
+          {/* Chat Area */}
+          <div className="flex-1 flex flex-col bg-slate-900/30">
+            {selectedRequestForChat && user ? (
+              <CreditRepairChat
+                requestId={selectedRequestForChat.id}
+                otherUserId={selectedRequestForChat.user_id}
+                otherUserName={selectedRequestForChat.full_name}
+                isAdmin={false}
+              />
+            ) : (
+              <div className="flex-1 flex items-center justify-center">
+                <div className="text-center py-12">
+                  <MessageCircle className="h-12 w-12 text-slate-600 mx-auto mb-4 opacity-50" />
+                  <p className="text-slate-400 text-sm">
+                    Selecione uma conversa ao lado
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     );
   };
