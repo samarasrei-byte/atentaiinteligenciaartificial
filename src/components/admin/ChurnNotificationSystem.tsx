@@ -24,8 +24,10 @@ import {
   MessageSquare,
   Zap,
   Target,
-  UserMinus
+  UserMinus,
+  Sparkles
 } from 'lucide-react';
+import { AIChurnMessageGenerator } from './AIChurnMessageGenerator';
 
 interface AtRiskUser {
   id: string;
@@ -359,6 +361,10 @@ export const ChurnNotificationSystem: React.FC = () => {
             <Users className="h-4 w-4" />
             Usuários em Risco
           </TabsTrigger>
+          <TabsTrigger value="ai-generator" className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4" />
+            Gerador IA
+          </TabsTrigger>
           <TabsTrigger value="templates" className="flex items-center gap-2">
             <Mail className="h-4 w-4" />
             Templates
@@ -368,6 +374,21 @@ export const ChurnNotificationSystem: React.FC = () => {
             Configurações
           </TabsTrigger>
         </TabsList>
+
+        {/* AI Generator Tab */}
+        <TabsContent value="ai-generator" className="space-y-4">
+          <AIChurnMessageGenerator
+            userName={atRiskUsers[0]?.full_name || ''}
+            userEmail={atRiskUsers[0]?.email || ''}
+            daysInactive={atRiskUsers[0]?.daysInactive || 14}
+            riskLevel={atRiskUsers[0]?.riskLevel || 'medium'}
+            onMessageGenerated={(message, subject) => {
+              setCustomMessage(message);
+              setCustomSubject(subject);
+              toast.success('Mensagem aplicada! Vá para "Usuários em Risco" para enviar.');
+            }}
+          />
+        </TabsContent>
 
         <TabsContent value="users" className="space-y-4">
           {/* Action Bar */}
