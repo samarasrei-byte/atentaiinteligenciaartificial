@@ -750,26 +750,41 @@ export default function PartnerPanel() {
     </div>
   );
 
+  const [selectedHistoryRequest, setSelectedHistoryRequest] = useState<CreditRepairRequest | FiscalRequest | null>(null);
+  const [showHistoryDialog, setShowHistoryDialog] = useState(false);
+  const [historyType, setHistoryType] = useState<'limpa-nome' | 'fiscal'>('limpa-nome');
+
+  const handleOpenHistory = (request: CreditRepairRequest | FiscalRequest, type: 'limpa-nome' | 'fiscal') => {
+    setSelectedHistoryRequest(request);
+    setHistoryType(type);
+    setShowHistoryDialog(true);
+  };
+
   const renderLimpaNome = () => (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Shield className="h-5 w-5 text-emerald-400" />
+          <h2 className={cn("text-xl font-semibold flex items-center gap-2", themeClasses.textPrimary)}>
+            <Shield className="h-5 w-5 text-emerald-500" />
             Limpa Nome
           </h2>
-          <p className="text-sm text-muted-foreground">{filteredRequests.length || 28} solicitações</p>
+          <p className={themeClasses.textMuted}>{filteredRequests.length || 28} solicitações</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar cliente..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 w-64 bg-background/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input 
+              placeholder="Buscar cliente..." 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              className={cn("pl-10 w-64", themeClasses.bgInput)}
+            />
           </div>
           <Select value={statusFilter} onValueChange={setStatusFilter}>
-            <SelectTrigger className="w-[140px] bg-background/50">
+            <SelectTrigger className={cn("w-[140px]", themeClasses.bgInput)}>
               <SelectValue placeholder="Status" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent className={isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'}>
               <SelectItem value="all">Todos</SelectItem>
               <SelectItem value="pending">Pendente</SelectItem>
               <SelectItem value="in_progress">Em Andamento</SelectItem>
@@ -787,7 +802,15 @@ export default function PartnerPanel() {
           { id: '3', full_name: 'Pedro Oliveira', email: 'pedro@email.com', phone: '(21) 97777-9012', debt_amount_cents: 2300000, status: 'pending', payment_status: 'pending', final_price_cents: 78000, created_at: subDays(new Date(), 5).toISOString(), user_id: '3' },
         ] as CreditRepairRequest[]).map((request, index) => (
           <motion.div key={request.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}>
-            <Card className="bg-white border-slate-200 hover:border-emerald-500/50 transition-all shadow-lg">
+            <Card 
+              className={cn(
+                "transition-all cursor-pointer",
+                isDark 
+                  ? 'bg-slate-800 border-slate-700 hover:border-emerald-500/50' 
+                  : 'bg-white border-slate-200 hover:border-emerald-500/50 shadow-lg'
+              )}
+              onClick={() => handleOpenHistory(request, 'limpa-nome')}
+            >
               <CardContent className="p-5">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
@@ -796,11 +819,11 @@ export default function PartnerPanel() {
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="font-semibold text-slate-900">{request.full_name}</h3>
+                        <h3 className={cn("font-semibold", themeClasses.textPrimary)}>{request.full_name}</h3>
                         {getStatusBadge(request.status)}
                         {getPaymentBadge(request.payment_status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-slate-600 flex-wrap">
+                      <div className={cn("flex items-center gap-4 text-sm flex-wrap", themeClasses.textSecondary)}>
                         {request.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{request.email}</span>}
                         {request.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{request.phone}</span>}
                       </div>
@@ -809,19 +832,24 @@ export default function PartnerPanel() {
                   <div className="flex items-center gap-6">
                     <div className="grid grid-cols-3 gap-6 text-center">
                       <div>
-                        <p className="text-lg font-bold text-red-600">{formatCurrency(request.debt_amount_cents)}</p>
-                        <p className="text-xs text-slate-500">Dívida</p>
+                        <p className="text-lg font-bold text-red-500">{formatCurrency(request.debt_amount_cents)}</p>
+                        <p className={cn("text-xs", themeClasses.textMuted)}>Dívida</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-slate-900">{formatCurrency(request.final_price_cents)}</p>
-                        <p className="text-xs text-slate-500">Serviço</p>
+                        <p className={cn("text-lg font-bold", themeClasses.textPrimary)}>{formatCurrency(request.final_price_cents)}</p>
+                        <p className={cn("text-xs", themeClasses.textMuted)}>Serviço</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-emerald-600">{formatCurrency(request.final_price_cents * partner.commission_percent / 100)}</p>
-                        <p className="text-xs text-slate-500">Comissão</p>
+                        <p className="text-lg font-bold text-emerald-500">{formatCurrency(request.final_price_cents * partner.commission_percent / 100)}</p>
+                        <p className={cn("text-xs", themeClasses.textMuted)}>Comissão</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => { setSelectedRequest(request); setShowChatDialog(true); }} className="border-emerald-500/50 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-500">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={(e) => { e.stopPropagation(); setSelectedRequest(request); setShowChatDialog(true); }} 
+                      className={isDark ? 'border-emerald-500/50 text-emerald-400 hover:bg-emerald-500/20' : 'border-emerald-500/50 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-500'}
+                    >
                       <MessageCircle className="h-4 w-4 mr-1" /> Chat
                     </Button>
                   </div>
@@ -838,16 +866,21 @@ export default function PartnerPanel() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Scale className="h-5 w-5 text-blue-400" />
+          <h2 className={cn("text-xl font-semibold flex items-center gap-2", themeClasses.textPrimary)}>
+            <Scale className="h-5 w-5 text-blue-500" />
             Módulo Fiscal
           </h2>
-          <p className="text-sm text-muted-foreground">{filteredFiscalRequests.length || 14} análises</p>
+          <p className={themeClasses.textMuted}>{filteredFiscalRequests.length || 14} análises</p>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            <Input placeholder="Buscar empresa..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="pl-10 w-64 bg-background/50" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+            <Input 
+              placeholder="Buscar empresa..." 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+              className={cn("pl-10 w-64", themeClasses.bgInput)}
+            />
           </div>
         </div>
       </div>
@@ -859,37 +892,58 @@ export default function PartnerPanel() {
           { id: '3', company_name: 'Tech Solutions Ltda', full_name: 'Roberto Lima', email: 'roberto@tech.com', cnpj: '11.222.333/0001-44', tax_regime: 'simples_nacional', status: 'pending', payment_status: 'pending', service_fee_cents: 49700, identified_value_cents: 0, created_at: subDays(new Date(), 1).toISOString() },
         ] as FiscalRequest[]).map((request, index) => (
           <motion.div key={request.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}>
-            <Card className="bg-white border-slate-200 hover:border-blue-500/50 transition-all shadow-lg">
+            <Card 
+              className={cn(
+                "transition-all cursor-pointer",
+                isDark 
+                  ? 'bg-slate-800 border-slate-700 hover:border-blue-500/50' 
+                  : 'bg-white border-slate-200 hover:border-blue-500/50 shadow-lg'
+              )}
+              onClick={() => handleOpenHistory(request, 'fiscal')}
+            >
               <CardContent className="p-5">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <div className={cn(
+                      "h-12 w-12 rounded-xl flex items-center justify-center",
+                      isDark ? 'bg-blue-500/20' : 'bg-blue-100'
+                    )}>
                       <Building className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="font-semibold text-slate-900">{request.company_name}</h3>
+                        <h3 className={cn("font-semibold", themeClasses.textPrimary)}>{request.company_name}</h3>
                         {getStatusBadge(request.status)}
                         {getPaymentBadge(request.payment_status || 'pending')}
                       </div>
-                      <p className="text-sm text-slate-600">{request.full_name}</p>
-                      <div className="flex items-center gap-4 text-sm text-slate-500 flex-wrap mt-1">
-                        <span className="font-mono text-xs text-slate-700">{request.cnpj}</span>
-                        <Badge variant="outline" className="text-xs bg-slate-100 text-slate-700 border-slate-300">{request.tax_regime.replace('_', ' ')}</Badge>
+                      <p className={themeClasses.textSecondary}>{request.full_name}</p>
+                      <div className={cn("flex items-center gap-4 text-sm flex-wrap mt-1", themeClasses.textMuted)}>
+                        <span className={cn("font-mono text-xs", themeClasses.textSecondary)}>{request.cnpj}</span>
+                        <Badge variant="outline" className={isDark ? 'text-xs bg-slate-700 text-slate-200 border-slate-600' : 'text-xs bg-slate-100 text-slate-700 border-slate-300'}>
+                          {request.tax_regime.replace('_', ' ')}
+                        </Badge>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="grid grid-cols-2 gap-6 text-center">
                       <div>
-                        <p className="text-lg font-bold text-blue-600">{formatCurrency(request.identified_value_cents || 0)}</p>
-                        <p className="text-xs text-slate-500">Valor Identificado</p>
+                        <p className="text-lg font-bold text-blue-500">{formatCurrency(request.identified_value_cents || 0)}</p>
+                        <p className={themeClasses.textMuted + " text-xs"}>Valor Identificado</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-emerald-600">{formatCurrency((request.service_fee_cents || 0) * partner.commission_percent / 100)}</p>
-                        <p className="text-xs text-slate-500">Comissão</p>
+                        <p className="text-lg font-bold text-emerald-500">{formatCurrency((request.service_fee_cents || 0) * partner.commission_percent / 100)}</p>
+                        <p className={themeClasses.textMuted + " text-xs"}>Comissão</p>
                       </div>
                     </div>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={(e) => { e.stopPropagation(); handleOpenHistory(request, 'fiscal'); }} 
+                      className={isDark ? 'border-blue-500/50 text-blue-400 hover:bg-blue-500/20' : 'border-blue-500/50 text-blue-700 hover:bg-blue-50'}
+                    >
+                      <Eye className="h-4 w-4 mr-1" /> Ver Histórico
+                    </Button>
                   </div>
                 </div>
               </CardContent>
@@ -904,13 +958,18 @@ export default function PartnerPanel() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-            <Bell className="h-5 w-5 text-amber-400" />
+          <h2 className={cn("text-xl font-semibold flex items-center gap-2", themeClasses.textPrimary)}>
+            <Bell className="h-5 w-5 text-amber-500" />
             Notificações
           </h2>
-          <p className="text-sm text-muted-foreground">{notifications.filter(n => !n.read).length} não lidas</p>
+          <p className={themeClasses.textMuted}>{notifications.filter(n => !n.read).length} não lidas</p>
         </div>
-        <Button variant="outline" size="sm" onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          onClick={() => setNotifications(prev => prev.map(n => ({ ...n, read: true })))}
+          className={isDark ? 'border-slate-600 text-slate-200 hover:bg-slate-700' : ''}
+        >
           Marcar todas como lidas
         </Button>
       </div>
@@ -919,7 +978,13 @@ export default function PartnerPanel() {
         {notifications.map((notification, index) => (
           <motion.div key={notification.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.03 }}>
             <Card 
-              className={`bg-card/50 backdrop-blur border-border/50 cursor-pointer transition-all hover:border-primary/30 ${!notification.read ? 'border-l-4 border-l-primary' : ''}`}
+              className={cn(
+                "cursor-pointer transition-all",
+                isDark 
+                  ? 'bg-slate-800/50 backdrop-blur border-slate-700 hover:border-emerald-500/30' 
+                  : 'bg-white/80 backdrop-blur border-slate-200 hover:border-primary/30 shadow-lg',
+                !notification.read && (isDark ? 'border-l-4 border-l-emerald-500' : 'border-l-4 border-l-primary')
+              )}
               onClick={() => markNotificationAsRead(notification.id)}
             >
               <CardContent className="p-4 flex items-start gap-4">
@@ -927,18 +992,18 @@ export default function PartnerPanel() {
                   notification.type === 'success' ? 'bg-emerald-500/10' : 
                   notification.type === 'warning' ? 'bg-amber-500/10' : 'bg-blue-500/10'
                 }`}>
-                  {notification.type === 'success' ? <CheckCircle className="h-5 w-5 text-emerald-400" /> :
-                   notification.type === 'warning' ? <AlertCircle className="h-5 w-5 text-amber-400" /> :
-                   <Bell className="h-5 w-5 text-blue-400" />}
+                  {notification.type === 'success' ? <CheckCircle className="h-5 w-5 text-emerald-500" /> :
+                   notification.type === 'warning' ? <AlertCircle className="h-5 w-5 text-amber-500" /> :
+                   <Bell className="h-5 w-5 text-blue-500" />}
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-medium text-foreground">{notification.title}</h3>
-                    <span className="text-xs text-muted-foreground">{notification.time}</span>
+                    <h3 className={cn("font-medium", themeClasses.textPrimary)}>{notification.title}</h3>
+                    <span className={cn("text-xs", themeClasses.textMuted)}>{notification.time}</span>
                   </div>
-                  <p className="text-sm text-muted-foreground">{notification.message}</p>
+                  <p className={themeClasses.textSecondary}>{notification.message}</p>
                 </div>
-                {!notification.read && <div className="h-2 w-2 rounded-full bg-primary" />}
+                {!notification.read && <div className="h-2 w-2 rounded-full bg-emerald-500" />}
               </CardContent>
             </Card>
           </motion.div>
@@ -957,13 +1022,13 @@ export default function PartnerPanel() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+              <h2 className={cn("text-xl font-bold flex items-center gap-2", themeClasses.textPrimary)}>
                 <div className="p-2 rounded-xl bg-emerald-500/20">
-                  <MessageCircle className="h-5 w-5 text-emerald-400" />
+                  <MessageCircle className="h-5 w-5 text-emerald-500" />
                 </div>
                 Chat com Clientes
               </h2>
-              <p className="text-sm text-muted-foreground mt-1">
+              <p className={cn("text-sm mt-1", themeClasses.textMuted)}>
                 Simulação do fluxo de atendimento Limpa Nome
               </p>
             </div>
@@ -982,25 +1047,33 @@ export default function PartnerPanel() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
+            <h2 className={cn("text-xl font-bold flex items-center gap-2", themeClasses.textPrimary)}>
               <div className="p-2 rounded-xl bg-emerald-500/20">
-                <MessageCircle className="h-5 w-5 text-emerald-400" />
+                <MessageCircle className="h-5 w-5 text-emerald-500" />
               </div>
               Chat com Clientes
             </h2>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className={cn("text-sm mt-1", themeClasses.textMuted)}>
               {allRequests.length} conversas ativas
             </p>
           </div>
         </div>
 
-        <div className="h-[calc(100vh-14rem)] flex rounded-2xl overflow-hidden border border-slate-700/50 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800">
+        <div className={cn(
+          "h-[calc(100vh-14rem)] flex rounded-2xl overflow-hidden border",
+          isDark 
+            ? 'border-slate-700/50 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800' 
+            : 'border-slate-200 bg-white shadow-lg'
+        )}>
           {/* Clients List */}
-          <div className="w-80 border-r border-slate-700/50 flex flex-col bg-slate-900/50">
-            <div className="p-4 border-b border-slate-700/50">
-              <h3 className="font-bold text-white flex items-center gap-2">
+          <div className={cn(
+            "w-80 border-r flex flex-col",
+            isDark ? 'border-slate-700/50 bg-slate-900/50' : 'border-slate-200 bg-slate-50'
+          )}>
+            <div className={cn("p-4 border-b", isDark ? 'border-slate-700/50' : 'border-slate-200')}>
+              <h3 className={cn("font-bold flex items-center gap-2", isDark ? 'text-white' : 'text-slate-900')}>
                 <div className="p-1.5 rounded-lg bg-emerald-500/20">
-                  <MessageCircle className="h-4 w-4 text-emerald-400" />
+                  <MessageCircle className="h-4 w-4 text-emerald-500" />
                 </div>
                 Conversas ({allRequests.length})
               </h3>
@@ -1011,20 +1084,23 @@ export default function PartnerPanel() {
                   <button
                     key={request.id}
                     onClick={() => setSelectedRequestForChat(request)}
-                    className={`w-full p-3 rounded-xl flex items-center gap-3 transition-all ${
+                    className={cn(
+                      "w-full p-3 rounded-xl flex items-center gap-3 transition-all border",
                       selectedRequestForChat?.id === request.id 
-                        ? 'bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 border border-emerald-500/30' 
-                        : 'hover:bg-slate-800/50 border border-transparent'
-                    }`}
+                        ? 'bg-gradient-to-r from-emerald-500/20 to-emerald-600/10 border-emerald-500/30' 
+                        : isDark 
+                          ? 'hover:bg-slate-800/50 border-transparent' 
+                          : 'hover:bg-slate-100 border-transparent'
+                    )}
                   >
-                    <Avatar className="h-10 w-10 border-2 border-slate-700">
+                    <Avatar className={cn("h-10 w-10 border-2", isDark ? 'border-slate-700' : 'border-slate-300')}>
                       <AvatarFallback className="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white">
                         {request.full_name[0]}
                       </AvatarFallback>
                     </Avatar>
                     <div className="flex-1 text-left min-w-0">
-                      <span className="font-medium text-white text-sm truncate block">{request.full_name}</span>
-                      <p className="text-xs text-slate-400 truncate">
+                      <span className={cn("font-medium text-sm truncate block", isDark ? 'text-white' : 'text-slate-900')}>{request.full_name}</span>
+                      <p className={cn("text-xs truncate", isDark ? 'text-slate-400' : 'text-slate-500')}>
                         {request.status === 'pending' ? 'Nova solicitação' : 'Em andamento'}
                       </p>
                     </div>
@@ -1036,7 +1112,7 @@ export default function PartnerPanel() {
           </div>
 
           {/* Chat Area */}
-          <div className="flex-1 flex flex-col bg-slate-900/30">
+          <div className={cn("flex-1 flex flex-col", isDark ? 'bg-slate-900/30' : 'bg-white')}>
             {selectedRequestForChat && user ? (
               <CreditRepairChat
                 requestId={selectedRequestForChat.id}
@@ -1047,8 +1123,8 @@ export default function PartnerPanel() {
             ) : (
               <div className="flex-1 flex items-center justify-center">
                 <div className="text-center py-12">
-                  <MessageCircle className="h-12 w-12 text-slate-600 mx-auto mb-4 opacity-50" />
-                  <p className="text-slate-400 text-sm">
+                  <MessageCircle className={cn("h-12 w-12 mx-auto mb-4 opacity-50", isDark ? 'text-slate-600' : 'text-slate-400')} />
+                  <p className={cn("text-sm", isDark ? 'text-slate-400' : 'text-slate-500')}>
                     Selecione uma conversa ao lado
                   </p>
                 </div>
@@ -1063,47 +1139,53 @@ export default function PartnerPanel() {
   const renderMetrics = () => (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <BarChart3 className="h-5 w-5 text-primary" />
+        <h2 className={cn("text-xl font-semibold flex items-center gap-2", themeClasses.textPrimary)}>
+          <BarChart3 className="h-5 w-5 text-emerald-500" />
           Métricas de Performance
         </h2>
-        <p className="text-sm text-muted-foreground">Acompanhe seu desempenho</p>
+        <p className={themeClasses.textMuted}>Acompanhe seu desempenho</p>
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: 'Taxa de Conversão', value: `${metricsData.conversionRate}%`, icon: TrendingUp, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
-          { label: 'Tempo Médio de Resposta', value: metricsData.avgResponseTime, icon: Clock, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
-          { label: 'Satisfação do Cliente', value: `${metricsData.satisfactionScore}/5`, icon: Sparkles, iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
-          { label: 'Total de Clientes', value: metricsData.totalClients.toString(), icon: Users, iconBg: 'bg-purple-100', iconColor: 'text-purple-600' },
-          { label: 'Clientes Ativos', value: metricsData.activeClients.toString(), icon: Activity, iconBg: 'bg-cyan-100', iconColor: 'text-cyan-600' },
-          { label: 'Crescimento Mensal', value: `${metricsData.monthlyGrowth}%`, icon: ArrowUpRight, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
+          { label: 'Taxa de Conversão', value: `${metricsData.conversionRate}%`, icon: TrendingUp, iconBg: isDark ? 'bg-emerald-500/20' : 'bg-emerald-100', iconColor: 'text-emerald-500' },
+          { label: 'Tempo Médio de Resposta', value: metricsData.avgResponseTime, icon: Clock, iconBg: isDark ? 'bg-blue-500/20' : 'bg-blue-100', iconColor: 'text-blue-500' },
+          { label: 'Satisfação do Cliente', value: `${metricsData.satisfactionScore}/5`, icon: Sparkles, iconBg: isDark ? 'bg-amber-500/20' : 'bg-amber-100', iconColor: 'text-amber-500' },
+          { label: 'Total de Clientes', value: metricsData.totalClients.toString(), icon: Users, iconBg: isDark ? 'bg-purple-500/20' : 'bg-purple-100', iconColor: 'text-purple-500' },
+          { label: 'Clientes Ativos', value: metricsData.activeClients.toString(), icon: Activity, iconBg: isDark ? 'bg-cyan-500/20' : 'bg-cyan-100', iconColor: 'text-cyan-500' },
+          { label: 'Crescimento Mensal', value: `${metricsData.monthlyGrowth}%`, icon: ArrowUpRight, iconBg: isDark ? 'bg-emerald-500/20' : 'bg-emerald-100', iconColor: 'text-emerald-500' },
         ].map((metric, i) => (
           <motion.div key={metric.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Card className="bg-white border-slate-200 shadow-lg">
+            <Card className={cn(
+              "transition-all",
+              isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200 shadow-lg'
+            )}>
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
                   <div className={`p-2 rounded-lg ${metric.iconBg}`}>
                     <metric.icon className={`h-5 w-5 ${metric.iconColor}`} />
                   </div>
                 </div>
-                <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
-                <p className="text-sm text-slate-600 mt-1">{metric.label}</p>
+                <p className={cn("text-2xl font-bold", themeClasses.textPrimary)}>{metric.value}</p>
+                <p className={cn("text-sm mt-1", themeClasses.textSecondary)}>{metric.label}</p>
               </CardContent>
             </Card>
           </motion.div>
         ))}
       </div>
 
-      <Card className="bg-white border-slate-200 shadow-lg">
+      <Card className={cn(
+        "transition-all",
+        isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200 shadow-lg'
+      )}>
         <CardHeader>
-          <CardTitle className="text-base text-slate-900">Performance Mensal</CardTitle>
+          <CardTitle className={cn("text-base", themeClasses.textPrimary)}>Performance Mensal</CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[300px]">
             <BarChart data={monthlyData}>
-              <XAxis dataKey="month" tickLine={false} axisLine={false} stroke="#64748b" fontSize={12} />
-              <YAxis tickLine={false} axisLine={false} stroke="#64748b" fontSize={12} />
+              <XAxis dataKey="month" tickLine={false} axisLine={false} stroke={themeClasses.chartText} fontSize={12} />
+              <YAxis tickLine={false} axisLine={false} stroke={themeClasses.chartText} fontSize={12} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Bar dataKey="requests" fill="#10b981" radius={[4, 4, 0, 0]} name="Solicitações" />
             </BarChart>
@@ -1116,40 +1198,49 @@ export default function PartnerPanel() {
   const renderCommissions = () => (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <DollarSign className="h-5 w-5 text-emerald-400" />
+        <h2 className={cn("text-xl font-semibold flex items-center gap-2", themeClasses.textPrimary)}>
+          <DollarSign className="h-5 w-5 text-emerald-500" />
           Comissões
         </h2>
-        <p className="text-sm text-muted-foreground">Acompanhe seus ganhos</p>
+        <p className={themeClasses.textMuted}>Acompanhe seus ganhos</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-white border-2 border-emerald-200 shadow-lg">
+        <Card className={cn(
+          "border-2 border-emerald-500/30",
+          isDark ? 'bg-slate-800' : 'bg-white shadow-lg'
+        )}>
           <CardContent className="p-6">
-            <p className="text-sm text-slate-600 mb-1">Comissão Disponível</p>
-            <p className="text-3xl font-bold text-emerald-600">{formatCurrency(commissionAmount)}</p>
-            <p className="text-xs text-slate-500 mt-2">Pronto para saque</p>
+            <p className={themeClasses.textSecondary + " text-sm mb-1"}>Comissão Disponível</p>
+            <p className="text-3xl font-bold text-emerald-500">{formatCurrency(commissionAmount)}</p>
+            <p className={themeClasses.textMuted + " text-xs mt-2"}>Pronto para saque</p>
           </CardContent>
         </Card>
-        <Card className="bg-white border-slate-200 shadow-lg">
+        <Card className={cn(
+          isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200 shadow-lg'
+        )}>
           <CardContent className="p-6">
-            <p className="text-sm text-slate-600 mb-1">Comissão Pendente</p>
-            <p className="text-3xl font-bold text-amber-600">{formatCurrency(85000)}</p>
-            <p className="text-xs text-slate-500 mt-2">Aguardando pagamento</p>
+            <p className={themeClasses.textSecondary + " text-sm mb-1"}>Comissão Pendente</p>
+            <p className="text-3xl font-bold text-amber-500">{formatCurrency(85000)}</p>
+            <p className={themeClasses.textMuted + " text-xs mt-2"}>Aguardando pagamento</p>
           </CardContent>
         </Card>
-        <Card className="bg-white border-slate-200 shadow-lg">
+        <Card className={cn(
+          isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200 shadow-lg'
+        )}>
           <CardContent className="p-6">
-            <p className="text-sm text-slate-600 mb-1">Total Recebido</p>
-            <p className="text-3xl font-bold text-slate-900">{formatCurrency(1890000)}</p>
-            <p className="text-xs text-slate-500 mt-2">Desde o início</p>
+            <p className={themeClasses.textSecondary + " text-sm mb-1"}>Total Recebido</p>
+            <p className={cn("text-3xl font-bold", themeClasses.textPrimary)}>{formatCurrency(1890000)}</p>
+            <p className={themeClasses.textMuted + " text-xs mt-2"}>Desde o início</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-white border-slate-200 shadow-lg">
+      <Card className={cn(
+        isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200 shadow-lg'
+      )}>
         <CardHeader>
-          <CardTitle className="text-base text-slate-900">Histórico de Comissões</CardTitle>
+          <CardTitle className={cn("text-base", themeClasses.textPrimary)}>Histórico de Comissões</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -1159,14 +1250,17 @@ export default function PartnerPanel() {
               { client: 'ABC Tecnologia', service: 'Módulo Fiscal', value: 9940, date: '05/01/2026', status: 'paid' },
               { client: 'Pedro Oliveira', service: 'Limpa Nome', value: 5940, date: '03/01/2026', status: 'pending' },
             ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
+              <div key={i} className={cn(
+                "flex items-center justify-between p-4 rounded-xl border",
+                isDark ? 'bg-slate-700/50 border-slate-600' : 'bg-slate-50 border-slate-100'
+              )}>
                 <div>
-                  <p className="font-medium text-slate-900">{item.client}</p>
-                  <p className="text-sm text-slate-600">{item.service}</p>
+                  <p className={cn("font-medium", themeClasses.textPrimary)}>{item.client}</p>
+                  <p className={themeClasses.textSecondary}>{item.service}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-emerald-600">{formatCurrency(item.value)}</p>
-                  <p className="text-xs text-slate-500">{item.date}</p>
+                  <p className="font-semibold text-emerald-500">{formatCurrency(item.value)}</p>
+                  <p className={themeClasses.textMuted + " text-xs"}>{item.date}</p>
                 </div>
               </div>
             ))}
@@ -1358,6 +1452,194 @@ export default function PartnerPanel() {
               />
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* History Dialog */}
+      <Dialog open={showHistoryDialog} onOpenChange={setShowHistoryDialog}>
+        <DialogContent className={cn(
+          "max-w-3xl max-h-[85vh] overflow-hidden shadow-2xl",
+          isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+        )}>
+          <DialogHeader className={cn(
+            "border-b pb-4",
+            isDark ? 'border-slate-700' : 'border-slate-200'
+          )}>
+            <DialogTitle className={cn("flex items-center gap-3", isDark ? 'text-white' : 'text-slate-900')}>
+              <div className={cn(
+                "p-2 rounded-xl",
+                historyType === 'limpa-nome' 
+                  ? (isDark ? 'bg-emerald-500/20' : 'bg-emerald-100')
+                  : (isDark ? 'bg-blue-500/20' : 'bg-blue-100')
+              )}>
+                {historyType === 'limpa-nome' 
+                  ? <Shield className="h-5 w-5 text-emerald-500" />
+                  : <Scale className="h-5 w-5 text-blue-500" />
+                }
+              </div>
+              Histórico - {historyType === 'limpa-nome' 
+                ? (selectedHistoryRequest as CreditRepairRequest)?.full_name 
+                : (selectedHistoryRequest as FiscalRequest)?.company_name}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <ScrollArea className="max-h-[65vh] pr-4">
+            <div className="space-y-6 py-4">
+              {/* Client Info */}
+              <div className={cn(
+                "rounded-xl p-4",
+                isDark ? 'bg-slate-700/50' : 'bg-slate-50'
+              )}>
+                <h4 className={cn("font-semibold mb-3 flex items-center gap-2", isDark ? 'text-white' : 'text-slate-900')}>
+                  <User className="h-4 w-4" />
+                  Informações do Cliente
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Nome</p>
+                    <p className={cn("font-medium", isDark ? 'text-white' : 'text-slate-900')}>
+                      {historyType === 'limpa-nome' 
+                        ? (selectedHistoryRequest as CreditRepairRequest)?.full_name 
+                        : (selectedHistoryRequest as FiscalRequest)?.full_name}
+                    </p>
+                  </div>
+                  <div>
+                    <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Email</p>
+                    <p className={cn("font-medium", isDark ? 'text-white' : 'text-slate-900')}>
+                      {selectedHistoryRequest?.email || '-'}
+                    </p>
+                  </div>
+                  {historyType === 'fiscal' && (
+                    <>
+                      <div>
+                        <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Empresa</p>
+                        <p className={cn("font-medium", isDark ? 'text-white' : 'text-slate-900')}>
+                          {(selectedHistoryRequest as FiscalRequest)?.company_name}
+                        </p>
+                      </div>
+                      <div>
+                        <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>CNPJ</p>
+                        <p className={cn("font-mono text-sm", isDark ? 'text-white' : 'text-slate-900')}>
+                          {(selectedHistoryRequest as FiscalRequest)?.cnpj}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              {/* Status & Values */}
+              <div className={cn(
+                "rounded-xl p-4",
+                isDark ? 'bg-slate-700/50' : 'bg-slate-50'
+              )}>
+                <h4 className={cn("font-semibold mb-3 flex items-center gap-2", isDark ? 'text-white' : 'text-slate-900')}>
+                  <Activity className="h-4 w-4" />
+                  Status & Valores
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  <div>
+                    <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Status</p>
+                    <div className="mt-1">{getStatusBadge(selectedHistoryRequest?.status || 'pending')}</div>
+                  </div>
+                  <div>
+                    <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Pagamento</p>
+                    <div className="mt-1">{getPaymentBadge((selectedHistoryRequest as any)?.payment_status || 'pending')}</div>
+                  </div>
+                  {historyType === 'limpa-nome' && (
+                    <div>
+                      <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Valor da Dívida</p>
+                      <p className="text-lg font-bold text-red-500">
+                        {formatCurrency((selectedHistoryRequest as CreditRepairRequest)?.debt_amount_cents || 0)}
+                      </p>
+                    </div>
+                  )}
+                  {historyType === 'fiscal' && (
+                    <div>
+                      <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>Valor Identificado</p>
+                      <p className="text-lg font-bold text-blue-500">
+                        {formatCurrency((selectedHistoryRequest as FiscalRequest)?.identified_value_cents || 0)}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Timeline */}
+              <div>
+                <h4 className={cn("font-semibold mb-4 flex items-center gap-2", isDark ? 'text-white' : 'text-slate-900')}>
+                  <Calendar className="h-4 w-4" />
+                  Linha do Tempo
+                </h4>
+                <div className="space-y-3">
+                  {[
+                    { 
+                      date: selectedHistoryRequest?.created_at ? format(new Date(selectedHistoryRequest.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR }) : '-', 
+                      title: 'Solicitação criada', 
+                      description: 'Cliente iniciou o processo',
+                      icon: FileText,
+                      color: 'text-blue-500'
+                    },
+                    { 
+                      date: '-', 
+                      title: 'Documentação recebida', 
+                      description: 'Documentos em análise',
+                      icon: FileText,
+                      color: 'text-amber-500'
+                    },
+                    { 
+                      date: '-', 
+                      title: 'Em processamento', 
+                      description: historyType === 'limpa-nome' ? 'Negociação com credores' : 'Análise tributária em andamento',
+                      icon: Clock,
+                      color: 'text-purple-500'
+                    },
+                  ].map((item, i) => (
+                    <div key={i} className={cn(
+                      "flex items-start gap-4 p-3 rounded-xl",
+                      isDark ? 'bg-slate-700/30' : 'bg-slate-50/50'
+                    )}>
+                      <div className={cn(
+                        "p-2 rounded-lg",
+                        isDark ? 'bg-slate-600' : 'bg-white shadow-sm'
+                      )}>
+                        <item.icon className={cn("h-4 w-4", item.color)} />
+                      </div>
+                      <div className="flex-1">
+                        <p className={cn("font-medium", isDark ? 'text-white' : 'text-slate-900')}>{item.title}</p>
+                        <p className={cn("text-sm", isDark ? 'text-slate-400' : 'text-slate-500')}>{item.description}</p>
+                      </div>
+                      <p className={cn("text-xs", isDark ? 'text-slate-500' : 'text-slate-400')}>{item.date}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-4">
+                <Button 
+                  onClick={() => {
+                    setShowHistoryDialog(false);
+                    if (historyType === 'limpa-nome' && selectedHistoryRequest) {
+                      setSelectedRequest(selectedHistoryRequest as CreditRepairRequest);
+                      setShowChatDialog(true);
+                    }
+                  }}
+                  className="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white"
+                >
+                  <MessageCircle className="h-4 w-4 mr-2" />
+                  Abrir Chat
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setShowHistoryDialog(false)}
+                  className={isDark ? 'border-slate-600 text-slate-300 hover:bg-slate-700' : ''}
+                >
+                  Fechar
+                </Button>
+              </div>
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
