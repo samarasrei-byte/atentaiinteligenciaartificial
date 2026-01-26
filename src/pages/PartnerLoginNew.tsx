@@ -47,13 +47,15 @@ const PartnerLoginNew = () => {
     setLoginState('checking_access');
     
     try {
+      // NOTE: User can have multiple partner records - use .limit(1) to avoid errors
       const { data: partnerLink } = await supabase
         .from('credit_repair_partner_users')
         .select('partner_id, role')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .order('is_primary', { ascending: false })
+        .limit(1);
 
-      if (partnerLink) {
+      if (Array.isArray(partnerLink) && partnerLink.length > 0) {
         navigate('/parceiro', { replace: true });
       } else {
         setLoginState('idle');
@@ -66,18 +68,20 @@ const PartnerLoginNew = () => {
 
   const checkPartnerAccessDirectly = async (userId: string): Promise<boolean> => {
     try {
+      // NOTE: User can have multiple partner records - use .limit(1) to avoid errors
       const { data, error } = await supabase
         .from('credit_repair_partner_users')
         .select('partner_id, role')
         .eq('user_id', userId)
-        .maybeSingle();
+        .order('is_primary', { ascending: false })
+        .limit(1);
 
       if (error) {
         console.error('Error checking partner access:', error);
         return false;
       }
 
-      return !!data;
+      return Array.isArray(data) && data.length > 0;
     } catch (err) {
       console.error('Exception checking partner access:', err);
       return false;

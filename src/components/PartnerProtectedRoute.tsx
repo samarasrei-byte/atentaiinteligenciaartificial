@@ -35,17 +35,20 @@ export function PartnerProtectedRoute({ children }: PartnerProtectedRouteProps) 
         }
 
         // Check credit_repair_partner_users table directly
+        // NOTE: User can have multiple partner records - use .limit(1) to avoid errors
         const { data, error } = await supabase
           .from('credit_repair_partner_users')
           .select('partner_id')
           .eq('user_id', user.id)
-          .maybeSingle();
+          .order('is_primary', { ascending: false })
+          .limit(1);
 
         if (error) {
           console.error('Error checking partner status:', error);
           setIsPartner(false);
         } else {
-          setIsPartner(!!data);
+          // Data is an array - check if any records exist
+          setIsPartner(Array.isArray(data) && data.length > 0);
         }
       } catch (error) {
         console.error('Error checking partner access:', error);
