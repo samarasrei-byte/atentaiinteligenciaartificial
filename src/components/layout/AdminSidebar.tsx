@@ -22,6 +22,7 @@ import {
   Wallet,
   Star,
   MessagesSquare,
+  MessageCircle,
   User,
   Settings,
   Sparkles,
@@ -137,6 +138,7 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Comunicação',
     icon: MessagesSquare,
     items: [
+      { icon: MessageCircle, label: 'Chat com Clientes', tabId: 'client-chat', isLive: true },
       { icon: MessagesSquare, label: 'Mensagens em Massa', tabId: 'mass-messages' },
       { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
       { icon: Headphones, label: 'Suporte', tabId: 'support' },

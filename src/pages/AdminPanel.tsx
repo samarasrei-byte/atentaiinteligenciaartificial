@@ -36,6 +36,7 @@ import { PartnerManagement } from '@/components/admin/PartnerManagement';
 import { AffiliateManagement } from '@/components/admin/AffiliateManagement';
 import { AffiliateCouponManagement } from '@/components/admin/AffiliateCouponManagement';
 import AuditLogViewer from '@/components/admin/AuditLogViewer';
+import { AdminClientChat } from '@/components/admin/AdminClientChat';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -491,6 +492,7 @@ const AdminPanel = () => {
           {activeTab === 'churn-notifications' && <ChurnNotificationSystem />}
           {activeTab === 'cohort' && <CohortAnalysis />}
           {activeTab === 'mass-messages' && <MassMessaging />}
+          {activeTab === 'client-chat' && <AdminClientChat />}
           {activeTab === 'saas-metrics' && <SaaSMetricsDashboard />}
           {activeTab === 'partners' && <PartnerManagement />}
           {activeTab === 'settings' && (
