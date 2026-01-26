@@ -19,10 +19,10 @@ import {
   EyeOff, 
   ArrowRight, 
   Shield,
-  Phone,
-  CheckCircle2,
-  Users,
-  Zap
+  TrendingUp,
+  Zap,
+  Globe,
+  BarChart3
 } from 'lucide-react';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
@@ -33,7 +33,6 @@ import { motion, AnimatePresence } from 'framer-motion';
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'Senha deve ter pelo menos 6 caracteres');
 const nameSchema = z.string().min(2, 'Nome deve ter pelo menos 2 caracteres');
-const phoneSchema = z.string().min(10, 'WhatsApp inválido').optional();
 
 type UserType = 'empresa' | 'autonomo' | 'contador';
 type AuthMode = 'login' | 'signup';
@@ -70,6 +69,30 @@ const userTypes: UserTypeOption[] = [
   },
 ];
 
+// Features for left panel carousel
+const features = [
+  {
+    icon: TrendingUp,
+    title: 'Simulador Tributário',
+    description: 'Compare regimes e economize até 40%'
+  },
+  {
+    icon: BarChart3,
+    title: 'IA Especializada',
+    description: 'Tire dúvidas sobre a Reforma Tributária'
+  },
+  {
+    icon: Shield,
+    title: 'Consultoria Premium',
+    description: 'Contadores especialistas à sua disposição'
+  },
+  {
+    icon: Zap,
+    title: 'Limpa Nome Empresarial',
+    description: 'Recupere seu crédito de forma legal'
+  },
+];
+
 const Auth = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -84,13 +107,20 @@ const Auth = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
-  const [phone, setPhone] = useState('');
   const [userType, setUserType] = useState<UserType>('empresa');
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [focusedField, setFocusedField] = useState<string | null>(null);
+  const [currentFeature, setCurrentFeature] = useState(0);
   
   const fromOnboarding = searchParams.get('from') === 'onboarding';
   const pendingOnboardingData = sessionStorage.getItem('pendingOnboardingData');
+
+  // Feature carousel
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentFeature((prev) => (prev + 1) % features.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     if (fromOnboarding) {
@@ -298,39 +328,6 @@ const Auth = () => {
     }
   };
 
-  const getFieldStatus = (fieldName: string) => {
-    if (errors[fieldName]) return 'error';
-    if (focusedField === fieldName) return 'focused';
-    
-    // Check if field has valid content
-    switch (fieldName) {
-      case 'email':
-        try { emailSchema.parse(email); return email ? 'valid' : 'default'; } catch { return 'default'; }
-      case 'password':
-        try { passwordSchema.parse(password); return password ? 'valid' : 'default'; } catch { return 'default'; }
-      case 'name':
-        try { nameSchema.parse(name); return name ? 'valid' : 'default'; } catch { return 'default'; }
-      default:
-        return 'default';
-    }
-  };
-
-  const getInputClassName = (fieldName: string) => {
-    const status = getFieldStatus(fieldName);
-    const baseClass = "pl-12 h-14 bg-slate-800/50 text-white placeholder:text-slate-500 rounded-xl transition-all duration-300";
-    
-    switch (status) {
-      case 'error':
-        return cn(baseClass, "border-red-500/50 focus:border-red-500 focus:ring-red-500/20");
-      case 'valid':
-        return cn(baseClass, "border-emerald-500/30 focus:border-emerald-500 focus:ring-emerald-500/20");
-      case 'focused':
-        return cn(baseClass, "border-primary focus:border-primary focus:ring-primary/30");
-      default:
-        return cn(baseClass, "border-slate-700/50 focus:border-primary focus:ring-primary/20");
-    }
-  };
-
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
@@ -342,369 +339,396 @@ const Auth = () => {
     );
   }
 
-  return (
-    <div className="min-h-screen relative overflow-hidden bg-slate-950">
-      {/* Clean Background - g8prospect inspired */}
-      <div className="absolute inset-0">
-        {/* Single subtle gradient */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/10 to-transparent rounded-full blur-[100px]" />
-        
-        {/* Grid pattern - more visible */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(45,212,191,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(45,212,191,.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
-      </div>
-
-      {/* Back Button */}
-      <div className="absolute top-6 left-6 z-20">
-        <Button
-          variant="ghost"
-          size="sm"
-          className="text-slate-400 hover:text-white hover:bg-white/10 gap-2 transition-all"
-          onClick={() => navigate('/')}
+  // Forgot Password Modal
+  if (showForgotPassword) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="w-full max-w-md"
         >
-          <ArrowLeft className="h-4 w-4" />
-          Voltar
-        </Button>
+          <div className="bg-white rounded-2xl shadow-2xl p-8">
+            <button
+              onClick={() => setShowForgotPassword(false)}
+              className="flex items-center gap-2 text-slate-500 hover:text-slate-700 mb-6"
+            >
+              <ArrowLeft className="h-4 w-4" />
+              Voltar
+            </button>
+            
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Recuperar senha</h2>
+            <p className="text-slate-500 mb-6">
+              Digite seu email para receber o link de recuperação
+            </p>
+            
+            <form onSubmit={handleForgotPassword} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="forgotEmail" className="text-slate-700">Email</Label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                  <Input
+                    id="forgotEmail"
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={forgotEmail}
+                    onChange={(e) => setForgotEmail(e.target.value)}
+                    className="pl-12 h-12 bg-slate-50 border-slate-200"
+                  />
+                </div>
+                {errors.forgotEmail && (
+                  <p className="text-sm text-red-500">{errors.forgotEmail}</p>
+                )}
+              </div>
+              
+              <Button 
+                type="submit" 
+                className="w-full h-12 bg-gradient-to-r from-primary to-cyan-500 hover:opacity-90"
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : (
+                  'Enviar link de recuperação'
+                )}
+              </Button>
+            </form>
+          </div>
+        </motion.div>
       </div>
+    );
+  }
 
-      {/* Main Content - Centered */}
-      <div className="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-[460px]">
-          {/* Logo & Title */}
+  return (
+    <div className="min-h-screen flex">
+      {/* Left Panel - Dark Hero Section */}
+      <div className="hidden lg:flex lg:w-1/2 xl:w-[55%] relative bg-slate-950 flex-col justify-between p-10 xl:p-16">
+        {/* Background effects */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-[linear-gradient(rgba(45,212,191,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(45,212,191,.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+          <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[150px]" />
+          <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-cyan-500/10 rounded-full blur-[150px]" />
+        </div>
+        
+        {/* Back button */}
+        <div className="relative z-10">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-slate-400 hover:text-white hover:bg-white/10 gap-2 -ml-2"
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
+        
+        {/* Main Content */}
+        <div className="relative z-10 flex-1 flex flex-col justify-center max-w-lg">
+          {/* Logo */}
+          <div className="mb-8">
+            <img 
+              src="/logo-atentai.png" 
+              alt="AtentAI" 
+              className="h-12 w-auto drop-shadow-[0_0_25px_rgba(45,212,191,0.5)]"
+            />
+          </div>
+          
+          {/* Headline */}
+          <h1 className="text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
+            AtentAI
+          </h1>
+          <p className="text-lg text-slate-400 mb-10">
+            A plataforma mais inteligente para gestão tributária e financeira empresarial
+          </p>
+          
+          {/* Feature Carousel */}
+          <div className="relative h-[100px] mb-12">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentFeature}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="absolute inset-0"
+              >
+                <div className="flex items-start gap-4 p-5 rounded-xl bg-slate-900/50 border border-slate-800/50 backdrop-blur-sm">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-cyan-500 flex items-center justify-center flex-shrink-0">
+                    {React.createElement(features[currentFeature].icon, { 
+                      className: "h-6 w-6 text-white" 
+                    })}
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-white text-lg mb-1">
+                      {features[currentFeature].title}
+                    </h3>
+                    <p className="text-slate-400">
+                      {features[currentFeature].description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+            
+            {/* Carousel indicators */}
+            <div className="absolute -bottom-6 left-0 flex gap-2">
+              {features.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentFeature(idx)}
+                  className={cn(
+                    "h-1.5 rounded-full transition-all duration-300",
+                    idx === currentFeature 
+                      ? "w-8 bg-primary" 
+                      : "w-1.5 bg-slate-700 hover:bg-slate-600"
+                  )}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Trust badges */}
+        <div className="relative z-10 flex items-center gap-8 text-slate-500">
+          <div className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            <span className="text-sm">Dados Protegidos</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Globe className="h-4 w-4" />
+            <span className="text-sm">100% Cloud</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            <span className="text-sm">Alta Performance</span>
+          </div>
+        </div>
+      </div>
+      
+      {/* Right Panel - White Form Section */}
+      <div className="w-full lg:w-1/2 xl:w-[45%] flex flex-col justify-center bg-white p-6 md:p-10 xl:p-16">
+        {/* Mobile back button */}
+        <div className="lg:hidden mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="text-slate-500 hover:text-slate-700 gap-2 -ml-2"
+            onClick={() => navigate('/')}
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Voltar
+          </Button>
+        </div>
+        
+        <div className="w-full max-w-md mx-auto">
+          {/* Header */}
           <div className="text-center mb-8">
-            <div className="mb-6">
+            {/* Mobile logo */}
+            <div className="lg:hidden mb-6">
               <img 
                 src="/logo-atentai.png" 
                 alt="AtentAI" 
-                className="h-10 w-auto mx-auto drop-shadow-[0_0_20px_rgba(45,212,191,0.4)]"
+                className="h-10 w-auto mx-auto"
               />
             </div>
             
-            <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              {mode === 'login' ? 'Acesse seu painel' : 'Crie sua conta'}
-            </h1>
-            
-            <p className="text-slate-400 text-sm">
+            <h2 className="text-2xl md:text-3xl font-bold text-slate-900 mb-2">
+              {mode === 'login' ? 'Bem-vindo de volta!' : 'Crie sua conta grátis'}
+            </h2>
+            <p className="text-slate-500">
               {mode === 'login' 
-                ? 'Análises tributárias personalizadas para seu negócio' 
-                : 'Descubra quanto você pode economizar'}
+                ? 'Entre para acessar sua conta' 
+                : 'Comece a economizar em minutos'}
             </p>
           </div>
-
-          {/* Auth Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-            className="relative"
-          >
-            {/* Glassmorphism Card */}
-            <div className="relative rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 shadow-2xl shadow-black/50 p-6 md:p-8">
-              {/* Subtle gradient overlay */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-slate-800/30 to-transparent pointer-events-none" />
-              
-              <div className="relative z-10">
-                {/* Mode Toggle */}
-                <div className="flex rounded-xl bg-slate-800/80 p-1.5 mb-6 border border-slate-700/50">
-                  <button
-                    type="button"
-                    onClick={() => setMode('login')}
-                    className={cn(
-                      "flex-1 py-3 text-sm font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
-                      mode === 'login' 
-                        ? "bg-primary text-slate-900 shadow-lg shadow-primary/30" 
-                        : "text-slate-400 hover:text-white"
-                    )}
-                  >
-                    <span>Entrar</span>
-                    {mode === 'login' && <span className="text-xs opacity-80">(já tenho conta)</span>}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setMode('signup')}
-                    className={cn(
-                      "flex-1 py-3 text-sm font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
-                      mode === 'signup' 
-                        ? "bg-primary text-slate-900 shadow-lg shadow-primary/30" 
-                        : "text-slate-400 hover:text-white"
-                    )}
-                  >
-                    <span>Cadastrar</span>
-                  </button>
-                </div>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <AnimatePresence mode="wait">
-                    {/* User Type Selection (only for signup) */}
-                    {mode === 'signup' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="space-y-2"
-                      >
-                        <Label className="text-sm font-medium text-slate-300">Eu sou</Label>
-                        <div className="grid grid-cols-3 gap-2">
-                          {userTypes.map((type) => {
-                            const Icon = type.icon;
-                            const isSelected = userType === type.type;
-                            return (
-                              <button
-                                key={type.type}
-                                type="button"
-                                onClick={() => setUserType(type.type)}
-                                className={cn(
-                                  "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-300",
-                                  isSelected
-                                    ? `border-primary bg-primary/10 text-white`
-                                    : "border-slate-700/50 bg-slate-800/30 text-slate-400 hover:border-slate-600 hover:text-white"
-                                )}
-                              >
-                                <div className={cn(
-                                  "w-9 h-9 rounded-lg flex items-center justify-center transition-all",
-                                  isSelected 
-                                    ? `bg-gradient-to-br ${type.gradient}` 
-                                    : "bg-slate-700/50"
-                                )}>
-                                  <Icon className="h-4 w-4 text-white" />
-                                </div>
-                                <span className="text-xs font-medium">{type.label}</span>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-
-                    {/* Name field (only for signup) */}
-                    {mode === 'signup' && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="space-y-2"
-                      >
-                        <Label htmlFor="name" className="text-sm font-medium text-slate-300">Nome completo</Label>
-                        <div className="relative">
-                          <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-                          <Input
-                            id="name"
-                            type="text"
-                            placeholder="Seu nome"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            onFocus={() => setFocusedField('name')}
-                            onBlur={() => setFocusedField(null)}
-                            className={getInputClassName('name')}
-                          />
-                          {getFieldStatus('name') === 'valid' && (
-                            <CheckCircle2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500" />
-                          )}
-                        </div>
-                        {errors.name && (
-                          <p className="text-sm text-red-400">{errors.name}</p>
-                        )}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Email field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email" className="text-sm font-medium text-slate-300">Email</Label>
-                    <div className="relative">
-                      <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-                      <Input
-                        id="email"
-                        type="email"
-                        placeholder="seu@email.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        onFocus={() => setFocusedField('email')}
-                        onBlur={() => setFocusedField(null)}
-                        className={getInputClassName('email')}
-                      />
-                      {getFieldStatus('email') === 'valid' && (
-                        <CheckCircle2 className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-500" />
-                      )}
-                    </div>
-                    {errors.email && (
-                      <p className="text-sm text-red-400">{errors.email}</p>
-                    )}
-                  </div>
-
-                  {/* Password field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="password" className="text-sm font-medium text-slate-300">Senha</Label>
-                    <div className="relative">
-                      <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-                      <Input
-                        id="password"
-                        type={showPassword ? 'text' : 'password'}
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        onFocus={() => setFocusedField('password')}
-                        onBlur={() => setFocusedField(null)}
-                        className={cn(getInputClassName('password'), "pr-12")}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors"
-                      >
-                        {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
-                      </button>
-                    </div>
-                    {errors.password && (
-                      <p className="text-sm text-red-400">{errors.password}</p>
-                    )}
-                  </div>
-
-                  {/* Forgot password link (only for login) */}
-                  {mode === 'login' && (
-                    <div className="text-right">
-                      <button
-                        type="button"
-                        onClick={() => setShowForgotPassword(true)}
-                        className="text-sm text-primary hover:text-primary/80 transition-colors"
-                      >
-                        Esqueceu sua senha?
-                      </button>
-                    </div>
-                  )}
-
-                  {/* Submit button */}
-                  <div className="pt-2">
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <Button
-                        type="submit"
-                        className="w-full h-14 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-teal-400 hover:from-primary/90 hover:to-teal-400/90 text-slate-900 shadow-lg shadow-primary/25 transition-all duration-300"
-                        disabled={isLoading}
-                      >
-                        {isLoading ? (
-                          <Loader2 className="h-5 w-5 animate-spin mr-2" />
-                        ) : null}
-                        {mode === 'login' ? 'Entrar no meu painel AtentAI' : 'Criar minha conta grátis'}
-                        {!isLoading && <ArrowRight className="h-5 w-5 ml-2" />}
-                      </Button>
-                    </motion.div>
-                    
-                    {/* Trust microcopy */}
-                    <p className="text-center text-xs text-slate-500 mt-3">
-                      {mode === 'login' 
-                        ? 'Acesso seguro às suas economias tributárias' 
-                        : 'Grátis para sempre • Sem cartão de crédito'}
-                    </p>
-                  </div>
-                </form>
-
-                {/* Switch mode link */}
-                <div className="mt-6 pt-5 border-t border-slate-700/50 text-center">
-                  <p className="text-sm text-slate-500">
-                    {mode === 'login' ? 'Ainda não tem conta?' : 'Já tem uma conta?'}
-                    <button
-                      type="button"
-                      onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
-                      className="ml-2 text-primary hover:text-primary/80 font-semibold transition-colors"
-                    >
-                      {mode === 'login' ? 'Criar conta gratuita' : 'Fazer login'}
-                    </button>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Trust Badges */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4 }}
-            className="mt-6 space-y-3"
-          >
-            <div className="flex items-center justify-center gap-2 text-slate-400">
-              <Shield className="h-4 w-4 text-emerald-500" />
-              <span className="text-xs">Conexão criptografada SSL 256-bit</span>
-            </div>
-            
-            <div className="flex items-center justify-center gap-6 text-slate-500">
-              <div className="flex items-center gap-1.5">
-                <Users className="h-3.5 w-3.5" />
-                <span className="text-xs">+5.000 empresas</span>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <Zap className="h-3.5 w-3.5" />
-                <span className="text-xs">Economia média de 23%</span>
-              </div>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-
-      {/* Forgot Password Modal */}
-      <AnimatePresence>
-        {showForgotPassword && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-            onClick={() => setShowForgotPassword(false)}
-          >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-8"
-            >
-              <div className="flex items-center gap-3 mb-6">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowForgotPassword(false)}
-                  className="h-10 w-10 text-slate-400 hover:text-white hover:bg-slate-800"
+          
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <AnimatePresence mode="wait">
+              {/* User Type Selection (only for signup) */}
+              {mode === 'signup' && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  className="space-y-3"
                 >
-                  <ArrowLeft className="h-5 w-5" />
-                </Button>
-                <div>
-                  <h2 className="font-semibold text-white text-lg">Recuperar Senha</h2>
-                  <p className="text-sm text-slate-400">Enviaremos um link de recuperação</p>
-                </div>
-              </div>
-              
-              <form onSubmit={handleForgotPassword} className="space-y-5">
-                <div className="space-y-2">
-                  <Label className="text-sm font-medium text-slate-300">Email</Label>
+                  <Label className="text-sm font-medium text-slate-700">Eu sou</Label>
+                  <div className="grid grid-cols-3 gap-3">
+                    {userTypes.map((type) => {
+                      const Icon = type.icon;
+                      const isSelected = userType === type.type;
+                      return (
+                        <button
+                          key={type.type}
+                          type="button"
+                          onClick={() => setUserType(type.type)}
+                          className={cn(
+                            "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-200",
+                            isSelected
+                              ? "border-primary bg-primary/5 text-slate-900"
+                              : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300"
+                          )}
+                        >
+                          <div className={cn(
+                            "w-10 h-10 rounded-xl flex items-center justify-center transition-all",
+                            isSelected 
+                              ? `bg-gradient-to-br ${type.gradient}` 
+                              : "bg-slate-200"
+                          )}>
+                            <Icon className={cn("h-5 w-5", isSelected ? "text-white" : "text-slate-500")} />
+                          </div>
+                          <span className="text-xs font-medium">{type.label}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Name field (only for signup) */}
+              {mode === 'signup' && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  className="space-y-2"
+                >
+                  <Label htmlFor="name" className="text-sm font-medium text-slate-700">
+                    Nome completo
+                  </Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                     <Input
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={forgotEmail}
-                      onChange={(e) => setForgotEmail(e.target.value)}
-                      className="pl-12 h-14 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 rounded-xl"
+                      id="name"
+                      type="text"
+                      placeholder="Seu nome"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="pl-12 h-12 bg-slate-50 border-slate-200 focus:border-primary focus:ring-primary/20"
                     />
                   </div>
-                  {errors.forgotEmail && (
-                    <p className="text-sm text-red-400">{errors.forgotEmail}</p>
+                  {errors.name && (
+                    <p className="text-sm text-red-500">{errors.name}</p>
                   )}
-                </div>
-                <Button
-                  type="submit"
-                  className="w-full h-14 rounded-xl font-semibold bg-gradient-to-r from-primary to-teal-400 text-slate-900"
-                  disabled={isLoading}
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* Email field */}
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium text-slate-700">
+                Email
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="seu@email.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="pl-12 h-12 bg-slate-50 border-slate-200 focus:border-primary focus:ring-primary/20"
+                />
+              </div>
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email}</p>
+              )}
+            </div>
+            
+            {/* Password field */}
+            <div className="space-y-2">
+              <Label htmlFor="password" className="text-sm font-medium text-slate-700">
+                Senha
+              </Label>
+              <div className="relative">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="pl-12 pr-12 h-12 bg-slate-50 border-slate-200 focus:border-primary focus:ring-primary/20"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
                 >
-                  {isLoading ? <Loader2 className="h-5 w-5 animate-spin mr-2" /> : null}
-                  Enviar Link de Recuperação
-                </Button>
-              </form>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                  {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password}</p>
+              )}
+            </div>
+            
+            {/* Forgot password (login only) */}
+            {mode === 'login' && (
+              <div className="text-right">
+                <button
+                  type="button"
+                  onClick={() => setShowForgotPassword(true)}
+                  className="text-sm text-primary hover:text-primary/80 font-medium"
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+            )}
+            
+            {/* Submit button */}
+            <Button
+              type="submit"
+              className="w-full h-12 bg-gradient-to-r from-primary via-cyan-500 to-blue-500 hover:opacity-90 transition-opacity text-white font-semibold rounded-xl shadow-lg shadow-primary/25"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="h-5 w-5 animate-spin" />
+              ) : (
+                <span className="flex items-center gap-2">
+                  {mode === 'login' ? 'Entrar' : 'Criar conta'}
+                  <ArrowRight className="h-4 w-4" />
+                </span>
+              )}
+            </Button>
+          </form>
+          
+          {/* Divider */}
+          <div className="relative my-8">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-200" />
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="px-4 bg-white text-slate-500">OU</span>
+            </div>
+          </div>
+          
+          {/* Toggle mode */}
+          <div className="text-center">
+            <p className="text-slate-600">
+              {mode === 'login' ? 'Não tem uma conta?' : 'Já tem uma conta?'}
+              {' '}
+              <button
+                type="button"
+                onClick={() => setMode(mode === 'login' ? 'signup' : 'login')}
+                className="font-semibold text-primary hover:text-primary/80"
+              >
+                {mode === 'login' ? 'Criar conta grátis' : 'Fazer login'}
+              </button>
+            </p>
+          </div>
+          
+          {/* Terms */}
+          <p className="text-center text-xs text-slate-400 mt-8">
+            Ao continuar, você concorda com nossos{' '}
+            <Link to="/termos" className="text-primary hover:underline">Termos de Uso</Link>
+            {' '}e{' '}
+            <Link to="/privacidade" className="text-primary hover:underline">Política de Privacidade</Link>
+          </p>
+        </div>
+      </div>
     </div>
   );
 };
