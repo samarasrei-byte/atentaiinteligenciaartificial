@@ -1395,6 +1395,7 @@ export default function PartnerPanel() {
             newRequestsCount={showNewRequestBadge ? newRequestsCount : 0}
             onRefresh={fetchPartnerData}
             onClearNotifications={handleClearNewRequests}
+            isDark={isDark}
           />
 
           {/* Modern Navigation */}
@@ -1403,6 +1404,7 @@ export default function PartnerPanel() {
             onTabChange={setActiveTab}
             requestsCount={requests.length}
             fiscalCount={fiscalRequests.length}
+            isDark={isDark}
           />
 
           {/* Content */}
@@ -1419,6 +1421,7 @@ export default function PartnerPanel() {
                   stats={displayStats}
                   commissionPercent={partner.commission_percent}
                   formatCurrency={formatCurrency}
+                  isDark={isDark}
                 />
               ) : (
                 renderContent()
