@@ -37,16 +37,17 @@ const ProfileSelector = () => {
     let mounted = true;
     
     const loadProfiles = async () => {
-      if (loading) return;
-      
-      if (!user) {
-        navigate('/auth', { replace: true });
-        return;
-      }
-
-      setIsLoading(true);
-
       try {
+        if (loading) return;
+        
+        if (!user) {
+          navigate('/auth', { replace: true });
+          return;
+        }
+
+        if (!mounted) return;
+        setIsLoading(true);
+
         // Run status checks with timeout to prevent hanging
         const checkWithTimeout = async <T,>(promise: Promise<T>, fallback: T, timeout = 5000): Promise<T> => {
           return Promise.race([
@@ -58,7 +59,10 @@ const ProfileSelector = () => {
         const [isAffiliate, isPartner] = await Promise.all([
           checkWithTimeout(checkAffiliateStatus(), false),
           checkWithTimeout(checkPartnerStatus(), false)
-        ]);
+        ]).catch(err => {
+          console.error('Error checking statuses:', err);
+          return [false, false];
+        });
 
         if (!mounted) return;
 
@@ -141,19 +145,23 @@ const ProfileSelector = () => {
 
         // If only one profile, redirect directly
         if (profiles.length === 1) {
-          await logAuditEvent({
+          logAuditEvent({
             userId: user.id,
             userEmail: user.email,
             actionType: 'route_access_allowed',
             routeAttempted: profiles[0].route,
             metadata: { auto_redirect: true, profile: profiles[0].id }
-          });
+          }).catch(console.error);
           navigate(profiles[0].route, { replace: true });
           return;
         }
 
       } catch (error) {
         console.error('Error loading profiles:', error);
+        // Fallback to empresa on error
+        if (mounted) {
+          navigate('/empresa', { replace: true });
+        }
       } finally {
         if (mounted) {
           setIsLoading(false);
