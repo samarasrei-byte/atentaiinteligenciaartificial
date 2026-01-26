@@ -18,6 +18,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { cn } from '@/lib/utils';
 import {
   Building, DollarSign, Users, Clock, CheckCircle, XCircle, AlertCircle,
   TrendingUp, Loader2, Search, RefreshCw, Phone, Mail, User, FileText,
@@ -35,6 +36,9 @@ import { PartnerStripeConnectSetup } from '@/components/partner/PartnerStripeCon
 import { ModernPartnerHeader } from '@/components/partner/ModernPartnerHeader';
 import { ModernPartnerStats } from '@/components/partner/ModernPartnerStats';
 import { ModernPartnerNavigation } from '@/components/partner/ModernPartnerNavigation';
+import { ModernPartnerChat } from '@/components/partner/ModernPartnerChat';
+import { usePartnerTheme } from '@/hooks/usePartnerTheme';
+
 
 interface Partner {
   id: string;
@@ -114,6 +118,7 @@ export default function PartnerPanel() {
   const navigate = useNavigate();
   
   const [collapsed, setCollapsed] = useState(false);
+  const { theme, toggleTheme, isDark, themeClasses } = usePartnerTheme();
   const [activeTab, setActiveTab] = useState('overview');
   const [serviceTab, setServiceTab] = useState<'limpa-nome' | 'fiscal'>('limpa-nome');
   const [isLoading, setIsLoading] = useState(true);
@@ -437,30 +442,62 @@ export default function PartnerPanel() {
   const renderServices = () => (
     <div className="space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-foreground flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-primary" />
+        <h2 className={cn("text-xl font-semibold flex items-center gap-2", isDark ? 'text-white' : 'text-slate-900')}>
+          <Sparkles className="h-5 w-5 text-emerald-500" />
           Serviços AtentAI
         </h2>
-        <p className="text-sm text-muted-foreground">Contrate serviços adicionais para expandir sua operação</p>
+        <p className={cn("text-sm", isDark ? 'text-slate-400' : 'text-slate-600')}>Contrate serviços adicionais para expandir sua operação</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { title: 'Plano Premium', description: 'Acesso completo a todas as ferramentas de análise', price: 'R$ 97/mês', features: ['IA ilimitada', 'Relatórios avançados', 'Suporte prioritário'] },
-          { title: 'Marketing Digital', description: 'Aumente sua captação de clientes', price: 'R$ 297/mês', features: ['Landing page personalizada', 'Tráfego pago gerenciado', 'Material de vendas'] },
-          { title: 'Treinamento Avançado', description: 'Capacitação para sua equipe', price: 'R$ 497', features: ['5 horas de treinamento', 'Material didático', 'Certificado'] },
+          { 
+            title: 'Marketing Digital', 
+            description: 'Aumente sua captação de clientes com estratégias digitais', 
+            price: 'R$ 780', 
+            features: ['Landing page personalizada', 'Tráfego pago gerenciado', 'Material de vendas profissional', 'Gestão de redes sociais'],
+            highlight: true
+          },
+          { 
+            title: 'Treinamento Avançado', 
+            description: 'Capacitação completa para sua equipe', 
+            price: 'R$ 497', 
+            features: ['5 horas de treinamento', 'Material didático exclusivo', 'Certificado de conclusão', 'Suporte por 30 dias'],
+            highlight: false
+          },
+          { 
+            title: 'Consultoria Especializada', 
+            description: 'Estratégias personalizadas para seu negócio', 
+            price: 'R$ 1.200', 
+            features: ['Análise do negócio', 'Plano de ação personalizado', 'Acompanhamento mensal', 'Relatórios de performance'],
+            highlight: false
+          },
         ].map((service, i) => (
-          <Card key={i} className="bg-white border-slate-200 hover:border-emerald-500/50 transition-all shadow-lg">
+          <Card 
+            key={i} 
+            className={cn(
+              "transition-all",
+              isDark 
+                ? 'bg-slate-800 border-slate-700 hover:border-emerald-500/50' 
+                : 'bg-white border-slate-200 hover:border-emerald-500/50 shadow-lg',
+              service.highlight && 'ring-2 ring-emerald-500/30'
+            )}
+          >
             <CardHeader>
-              <CardTitle className="text-lg text-slate-900">{service.title}</CardTitle>
-              <CardDescription className="text-slate-600">{service.description}</CardDescription>
+              <div className="flex items-center justify-between">
+                <CardTitle className={cn("text-lg", isDark ? 'text-white' : 'text-slate-900')}>{service.title}</CardTitle>
+                {service.highlight && (
+                  <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">Popular</Badge>
+                )}
+              </div>
+              <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>{service.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-2xl font-bold text-emerald-600">{service.price}</p>
               <ul className="space-y-2">
                 {service.features.map((feature, j) => (
-                  <li key={j} className="text-sm text-slate-700 flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-emerald-500" />
+                  <li key={j} className={cn("text-sm flex items-center gap-2", isDark ? 'text-slate-300' : 'text-slate-700')}>
+                    <CheckCircle className="h-4 w-4 text-emerald-500 flex-shrink-0" />
                     {feature}
                   </li>
                 ))}
@@ -469,6 +506,73 @@ export default function PartnerPanel() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      {/* Serviços para Contador - Limpa Nome e Módulo Fiscal */}
+      <div className="mt-8">
+        <h3 className={cn("text-lg font-semibold flex items-center gap-2 mb-4", isDark ? 'text-white' : 'text-slate-900')}>
+          <Building className="h-5 w-5 text-blue-500" />
+          Serviços para Clientes (Contador)
+        </h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Card className={cn(
+            "transition-all",
+            isDark ? 'bg-slate-800 border-slate-700 hover:border-emerald-500/50' : 'bg-white border-slate-200 hover:border-emerald-500/50 shadow-lg'
+          )}>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                  <Shield className="h-5 w-5 text-emerald-600" />
+                </div>
+                <div>
+                  <CardTitle className={cn("text-base", isDark ? 'text-white' : 'text-slate-900')}>Limpa Nome PF</CardTitle>
+                  <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>Recuperação de crédito para pessoa física</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold text-emerald-600">R$ 780</p>
+                <span className={cn("text-sm", isDark ? 'text-slate-400' : 'text-slate-500')}>por cliente</span>
+              </div>
+              <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>
+                Inclui: Análise completa, negociação de dívidas, regularização de score
+              </p>
+              <Button variant="outline" className="w-full border-emerald-500/50 text-emerald-700 hover:bg-emerald-50">
+                Solicitar para Cliente
+              </Button>
+            </CardContent>
+          </Card>
+
+          <Card className={cn(
+            "transition-all",
+            isDark ? 'bg-slate-800 border-slate-700 hover:border-blue-500/50' : 'bg-white border-slate-200 hover:border-blue-500/50 shadow-lg'
+          )}>
+            <CardHeader>
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-10 rounded-xl bg-blue-100 flex items-center justify-center">
+                  <Scale className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <CardTitle className={cn("text-base", isDark ? 'text-white' : 'text-slate-900')}>Módulo Fiscal</CardTitle>
+                  <CardDescription className={isDark ? 'text-slate-400' : 'text-slate-600'}>Análise tributária completa</CardDescription>
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="flex items-baseline gap-2">
+                <p className="text-2xl font-bold text-blue-600">Grátis + 50%</p>
+                <span className={cn("text-sm", isDark ? 'text-slate-400' : 'text-slate-500')}>do recuperado</span>
+              </div>
+              <p className={cn("text-xs", isDark ? 'text-slate-400' : 'text-slate-500')}>
+                Inclui: Auditoria fiscal, identificação de créditos, relatório detalhado
+              </p>
+              <Button variant="outline" className="w-full border-blue-500/50 text-blue-700 hover:bg-blue-50">
+                Solicitar para Cliente
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   );
@@ -1172,7 +1276,7 @@ export default function PartnerPanel() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-100">
+    <div className={cn("min-h-screen transition-colors duration-300", isDark ? 'bg-slate-900' : 'bg-slate-100')}>
       {/* Sidebar - Fixed */}
       <div className="hidden lg:block flex-shrink-0">
         <PartnerSidebar 
@@ -1182,11 +1286,13 @@ export default function PartnerPanel() {
           onTabChange={setActiveTab}
           pendingCount={requests.filter(r => r.status === 'pending').length}
           partnerName={partner?.company_name}
+          isDark={isDark}
+          onThemeToggle={toggleTheme}
         />
       </div>
 
       {/* Main Content */}
-      <main className={`min-h-screen transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={cn("min-h-screen transition-all duration-300", collapsed ? 'lg:ml-16' : 'lg:ml-64')}>
         <div className="p-6 lg:p-8 max-w-7xl mx-auto">
           {/* Modern Header */}
           <ModernPartnerHeader
@@ -1230,9 +1336,17 @@ export default function PartnerPanel() {
 
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
-        <DialogContent className="max-w-4xl h-[80vh] p-0 bg-white border-slate-200 shadow-2xl">
-          <DialogHeader className="p-4 border-b border-slate-200">
-            <DialogTitle className="text-slate-900">Chat - {selectedRequest?.full_name}</DialogTitle>
+        <DialogContent className={cn(
+          "max-w-4xl h-[80vh] p-0 shadow-2xl",
+          isDark ? 'bg-slate-800 border-slate-700' : 'bg-white border-slate-200'
+        )}>
+          <DialogHeader className={cn(
+            "p-4 border-b",
+            isDark ? 'border-slate-700' : 'border-slate-200'
+          )}>
+            <DialogTitle className={isDark ? 'text-white' : 'text-slate-900'}>
+              Chat - {selectedRequest?.full_name}
+            </DialogTitle>
           </DialogHeader>
           {selectedRequest && user && (
             <div className="flex-1 overflow-hidden">
