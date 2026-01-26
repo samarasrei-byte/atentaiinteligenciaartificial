@@ -450,22 +450,22 @@ export default function PartnerPanel() {
           { title: 'Marketing Digital', description: 'Aumente sua captação de clientes', price: 'R$ 297/mês', features: ['Landing page personalizada', 'Tráfego pago gerenciado', 'Material de vendas'] },
           { title: 'Treinamento Avançado', description: 'Capacitação para sua equipe', price: 'R$ 497', features: ['5 horas de treinamento', 'Material didático', 'Certificado'] },
         ].map((service, i) => (
-          <Card key={i} className="bg-card/50 backdrop-blur border-border/50 hover:border-primary/30 transition-all">
+          <Card key={i} className="bg-white border-slate-200 hover:border-emerald-500/50 transition-all shadow-lg">
             <CardHeader>
-              <CardTitle className="text-lg">{service.title}</CardTitle>
-              <CardDescription>{service.description}</CardDescription>
+              <CardTitle className="text-lg text-slate-900">{service.title}</CardTitle>
+              <CardDescription className="text-slate-600">{service.description}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              <p className="text-2xl font-bold text-primary">{service.price}</p>
+              <p className="text-2xl font-bold text-emerald-600">{service.price}</p>
               <ul className="space-y-2">
                 {service.features.map((feature, j) => (
-                  <li key={j} className="text-sm text-muted-foreground flex items-center gap-2">
-                    <CheckCircle className="h-4 w-4 text-emerald-400" />
+                  <li key={j} className="text-sm text-slate-700 flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-emerald-500" />
                     {feature}
                   </li>
                 ))}
               </ul>
-              <Button className="w-full">Contratar</Button>
+              <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white">Contratar</Button>
             </CardContent>
           </Card>
         ))}
@@ -683,20 +683,20 @@ export default function PartnerPanel() {
           { id: '3', full_name: 'Pedro Oliveira', email: 'pedro@email.com', phone: '(21) 97777-9012', debt_amount_cents: 2300000, status: 'pending', payment_status: 'pending', final_price_cents: 78000, created_at: subDays(new Date(), 5).toISOString(), user_id: '3' },
         ] as CreditRepairRequest[]).map((request, index) => (
           <motion.div key={request.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}>
-            <Card className="bg-card/50 backdrop-blur border-border/50 hover:border-emerald-500/30 transition-all">
+            <Card className="bg-white border-slate-200 hover:border-emerald-500/50 transition-all shadow-lg">
               <CardContent className="p-5">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <Avatar className="h-12 w-12 border-2 border-emerald-500/20">
-                      <AvatarFallback className="bg-emerald-500/10 text-emerald-400">{request.full_name[0]}</AvatarFallback>
+                    <Avatar className="h-12 w-12 border-2 border-emerald-500/30">
+                      <AvatarFallback className="bg-emerald-100 text-emerald-700 font-semibold">{request.full_name[0]}</AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="font-semibold text-foreground">{request.full_name}</h3>
+                        <h3 className="font-semibold text-slate-900">{request.full_name}</h3>
                         {getStatusBadge(request.status)}
                         {getPaymentBadge(request.payment_status)}
                       </div>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
+                      <div className="flex items-center gap-4 text-sm text-slate-600 flex-wrap">
                         {request.email && <span className="flex items-center gap-1"><Mail className="h-3 w-3" />{request.email}</span>}
                         {request.phone && <span className="flex items-center gap-1"><Phone className="h-3 w-3" />{request.phone}</span>}
                       </div>
@@ -705,19 +705,19 @@ export default function PartnerPanel() {
                   <div className="flex items-center gap-6">
                     <div className="grid grid-cols-3 gap-6 text-center">
                       <div>
-                        <p className="text-lg font-bold text-red-400">{formatCurrency(request.debt_amount_cents)}</p>
-                        <p className="text-xs text-muted-foreground">Dívida</p>
+                        <p className="text-lg font-bold text-red-600">{formatCurrency(request.debt_amount_cents)}</p>
+                        <p className="text-xs text-slate-500">Dívida</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-foreground">{formatCurrency(request.final_price_cents)}</p>
-                        <p className="text-xs text-muted-foreground">Serviço</p>
+                        <p className="text-lg font-bold text-slate-900">{formatCurrency(request.final_price_cents)}</p>
+                        <p className="text-xs text-slate-500">Serviço</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-emerald-400">{formatCurrency(request.final_price_cents * partner.commission_percent / 100)}</p>
-                        <p className="text-xs text-muted-foreground">Comissão</p>
+                        <p className="text-lg font-bold text-emerald-600">{formatCurrency(request.final_price_cents * partner.commission_percent / 100)}</p>
+                        <p className="text-xs text-slate-500">Comissão</p>
                       </div>
                     </div>
-                    <Button variant="outline" size="sm" onClick={() => { setSelectedRequest(request); setShowChatDialog(true); }} className="border-border/50 hover:border-primary/50">
+                    <Button variant="outline" size="sm" onClick={() => { setSelectedRequest(request); setShowChatDialog(true); }} className="border-emerald-500/50 text-emerald-700 hover:bg-emerald-50 hover:border-emerald-500">
                       <MessageCircle className="h-4 w-4 mr-1" /> Chat
                     </Button>
                   </div>
@@ -755,35 +755,35 @@ export default function PartnerPanel() {
           { id: '3', company_name: 'Tech Solutions Ltda', full_name: 'Roberto Lima', email: 'roberto@tech.com', cnpj: '11.222.333/0001-44', tax_regime: 'simples_nacional', status: 'pending', payment_status: 'pending', service_fee_cents: 49700, identified_value_cents: 0, created_at: subDays(new Date(), 1).toISOString() },
         ] as FiscalRequest[]).map((request, index) => (
           <motion.div key={request.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.03 }}>
-            <Card className="bg-card/50 backdrop-blur border-border/50 hover:border-blue-500/30 transition-all">
+            <Card className="bg-white border-slate-200 hover:border-blue-500/50 transition-all shadow-lg">
               <CardContent className="p-5">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className="h-12 w-12 rounded-xl bg-blue-500/10 flex items-center justify-center">
-                      <Building className="h-6 w-6 text-blue-400" />
+                    <div className="h-12 w-12 rounded-xl bg-blue-100 flex items-center justify-center">
+                      <Building className="h-6 w-6 text-blue-600" />
                     </div>
                     <div>
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <h3 className="font-semibold text-foreground">{request.company_name}</h3>
+                        <h3 className="font-semibold text-slate-900">{request.company_name}</h3>
                         {getStatusBadge(request.status)}
                         {getPaymentBadge(request.payment_status || 'pending')}
                       </div>
-                      <p className="text-sm text-muted-foreground">{request.full_name}</p>
-                      <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap mt-1">
-                        <span className="font-mono text-xs">{request.cnpj}</span>
-                        <Badge variant="outline" className="text-xs">{request.tax_regime.replace('_', ' ')}</Badge>
+                      <p className="text-sm text-slate-600">{request.full_name}</p>
+                      <div className="flex items-center gap-4 text-sm text-slate-500 flex-wrap mt-1">
+                        <span className="font-mono text-xs text-slate-700">{request.cnpj}</span>
+                        <Badge variant="outline" className="text-xs bg-slate-100 text-slate-700 border-slate-300">{request.tax_regime.replace('_', ' ')}</Badge>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-6">
                     <div className="grid grid-cols-2 gap-6 text-center">
                       <div>
-                        <p className="text-lg font-bold text-blue-400">{formatCurrency(request.identified_value_cents || 0)}</p>
-                        <p className="text-xs text-muted-foreground">Valor Identificado</p>
+                        <p className="text-lg font-bold text-blue-600">{formatCurrency(request.identified_value_cents || 0)}</p>
+                        <p className="text-xs text-slate-500">Valor Identificado</p>
                       </div>
                       <div>
-                        <p className="text-lg font-bold text-emerald-400">{formatCurrency((request.service_fee_cents || 0) * partner.commission_percent / 100)}</p>
-                        <p className="text-xs text-muted-foreground">Comissão</p>
+                        <p className="text-lg font-bold text-emerald-600">{formatCurrency((request.service_fee_cents || 0) * partner.commission_percent / 100)}</p>
+                        <p className="text-xs text-slate-500">Comissão</p>
                       </div>
                     </div>
                   </div>
@@ -968,45 +968,40 @@ export default function PartnerPanel() {
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
-          { label: 'Taxa de Conversão', value: `${metricsData.conversionRate}%`, icon: TrendingUp, color: 'emerald', change: '' },
-          { label: 'Tempo Médio de Resposta', value: metricsData.avgResponseTime, icon: Clock, color: 'blue', change: '' },
-          { label: 'Satisfação do Cliente', value: `${metricsData.satisfactionScore}/5`, icon: Sparkles, color: 'amber', change: '' },
-          { label: 'Total de Clientes', value: metricsData.totalClients.toString(), icon: Users, color: 'purple', change: '' },
-          { label: 'Clientes Ativos', value: metricsData.activeClients.toString(), icon: Activity, color: 'cyan', change: '' },
-          { label: 'Crescimento Mensal', value: `${metricsData.monthlyGrowth}%`, icon: ArrowUpRight, color: 'emerald', change: '' },
+          { label: 'Taxa de Conversão', value: `${metricsData.conversionRate}%`, icon: TrendingUp, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
+          { label: 'Tempo Médio de Resposta', value: metricsData.avgResponseTime, icon: Clock, iconBg: 'bg-blue-100', iconColor: 'text-blue-600' },
+          { label: 'Satisfação do Cliente', value: `${metricsData.satisfactionScore}/5`, icon: Sparkles, iconBg: 'bg-amber-100', iconColor: 'text-amber-600' },
+          { label: 'Total de Clientes', value: metricsData.totalClients.toString(), icon: Users, iconBg: 'bg-purple-100', iconColor: 'text-purple-600' },
+          { label: 'Clientes Ativos', value: metricsData.activeClients.toString(), icon: Activity, iconBg: 'bg-cyan-100', iconColor: 'text-cyan-600' },
+          { label: 'Crescimento Mensal', value: `${metricsData.monthlyGrowth}%`, icon: ArrowUpRight, iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600' },
         ].map((metric, i) => (
           <motion.div key={metric.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-            <Card className="bg-card/50 backdrop-blur border-border/50">
+            <Card className="bg-white border-slate-200 shadow-lg">
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <div className={`p-2 rounded-lg bg-${metric.color}-500/10`}>
-                    <metric.icon className={`h-5 w-5 text-${metric.color}-400`} />
+                  <div className={`p-2 rounded-lg ${metric.iconBg}`}>
+                    <metric.icon className={`h-5 w-5 ${metric.iconColor}`} />
                   </div>
-                  {metric.change && (
-                    <span className={`text-xs font-medium ${metric.change.startsWith('+') || metric.change.startsWith('-') ? (metric.change.startsWith('+') ? 'text-emerald-400' : 'text-blue-400') : 'text-muted-foreground'}`}>
-                      {metric.change}
-                    </span>
-                  )}
                 </div>
-                <p className="text-2xl font-bold text-foreground">{metric.value}</p>
-                <p className="text-xs text-muted-foreground mt-1">{metric.label}</p>
+                <p className="text-2xl font-bold text-slate-900">{metric.value}</p>
+                <p className="text-sm text-slate-600 mt-1">{metric.label}</p>
               </CardContent>
             </Card>
           </motion.div>
         ))}
       </div>
 
-      <Card className="bg-card/50 backdrop-blur border-border/50">
+      <Card className="bg-white border-slate-200 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-base">Performance Mensal</CardTitle>
+          <CardTitle className="text-base text-slate-900">Performance Mensal</CardTitle>
         </CardHeader>
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[300px]">
             <BarChart data={monthlyData}>
-              <XAxis dataKey="month" tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-              <YAxis tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+              <XAxis dataKey="month" tickLine={false} axisLine={false} stroke="#64748b" fontSize={12} />
+              <YAxis tickLine={false} axisLine={false} stroke="#64748b" fontSize={12} />
               <ChartTooltip content={<ChartTooltipContent />} />
-              <Bar dataKey="requests" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Solicitações" />
+              <Bar dataKey="requests" fill="#10b981" radius={[4, 4, 0, 0]} name="Solicitações" />
             </BarChart>
           </ChartContainer>
         </CardContent>
@@ -1025,32 +1020,32 @@ export default function PartnerPanel() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="bg-gradient-to-br from-emerald-500/10 via-card to-card border-emerald-500/20">
+        <Card className="bg-white border-2 border-emerald-200 shadow-lg">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground mb-1">Comissão Disponível</p>
-            <p className="text-3xl font-bold text-emerald-400">{formatCurrency(commissionAmount)}</p>
-            <p className="text-xs text-muted-foreground mt-2">Pronto para saque</p>
+            <p className="text-sm text-slate-600 mb-1">Comissão Disponível</p>
+            <p className="text-3xl font-bold text-emerald-600">{formatCurrency(commissionAmount)}</p>
+            <p className="text-xs text-slate-500 mt-2">Pronto para saque</p>
           </CardContent>
         </Card>
-        <Card className="bg-card/50 backdrop-blur border-border/50">
+        <Card className="bg-white border-slate-200 shadow-lg">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground mb-1">Comissão Pendente</p>
-            <p className="text-3xl font-bold text-amber-400">{formatCurrency(85000)}</p>
-            <p className="text-xs text-muted-foreground mt-2">Aguardando pagamento</p>
+            <p className="text-sm text-slate-600 mb-1">Comissão Pendente</p>
+            <p className="text-3xl font-bold text-amber-600">{formatCurrency(85000)}</p>
+            <p className="text-xs text-slate-500 mt-2">Aguardando pagamento</p>
           </CardContent>
         </Card>
-        <Card className="bg-card/50 backdrop-blur border-border/50">
+        <Card className="bg-white border-slate-200 shadow-lg">
           <CardContent className="p-6">
-            <p className="text-sm text-muted-foreground mb-1">Total Recebido</p>
-            <p className="text-3xl font-bold text-foreground">{formatCurrency(1890000)}</p>
-            <p className="text-xs text-muted-foreground mt-2">Desde o início</p>
+            <p className="text-sm text-slate-600 mb-1">Total Recebido</p>
+            <p className="text-3xl font-bold text-slate-900">{formatCurrency(1890000)}</p>
+            <p className="text-xs text-slate-500 mt-2">Desde o início</p>
           </CardContent>
         </Card>
       </div>
 
-      <Card className="bg-card/50 backdrop-blur border-border/50">
+      <Card className="bg-white border-slate-200 shadow-lg">
         <CardHeader>
-          <CardTitle className="text-base">Histórico de Comissões</CardTitle>
+          <CardTitle className="text-base text-slate-900">Histórico de Comissões</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-3">
@@ -1060,14 +1055,14 @@ export default function PartnerPanel() {
               { client: 'ABC Tecnologia', service: 'Módulo Fiscal', value: 9940, date: '05/01/2026', status: 'paid' },
               { client: 'Pedro Oliveira', service: 'Limpa Nome', value: 5940, date: '03/01/2026', status: 'pending' },
             ].map((item, i) => (
-              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-muted/30">
+              <div key={i} className="flex items-center justify-between p-4 rounded-xl bg-slate-50 border border-slate-100">
                 <div>
-                  <p className="font-medium text-foreground">{item.client}</p>
-                  <p className="text-sm text-muted-foreground">{item.service}</p>
+                  <p className="font-medium text-slate-900">{item.client}</p>
+                  <p className="text-sm text-slate-600">{item.service}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-semibold text-emerald-400">{formatCurrency(item.value)}</p>
-                  <p className="text-xs text-muted-foreground">{item.date}</p>
+                  <p className="font-semibold text-emerald-600">{formatCurrency(item.value)}</p>
+                  <p className="text-xs text-slate-500">{item.date}</p>
                 </div>
               </div>
             ))}
