@@ -368,8 +368,60 @@ const AdminPanel = () => {
 
           {activeTab === 'metrics' && <UsageMetrics data={{ aiQuestionsToday: stats.aiQuestionsToday, aiQuestionsThisWeek: stats.aiQuestionsThisWeek, aiQuestionsThisMonth: stats.aiQuestionsThisMonth, simulationsToday: stats.simulationsToday, simulationsThisWeek: stats.simulationsThisWeek, simulationsThisMonth: stats.simulationsThisMonth, activeUsersToday: stats.activeUsersToday, activeUsersThisWeek: stats.activeUsersThisWeek, consultationsScheduledThisWeek: 0, consultationsCompletedThisWeek: 0, averageResponseTime: 2.5, peakHour: '14:00' }} />}
           
-          {activeTab === 'contadores' && (
-            <ContadoresManagement />
+          {activeTab === 'contadores' && <ContadoresManagement />}
+
+          {/* Empresas - Lista de empresas cadastradas */}
+          {activeTab === 'empresas' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building2 className="h-5 w-5 text-primary" />
+                      Gestão de Empresas
+                    </CardTitle>
+                    <CardDescription>Empresas cadastradas na plataforma</CardDescription>
+                  </div>
+                  <Button variant="outline" onClick={() => window.open('/empresa', '_blank')}>
+                    Ver Painel Empresa
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Building2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-muted-foreground">Gestão detalhada de empresas em desenvolvimento.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Dados das empresas podem ser visualizados na aba "Usuários" com filtros.</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Autônomos - Lista de autônomos cadastrados */}
+          {activeTab === 'autonomos' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5 text-emerald-500" />
+                      Gestão de Autônomos
+                    </CardTitle>
+                    <CardDescription>Profissionais autônomos cadastrados</CardDescription>
+                  </div>
+                  <Button variant="outline" onClick={() => window.open('/autonomo', '_blank')}>
+                    Ver Painel Autônomo
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <User className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-muted-foreground">Gestão detalhada de autônomos em desenvolvimento.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Profissionais autônomos podem ser identificados pela role "autonomo".</p>
+                </div>
+              </CardContent>
+            </Card>
           )}
           
           {activeTab === 'revenue' && (

@@ -13,8 +13,11 @@ import {
   RefreshCw,
   Users,
   Calendar,
-  DollarSign
+  DollarSign,
+  Sparkles,
+  MessageSquare
 } from 'lucide-react';
+import { AIChurnMessageGenerator } from './AIChurnMessageGenerator';
 import { 
   AreaChart, 
   Area, 
@@ -359,44 +362,57 @@ export const ChurnAnalytics: React.FC = () => {
         </Card>
       </div>
 
-      {/* At-Risk Users */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-warning" />
-            Usuários em Risco
-            <Badge variant="outline" className="ml-2">{data.atRiskUsers.length}</Badge>
-          </CardTitle>
-          <CardDescription>Usuários inativos há mais de 14 dias - considere enviar mensagem de retenção</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {data.atRiskUsers.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Nenhum usuário em risco identificado</p>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {data.atRiskUsers.map((user) => (
-                <div key={user.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-warning/20">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center">
-                      <span className="text-sm font-medium text-warning">{user.email[0].toUpperCase()}</span>
+      {/* AI Message Generator + At-Risk Users Grid */}
+      <div className="grid lg:grid-cols-2 gap-6">
+        {/* AI Message Generator */}
+        <AIChurnMessageGenerator
+          daysInactive={data.atRiskUsers[0]?.daysInactive || 14}
+          riskLevel={
+            data.atRiskUsers[0]?.daysInactive >= 30 ? 'critical' :
+            data.atRiskUsers[0]?.daysInactive >= 21 ? 'high' :
+            data.atRiskUsers[0]?.daysInactive >= 14 ? 'medium' : 'low'
+          }
+        />
+
+        {/* At-Risk Users */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <AlertTriangle className="h-5 w-5 text-warning" />
+              Usuários em Risco
+              <Badge variant="outline" className="ml-2">{data.atRiskUsers.length}</Badge>
+            </CardTitle>
+            <CardDescription>Usuários inativos há mais de 14 dias - considere enviar mensagem de retenção</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {data.atRiskUsers.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                <Users className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p>Nenhum usuário em risco identificado</p>
+              </div>
+            ) : (
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                {data.atRiskUsers.map((user) => (
+                  <div key={user.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border border-warning/20">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-warning/20 flex items-center justify-center">
+                        <span className="text-sm font-medium text-warning">{user.email[0].toUpperCase()}</span>
+                      </div>
+                      <div>
+                        <p className="font-medium">{user.email}</p>
+                        <p className="text-sm text-muted-foreground">Último acesso: {user.lastActive}</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-medium">{user.email}</p>
-                      <p className="text-sm text-muted-foreground">Último acesso: {user.lastActive}</p>
-                    </div>
+                    <Badge variant="outline" className="bg-warning/10 text-warning">
+                      {user.daysInactive} dias inativo
+                    </Badge>
                   </div>
-                  <Badge variant="outline" className="bg-warning/10 text-warning">
-                    {user.daysInactive} dias inativo
-                  </Badge>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };
