@@ -16,7 +16,6 @@ import {
   ChevronRight,
   Sparkles,
   ShoppingBag,
-  FileText,
   TrendingUp,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -91,19 +90,19 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
           'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative',
           'touch-manipulation active:scale-[0.98]',
           active
-            ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            ? 'bg-emerald-100 text-emerald-700 font-medium'
+            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
         )}
       >
         <Icon className={cn(
           'h-5 w-5 shrink-0 transition-colors',
-          active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+          active ? 'text-emerald-600' : 'text-slate-500 group-hover:text-slate-700'
         )} />
         {!collapsed && (
           <>
-            <span className="font-medium text-sm flex-1 text-left">{item.label}</span>
+            <span className="text-sm flex-1 text-left">{item.label}</span>
             {item.badge && (
-              <span className="h-5 min-w-5 px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
+              <span className="h-5 min-w-5 px-1.5 rounded-full bg-emerald-600 text-white text-xs font-bold flex items-center justify-center">
                 {item.badge}
               </span>
             )}
@@ -116,7 +115,7 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
           </>
         )}
         {active && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-emerald-600 rounded-r-full" />
         )}
       </button>
     );
@@ -125,11 +124,11 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="bg-popover text-popover-foreground border text-xs px-3 py-1.5">
+          <TooltipContent side="right" className="bg-white text-slate-900 border border-slate-200 text-xs px-3 py-1.5 shadow-lg">
             <div className="flex items-center gap-2">
               {item.label}
               {item.badge && (
-                <span className="h-4 min-w-4 px-1 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                <span className="h-4 min-w-4 px-1 rounded-full bg-emerald-600 text-white text-[10px] font-bold flex items-center justify-center">
                   {item.badge}
                 </span>
               )}
@@ -147,20 +146,20 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-card border-r border-border',
+          'bg-white border-r border-slate-200 shadow-lg',
           collapsed ? 'w-16' : 'w-64'
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
+        <div className="flex items-center justify-between px-4 py-4 border-b border-slate-200">
           <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
+            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shadow-md">
               <Sparkles className="h-5 w-5 text-white" />
             </div>
             {!collapsed && (
               <div>
-                <span className="text-base font-bold text-foreground">AtentAI</span>
-                <span className="block text-[10px] text-emerald-500 font-medium -mt-0.5">Parceiro</span>
+                <span className="text-base font-bold text-slate-900">AtentAI</span>
+                <span className="block text-[10px] text-emerald-600 font-semibold -mt-0.5">Parceiro</span>
               </div>
             )}
           </div>
@@ -171,16 +170,16 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
           variant="outline"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-card border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
+          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-white border-slate-200 text-slate-600 hover:text-slate-900 hidden lg:flex shadow-md"
         >
           {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
 
         {/* Partner Info (when not collapsed) */}
         {!collapsed && partnerName && (
-          <div className="px-4 py-3 border-b border-border">
-            <p className="text-xs text-muted-foreground">Empresa</p>
-            <p className="text-sm font-semibold text-foreground truncate">{partnerName}</p>
+          <div className="px-4 py-3 border-b border-slate-200 bg-slate-50">
+            <p className="text-xs text-slate-500 font-medium">Empresa</p>
+            <p className="text-sm font-semibold text-slate-900 truncate">{partnerName}</p>
           </div>
         )}
 
@@ -192,19 +191,19 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
         </nav>
 
         {/* User & Logout */}
-        <div className="px-2 py-3 border-t border-border">
+        <div className="px-2 py-3 border-t border-slate-200 bg-slate-50">
           {!collapsed && (
             <div className="flex items-center gap-3 px-4 py-2 mb-2">
-              <div className="h-9 w-9 rounded-full bg-emerald-500/10 flex items-center justify-center">
-                <span className="text-sm font-bold text-emerald-500">
+              <div className="h-9 w-9 rounded-full bg-emerald-100 flex items-center justify-center">
+                <span className="text-sm font-bold text-emerald-700">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'P'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-sm font-medium text-slate-900 truncate">
                   {profile?.full_name?.split(' ')[0] || 'Parceiro'}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                <p className="text-xs text-slate-500 truncate">{user?.email}</p>
               </div>
             </div>
           )}
@@ -214,17 +213,17 @@ const PartnerSidebar: React.FC<PartnerSidebarProps> = ({
                 onClick={handleSignOut}
                 className={cn(
                   'w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all',
-                  'text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
+                  'text-slate-600 hover:bg-red-50 hover:text-red-600',
                   'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
                 )}
               >
                 <LogOut className="h-5 w-5" />
-                {!collapsed && <span className="text-sm">Sair</span>}
+                {!collapsed && <span className="text-sm font-medium">Sair</span>}
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-popover text-popover-foreground border text-xs">
+              <TooltipContent side="right" className="bg-white text-slate-900 border border-slate-200 text-xs shadow-lg">
                 Sair
               </TooltipContent>
             )}

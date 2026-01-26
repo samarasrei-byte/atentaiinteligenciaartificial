@@ -376,13 +376,13 @@ export default function PartnerPanel() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
         <div className="text-center space-y-4">
           <div className="relative">
             <div className="absolute inset-0 rounded-full bg-emerald-500/20 blur-xl animate-pulse" />
-            <Loader2 className="h-12 w-12 animate-spin text-emerald-400 relative" />
+            <Loader2 className="h-12 w-12 animate-spin text-emerald-600 relative" />
           </div>
-          <p className="text-slate-400 text-sm">Carregando painel do parceiro...</p>
+          <p className="text-slate-600 text-sm font-medium">Carregando painel do parceiro...</p>
         </div>
       </div>
     );
@@ -390,14 +390,14 @@ export default function PartnerPanel() {
 
   if (!partner) {
     return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-        <Card className="bg-slate-900/80 border-slate-700/50 p-8 text-center max-w-md backdrop-blur-xl">
-          <div className="h-20 w-20 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-6">
-            <Building className="h-10 w-10 text-slate-500" />
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+        <Card className="bg-white border-slate-200 p-8 text-center max-w-md shadow-xl">
+          <div className="h-20 w-20 rounded-2xl bg-slate-100 flex items-center justify-center mx-auto mb-6">
+            <Building className="h-10 w-10 text-slate-400" />
           </div>
-          <h2 className="text-xl font-bold text-white mb-2">Acesso Restrito</h2>
-          <p className="text-slate-400 mb-6">Você não está vinculado a uma empresa parceira.</p>
-          <Button onClick={() => navigate('/dashboard')} className="bg-emerald-600 hover:bg-emerald-700">
+          <h2 className="text-xl font-bold text-slate-900 mb-2">Acesso Restrito</h2>
+          <p className="text-slate-600 mb-6">Você não está vinculado a uma empresa parceira.</p>
+          <Button onClick={() => navigate('/dashboard')} className="bg-emerald-600 hover:bg-emerald-700 text-white">
             Voltar ao Dashboard
           </Button>
         </Card>
@@ -478,10 +478,10 @@ export default function PartnerPanel() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: FileText, label: 'Solicitações', value: displayStats.total, color: 'primary', change: '+12%' },
-          { icon: Clock, label: 'Pendentes', value: displayStats.pending, color: 'amber', change: '-5%' },
-          { icon: TrendingUp, label: 'Em Andamento', value: displayStats.inProgress, color: 'blue', change: '+8%' },
-          { icon: CheckCircle, label: 'Concluídos', value: displayStats.completed, color: 'emerald', change: '+23%' },
+          { icon: FileText, label: 'Solicitações', value: displayStats.total, bgColor: 'bg-blue-50', iconBg: 'bg-blue-100', iconColor: 'text-blue-600', textColor: 'text-blue-700' },
+          { icon: Clock, label: 'Pendentes', value: displayStats.pending, bgColor: 'bg-amber-50', iconBg: 'bg-amber-100', iconColor: 'text-amber-600', textColor: 'text-amber-700' },
+          { icon: TrendingUp, label: 'Em Andamento', value: displayStats.inProgress, bgColor: 'bg-cyan-50', iconBg: 'bg-cyan-100', iconColor: 'text-cyan-600', textColor: 'text-cyan-700' },
+          { icon: CheckCircle, label: 'Concluídos', value: displayStats.completed, bgColor: 'bg-emerald-50', iconBg: 'bg-emerald-100', iconColor: 'text-emerald-600', textColor: 'text-emerald-700' },
         ].map((stat, i) => (
           <motion.div
             key={stat.label}
@@ -489,19 +489,19 @@ export default function PartnerPanel() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className="bg-card/50 backdrop-blur border-border/50 hover:border-primary/30 transition-colors">
+            <Card className={`${stat.bgColor} border-0 shadow-lg hover:shadow-xl transition-shadow`}>
               <CardContent className="p-5">
                 <div className="flex items-center justify-between mb-3">
-                  <div className={`p-2.5 rounded-xl bg-${stat.color}-500/10`}>
-                    <stat.icon className={`h-5 w-5 text-${stat.color}-400`} />
+                  <div className={`p-2.5 rounded-xl ${stat.iconBg}`}>
+                    <stat.icon className={`h-5 w-5 ${stat.iconColor}`} />
                   </div>
-                  <span className={`text-xs font-medium flex items-center gap-1 ${stat.change.startsWith('+') ? 'text-emerald-400' : 'text-red-400'}`}>
-                    {stat.change.startsWith('+') ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
-                    {stat.change}
+                  <span className="text-xs font-medium flex items-center gap-1 text-emerald-600">
+                    <ArrowUpRight className="h-3 w-3" />
+                    +12%
                   </span>
                 </div>
-                <p className="text-3xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
+                <p className={`text-3xl font-bold ${stat.textColor}`}>{stat.value}</p>
+                <p className="text-sm text-slate-600 mt-1 font-medium">{stat.label}</p>
               </CardContent>
             </Card>
           </motion.div>
@@ -511,18 +511,18 @@ export default function PartnerPanel() {
       {/* Revenue Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <Card className="bg-gradient-to-br from-primary/10 via-card to-card border-primary/20">
+          <Card className="bg-white border-slate-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Receita Total</p>
-                  <p className="text-3xl font-bold text-foreground">{formatCurrency(displayStats.totalRevenue)}</p>
-                  <p className="text-xs text-emerald-400 mt-2 flex items-center gap-1">
-                    <ArrowUpRight className="h-3 w-3" /> +18.5% vs mês anterior
+                  <p className="text-sm text-slate-600 mb-1 font-medium">Receita Total</p>
+                  <p className="text-3xl font-bold text-slate-900">{formatCurrency(displayStats.totalRevenue)}</p>
+                  <p className="text-sm text-emerald-600 mt-2 flex items-center gap-1 font-medium">
+                    <ArrowUpRight className="h-4 w-4" /> +18.5% vs mês anterior
                   </p>
                 </div>
-                <div className="h-16 w-16 rounded-2xl bg-primary/20 flex items-center justify-center">
-                  <DollarSign className="h-8 w-8 text-primary" />
+                <div className="h-16 w-16 rounded-2xl bg-slate-100 flex items-center justify-center">
+                  <DollarSign className="h-8 w-8 text-slate-700" />
                 </div>
               </div>
             </CardContent>
@@ -530,16 +530,16 @@ export default function PartnerPanel() {
         </motion.div>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <Card className="bg-gradient-to-br from-emerald-500/10 via-card to-card border-emerald-500/20">
+          <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 shadow-lg">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground mb-1">Sua Comissão ({partner.commission_percent}%)</p>
-                  <p className="text-3xl font-bold text-emerald-400">{formatCurrency(commissionAmount)}</p>
-                  <p className="text-xs text-muted-foreground mt-2">Disponível para saque</p>
+                  <p className="text-sm text-emerald-700 mb-1 font-medium">Sua Comissão ({partner.commission_percent}%)</p>
+                  <p className="text-3xl font-bold text-emerald-700">{formatCurrency(commissionAmount)}</p>
+                  <p className="text-sm text-emerald-600 mt-2 font-medium">Disponível para saque</p>
                 </div>
-                <div className="h-16 w-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center">
-                  <Wallet className="h-8 w-8 text-emerald-400" />
+                <div className="h-16 w-16 rounded-2xl bg-emerald-200 flex items-center justify-center">
+                  <Wallet className="h-8 w-8 text-emerald-700" />
                 </div>
               </div>
             </CardContent>
@@ -549,10 +549,10 @@ export default function PartnerPanel() {
 
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card className="bg-card/50 backdrop-blur border-border/50">
+        <Card className="bg-white border-slate-200 shadow-lg">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-primary" />
+            <CardTitle className="text-base flex items-center gap-2 text-slate-900">
+              <TrendingUp className="h-4 w-4 text-emerald-600" />
               Evolução Mensal
             </CardTitle>
           </CardHeader>
@@ -561,28 +561,28 @@ export default function PartnerPanel() {
               <AreaChart data={monthlyData}>
                 <defs>
                   <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#10b981" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
                   </linearGradient>
                   <linearGradient id="colorCommission" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="hsl(142.1 76.2% 36.3%)" stopOpacity={0.3}/>
-                    <stop offset="95%" stopColor="hsl(142.1 76.2% 36.3%)" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#059669" stopOpacity={0.3}/>
+                    <stop offset="95%" stopColor="#059669" stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="month" tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis tickLine={false} axisLine={false} stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                <XAxis dataKey="month" tickLine={false} axisLine={false} stroke="#64748b" fontSize={12} />
+                <YAxis tickLine={false} axisLine={false} stroke="#64748b" fontSize={12} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Area type="monotone" dataKey="revenue" stroke="hsl(var(--primary))" fillOpacity={1} fill="url(#colorRevenue)" name="Receita" />
-                <Area type="monotone" dataKey="commission" stroke="hsl(142.1 76.2% 36.3%)" fillOpacity={1} fill="url(#colorCommission)" name="Comissão" />
+                <Area type="monotone" dataKey="revenue" stroke="#10b981" fillOpacity={1} fill="url(#colorRevenue)" name="Receita" />
+                <Area type="monotone" dataKey="commission" stroke="#059669" fillOpacity={1} fill="url(#colorCommission)" name="Comissão" />
               </AreaChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
-        <Card className="bg-card/50 backdrop-blur border-border/50">
+        <Card className="bg-white border-slate-200 shadow-lg">
           <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <PieChartIcon className="h-4 w-4 text-primary" />
+            <CardTitle className="text-base flex items-center gap-2 text-slate-900">
+              <PieChartIcon className="h-4 w-4 text-blue-600" />
               Distribuição por Status
             </CardTitle>
           </CardHeader>
@@ -609,7 +609,7 @@ export default function PartnerPanel() {
                 </ResponsiveContainer>
               </div>
             ) : (
-              <div className="h-[280px] flex items-center justify-center text-muted-foreground">
+              <div className="h-[280px] flex items-center justify-center text-slate-500">
                 Nenhuma solicitação encontrada
               </div>
             )}
@@ -618,26 +618,26 @@ export default function PartnerPanel() {
       </div>
 
       {/* Quick Actions */}
-      <Card className="bg-card/50 backdrop-blur border-border/50">
+      <Card className="bg-white border-slate-200 shadow-lg">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Ações Rápidas</CardTitle>
+          <CardTitle className="text-base text-slate-900">Ações Rápidas</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { icon: Shield, label: 'Limpa Nome', tab: 'limpa-nome', color: 'emerald' },
-              { icon: Scale, label: 'Módulo Fiscal', tab: 'modulo-fiscal', color: 'blue' },
-              { icon: MessageCircle, label: 'Chat', tab: 'chat', color: 'purple' },
-              { icon: Wallet, label: 'Saques', tab: 'withdrawals', color: 'amber' },
+              { icon: Shield, label: 'Limpa Nome', tab: 'limpa-nome', bgColor: 'bg-emerald-50', hoverColor: 'hover:bg-emerald-100', iconColor: 'text-emerald-600' },
+              { icon: Scale, label: 'Módulo Fiscal', tab: 'modulo-fiscal', bgColor: 'bg-blue-50', hoverColor: 'hover:bg-blue-100', iconColor: 'text-blue-600' },
+              { icon: MessageCircle, label: 'Chat', tab: 'chat', bgColor: 'bg-purple-50', hoverColor: 'hover:bg-purple-100', iconColor: 'text-purple-600' },
+              { icon: Wallet, label: 'Saques', tab: 'withdrawals', bgColor: 'bg-amber-50', hoverColor: 'hover:bg-amber-100', iconColor: 'text-amber-600' },
             ].map((action) => (
               <Button
                 key={action.tab}
                 variant="outline"
                 onClick={() => setActiveTab(action.tab)}
-                className={`h-auto py-4 flex flex-col items-center gap-2 border-border/50 hover:border-${action.color}-500/50 hover:bg-${action.color}-500/5`}
+                className={`h-auto py-4 flex flex-col items-center gap-2 border-slate-200 ${action.bgColor} ${action.hoverColor}`}
               >
-                <action.icon className={`h-6 w-6 text-${action.color}-400`} />
-                <span className="text-xs">{action.label}</span>
+                <action.icon className={`h-6 w-6 ${action.iconColor}`} />
+                <span className="text-sm text-slate-700 font-medium">{action.label}</span>
               </Button>
             ))}
           </div>
@@ -1172,15 +1172,8 @@ export default function PartnerPanel() {
   );
 
   return (
-    <div className="min-h-screen bg-slate-950">
-      {/* Background effects */}
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px]" />
-        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px]" />
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.01)_1px,transparent_1px)] bg-[size:64px_64px]" />
-      </div>
-
-      {/* Sidebar */}
+    <div className="min-h-screen bg-slate-100">
+      {/* Sidebar - Fixed */}
       <div className="hidden lg:block flex-shrink-0">
         <PartnerSidebar 
           collapsed={collapsed} 
@@ -1193,8 +1186,8 @@ export default function PartnerPanel() {
       </div>
 
       {/* Main Content */}
-      <main className={`relative z-10 min-h-screen transition-all duration-300 overflow-x-hidden ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
-        <div className="p-6 lg:p-8">
+      <main className={`min-h-screen transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+        <div className="p-6 lg:p-8 max-w-7xl mx-auto">
           {/* Modern Header */}
           <ModernPartnerHeader
             partnerName={partner.trade_name || partner.company_name}
@@ -1237,9 +1230,9 @@ export default function PartnerPanel() {
 
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
-        <DialogContent className="max-w-4xl h-[80vh] p-0 bg-slate-900 border-slate-700">
-          <DialogHeader className="p-4 border-b border-slate-700">
-            <DialogTitle className="text-white">Chat - {selectedRequest?.full_name}</DialogTitle>
+        <DialogContent className="max-w-4xl h-[80vh] p-0 bg-white border-slate-200 shadow-2xl">
+          <DialogHeader className="p-4 border-b border-slate-200">
+            <DialogTitle className="text-slate-900">Chat - {selectedRequest?.full_name}</DialogTitle>
           </DialogHeader>
           {selectedRequest && user && (
             <div className="flex-1 overflow-hidden">

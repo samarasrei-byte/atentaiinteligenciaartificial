@@ -61,66 +61,62 @@ export function ModernPartnerNavigation({
       transition={{ delay: 0.1 }}
       className="mb-8"
     >
-      <div className="relative">
-        {/* Gradient border effect */}
-        <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/20 via-blue-500/20 to-purple-500/20 rounded-2xl blur-xl opacity-50" />
-        
-        <div className="relative bg-slate-900/80 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-2">
-          <div className="flex flex-wrap gap-1">
-            {navItems.map((item) => {
-              const isActive = activeTab === item.id;
-              const badgeCount = getBadgeCount(item.id);
-              
-              return (
-                <button
-                  key={item.id}
-                  onClick={() => onTabChange(item.id)}
-                  className={cn(
-                    "relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2",
-                    isActive
-                      ? "bg-white/10 text-white shadow-lg"
-                      : "text-slate-300 hover:text-white hover:bg-white/5"
-                  )}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeTab"
-                      className={cn(
-                        "absolute inset-0 rounded-xl",
-                        item.color === 'emerald' && "bg-emerald-500/20 border border-emerald-500/30",
-                        item.color === 'blue' && "bg-blue-500/20 border border-blue-500/30",
-                        item.color === 'purple' && "bg-purple-500/20 border border-purple-500/30",
-                        item.color === 'primary' && "bg-primary/20 border border-primary/30",
-                        !item.color && "bg-white/10"
-                      )}
-                      transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                    />
-                  )}
-                  <item.icon className={cn(
-                    "h-4 w-4 relative z-10",
-                    isActive && item.color === 'emerald' && "text-emerald-400",
-                    isActive && item.color === 'blue' && "text-blue-400",
-                    isActive && item.color === 'purple' && "text-purple-400",
-                    isActive && item.color === 'primary' && "text-primary",
-                    !isActive && "text-slate-400"
-                  )} />
-                  <span className="relative z-10 hidden sm:inline">{item.label}</span>
-                  {badgeCount > 0 && (
-                    <Badge 
-                      className={cn(
-                        "relative z-10 h-5 px-1.5 text-[10px]",
-                        item.color === 'emerald' && "bg-emerald-500 text-white",
-                        item.color === 'blue' && "bg-blue-500 text-white",
-                        !item.color && "bg-primary text-white"
-                      )}
-                    >
-                      {badgeCount}
-                    </Badge>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+      <div className="bg-white rounded-2xl border border-slate-200 shadow-lg p-2">
+        <div className="flex flex-wrap gap-1">
+          {navItems.map((item) => {
+            const isActive = activeTab === item.id;
+            const badgeCount = getBadgeCount(item.id);
+            
+            return (
+              <button
+                key={item.id}
+                onClick={() => onTabChange(item.id)}
+                className={cn(
+                  "relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2",
+                  isActive
+                    ? "bg-slate-100 text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                )}
+              >
+                {isActive && (
+                  <motion.div
+                    layoutId="activeTab"
+                    className={cn(
+                      "absolute inset-0 rounded-xl",
+                      item.color === 'emerald' && "bg-emerald-100 border border-emerald-200",
+                      item.color === 'blue' && "bg-blue-100 border border-blue-200",
+                      item.color === 'purple' && "bg-purple-100 border border-purple-200",
+                      item.color === 'primary' && "bg-primary/10 border border-primary/20",
+                      !item.color && "bg-slate-100"
+                    )}
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                  />
+                )}
+                <item.icon className={cn(
+                  "h-4 w-4 relative z-10",
+                  isActive && item.color === 'emerald' && "text-emerald-600",
+                  isActive && item.color === 'blue' && "text-blue-600",
+                  isActive && item.color === 'purple' && "text-purple-600",
+                  isActive && item.color === 'primary' && "text-primary",
+                  isActive && !item.color && "text-slate-900",
+                  !isActive && "text-slate-500"
+                )} />
+                <span className="relative z-10 hidden sm:inline">{item.label}</span>
+                {badgeCount > 0 && (
+                  <Badge 
+                    className={cn(
+                      "relative z-10 h-5 px-1.5 text-[10px] font-bold",
+                      item.color === 'emerald' && "bg-emerald-600 text-white",
+                      item.color === 'blue' && "bg-blue-600 text-white",
+                      !item.color && "bg-slate-700 text-white"
+                    )}
+                  >
+                    {badgeCount}
+                  </Badge>
+                )}
+              </button>
+            );
+          })}
         </div>
       </div>
     </motion.div>
