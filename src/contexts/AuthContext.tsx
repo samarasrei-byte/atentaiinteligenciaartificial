@@ -305,6 +305,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   // Check if user is a partner (has record in credit_repair_partner_users table)
+  // NOTE: User can have multiple partner records - we use .limit(1) instead of .maybeSingle()
+  // to avoid errors when multiple records exist
   const checkPartnerStatus = async (): Promise<boolean> => {
     if (!user?.id) return false;
     
@@ -313,18 +315,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .from('credit_repair_partner_users')
         .select('partner_id')
         .eq('user_id', user.id)
-        .maybeSingle();
+        .order('is_primary', { ascending: false }) // Primary partner first
+        .limit(1);
       
       if (error) {
         console.error('Error checking partner status:', error);
         return false;
       }
       
-      const isPartner = !!data;
+      // Data is an array - check if any records exist
+      const isPartner = Array.isArray(data) && data.length > 0;
+      const primaryPartnerId = isPartner ? data[0].partner_id : null;
+      
       setUserStatus(prev => ({ 
         ...prev, 
         isPartner, 
-        partnerId: data?.partner_id || null 
+        partnerId: primaryPartnerId 
       }));
       return isPartner;
     } catch (error) {
