@@ -25,7 +25,7 @@ import {
   Building2
 } from 'lucide-react';
 
-type AppRole = 'admin' | 'contador' | 'user' | 'autonomo';
+type AppRole = 'admin' | 'contador' | 'user' | 'autonomo' | 'affiliate';
 
 interface UserWithRoles {
   user_id: string;
@@ -53,6 +53,12 @@ const roleConfig: Record<AppRole, { label: string; color: string; icon: any; des
     color: 'bg-primary/10 text-primary border-primary/20',
     icon: User,
     description: 'Simulador e gestão financeira'
+  },
+  affiliate: {
+    label: 'Afiliado',
+    color: 'bg-emerald-500/10 text-emerald-500 border-emerald-500/20',
+    icon: Users,
+    description: 'Programa de afiliados e cupons'
   },
   user: {
     label: 'Empresa',
@@ -213,6 +219,7 @@ const RoleManagement = () => {
     admins: users.filter(u => u.roles.includes('admin')).length,
     contadores: users.filter(u => u.roles.includes('contador')).length,
     autonomos: users.filter(u => u.roles.includes('autonomo')).length,
+    affiliates: users.filter(u => u.roles.includes('affiliate')).length,
   };
 
   if (authLoading || isLoading) {
@@ -257,7 +264,7 @@ const RoleManagement = () => {
 
         <div className="p-4 lg:p-6 space-y-6">
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <Card className="bg-card border-border">
               <CardContent className="p-4">
                 <div className="flex items-center gap-3">
@@ -310,10 +317,23 @@ const RoleManagement = () => {
                 </div>
               </CardContent>
             </Card>
+            <Card className="bg-card border-border">
+              <CardContent className="p-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-emerald-500/10">
+                    <Users className="h-5 w-5 text-emerald-500" />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold">{stats.affiliates}</p>
+                    <p className="text-xs text-muted-foreground">Afiliados</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
           {/* Role Legend */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
             {(Object.entries(roleConfig) as [AppRole, typeof roleConfig.admin][]).map(([role, config]) => {
               const Icon = config.icon;
               return (
@@ -419,7 +439,7 @@ const RoleManagement = () => {
                           })}
 
                           {/* Add Role Buttons */}
-                          {(['admin', 'contador', 'autonomo', 'user'] as AppRole[])
+                          {(['admin', 'contador', 'autonomo', 'affiliate', 'user'] as AppRole[])
                             .filter((role) => !userItem.roles.includes(role))
                             .map((role) => {
                               const config = roleConfig[role];
