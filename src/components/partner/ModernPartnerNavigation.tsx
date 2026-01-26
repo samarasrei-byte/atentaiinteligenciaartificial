@@ -79,7 +79,7 @@ export function ModernPartnerNavigation({
                     "relative px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 flex items-center gap-2",
                     isActive
                       ? "bg-white/10 text-white shadow-lg"
-                      : "text-slate-400 hover:text-white hover:bg-white/5"
+                      : "text-slate-300 hover:text-white hover:bg-white/5"
                   )}
                 >
                   {isActive && (
@@ -101,7 +101,8 @@ export function ModernPartnerNavigation({
                     isActive && item.color === 'emerald' && "text-emerald-400",
                     isActive && item.color === 'blue' && "text-blue-400",
                     isActive && item.color === 'purple' && "text-purple-400",
-                    isActive && item.color === 'primary' && "text-primary"
+                    isActive && item.color === 'primary' && "text-primary",
+                    !isActive && "text-slate-400"
                   )} />
                   <span className="relative z-10 hidden sm:inline">{item.label}</span>
                   {badgeCount > 0 && (
