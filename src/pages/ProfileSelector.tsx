@@ -34,6 +34,8 @@ const ProfileSelector = () => {
   const [availableProfiles, setAvailableProfiles] = useState<ProfileOption[]>([]);
 
   useEffect(() => {
+    let mounted = true;
+    
     const loadProfiles = async () => {
       if (loading) return;
       
@@ -45,10 +47,20 @@ const ProfileSelector = () => {
       setIsLoading(true);
 
       try {
+        // Run status checks with timeout to prevent hanging
+        const checkWithTimeout = async <T,>(promise: Promise<T>, fallback: T, timeout = 5000): Promise<T> => {
+          return Promise.race([
+            promise,
+            new Promise<T>((resolve) => setTimeout(() => resolve(fallback), timeout))
+          ]);
+        };
+
         const [isAffiliate, isPartner] = await Promise.all([
-          checkAffiliateStatus(),
-          checkPartnerStatus()
+          checkWithTimeout(checkAffiliateStatus(), false),
+          checkWithTimeout(checkPartnerStatus(), false)
         ]);
+
+        if (!mounted) return;
 
         const profiles: ProfileOption[] = [];
 
@@ -124,6 +136,7 @@ const ProfileSelector = () => {
           available: true
         });
 
+        if (!mounted) return;
         setAvailableProfiles(profiles);
 
         // If only one profile, redirect directly
@@ -142,12 +155,18 @@ const ProfileSelector = () => {
       } catch (error) {
         console.error('Error loading profiles:', error);
       } finally {
-        setIsLoading(false);
+        if (mounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     loadProfiles();
-  }, [user, loading, hasRole, navigate, checkAffiliateStatus, checkPartnerStatus]);
+    
+    return () => {
+      mounted = false;
+    };
+  }, [user, loading, hasRole, navigate]);
 
   const handleSelectProfile = async (profile: ProfileOption) => {
     await logAuditEvent({

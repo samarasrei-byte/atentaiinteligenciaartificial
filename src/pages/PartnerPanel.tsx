@@ -32,6 +32,9 @@ import { ModernPartnerChatDemo } from '@/components/limpa-nome/ModernPartnerChat
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { PartnerWithdrawalSystem } from '@/components/partner/PartnerWithdrawalSystem';
 import { PartnerStripeConnectSetup } from '@/components/partner/PartnerStripeConnectSetup';
+import { ModernPartnerHeader } from '@/components/partner/ModernPartnerHeader';
+import { ModernPartnerStats } from '@/components/partner/ModernPartnerStats';
+import { ModernPartnerNavigation } from '@/components/partner/ModernPartnerNavigation';
 
 interface Partner {
   id: string;
@@ -373,10 +376,13 @@ export default function PartnerPanel() {
 
   if (authLoading || isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
         <div className="text-center space-y-4">
-          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground text-sm">Carregando painel...</p>
+          <div className="relative">
+            <div className="absolute inset-0 rounded-full bg-emerald-500/20 blur-xl animate-pulse" />
+            <Loader2 className="h-12 w-12 animate-spin text-emerald-400 relative" />
+          </div>
+          <p className="text-slate-400 text-sm">Carregando painel do parceiro...</p>
         </div>
       </div>
     );
@@ -384,12 +390,16 @@ export default function PartnerPanel() {
 
   if (!partner) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-background">
-        <Card className="p-8 text-center max-w-md">
-          <Building className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
-          <h2 className="text-xl font-semibold mb-2">Acesso Restrito</h2>
-          <p className="text-muted-foreground mb-6">Você não está vinculado a uma empresa parceira.</p>
-          <Button onClick={() => navigate('/dashboard')}>Voltar ao Dashboard</Button>
+      <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
+        <Card className="bg-slate-900/80 border-slate-700/50 p-8 text-center max-w-md backdrop-blur-xl">
+          <div className="h-20 w-20 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto mb-6">
+            <Building className="h-10 w-10 text-slate-500" />
+          </div>
+          <h2 className="text-xl font-bold text-white mb-2">Acesso Restrito</h2>
+          <p className="text-slate-400 mb-6">Você não está vinculado a uma empresa parceira.</p>
+          <Button onClick={() => navigate('/dashboard')} className="bg-emerald-600 hover:bg-emerald-700">
+            Voltar ao Dashboard
+          </Button>
         </Card>
       </div>
     );
@@ -1167,7 +1177,14 @@ export default function PartnerPanel() {
   );
 
   return (
-    <div className="dashboard-layout">
+    <div className="min-h-screen bg-slate-950">
+      {/* Background effects */}
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/5 rounded-full blur-[150px]" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-blue-500/5 rounded-full blur-[120px]" />
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.01)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.01)_1px,transparent_1px)] bg-[size:64px_64px]" />
+      </div>
+
       {/* Sidebar */}
       <div className="hidden lg:block flex-shrink-0">
         <PartnerSidebar 
@@ -1181,42 +1198,26 @@ export default function PartnerPanel() {
       </div>
 
       {/* Main Content */}
-      <main className={`dashboard-main transition-all duration-300 overflow-x-hidden ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
-        {/* Header */}
-        <header className="dashboard-header">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/20 to-emerald-500/20 flex items-center justify-center">
-                <Building className="h-5 w-5 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-lg font-semibold text-foreground">{partner.trade_name || partner.company_name}</h1>
-                <p className="text-xs text-muted-foreground">Painel do Parceiro</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-3">
-              {showNewRequestBadge && newRequestsCount > 0 && (
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={handleClearNewRequests}
-                  className="relative border-primary/30 bg-primary/5 text-primary hover:bg-primary/10"
-                >
-                  <BellRing className="h-4 w-4 mr-2" />
-                  {newRequestsCount} nova{newRequestsCount > 1 ? 's' : ''}
-                </Button>
-              )}
-              <Badge className="bg-emerald-500/10 text-emerald-400 border-emerald-500/20">
-                <CheckCircle className="h-3 w-3 mr-1" />Ativo
-              </Badge>
-              <Button variant="ghost" size="icon" onClick={fetchPartnerData}>
-                <RefreshCw className="h-4 w-4" />
-              </Button>
-            </div>
-          </div>
-        </header>
+      <main className={`relative z-10 min-h-screen transition-all duration-300 overflow-x-hidden ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+        <div className="p-6 lg:p-8">
+          {/* Modern Header */}
+          <ModernPartnerHeader
+            partnerName={partner.trade_name || partner.company_name}
+            isActive={partner.is_active}
+            newRequestsCount={showNewRequestBadge ? newRequestsCount : 0}
+            onRefresh={fetchPartnerData}
+            onClearNotifications={handleClearNewRequests}
+          />
 
-        <div className="dashboard-content">
+          {/* Modern Navigation */}
+          <ModernPartnerNavigation
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            requestsCount={requests.length}
+            fiscalCount={fiscalRequests.length}
+          />
+
+          {/* Content */}
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
@@ -1225,7 +1226,15 @@ export default function PartnerPanel() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {renderContent()}
+              {activeTab === 'overview' ? (
+                <ModernPartnerStats
+                  stats={displayStats}
+                  commissionPercent={partner.commission_percent}
+                  formatCurrency={formatCurrency}
+                />
+              ) : (
+                renderContent()
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -1233,9 +1242,9 @@ export default function PartnerPanel() {
 
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
-        <DialogContent className="max-w-4xl h-[80vh] p-0 bg-background border-border">
-          <DialogHeader className="p-4 border-b border-border">
-            <DialogTitle>Chat - {selectedRequest?.full_name}</DialogTitle>
+        <DialogContent className="max-w-4xl h-[80vh] p-0 bg-slate-900 border-slate-700">
+          <DialogHeader className="p-4 border-b border-slate-700">
+            <DialogTitle className="text-white">Chat - {selectedRequest?.full_name}</DialogTitle>
           </DialogHeader>
           {selectedRequest && user && (
             <div className="flex-1 overflow-hidden">
