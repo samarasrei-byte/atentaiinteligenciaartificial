@@ -22,7 +22,7 @@ import AutonomoPanel from "./pages/AutonomoPanel";
 import ContadorPanel from "./pages/ContadorPanel";
 import AdminPanel from "./pages/AdminPanel";
 import AdminReports from "./pages/AdminReports";
-import AdminLogin from "./pages/AdminLogin";
+import AdminLoginNew from "./pages/AdminLoginNew";
 import Profile from "./pages/Profile";
 import Simulator from "./pages/Simulator";
 import TransitionSimulator from "./pages/TransitionSimulator";
@@ -74,7 +74,7 @@ import AffiliateLimpaNomeLanding from "./pages/AffiliateLimpaNomeLanding";
 import AffiliateOnboarding from "./pages/AffiliateOnboarding";
 import AffiliateOnboardingFlow from "./pages/AffiliateOnboardingFlow";
 import AffiliateOfferPage from "./pages/AffiliateOfferPage";
-import PartnerLogin from "./pages/PartnerLogin";
+import PartnerLoginNew from "./pages/PartnerLoginNew";
 import PartnerPanel from "./pages/PartnerPanel";
 import PartnerInvite from "./pages/PartnerInvite";
 import PublicOnboarding from "./pages/PublicOnboarding";
@@ -145,8 +145,8 @@ const App = () => (
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
               <Route path="/parceiro/onboarding" element={<PartnerOnboarding />} />
-              <Route path="/admin/login" element={<AdminLogin />} />
-              <Route path="/parceiro/login" element={<PartnerLogin />} />
+              <Route path="/admin/login" element={<AdminLoginNew />} />
+              <Route path="/parceiro/login" element={<PartnerLoginNew />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
               {/* Affiliate routes */}
