@@ -349,11 +349,11 @@ const Auth = () => {
         {/* Single subtle gradient */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[400px] bg-gradient-to-b from-primary/10 to-transparent rounded-full blur-[100px]" />
         
-        {/* Minimal grid pattern */}
-        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,.02)_1px,transparent_1px)] bg-[size:60px_60px]" />
+        {/* Grid pattern - more visible */}
+        <div className="absolute inset-0 bg-[linear-gradient(rgba(45,212,191,.03)_1px,transparent_1px),linear-gradient(90deg,rgba(45,212,191,.03)_1px,transparent_1px)] bg-[size:50px_50px]" />
       </div>
 
-      {/* Back Button - More prominent */}
+      {/* Back Button */}
       <div className="absolute top-6 left-6 z-20">
         <Button
           variant="ghost"
@@ -366,24 +366,21 @@ const Auth = () => {
         </Button>
       </div>
 
-      {/* Main Content - Centered and Clean */}
+      {/* Main Content - Centered */}
       <div className="relative z-10 min-h-screen flex items-center justify-center p-4 md:p-8">
-        <div className="w-full max-w-[420px]">
-          {/* Logo & Title - Simplified */}
+        <div className="w-full max-w-[460px]">
+          {/* Logo & Title */}
           <div className="text-center mb-8">
-            {/* Logo with strong contrast */}
             <div className="mb-6">
               <img 
                 src="/logo-atentai.png" 
                 alt="AtentAI" 
-                className="h-12 w-auto mx-auto drop-shadow-[0_0_20px_rgba(45,212,191,0.5)]"
+                className="h-10 w-auto mx-auto drop-shadow-[0_0_20px_rgba(45,212,191,0.4)]"
               />
             </div>
             
             <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
-              {mode === 'login' 
-                ? 'Acesse seu painel' 
-                : 'Crie sua conta'}
+              {mode === 'login' ? 'Acesse seu painel' : 'Crie sua conta'}
             </h1>
             
             <p className="text-slate-400 text-sm">
@@ -397,46 +394,45 @@ const Auth = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.4 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
             className="relative"
           >
-            {/* Glassmorphism Card with enhanced styling */}
-            <div className="relative rounded-2xl bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 shadow-2xl shadow-black/40 p-8">
+            {/* Glassmorphism Card */}
+            <div className="relative rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 shadow-2xl shadow-black/50 p-6 md:p-8">
               {/* Subtle gradient overlay */}
-              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-slate-800/20 to-transparent pointer-events-none" />
+              <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-slate-800/30 to-transparent pointer-events-none" />
               
               <div className="relative z-10">
-                {/* Mode Toggle - Clear differentiation */}
-                <div className="flex rounded-xl bg-slate-800/60 p-1 mb-8 border border-slate-700/50">
+                {/* Mode Toggle */}
+                <div className="flex rounded-xl bg-slate-800/80 p-1.5 mb-6 border border-slate-700/50">
                   <button
                     type="button"
                     onClick={() => setMode('login')}
                     className={cn(
-                      "flex-1 py-3.5 text-sm font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2",
+                      "flex-1 py-3 text-sm font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
                       mode === 'login' 
-                        ? "bg-primary text-slate-900 shadow-lg shadow-primary/25" 
+                        ? "bg-primary text-slate-900 shadow-lg shadow-primary/30" 
                         : "text-slate-400 hover:text-white"
                     )}
                   >
                     <span>Entrar</span>
-                    {mode === 'login' && <span className="text-xs opacity-75">(já tenho conta)</span>}
+                    {mode === 'login' && <span className="text-xs opacity-80">(já tenho conta)</span>}
                   </button>
                   <button
                     type="button"
                     onClick={() => setMode('signup')}
                     className={cn(
-                      "flex-1 py-3.5 text-sm font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-2",
+                      "flex-1 py-3 text-sm font-semibold rounded-lg transition-all duration-300 flex items-center justify-center gap-1.5",
                       mode === 'signup' 
-                        ? "bg-primary text-slate-900 shadow-lg shadow-primary/25" 
+                        ? "bg-primary text-slate-900 shadow-lg shadow-primary/30" 
                         : "text-slate-400 hover:text-white"
                     )}
                   >
                     <span>Cadastrar</span>
-                    {mode === 'signup' && <span className="text-xs opacity-75">(primeiro acesso)</span>}
                   </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-4">
                   <AnimatePresence mode="wait">
                     {/* User Type Selection (only for signup) */}
                     {mode === 'signup' && (
@@ -444,7 +440,7 @@ const Auth = () => {
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="space-y-3"
+                        className="space-y-2"
                       >
                         <Label className="text-sm font-medium text-slate-300">Eu sou</Label>
                         <div className="grid grid-cols-3 gap-2">
@@ -457,19 +453,19 @@ const Auth = () => {
                                 type="button"
                                 onClick={() => setUserType(type.type)}
                                 className={cn(
-                                  "flex flex-col items-center gap-2 p-4 rounded-xl border-2 transition-all duration-300",
+                                  "flex flex-col items-center gap-2 p-3 rounded-xl border-2 transition-all duration-300",
                                   isSelected
                                     ? `border-primary bg-primary/10 text-white`
                                     : "border-slate-700/50 bg-slate-800/30 text-slate-400 hover:border-slate-600 hover:text-white"
                                 )}
                               >
                                 <div className={cn(
-                                  "w-10 h-10 rounded-lg flex items-center justify-center transition-all",
+                                  "w-9 h-9 rounded-lg flex items-center justify-center transition-all",
                                   isSelected 
                                     ? `bg-gradient-to-br ${type.gradient}` 
                                     : "bg-slate-700/50"
                                 )}>
-                                  <Icon className="h-5 w-5 text-white" />
+                                  <Icon className="h-4 w-4 text-white" />
                                 </div>
                                 <span className="text-xs font-medium">{type.label}</span>
                               </button>
@@ -505,10 +501,7 @@ const Auth = () => {
                           )}
                         </div>
                         {errors.name && (
-                          <p className="text-sm text-red-400 flex items-center gap-1">
-                            <span className="inline-block w-1 h-1 bg-red-400 rounded-full" />
-                            {errors.name}
-                          </p>
+                          <p className="text-sm text-red-400">{errors.name}</p>
                         )}
                       </motion.div>
                     )}
@@ -534,37 +527,9 @@ const Auth = () => {
                       )}
                     </div>
                     {errors.email && (
-                      <p className="text-sm text-red-400 flex items-center gap-1">
-                        <span className="inline-block w-1 h-1 bg-red-400 rounded-full" />
-                        {errors.email}
-                      </p>
+                      <p className="text-sm text-red-400">{errors.email}</p>
                     )}
                   </div>
-
-                  {/* WhatsApp field (only for signup) */}
-                  <AnimatePresence>
-                    {mode === 'signup' && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="space-y-2"
-                      >
-                        <Label htmlFor="phone" className="text-sm font-medium text-slate-300">WhatsApp</Label>
-                        <div className="relative">
-                          <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-500" />
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="(11) 99999-9999"
-                            value={phone}
-                            onChange={(e) => setPhone(e.target.value)}
-                            className="pl-12 h-14 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 rounded-xl focus:border-primary focus:ring-primary/20"
-                          />
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
 
                   {/* Password field */}
                   <div className="space-y-2">
@@ -590,10 +555,7 @@ const Auth = () => {
                       </button>
                     </div>
                     {errors.password && (
-                      <p className="text-sm text-red-400 flex items-center gap-1">
-                        <span className="inline-block w-1 h-1 bg-red-400 rounded-full" />
-                        {errors.password}
-                      </p>
+                      <p className="text-sm text-red-400">{errors.password}</p>
                     )}
                   </div>
 
@@ -639,7 +601,7 @@ const Auth = () => {
                 </form>
 
                 {/* Switch mode link */}
-                <div className="mt-8 pt-6 border-t border-slate-800 text-center">
+                <div className="mt-6 pt-5 border-t border-slate-700/50 text-center">
                   <p className="text-sm text-slate-500">
                     {mode === 'login' ? 'Ainda não tem conta?' : 'Já tem uma conta?'}
                     <button
@@ -659,16 +621,14 @@ const Auth = () => {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-8 space-y-4"
+            transition={{ delay: 0.4 }}
+            className="mt-6 space-y-3"
           >
-            {/* Primary security badge */}
             <div className="flex items-center justify-center gap-2 text-slate-400">
               <Shield className="h-4 w-4 text-emerald-500" />
               <span className="text-xs">Conexão criptografada SSL 256-bit</span>
             </div>
             
-            {/* Social proof badges */}
             <div className="flex items-center justify-center gap-6 text-slate-500">
               <div className="flex items-center gap-1.5">
                 <Users className="h-3.5 w-3.5" />
@@ -698,7 +658,7 @@ const Auth = () => {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-800 shadow-2xl p-8"
+              className="w-full max-w-md rounded-2xl bg-slate-900 border border-slate-700 shadow-2xl p-8"
             >
               <div className="flex items-center gap-3 mb-6">
                 <Button
@@ -711,9 +671,7 @@ const Auth = () => {
                 </Button>
                 <div>
                   <h2 className="font-semibold text-white text-lg">Recuperar Senha</h2>
-                  <p className="text-sm text-slate-400">
-                    Enviaremos um link de recuperação
-                  </p>
+                  <p className="text-sm text-slate-400">Enviaremos um link de recuperação</p>
                 </div>
               </div>
               
