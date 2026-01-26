@@ -129,15 +129,10 @@ export default function PartnerOnboarding() {
     setIsSubmitting(true);
     
     try {
-      // Buscar parceiro ativo para atribuir
-      const { data: activePartner } = await supabase
-        .from('credit_repair_partners')
-        .select('id')
-        .eq('is_active', true)
-        .limit(1)
-        .single();
-
-      const partnerId = activePartner?.id || null;
+      // GUILHERME BARROS - Parceiro único centralizado para todos os serviços
+      const GUILHERME_PARTNER_ID = 'df40dfff-62bd-4b66-88bd-c811cd90d78d';
+      
+      const partnerId = GUILHERME_PARTNER_ID;
       const userId = user?.id || null;
 
       if (isLimpaNome) {
