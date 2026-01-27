@@ -120,11 +120,12 @@ const adminItems: SidebarItem[] = [
 
 const contadorItems: SidebarItem[] = [
   { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-  { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening', badge: 'NEW', badgeColor: 'text-emerald-400' },
-  { icon: ScrollText, label: 'Certidões', tabId: 'certificates', badge: 'NEW', badgeColor: 'text-primary' },
-  { icon: FileText, label: 'Imposto de Renda', tabId: 'ir', badge: 'NEW', badgeColor: 'text-amber-400' },
-  { icon: MessagesSquare, label: 'Chat', tabId: 'chat' },
-  { icon: Scale, label: 'Atualizações', tabId: 'updates' },
+  { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome', badge: 'LIVE', badgeColor: 'text-emerald-400' },
+  { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal', badge: 'LIVE', badgeColor: 'text-violet-400' },
+  { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening', badge: 'NEW', badgeColor: 'text-amber-400' },
+  { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
+  { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
+  { icon: MessagesSquare, label: 'Chat Clientes', tabId: 'chat' },
   { icon: BarChart3, label: 'Stats', tabId: 'stats' },
   { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
   { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
