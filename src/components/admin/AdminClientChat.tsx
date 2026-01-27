@@ -76,31 +76,29 @@ const documentTypes = [
   { id: 'outro', label: 'Outro Documento', icon: Paperclip },
 ];
 
-// Service color schemes - Futuristic and modern
+// Service color schemes - WhatsApp-style clean and minimal
 const serviceThemes = {
   'limpa-nome': {
-    primary: 'from-emerald-500 to-teal-500',
-    accent: 'text-emerald-400',
-    bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/30',
-    ring: 'ring-emerald-500/40',
-    badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    avatarBg: 'bg-gradient-to-br from-emerald-500 to-teal-500',
-    messageBg: 'bg-gradient-to-r from-emerald-500 to-teal-500',
-    glow: 'shadow-lg shadow-emerald-500/25',
-    headerBg: 'bg-gradient-to-r from-emerald-600/20 to-teal-600/10',
+    primary: 'bg-emerald-500',
+    accent: 'text-emerald-600',
+    accentLight: 'text-emerald-500',
+    bg: 'bg-emerald-50',
+    border: 'border-emerald-200',
+    badge: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    avatarBg: 'bg-emerald-500',
+    messageBg: 'bg-emerald-500',
+    dot: 'bg-emerald-500',
   },
   'fiscal': {
-    primary: 'from-violet-500 to-purple-500',
-    accent: 'text-violet-400',
-    bg: 'bg-violet-500/10',
-    border: 'border-violet-500/30',
-    ring: 'ring-violet-500/40',
-    badge: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
-    avatarBg: 'bg-gradient-to-br from-violet-500 to-purple-500',
-    messageBg: 'bg-gradient-to-r from-violet-500 to-purple-500',
-    glow: 'shadow-lg shadow-violet-500/25',
-    headerBg: 'bg-gradient-to-r from-violet-600/20 to-purple-600/10',
+    primary: 'bg-violet-500',
+    accent: 'text-violet-600',
+    accentLight: 'text-violet-500',
+    bg: 'bg-violet-50',
+    border: 'border-violet-200',
+    badge: 'bg-violet-100 text-violet-700 border-violet-200',
+    avatarBg: 'bg-violet-500',
+    messageBg: 'bg-violet-500',
+    dot: 'bg-violet-500',
   }
 };
 
@@ -365,13 +363,12 @@ Guilherme`;
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[600px]">
+      <div className="flex items-center justify-center h-[600px] bg-white">
         <div className="flex flex-col items-center gap-4">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
-            <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-primary" />
+            <div className="w-12 h-12 rounded-full border-3 border-gray-200 border-t-emerald-500 animate-spin" />
           </div>
-          <p className="text-muted-foreground">Carregando atendimentos...</p>
+          <p className="text-gray-500 text-sm">Carregando atendimentos...</p>
         </div>
       </div>
     );
@@ -379,89 +376,89 @@ Guilherme`;
 
   return (
     <div className="h-[calc(100vh-180px)] min-h-[600px] flex flex-col">
-      {/* Header - Clean and minimal */}
+      {/* Header - Clean WhatsApp style */}
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary/60 shadow-lg shadow-primary/20">
-            <MessageCircle className="h-6 w-6 text-primary-foreground" />
+          <div className="p-2.5 rounded-full bg-emerald-500">
+            <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-xl font-bold text-foreground">Central de Atendimento</h2>
-            <p className="text-sm text-muted-foreground">{clients.length} clientes ativos</p>
+            <h2 className="text-lg font-semibold text-gray-900">Central de Atendimento</h2>
+            <p className="text-sm text-gray-500">{clients.length} clientes ativos</p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 border-border/50 hover:border-primary/50">
+        <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 text-gray-600 border-gray-200 hover:bg-gray-50">
           <RefreshCw className="h-4 w-4" />
           Atualizar
         </Button>
       </div>
 
-      {/* Main Container - Modern glassmorphism */}
-      <div className="flex-1 flex gap-0 min-h-0 overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-card/80 to-muted/30 backdrop-blur-xl shadow-2xl">
+      {/* Main Container - WhatsApp-style clean white */}
+      <div className="flex-1 flex gap-0 min-h-0 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
         
-        {/* Client List Panel - Dark theme */}
-        <div className="w-80 shrink-0 flex flex-col bg-slate-900/95 border-r border-white/5">
+        {/* Client List Panel - White background */}
+        <div className="w-80 shrink-0 flex flex-col bg-white border-r border-gray-200">
           {/* Search & Filters */}
-          <div className="p-4 shrink-0 space-y-3 border-b border-white/10">
+          <div className="p-3 shrink-0 space-y-3 border-b border-gray-100 bg-gray-50">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
               <Input 
                 placeholder="Buscar cliente..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-primary/50"
+                className="pl-9 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500/20"
               />
             </div>
             
-            {/* Service Tabs - Modern pills */}
-            <div className="flex gap-1 p-1 rounded-xl bg-slate-800/50">
+            {/* Service Tabs - Clean pills */}
+            <div className="flex gap-1 p-1 rounded-lg bg-gray-100">
               <button
                 onClick={() => setActiveServiceTab('all')}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'all' 
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
-                    : "text-slate-400 hover:text-white hover:bg-slate-700/50"
+                    ? "bg-white text-gray-900 shadow-sm" 
+                    : "text-gray-500 hover:text-gray-700"
                 )}
               >
                 <Users className="h-3.5 w-3.5" />
                 Todos
-                <span className="ml-0.5 opacity-70">{clients.length}</span>
+                <span className="text-gray-400">{clients.length}</span>
               </button>
               <button
                 onClick={() => setActiveServiceTab('limpa-nome')}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'limpa-nome' 
-                    ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30" 
-                    : "text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10"
+                    ? "bg-emerald-500 text-white shadow-sm" 
+                    : "text-gray-500 hover:text-emerald-600"
                 )}
               >
                 <Shield className="h-3.5 w-3.5" />
-                <span className="opacity-70">{limpaNomeCount}</span>
+                <span>{limpaNomeCount}</span>
               </button>
               <button
                 onClick={() => setActiveServiceTab('fiscal')}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'fiscal' 
-                    ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg shadow-violet-500/30" 
-                    : "text-slate-400 hover:text-violet-400 hover:bg-violet-500/10"
+                    ? "bg-violet-500 text-white shadow-sm" 
+                    : "text-gray-500 hover:text-violet-600"
                 )}
               >
                 <Scale className="h-3.5 w-3.5" />
-                <span className="opacity-70">{fiscalCount}</span>
+                <span>{fiscalCount}</span>
               </button>
             </div>
           </div>
 
           {/* Scrollable Client List */}
-          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-            <div className="p-2 space-y-1">
+          <div className="flex-1 overflow-y-auto">
+            <div className="divide-y divide-gray-100">
               {filteredClients.length === 0 ? (
                 <div className="text-center py-12">
-                  <Users className="h-10 w-10 mx-auto mb-3 text-slate-600" />
-                  <p className="text-sm text-slate-500">Nenhum cliente encontrado</p>
+                  <Users className="h-10 w-10 mx-auto mb-3 text-gray-300" />
+                  <p className="text-sm text-gray-500">Nenhum cliente encontrado</p>
                 </div>
               ) : (
                 filteredClients.map((client) => {
@@ -473,22 +470,21 @@ Guilherme`;
                       key={client.id}
                       onClick={() => setSelectedClient(client)}
                       className={cn(
-                        "w-full p-3 rounded-xl text-left transition-all group",
+                        "w-full px-3 py-3 text-left transition-all",
                         isSelected
-                          ? `bg-gradient-to-r ${clientTheme.primary} shadow-lg ${clientTheme.glow}`
-                          : "hover:bg-slate-800/60 border border-transparent hover:border-slate-700/50"
+                          ? "bg-emerald-50"
+                          : "hover:bg-gray-50"
                       )}
-                      whileTap={{ scale: 0.98 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       <div className="flex items-center gap-3">
                         <div className={cn(
-                          "relative w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm shrink-0",
-                          isSelected ? "bg-white/20 text-white" : `${clientTheme.avatarBg} text-white`
+                          "relative w-11 h-11 rounded-full flex items-center justify-center font-medium text-sm shrink-0 text-white",
+                          clientTheme.avatarBg
                         )}>
                           {getInitials(client.full_name)}
                           <div className={cn(
-                            "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2",
-                            isSelected ? "border-white/30" : "border-slate-900",
+                            "absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full border-2 border-white",
                             client.status === 'completed' ? 'bg-green-500' :
                             client.status === 'pending' ? 'bg-amber-500' : 'bg-blue-500'
                           )} />
@@ -496,33 +492,25 @@ Guilherme`;
                         
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <span className={cn(
-                              "font-medium truncate text-sm",
-                              isSelected ? "text-white" : "text-slate-200 group-hover:text-white"
-                            )}>
+                            <span className="font-medium truncate text-sm text-gray-900">
                               {client.full_name}
                             </span>
-                            <ChevronRight className={cn(
-                              "h-4 w-4 shrink-0 transition-transform",
-                              isSelected ? "text-white/70" : "text-slate-600 opacity-0 group-hover:opacity-100",
-                              isSelected && "translate-x-0.5"
-                            )} />
+                            <span className="text-[11px] text-gray-400 shrink-0">
+                              {formatDistanceToNow(new Date(client.created_at), { addSuffix: false, locale: ptBR })}
+                            </span>
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             {client.service_type === 'limpa-nome' ? (
-                              <Shield className={cn("h-3 w-3", isSelected ? "text-white/70" : "text-emerald-500")} />
+                              <>
+                                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                <span className="text-xs text-gray-500">Limpa Nome</span>
+                              </>
                             ) : (
-                              <Scale className={cn("h-3 w-3", isSelected ? "text-white/70" : "text-violet-500")} />
+                              <>
+                                <div className="w-2 h-2 rounded-full bg-violet-500" />
+                                <span className="text-xs text-gray-500">Fiscal</span>
+                              </>
                             )}
-                            <span className={cn("text-xs truncate", isSelected ? "text-white/70" : "text-slate-400")}>
-                              {client.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-1 mt-1">
-                            <Clock className={cn("h-3 w-3", isSelected ? "text-white/50" : "text-slate-500")} />
-                            <span className={cn("text-[10px]", isSelected ? "text-white/50" : "text-slate-500")}>
-                              {formatDistanceToNow(new Date(client.created_at), { addSuffix: true, locale: ptBR })}
-                            </span>
                           </div>
                         </div>
                       </div>
@@ -534,54 +522,38 @@ Guilherme`;
           </div>
         </div>
 
-        {/* Chat Panel - Fixed Layout with colored border */}
-        <div className="flex-1 flex flex-col min-w-0 bg-slate-950/40">
+        {/* Chat Panel - WhatsApp style */}
+        <div className="flex-1 flex flex-col min-w-0 bg-gray-100">
           {selectedClient && theme ? (
             <>
-              {/* Fixed Chat Header with gradient border */}
+              {/* Fixed Chat Header - Clean style */}
               <div className={cn(
-                "shrink-0 p-4 border-b-2",
-                theme.headerBg,
+                "shrink-0 px-4 py-3 border-b",
                 selectedClient.service_type === 'limpa-nome' 
-                  ? "border-emerald-500/50" 
-                  : "border-violet-500/50"
+                  ? "bg-emerald-500 border-emerald-600" 
+                  : "bg-violet-500 border-violet-600"
               )}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={cn(
-                      "w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold",
-                      theme.avatarBg,
-                      theme.glow
-                    )}>
+                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-white/20">
                       {getInitials(selectedClient.full_name)}
                     </div>
                     <div>
                       <h3 className="font-semibold text-white">{selectedClient.full_name}</h3>
                       <div className="flex items-center gap-2 text-sm">
-                        {selectedClient.service_type === 'limpa-nome' ? (
-                          <Badge className="gap-1 text-[10px] bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
-                            <Shield className="h-3 w-3" />
-                            Limpa Nome
-                          </Badge>
-                        ) : (
-                          <Badge className="gap-1 text-[10px] bg-violet-500/20 text-violet-300 border-violet-500/30">
-                            <Scale className="h-3 w-3" />
-                            Módulo Fiscal
-                          </Badge>
-                        )}
-                        <span className="text-slate-400 text-xs">{selectedClient.email}</span>
+                        <span className="text-white/80 text-xs">{selectedClient.email}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs text-slate-300 border-slate-600">
+                    <Badge className="text-xs bg-white/20 text-white border-0">
                       {getStatusLabel(selectedClient.status)}
                     </Badge>
                     <Button 
-                      variant="outline" 
+                      variant="ghost" 
                       size="sm"
                       onClick={() => setShowDocumentRequest(!showDocumentRequest)}
-                      className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white"
+                      className="gap-2 text-white hover:bg-white/10"
                     >
                       <FileCheck className="h-4 w-4" />
                       <span className="hidden sm:inline">Solicitar Doc</span>
@@ -597,12 +569,12 @@ Guilherme`;
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="shrink-0 overflow-hidden border-b border-slate-700/50 bg-slate-900/50"
+                    className="shrink-0 overflow-hidden border-b border-gray-200 bg-white"
                   >
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-sm text-white">Selecione o tipo de documento:</h4>
-                        <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-white" onClick={() => setShowDocumentRequest(false)}>
+                        <h4 className="font-medium text-sm text-gray-700">Selecione o tipo de documento:</h4>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-gray-400 hover:text-gray-600" onClick={() => setShowDocumentRequest(false)}>
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
@@ -612,7 +584,7 @@ Guilherme`;
                             key={doc.id}
                             variant="outline"
                             size="sm"
-                            className="justify-start gap-2 h-auto py-2 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600"
+                            className="justify-start gap-2 h-auto py-2 border-gray-200 text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                             onClick={() => handleDocumentRequest(doc.id, doc.label)}
                           >
                             <doc.icon className={cn("h-4 w-4", theme.accent)} />
@@ -625,28 +597,22 @@ Guilherme`;
                 )}
               </AnimatePresence>
 
-              {/* Scrollable Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
-                <div className="space-y-4 max-w-3xl mx-auto">
+              {/* Scrollable Messages Area - WhatsApp wallpaper style */}
+              <div className="flex-1 overflow-y-auto p-4" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%239C92AC" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")' }}>
+                <div className="space-y-3 max-w-3xl mx-auto">
                   {messages.length === 0 ? (
                     <div className="text-center py-16">
-                      <div className={cn(
-                        "w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center",
-                        theme.bg,
-                        "border",
-                        theme.border
-                      )}>
-                        <MessageCircle className={cn("h-10 w-10", theme.accent)} />
+                      <div className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center bg-white shadow-sm">
+                        <MessageCircle className="h-8 w-8 text-gray-400" />
                       </div>
-                      <h4 className="text-lg font-medium text-white mb-2">Inicie a conversa</h4>
-                      <p className="text-sm text-slate-400 max-w-xs mx-auto">
+                      <h4 className="text-base font-medium text-gray-700 mb-1">Inicie a conversa</h4>
+                      <p className="text-sm text-gray-500 max-w-xs mx-auto">
                         Use a IA para gerar uma mensagem humanizada como Guilherme.
                       </p>
                     </div>
                   ) : (
                     messages.map((message, idx) => {
                       const isMine = message.sender_id === user?.id;
-                      const showAvatar = !isMine && (idx === 0 || messages[idx - 1].sender_id === user?.id);
                       
                       return (
                         <motion.div
@@ -656,38 +622,26 @@ Guilherme`;
                           transition={{ delay: idx * 0.02 }}
                           className={cn("flex", isMine ? "justify-end" : "justify-start")}
                         >
-                          <div className={cn("flex items-end gap-2 max-w-[75%]", isMine && "flex-row-reverse")}>
-                            {!isMine && showAvatar && (
-                              <div className={cn(
-                                "w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0",
-                                theme.avatarBg
-                              )}>
-                                {getInitials(selectedClient.full_name)}
-                              </div>
+                          <div
+                            className={cn(
+                              "rounded-lg px-3 py-2 max-w-[75%] shadow-sm",
+                              isMine
+                                ? `${theme.messageBg} text-white rounded-br-sm`
+                                : "bg-white text-gray-800 rounded-bl-sm"
                             )}
-                            {!isMine && !showAvatar && <div className="w-8 shrink-0" />}
-                            
-                            <div
-                              className={cn(
-                                "rounded-2xl px-4 py-2.5 shadow-lg",
-                                isMine
-                                  ? `${theme.messageBg} text-white rounded-br-md ${theme.glow}`
-                                  : "bg-slate-800 text-slate-100 rounded-bl-md border border-slate-700/50"
+                          >
+                            <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                            <div className={cn("flex items-center gap-1 mt-1", isMine && "justify-end")}>
+                              <span className={cn("text-[10px]", isMine ? "text-white/70" : "text-gray-400")}>
+                                {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
+                              </span>
+                              {isMine && (
+                                message.read_at ? (
+                                  <CheckCheck className="h-3 w-3 text-white/70" />
+                                ) : (
+                                  <Check className="h-3 w-3 text-white/70" />
+                                )
                               )}
-                            >
-                              <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                              <div className={cn("flex items-center gap-1.5 mt-1.5", isMine && "justify-end")}>
-                                <span className={cn("text-[10px]", isMine ? "text-white/60" : "text-slate-500")}>
-                                  {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
-                                </span>
-                                {isMine && (
-                                  message.read_at ? (
-                                    <CheckCheck className="h-3 w-3 text-white/60" />
-                                  ) : (
-                                    <Check className="h-3 w-3 text-white/60" />
-                                  )
-                                )}
-                              </div>
                             </div>
                           </div>
                         </motion.div>
@@ -698,10 +652,10 @@ Guilherme`;
                 </div>
               </div>
 
-              {/* Fixed Input Area - Modern glass effect */}
-              <div className="shrink-0 p-4 border-t border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
-                <form onSubmit={handleSend} className="space-y-3">
-                  <div className="flex gap-2 items-end">
+              {/* Fixed Input Area - WhatsApp style */}
+              <div className="shrink-0 p-3 border-t border-gray-200 bg-gray-50">
+                <form onSubmit={handleSend} className="space-y-2">
+                  <div className="flex gap-2 items-center">
                     <Button
                       type="button"
                       variant="outline"
@@ -709,14 +663,14 @@ Guilherme`;
                       onClick={generateAIResponse}
                       disabled={isGeneratingAI}
                       className={cn(
-                        "shrink-0 gap-2 h-10 border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-primary/50",
+                        "shrink-0 gap-2 h-10 border-gray-200 text-gray-600 hover:bg-white hover:text-emerald-600 hover:border-emerald-200",
                         isGeneratingAI && "animate-pulse"
                       )}
                     >
                       {isGeneratingAI ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Bot className="h-4 w-4 text-primary" />
+                        <Bot className="h-4 w-4 text-emerald-500" />
                       )}
                       <span className="hidden sm:inline">Gerar como Guilherme</span>
                     </Button>
@@ -726,7 +680,7 @@ Guilherme`;
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Digite sua mensagem como Guilherme..."
-                        className="h-10 pr-4 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-primary/50"
+                        className="h-10 pr-4 bg-white border-gray-200 text-gray-900 placeholder:text-gray-400 focus:border-emerald-500 focus:ring-emerald-500/20"
                         disabled={isSending}
                       />
                     </div>
@@ -736,10 +690,8 @@ Guilherme`;
                       disabled={!newMessage.trim() || isSending}
                       className={cn(
                         "shrink-0 h-10 w-10 p-0 rounded-full",
-                        "bg-gradient-to-r",
-                        theme.primary,
-                        "hover:opacity-90",
-                        theme.glow
+                        theme.messageBg,
+                        "hover:opacity-90 text-white"
                       )}
                     >
                       {isSending ? (
@@ -756,7 +708,7 @@ Guilherme`;
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="text-xs text-slate-400 flex items-center gap-1.5"
+                        className="text-xs text-gray-500 flex items-center gap-1.5"
                       >
                         <Sparkles className="h-3 w-3 text-amber-500" />
                         Revise a mensagem antes de enviar.
@@ -767,14 +719,14 @@ Guilherme`;
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center bg-gray-50">
               <div className="text-center">
-                <div className="w-24 h-24 rounded-2xl bg-slate-800/50 flex items-center justify-center mx-auto mb-6 border border-slate-700/50">
-                  <MessageCircle className="h-12 w-12 text-slate-600" />
+                <div className="w-20 h-20 rounded-full bg-white flex items-center justify-center mx-auto mb-4 shadow-sm">
+                  <MessageCircle className="h-10 w-10 text-gray-300" />
                 </div>
-                <h3 className="text-xl font-semibold text-white mb-2">Selecione um cliente</h3>
-                <p className="text-slate-400 text-sm max-w-xs mx-auto">
-                  Escolha um cliente na lista para iniciar ou continuar o atendimento
+                <h3 className="text-lg font-medium text-gray-700 mb-1">Selecione um cliente</h3>
+                <p className="text-gray-500 text-sm max-w-xs mx-auto">
+                  Escolha um cliente na lista para iniciar o atendimento
                 </p>
               </div>
             </div>
