@@ -14,7 +14,6 @@ import { FiscalModuleSection } from "@/components/sections/FiscalModuleSection";
 import { FiscalTestimonialsSection } from "@/components/sections/FiscalTestimonialsSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
-import { LandingAIAgent } from "@/components/ai/LandingAIAgent";
 import { ServicesHubModern } from "@/components/dashboard/ServicesHubModern";
 
 const Index = () => {
@@ -105,9 +104,6 @@ const Index = () => {
       </main>
 
       <Footer onNavigate={scrollToSection} />
-      
-      {/* Agente de IA flutuante para conversão */}
-      <LandingAIAgent />
     </div>
   );
 };
