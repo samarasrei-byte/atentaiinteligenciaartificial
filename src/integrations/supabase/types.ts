@@ -2306,7 +2306,48 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      contador_profiles_public: {
+        Row: {
+          available: boolean | null
+          bio: string | null
+          crc_number: string | null
+          created_at: string | null
+          hourly_rate_cents: number | null
+          id: string | null
+          rating: number | null
+          specialty: string | null
+          total_consultations: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          available?: boolean | null
+          bio?: string | null
+          crc_number?: string | null
+          created_at?: string | null
+          hourly_rate_cents?: number | null
+          id?: string | null
+          rating?: number | null
+          specialty?: string | null
+          total_consultations?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          available?: boolean | null
+          bio?: string | null
+          crc_number?: string | null
+          created_at?: string | null
+          hourly_rate_cents?: number | null
+          id?: string | null
+          rating?: number | null
+          specialty?: string | null
+          total_consultations?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       apply_affiliate_coupon: {
