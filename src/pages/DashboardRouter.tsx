@@ -1,9 +1,22 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { logAuditEvent } from '@/hooks/useAuditLog';
+
+function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+  let timeoutId: number | undefined;
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    timeoutId = window.setTimeout(() => {
+      reject(new Error(`Timeout after ${ms}ms (${label})`));
+    }, ms);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    if (timeoutId) window.clearTimeout(timeoutId);
+  }) as Promise<T>;
+}
 
 /**
  * Smart router that redirects users to their appropriate panel based on role:
@@ -19,10 +32,29 @@ const DashboardRouter = () => {
   const navigate = useNavigate();
   const { user, loading, hasRole, roles, checkAffiliateStatus } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
+  const hasNavigatedRef = useRef(false);
+  const latestLoadingRef = useRef(loading);
 
   useEffect(() => {
+    latestLoadingRef.current = loading;
+  }, [loading]);
+
+  useEffect(() => {
+    hasNavigatedRef.current = false;
+
     const determineDestination = async () => {
-      if (loading) return;
+      // If auth is still resolving, keep showing loading UI.
+      // But never let it hang indefinitely.
+      if (loading) {
+        // Safety: if loading gets stuck, force the user back to auth after a short delay.
+        window.setTimeout(() => {
+          if (!hasNavigatedRef.current && latestLoadingRef.current) {
+            hasNavigatedRef.current = true;
+            navigate('/auth', { replace: true });
+          }
+        }, 10000);
+        return;
+      }
       
       if (!user) {
         navigate('/auth', { replace: true });
@@ -32,94 +64,137 @@ const DashboardRouter = () => {
       setIsChecking(true);
 
       try {
-        // Check affiliate status
-        const isAffiliate = await checkAffiliateStatus();
+        // Global safety timeout to avoid infinite spinner
+        await withTimeout(
+          (async () => {
+            // Check affiliate status (bounded)
+            const isAffiliate = await withTimeout(checkAffiliateStatus(), 3000, 'checkAffiliateStatus');
 
-        // Count special profiles (NOT including empresa/user as it's always available as fallback)
-        let specialProfilesCount = 0;
-        const availableProfiles: string[] = [];
+            // Count special profiles (NOT including empresa/user as it's always available as fallback)
+            let specialProfilesCount = 0;
+            const availableProfiles: string[] = [];
 
-        if (hasRole('admin')) {
-          specialProfilesCount++;
-          availableProfiles.push('admin');
-        }
-        if (hasRole('contador')) {
-          specialProfilesCount++;
-          availableProfiles.push('contador');
-        }
-        if (isAffiliate || hasRole('affiliate')) {
-          specialProfilesCount++;
-          availableProfiles.push('afiliado');
-        }
-        if (hasRole('autonomo')) {
-          specialProfilesCount++;
-          availableProfiles.push('autonomo');
-        }
-        
-        // Add empresa as last option
-        availableProfiles.push('empresa');
+            if (hasRole('admin')) {
+              specialProfilesCount++;
+              availableProfiles.push('admin');
+            }
+            if (hasRole('contador')) {
+              specialProfilesCount++;
+              availableProfiles.push('contador');
+            }
+            if (isAffiliate || hasRole('affiliate')) {
+              specialProfilesCount++;
+              availableProfiles.push('afiliado');
+            }
+            if (hasRole('autonomo')) {
+              specialProfilesCount++;
+              availableProfiles.push('autonomo');
+            }
+            
+            // Add empresa as last option
+            availableProfiles.push('empresa');
 
-        // Log the routing decision
-        await logAuditEvent({
-          userId: user.id,
-          userEmail: user.email,
-          actionType: 'dashboard_route',
-          routeAttempted: '/dashboard',
-          metadata: { 
-            available_profiles: availableProfiles, 
-            profile_count: specialProfilesCount 
-          }
-        });
+            // Log routing decision (fire-and-forget; never block routing)
+            void withTimeout(
+              logAuditEvent({
+                userId: user.id,
+                userEmail: user.email,
+                actionType: 'dashboard_route',
+                routeAttempted: '/dashboard',
+                metadata: {
+                  available_profiles: availableProfiles,
+                  profile_count: specialProfilesCount,
+                },
+              }),
+              1500,
+              'logAuditEvent'
+            ).catch(() => {
+              // Intentionally ignore logging failures/timeouts
+            });
 
-        // If user has 2+ special profiles, go to profile selector to let them choose
-        if (specialProfilesCount >= 2) {
-          navigate('/selecionar-perfil', { replace: true });
-          return;
-        }
+            // If user has 2+ special profiles, go to profile selector to let them choose
+            if (specialProfilesCount >= 2) {
+              if (!hasNavigatedRef.current) {
+                hasNavigatedRef.current = true;
+                navigate('/selecionar-perfil', { replace: true });
+              }
+              return;
+            }
 
-        // Priority-based routing: admin > contador > affiliate > autonomo > empresa
-        if (hasRole('admin')) {
-          navigate('/admin', { replace: true });
-          return;
-        }
-        
-        if (hasRole('contador')) {
-          navigate('/contador', { replace: true });
-          return;
-        }
+            // Priority-based routing: admin > contador > affiliate > autonomo > empresa
+            if (hasRole('admin')) {
+              if (!hasNavigatedRef.current) {
+                hasNavigatedRef.current = true;
+                navigate('/admin', { replace: true });
+              }
+              return;
+            }
+            
+            if (hasRole('contador')) {
+              if (!hasNavigatedRef.current) {
+                hasNavigatedRef.current = true;
+                navigate('/contador', { replace: true });
+              }
+              return;
+            }
 
-        if (isAffiliate || hasRole('affiliate')) {
-          navigate('/afiliado/painel', { replace: true });
-          return;
-        }
+            if (isAffiliate || hasRole('affiliate')) {
+              if (!hasNavigatedRef.current) {
+                hasNavigatedRef.current = true;
+                navigate('/afiliado/painel', { replace: true });
+              }
+              return;
+            }
 
-        if (hasRole('autonomo')) {
-          navigate('/autonomo', { replace: true });
-          return;
-        }
+            if (hasRole('autonomo')) {
+              if (!hasNavigatedRef.current) {
+                hasNavigatedRef.current = true;
+                navigate('/autonomo', { replace: true });
+              }
+              return;
+            }
 
-        // Check if user only has 'user' role (default)
-        const hasAnySpecificRole = roles.length > 0 && !roles.every(r => r === 'user');
-        
-        // If user only has 'user' role, check if they need onboarding
-        if (!hasAnySpecificRole) {
-          const { data: companyData } = await supabase
-            .from('companies')
-            .select('id')
-            .eq('user_id', user.id)
-            .maybeSingle();
+            // Check if user only has 'user' role (default)
+            const hasAnySpecificRole = roles.length > 0 && !roles.every(r => r === 'user');
+            
+            // If user only has 'user' role, check if they need onboarding
+            if (!hasAnySpecificRole) {
+              const { data: companyData } = await withTimeout(
+                (async () =>
+                  await supabase
+                    .from('companies')
+                    .select('id')
+                    .eq('user_id', user.id)
+                    .maybeSingle()
+                )(),
+                3000,
+                'companies.maybeSingle'
+              );
 
-          if (!companyData) {
-            navigate('/bem-vindo', { replace: true });
-            return;
-          }
-        }
+              if (!companyData) {
+                if (!hasNavigatedRef.current) {
+                  hasNavigatedRef.current = true;
+                  navigate('/bem-vindo', { replace: true });
+                }
+                return;
+              }
+            }
 
-        // Default user goes to empresa panel
-        navigate('/empresa', { replace: true });
+            // Default user goes to empresa panel
+            if (!hasNavigatedRef.current) {
+              hasNavigatedRef.current = true;
+              navigate('/empresa', { replace: true });
+            }
+          })(),
+          8000,
+          'determineDestination'
+        );
       } catch (error) {
         console.error('Error determining destination:', error);
-        navigate('/empresa', { replace: true });
+        if (!hasNavigatedRef.current) {
+          hasNavigatedRef.current = true;
+          navigate('/empresa', { replace: true });
+        }
       } finally {
         setIsChecking(false);
       }
@@ -132,7 +207,9 @@ const DashboardRouter = () => {
     <div className="min-h-screen flex items-center justify-center bg-slate-950">
       <div className="text-center space-y-4">
         <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
-        <p className="text-white/60 font-medium">Redirecionando para seu painel...</p>
+        <p className="text-white/60 font-medium">
+          {loading ? 'Carregando sua sessão...' : isChecking ? 'Redirecionando para seu painel...' : 'Quase lá...'}
+        </p>
       </div>
     </div>
   );
