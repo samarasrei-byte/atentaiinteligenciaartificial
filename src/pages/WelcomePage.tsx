@@ -112,12 +112,14 @@ const WelcomePage = () => {
 
     try {
       // Check if user already has this role
-      const { data: existingRole } = await supabase
+      const { data: existingRole, error: existingRoleError } = await supabase
         .from('user_roles')
         .select('id')
         .eq('user_id', user.id)
         .eq('role', option.role)
-        .single();
+        .maybeSingle();
+
+      if (existingRoleError) throw existingRoleError;
 
       if (!existingRole) {
         // Add the role to user_roles table
@@ -133,29 +135,37 @@ const WelcomePage = () => {
 
       // Create profile data based on type
       if (option.type === 'autonomo') {
-        const { data: existingProfile } = await supabase
+        const { data: existingProfile, error: existingProfileError } = await supabase
           .from('autonomo_profiles')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (existingProfileError) throw existingProfileError;
 
         if (!existingProfile) {
-          await supabase.from('autonomo_profiles').insert({
+          const { error: insertError } = await supabase.from('autonomo_profiles').insert({
             user_id: user.id,
           });
+
+          if (insertError) throw insertError;
         }
       } else if (option.type === 'contador') {
-        const { data: existingProfile } = await supabase
+        const { data: existingProfile, error: existingProfileError } = await supabase
           .from('contador_profiles')
           .select('id')
           .eq('user_id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (existingProfileError) throw existingProfileError;
 
         if (!existingProfile) {
-          await supabase.from('contador_profiles').insert({
+          const { error: insertError } = await supabase.from('contador_profiles').insert({
             user_id: user.id,
             available: false,
           });
+
+          if (insertError) throw insertError;
         }
       }
 
