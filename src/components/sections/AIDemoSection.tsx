@@ -207,11 +207,11 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
   };
 
   return (
-    <section className="py-16 relative overflow-hidden bg-gradient-to-b from-slate-900 via-slate-800 to-background">
+    <section className="py-16 relative overflow-hidden bg-slate-900">
       {/* Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.15)_0%,transparent_50%)]" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(249,115,22,0.1)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.1)_0%,transparent_50%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(249,115,22,0.08)_0%,transparent_50%)]" />
       </div>
 
       <div className="container mx-auto px-4 relative z-10">
@@ -269,9 +269,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
 
               {/* Messages - WhatsApp Style */}
               <CardContent 
-                className="p-3 h-[380px] overflow-y-auto space-y-2"
+                className="p-3 min-h-[200px] max-h-[320px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
                 style={{ 
-                  backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.02"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
                   backgroundColor: '#0b141a'
                 }}
               >
@@ -326,8 +325,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
               </CardContent>
 
               {/* Quick Questions - Chips Style */}
-              <div className="px-3 py-2 bg-[#202c33]/50 border-t border-white/5 overflow-x-auto">
-                <div className="flex gap-2 pb-1">
+              <div className="px-3 py-2 bg-[#202c33]/50 border-t border-white/5">
+                <div className="flex flex-wrap gap-2">
                   {QUICK_QUESTIONS.map((q) => (
                     <Button 
                       key={q.keyword}
