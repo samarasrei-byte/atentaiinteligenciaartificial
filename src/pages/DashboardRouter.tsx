@@ -11,14 +11,13 @@ import { logAuditEvent } from '@/hooks/useAuditLog';
  * - Contador → /contador
  * - Autônomo → /autonomo
  * - Afiliado → /afiliado/painel
- * - Parceiro → /parceiro
  * - Empresa (user default) → /empresa
  * 
  * Priority order ensures users with multiple roles go to the most appropriate panel.
  */
 const DashboardRouter = () => {
   const navigate = useNavigate();
-  const { user, loading, hasRole, roles, checkAffiliateStatus, checkPartnerStatus } = useAuth();
+  const { user, loading, hasRole, roles, checkAffiliateStatus } = useAuth();
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
@@ -33,40 +32,28 @@ const DashboardRouter = () => {
       setIsChecking(true);
 
       try {
-        // Check affiliate and partner status in parallel
-        const [isAffiliate, isPartner] = await Promise.all([
-          checkAffiliateStatus(),
-          checkPartnerStatus()
-        ]);
+        // Check affiliate status
+        const isAffiliate = await checkAffiliateStatus();
 
         // Count special profiles (NOT including empresa/user as it's always available as fallback)
-        // Partner status takes priority - if user is a partner, they should go directly to partner panel
         let specialProfilesCount = 0;
         const availableProfiles: string[] = [];
 
-        // Partner gets highest priority and is NOT counted with other profiles
-        // If user is a partner, they go to partner panel directly
-        if (isPartner) {
-          // Partner is their primary role - skip profile selection
-          availableProfiles.push('parceiro');
-        } else {
-          // Only count other special profiles if user is NOT a partner
-          if (hasRole('admin')) {
-            specialProfilesCount++;
-            availableProfiles.push('admin');
-          }
-          if (hasRole('contador')) {
-            specialProfilesCount++;
-            availableProfiles.push('contador');
-          }
-          if (isAffiliate || hasRole('affiliate')) {
-            specialProfilesCount++;
-            availableProfiles.push('afiliado');
-          }
-          if (hasRole('autonomo')) {
-            specialProfilesCount++;
-            availableProfiles.push('autonomo');
-          }
+        if (hasRole('admin')) {
+          specialProfilesCount++;
+          availableProfiles.push('admin');
+        }
+        if (hasRole('contador')) {
+          specialProfilesCount++;
+          availableProfiles.push('contador');
+        }
+        if (isAffiliate || hasRole('affiliate')) {
+          specialProfilesCount++;
+          availableProfiles.push('afiliado');
+        }
+        if (hasRole('autonomo')) {
+          specialProfilesCount++;
+          availableProfiles.push('autonomo');
         }
         
         // Add empresa as last option
@@ -83,12 +70,6 @@ const DashboardRouter = () => {
             profile_count: specialProfilesCount 
           }
         });
-
-        // If user is a partner, go directly to partner panel (highest priority for partners)
-        if (isPartner) {
-          navigate('/parceiro', { replace: true });
-          return;
-        }
 
         // If user has 2+ special profiles, go to profile selector to let them choose
         if (specialProfilesCount >= 2) {
@@ -145,7 +126,7 @@ const DashboardRouter = () => {
     };
 
     determineDestination();
-  }, [user, loading, hasRole, roles, navigate, checkAffiliateStatus, checkPartnerStatus]);
+  }, [user, loading, hasRole, roles, navigate, checkAffiliateStatus]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950">

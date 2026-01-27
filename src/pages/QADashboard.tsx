@@ -600,9 +600,6 @@ const QADashboard = () => {
               <Button variant="outline" size="sm" onClick={() => navigate('/contador')}>
                 Painel Contador
               </Button>
-              <Button variant="outline" size="sm" onClick={() => navigate('/parceiro')}>
-                Painel Parceiro
-              </Button>
               <Button variant="outline" size="sm" onClick={() => navigate('/admin')}>
                 Painel Admin
               </Button>

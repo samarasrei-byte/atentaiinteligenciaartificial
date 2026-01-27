@@ -7,7 +7,6 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
 import { AffiliateProtectedRoute } from "@/components/AffiliateProtectedRoute";
-import { PartnerProtectedRoute } from "@/components/PartnerProtectedRoute";
 import { OfflineIndicator } from "@/components/pwa/OfflineIndicator";
 import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -74,13 +73,10 @@ import AffiliateLimpaNomeLanding from "./pages/AffiliateLimpaNomeLanding";
 import AffiliateOnboarding from "./pages/AffiliateOnboarding";
 import AffiliateOnboardingFlow from "./pages/AffiliateOnboardingFlow";
 import AffiliateOfferPage from "./pages/AffiliateOfferPage";
-import PartnerLoginNew from "./pages/PartnerLoginNew";
-import PartnerPanel from "./pages/PartnerPanel";
 import PartnerInvite from "./pages/PartnerInvite";
 import PublicOnboarding from "./pages/PublicOnboarding";
 import MinhasSolicitacoesPage from "./pages/MinhasSolicitacoesPage";
 import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
-import PartnerOnboarding from "./pages/PartnerOnboarding";
 import LimpaNomeLanding from "./pages/LimpaNomeLanding";
 import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
 import TestLogin from "./pages/TestLogin";
@@ -144,9 +140,7 @@ const App = () => (
               <Route path="/modulo-fiscal" element={<ModuloFiscalLanding />} />
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
-              <Route path="/parceiro/onboarding" element={<PartnerOnboarding />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
-              <Route path="/parceiro/login" element={<PartnerLoginNew />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
               {/* Affiliate routes */}
@@ -167,11 +161,6 @@ const App = () => (
                 <ProtectedRoute>
                   <QADashboard />
                 </ProtectedRoute>
-              } />
-              <Route path="/parceiro" element={
-                <PartnerProtectedRoute>
-                  <PartnerPanel />
-                </PartnerProtectedRoute>
               } />
               <Route path="/limpa-nome/status/:id" element={
                 <ProtectedRoute>
