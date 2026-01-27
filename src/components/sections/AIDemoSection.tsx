@@ -207,59 +207,59 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
   };
 
   return (
-    <section className="py-16 relative overflow-hidden bg-slate-900">
+    <section className="py-10 md:py-16 relative overflow-hidden bg-slate-900">
       {/* Background Effects */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(16,185,129,0.1)_0%,transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(249,115,22,0.08)_0%,transparent_50%)]" />
       </div>
 
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-3 md:px-4 relative z-10">
         {/* Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-8"
+          className="text-center mb-6 md:mb-8"
         >
-          <Badge className="mb-4 bg-accent/20 text-accent border-accent/30 text-sm px-4 py-1">
-            <Bot className="w-4 h-4 mr-2" />
+          <Badge className="mb-3 md:mb-4 bg-accent/20 text-accent border-accent/30 text-xs md:text-sm px-3 md:px-4 py-1">
+            <Bot className="w-3 h-3 md:w-4 md:h-4 mr-1.5 md:mr-2" />
             Experimente Grátis • Sem Cadastro
           </Badge>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-2 md:mb-3">
             Converse com a IA Tributária
           </h2>
-          <p className="text-slate-300 max-w-2xl mx-auto">
+          <p className="text-slate-300 text-sm md:text-base max-w-2xl mx-auto px-2">
             Tire dúvidas sobre a Reforma em segundos. Toque nos botões para respostas rápidas!
           </p>
         </motion.div>
 
-        <div className="grid lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
           {/* Chat Demo - WhatsApp Style */}
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-2"
+            className="lg:col-span-2 order-1"
           >
-            <Card className="bg-[#0b141a] border-0 shadow-2xl overflow-hidden rounded-2xl">
+            <Card className="bg-[#0b141a] border-0 shadow-2xl overflow-hidden rounded-xl md:rounded-2xl">
               {/* Chat Header - WhatsApp Style */}
-              <div className="bg-[#202c33] p-3 flex items-center justify-between">
-                <div className="flex items-center gap-3">
+              <div className="bg-[#202c33] p-2.5 md:p-3 flex items-center justify-between">
+                <div className="flex items-center gap-2.5 md:gap-3">
                   <div className="relative">
-                    <div className="w-10 h-10 bg-gradient-to-br from-primary to-emerald-500 rounded-full flex items-center justify-center">
-                      <Bot className="h-5 w-5 text-white" />
+                    <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-primary to-emerald-500 rounded-full flex items-center justify-center">
+                      <Bot className="h-4 w-4 md:h-5 md:w-5 text-white" />
                     </div>
-                    <span className="absolute bottom-0 right-0 w-3 h-3 bg-emerald-500 rounded-full border-2 border-[#202c33]" />
+                    <span className="absolute bottom-0 right-0 w-2.5 h-2.5 md:w-3 md:h-3 bg-emerald-500 rounded-full border-2 border-[#202c33]" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-white flex items-center gap-2">
+                    <h3 className="font-semibold text-white text-sm md:text-base flex items-center gap-1.5 md:gap-2">
                       AtentAI
-                      <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 text-[10px] px-1.5 py-0">
+                      <Badge variant="secondary" className="bg-emerald-500/20 text-emerald-400 text-[9px] md:text-[10px] px-1 md:px-1.5 py-0">
                         Demo
                       </Badge>
                     </h3>
-                    <p className="text-xs text-emerald-400 flex items-center gap-1">
+                    <p className="text-[10px] md:text-xs text-emerald-400 flex items-center gap-1">
                       <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" />
                       online agora
                     </p>
@@ -269,10 +269,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
 
               {/* Messages - WhatsApp Style */}
               <CardContent 
-                className="p-3 min-h-[200px] max-h-[320px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
-                style={{ 
-                  backgroundColor: '#0b141a'
-                }}
+                className="p-2.5 md:p-3 min-h-[180px] md:min-h-[200px] max-h-[260px] md:max-h-[320px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
+                style={{ backgroundColor: '#0b141a' }}
               >
                 {messages.map((msg, i) => (
                   <div 
@@ -283,7 +281,7 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                     )}
                   >
                     <div className={cn(
-                      "max-w-[85%] rounded-lg px-3 py-2 text-sm relative",
+                      "max-w-[90%] md:max-w-[85%] rounded-lg px-2.5 md:px-3 py-2 text-xs md:text-sm relative",
                       msg.role === 'user' 
                         ? 'bg-[#005c4b] text-white rounded-tr-none' 
                         : 'bg-[#202c33] text-white rounded-tl-none'
@@ -296,11 +294,11 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                         "flex items-center gap-1 mt-1",
                         msg.role === 'user' ? 'justify-end' : 'justify-start'
                       )}>
-                        <span className="text-[10px] text-slate-400">
+                        <span className="text-[9px] md:text-[10px] text-slate-400">
                           {formatTime(msg.timestamp)}
                         </span>
                         {msg.role === 'user' && (
-                          <CheckCheck className="h-3 w-3 text-sky-400" />
+                          <CheckCheck className="h-2.5 w-2.5 md:h-3 md:w-3 text-sky-400" />
                         )}
                       </div>
                     </div>
@@ -310,11 +308,11 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 {/* Typing indicator */}
                 {isTyping && (
                   <div className="flex justify-start">
-                    <div className="bg-[#202c33] rounded-lg rounded-tl-none px-4 py-3">
+                    <div className="bg-[#202c33] rounded-lg rounded-tl-none px-3 md:px-4 py-2.5 md:py-3">
                       <div className="flex gap-1">
-                        <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                        <span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 md:w-2 md:h-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
                       </div>
                     </div>
                   </div>
@@ -325,17 +323,31 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
               </CardContent>
 
               {/* Quick Questions - Chips Style */}
-              <div className="px-3 py-2 bg-[#202c33]/50 border-t border-white/5">
-                <div className="flex flex-wrap gap-2">
-                  {QUICK_QUESTIONS.map((q) => (
+              <div className="px-2.5 md:px-3 py-2 bg-[#202c33]/50 border-t border-white/5">
+                <div className="flex flex-wrap gap-1.5 md:gap-2">
+                  {QUICK_QUESTIONS.slice(0, 4).map((q) => (
                     <Button 
                       key={q.keyword}
                       variant="outline" 
                       size="sm"
                       onClick={() => handleQuickQuestion(q.keyword, q.label)}
-                      className="text-xs gap-1.5 whitespace-nowrap bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-3"
+                      className="text-[10px] md:text-xs gap-1 md:gap-1.5 bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-2 md:px-3 h-7 md:h-8"
                     >
-                      <q.icon className="w-3 h-3" />
+                      <q.icon className="w-2.5 h-2.5 md:w-3 md:h-3" />
+                      <span className="hidden xs:inline">{q.label}</span>
+                      <span className="xs:hidden">{q.label.split(' ')[0]}</span>
+                    </Button>
+                  ))}
+                  {/* Show remaining on larger screens */}
+                  {QUICK_QUESTIONS.slice(4).map((q) => (
+                    <Button 
+                      key={q.keyword}
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => handleQuickQuestion(q.keyword, q.label)}
+                      className="hidden sm:flex text-[10px] md:text-xs gap-1 md:gap-1.5 bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-2 md:px-3 h-7 md:h-8"
+                    >
+                      <q.icon className="w-2.5 h-2.5 md:w-3 md:h-3" />
                       {q.label}
                     </Button>
                   ))}
@@ -349,12 +361,12 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  className="flex-1 bg-[#2a3942] border-0 text-white placeholder:text-slate-400 rounded-full px-4 focus-visible:ring-1 focus-visible:ring-emerald-500"
+                  className="flex-1 bg-[#2a3942] border-0 text-white text-sm placeholder:text-slate-400 rounded-full px-3 md:px-4 h-9 md:h-10 focus-visible:ring-1 focus-visible:ring-emerald-500"
                 />
                 <Button 
                   onClick={handleSend} 
                   size="icon" 
-                  className="bg-emerald-600 hover:bg-emerald-500 rounded-full h-10 w-10"
+                  className="bg-emerald-600 hover:bg-emerald-500 rounded-full h-9 w-9 md:h-10 md:w-10 shrink-0"
                   disabled={!input.trim()}
                 >
                   <Send className="h-4 w-4" />
@@ -363,82 +375,83 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
             </Card>
           </motion.div>
 
-          {/* Premium CTA - More Attractive */}
+          {/* Premium CTA - Mobile Optimized */}
           <motion.div 
-            initial={{ opacity: 0, x: 20 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+            className="order-2"
           >
-            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-black border-accent/20 h-full flex flex-col relative overflow-hidden">
+            <Card className="bg-gradient-to-br from-slate-800 via-slate-900 to-black border-accent/20 flex flex-col relative overflow-hidden">
               {/* Glow Effect */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-accent/20 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-24 h-24 bg-primary/10 rounded-full blur-2xl" />
+              <div className="absolute top-0 right-0 w-24 md:w-32 h-24 md:h-32 bg-accent/20 rounded-full blur-3xl" />
+              <div className="absolute bottom-0 left-0 w-20 md:w-24 h-20 md:h-24 bg-primary/10 rounded-full blur-2xl" />
               
-              <CardContent className="p-6 flex flex-col h-full relative z-10">
+              <CardContent className="p-4 md:p-6 flex flex-col relative z-10">
                 {/* Badge de Destaque */}
                 <div className="absolute -top-1 -right-1">
-                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 text-[10px] px-2 py-1 rounded-bl-lg rounded-tr-lg">
-                    <Star className="h-3 w-3 mr-1 fill-current" />
+                  <Badge className="bg-gradient-to-r from-orange-500 to-red-500 text-white border-0 text-[9px] md:text-[10px] px-1.5 md:px-2 py-0.5 md:py-1 rounded-bl-lg rounded-tr-lg">
+                    <Star className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1 fill-current" />
                     MAIS POPULAR
                   </Badge>
                 </div>
 
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="p-2 bg-gradient-to-br from-accent to-orange-500 rounded-xl">
-                    <Crown className="h-5 w-5 text-white" />
+                <div className="flex items-center gap-2 mb-3 md:mb-4">
+                  <div className="p-1.5 md:p-2 bg-gradient-to-br from-accent to-orange-500 rounded-lg md:rounded-xl">
+                    <Crown className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-white text-lg">AtentAI Premium</h3>
+                  <h3 className="font-bold text-white text-base md:text-lg">AtentAI Premium</h3>
                 </div>
 
-                <p className="text-slate-300 text-sm mb-4">
+                <p className="text-slate-300 text-xs md:text-sm mb-3 md:mb-4">
                   Desbloqueie análises personalizadas e simule o impacto real no seu negócio.
                 </p>
 
-                {/* Benefits with better visual */}
-                <ul className="space-y-2.5 mb-5 flex-1">
+                {/* Benefits - Grid on mobile */}
+                <ul className="grid grid-cols-2 lg:grid-cols-1 gap-2 md:gap-2.5 mb-4 md:mb-5">
                   {[
                     { text: 'Perguntas ilimitadas', icon: MessageCircle },
-                    { text: 'IA com dados atualizados', icon: Zap },
+                    { text: 'IA atualizada', icon: Zap },
                     { text: 'Simulações personalizadas', icon: Calculator },
-                    { text: 'Análise do seu negócio', icon: TrendingUp },
-                    { text: 'Relatórios em PDF', icon: ShieldCheck },
+                    { text: 'Análise do negócio', icon: TrendingUp },
                   ].map((item, i) => (
-                    <li key={i} className="flex items-center gap-2.5 text-sm">
-                      <div className="p-1 bg-accent/20 rounded-md">
-                        <item.icon className="h-3.5 w-3.5 text-accent" />
+                    <li key={i} className="flex items-center gap-1.5 md:gap-2.5 text-xs md:text-sm">
+                      <div className="p-0.5 md:p-1 bg-accent/20 rounded-md shrink-0">
+                        <item.icon className="h-3 w-3 md:h-3.5 md:w-3.5 text-accent" />
                       </div>
-                      <span className="text-white">{item.text}</span>
+                      <span className="text-white truncate">{item.text}</span>
                     </li>
                   ))}
                 </ul>
 
-                {/* Price Section - More Attractive */}
-                <div className="space-y-3">
-                  <div className="bg-white/5 rounded-xl p-4 text-center border border-white/10">
-                    <div className="flex items-center justify-center gap-2 mb-1">
-                      <Percent className="h-4 w-4 text-red-400" />
-                      <span className="text-red-400 text-xs font-medium line-through">R$ 79/mês</span>
+                {/* Price Section - Compact on mobile */}
+                <div className="space-y-2 md:space-y-3">
+                  <div className="bg-white/5 rounded-lg md:rounded-xl p-3 md:p-4 text-center border border-white/10">
+                    <div className="flex items-center justify-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
+                      <Percent className="h-3 w-3 md:h-4 md:w-4 text-red-400" />
+                      <span className="text-red-400 text-[10px] md:text-xs font-medium line-through">R$ 79/mês</span>
                     </div>
-                    <p className="text-3xl font-bold text-white">
-                      R$ 39<span className="text-base font-normal text-slate-400">/mês</span>
+                    <p className="text-2xl md:text-3xl font-bold text-white">
+                      R$ 39<span className="text-sm md:text-base font-normal text-slate-400">/mês</span>
                     </p>
-                    <p className="text-emerald-400 text-xs font-medium mt-1">
+                    <p className="text-emerald-400 text-[10px] md:text-xs font-medium mt-0.5 md:mt-1">
                       Economize 50% - Oferta Limitada!
                     </p>
                   </div>
 
                   <Button 
-                    className="w-full bg-gradient-to-r from-accent via-orange-500 to-accent hover:from-accent/90 hover:via-orange-400 hover:to-accent/90 text-white font-semibold h-12 text-base group shadow-lg shadow-accent/25"
+                    className="w-full bg-gradient-to-r from-accent via-orange-500 to-accent hover:from-accent/90 hover:via-orange-400 hover:to-accent/90 text-white font-semibold h-10 md:h-12 text-sm md:text-base group shadow-lg shadow-accent/25"
                     onClick={() => navigate('/pricing')}
                   >
-                    <Gift className="h-5 w-5 mr-2" />
+                    <Gift className="h-4 w-4 md:h-5 md:w-5 mr-1.5 md:mr-2" />
                     Começar Agora
-                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight className="h-4 w-4 md:h-5 md:w-5 ml-1.5 md:ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
 
-                  <div className="flex items-center justify-center gap-3 text-xs text-slate-400">
-                    <span className="flex items-center gap-1">
-                      <ShieldCheck className="h-3 w-3 text-emerald-400" />
+                  <div className="flex items-center justify-center gap-2 md:gap-3 text-[10px] md:text-xs text-slate-400">
+                    <span className="flex items-center gap-0.5 md:gap-1">
+                      <ShieldCheck className="h-2.5 w-2.5 md:h-3 md:w-3 text-emerald-400" />
                       7 dias de garantia
                     </span>
                     <span>•</span>
