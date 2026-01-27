@@ -1,6 +1,7 @@
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
+import { AIDemoSection } from "@/components/sections/AIDemoSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { SimulatorSection } from "@/components/sections/SimulatorSection";
 import { AISection } from "@/components/sections/AISection";
@@ -44,7 +45,10 @@ const Index = () => {
         {/* 1. HERO - Primeira impressão: O que é, para quem, CTA forte */}
         <HeroSection onNavigate={scrollToSection} />
         
-        {/* 2. FEATURES - O que oferecemos (benefícios claros) */}
+        {/* 2. AI DEMO - Demonstração gratuita para engajamento imediato */}
+        <AIDemoSection />
+        
+        {/* 3. FEATURES - O que oferecemos (benefícios claros) */}
         <FeaturesSection />
         
         {/* 3. STATS - Prova social com números (credibilidade) */}
