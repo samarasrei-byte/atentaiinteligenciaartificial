@@ -31,9 +31,11 @@ import {
   FileText, Calendar, DollarSign, Star, Users, Check, X, Clock, Loader2,
   Wallet, TrendingUp, Save, Award, Target, MessageSquare, RefreshCw,
   CheckCircle, AlertCircle, XCircle, Menu, Banknote, FileDown, Building2,
-  ScrollText,
+  ScrollText, Shield, Scale,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { CreditRepairManagement } from '@/components/admin/CreditRepairManagement';
+import { FiscalAnalysisManagement } from '@/components/admin/FiscalAnalysisManagement';
 
 interface ContadorProfile {
   id: string;
@@ -457,13 +459,29 @@ const ContadorPanel = () => {
             </div>
           )}
 
-          {activeTab === 'updates' && (
+          {activeTab === 'limpa-nome' && (
             <div className="space-y-6">
               <div>
-                <h2 className="text-2xl font-bold text-foreground">Central de Atualizações Legais</h2>
-                <p className="text-muted-foreground">Mantenha-se atualizado com as últimas mudanças na legislação tributária</p>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Shield className="h-6 w-6 text-emerald-500" />
+                  Limpa Nome - Recuperação de Crédito
+                </h2>
+                <p className="text-muted-foreground">Gerencie solicitações de limpeza de nome dos clientes</p>
               </div>
-              <LegalUpdates />
+              <CreditRepairManagement />
+            </div>
+          )}
+
+          {activeTab === 'analise-fiscal' && (
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  <Scale className="h-6 w-6 text-violet-500" />
+                  Análise Fiscal
+                </h2>
+                <p className="text-muted-foreground">Gerencie solicitações de análise fiscal dos clientes</p>
+              </div>
+              <FiscalAnalysisManagement />
             </div>
           )}
 

@@ -27,7 +27,8 @@ import {
   Clock,
   Paperclip,
   Zap,
-  ChevronRight
+  ChevronRight,
+  Bot
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -75,29 +76,31 @@ const documentTypes = [
   { id: 'outro', label: 'Outro Documento', icon: Paperclip },
 ];
 
-// Service color schemes
+// Service color schemes - Futuristic and modern
 const serviceThemes = {
   'limpa-nome': {
-    primary: 'from-emerald-500 to-teal-600',
+    primary: 'from-emerald-500 to-teal-500',
     accent: 'text-emerald-400',
     bg: 'bg-emerald-500/10',
-    border: 'border-emerald-500/20',
-    ring: 'ring-emerald-500/30',
+    border: 'border-emerald-500/30',
+    ring: 'ring-emerald-500/40',
     badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-    avatarBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
-    messageBg: 'bg-gradient-to-r from-emerald-600 to-teal-600',
-    glow: 'shadow-emerald-500/20',
+    avatarBg: 'bg-gradient-to-br from-emerald-500 to-teal-500',
+    messageBg: 'bg-gradient-to-r from-emerald-500 to-teal-500',
+    glow: 'shadow-lg shadow-emerald-500/25',
+    headerBg: 'bg-gradient-to-r from-emerald-600/20 to-teal-600/10',
   },
   'fiscal': {
-    primary: 'from-violet-500 to-purple-600',
+    primary: 'from-violet-500 to-purple-500',
     accent: 'text-violet-400',
     bg: 'bg-violet-500/10',
-    border: 'border-violet-500/20',
-    ring: 'ring-violet-500/30',
+    border: 'border-violet-500/30',
+    ring: 'ring-violet-500/40',
     badge: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
-    avatarBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
-    messageBg: 'bg-gradient-to-r from-violet-600 to-purple-600',
-    glow: 'shadow-violet-500/20',
+    avatarBg: 'bg-gradient-to-br from-violet-500 to-purple-500',
+    messageBg: 'bg-gradient-to-r from-violet-500 to-purple-500',
+    glow: 'shadow-lg shadow-violet-500/25',
+    headerBg: 'bg-gradient-to-r from-violet-600/20 to-purple-600/10',
   }
 };
 
@@ -251,7 +254,7 @@ export function AdminClientChat() {
         : `Serviço: Módulo Fiscal. CNPJ: ${selectedClient.cnpj || 'Não informado'}. Valor identificado: R$ ${((selectedClient.identified_value_cents || 0) / 100).toFixed(2)}.`;
 
       const conversationHistory = messages.length > 0 
-        ? messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'Admin' : 'Cliente'}]: ${m.content}`).join('\n')
+        ? messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'Guilherme' : 'Cliente'}]: ${m.content}`).join('\n')
         : 'Primeiro contato - sem histórico anterior';
 
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-admin-response`, {
@@ -267,8 +270,8 @@ export function AdminClientChat() {
           context,
           conversationHistory,
           action: messages.length === 0 
-            ? 'Gerar mensagem de boas-vindas acolhedora para primeiro contato'
-            : 'Gerar resposta de acompanhamento natural para continuar o atendimento',
+            ? 'Gerar mensagem de boas-vindas pessoal e acolhedora como Guilherme, especialista humano'
+            : 'Gerar resposta de acompanhamento natural e humanizada como Guilherme',
         }),
       });
 
@@ -300,8 +303,8 @@ export function AdminClientChat() {
         const cleanResponse = aiResponse.replace(/^🧠\s*Sugestão de resposta para envio:\s*/i, '').trim();
         setNewMessage(cleanResponse);
         toast({ 
-          title: '🧠 Sugestão gerada pela AtentAI', 
-          description: 'Revise e edite antes de enviar ao cliente.' 
+          title: '🧠 Sugestão gerada', 
+          description: 'Revise e personalize antes de enviar.' 
         });
       } else {
         const errorData = await response.json();
@@ -320,8 +323,18 @@ export function AdminClientChat() {
   };
 
   const handleDocumentRequest = (docId: string, docLabel: string) => {
+    const firstName = selectedClient?.full_name?.split(' ')[0] || 'Cliente';
     setNewMessage(prev => {
-      const docMessage = `📋 *Solicitação de Documento*\n\nOlá ${selectedClient?.full_name?.split(' ')[0]}! 👋\n\nPara dar continuidade ao seu processo, preciso que você envie o seguinte documento:\n\n📄 *${docLabel}*\n\nVocê pode enviar como foto ou PDF aqui mesmo no chat. Qualquer dúvida, estou à disposição! 😊`;
+      const docMessage = `Olá, ${firstName}! 👋
+
+Para dar continuidade ao seu processo, vou precisar que você me envie o seguinte documento:
+
+📄 ${docLabel}
+
+Pode enviar como foto ou PDF aqui mesmo no chat. Qualquer dúvida, estou à disposição!
+
+Abraço,
+Guilherme`;
       return prev ? prev + '\n\n' + docMessage : docMessage;
     });
     setShowDocumentRequest(false);
@@ -365,8 +378,8 @@ export function AdminClientChat() {
   }
 
   return (
-    <div className="h-[calc(100vh-200px)] min-h-[600px] flex flex-col">
-      {/* Header */}
+    <div className="h-[calc(100vh-180px)] min-h-[600px] flex flex-col">
+      {/* Header - Clean and minimal */}
       <div className="flex items-center justify-between mb-4 shrink-0">
         <div className="flex items-center gap-3">
           <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary/60 shadow-lg shadow-primary/20">
@@ -377,80 +390,78 @@ export function AdminClientChat() {
             <p className="text-sm text-muted-foreground">{clients.length} clientes ativos</p>
           </div>
         </div>
-        <Button variant="outline" size="sm" onClick={loadClients} className="gap-2">
+        <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 border-border/50 hover:border-primary/50">
           <RefreshCw className="h-4 w-4" />
           Atualizar
         </Button>
       </div>
 
-      {/* Main Container - Fixed Height */}
-      <div className="flex-1 flex gap-4 min-h-0 overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm">
+      {/* Main Container - Modern glassmorphism */}
+      <div className="flex-1 flex gap-0 min-h-0 overflow-hidden rounded-2xl border border-border/40 bg-gradient-to-br from-card/80 to-muted/30 backdrop-blur-xl shadow-2xl">
         
-        {/* Client List Panel */}
-        <div className="w-80 shrink-0 flex flex-col border-r border-border/50 bg-muted/20">
+        {/* Client List Panel - Dark theme */}
+        <div className="w-80 shrink-0 flex flex-col bg-slate-900/95 border-r border-white/5">
           {/* Search & Filters */}
-          <div className="p-4 shrink-0 space-y-3 border-b border-border/50">
+          <div className="p-4 shrink-0 space-y-3 border-b border-white/10">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input 
                 placeholder="Buscar cliente..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-9 bg-background/50 border-border/50"
+                className="pl-9 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-primary/50"
               />
             </div>
             
-            {/* Service Tabs */}
-            <div className="flex gap-1 p-1 rounded-lg bg-background/50">
+            {/* Service Tabs - Modern pills */}
+            <div className="flex gap-1 p-1 rounded-xl bg-slate-800/50">
               <button
                 onClick={() => setActiveServiceTab('all')}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
                   activeServiceTab === 'all' 
-                    ? "bg-primary text-primary-foreground shadow-sm" 
-                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/30" 
+                    : "text-slate-400 hover:text-white hover:bg-slate-700/50"
                 )}
               >
                 <Users className="h-3.5 w-3.5" />
                 Todos
-                <span className="ml-1 opacity-70">{clients.length}</span>
+                <span className="ml-0.5 opacity-70">{clients.length}</span>
               </button>
               <button
                 onClick={() => setActiveServiceTab('limpa-nome')}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
                   activeServiceTab === 'limpa-nome' 
-                    ? "bg-emerald-500 text-white shadow-sm shadow-emerald-500/20" 
-                    : "text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10"
+                    ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-lg shadow-emerald-500/30" 
+                    : "text-slate-400 hover:text-emerald-400 hover:bg-emerald-500/10"
                 )}
               >
                 <Shield className="h-3.5 w-3.5" />
-                <span className="hidden xl:inline">Limpa</span>
                 <span className="opacity-70">{limpaNomeCount}</span>
               </button>
               <button
                 onClick={() => setActiveServiceTab('fiscal')}
                 className={cn(
-                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "flex-1 py-2 px-3 rounded-lg text-xs font-medium transition-all flex items-center justify-center gap-1.5",
                   activeServiceTab === 'fiscal' 
-                    ? "bg-violet-500 text-white shadow-sm shadow-violet-500/20" 
-                    : "text-muted-foreground hover:text-violet-400 hover:bg-violet-500/10"
+                    ? "bg-gradient-to-r from-violet-500 to-purple-500 text-white shadow-lg shadow-violet-500/30" 
+                    : "text-slate-400 hover:text-violet-400 hover:bg-violet-500/10"
                 )}
               >
                 <Scale className="h-3.5 w-3.5" />
-                <span className="hidden xl:inline">Fiscal</span>
                 <span className="opacity-70">{fiscalCount}</span>
               </button>
             </div>
           </div>
 
           {/* Scrollable Client List */}
-          <div className="flex-1 overflow-y-auto">
+          <div className="flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
             <div className="p-2 space-y-1">
               {filteredClients.length === 0 ? (
                 <div className="text-center py-12">
-                  <Users className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
-                  <p className="text-sm text-muted-foreground">Nenhum cliente encontrado</p>
+                  <Users className="h-10 w-10 mx-auto mb-3 text-slate-600" />
+                  <p className="text-sm text-slate-500">Nenhum cliente encontrado</p>
                 </div>
               ) : (
                 filteredClients.map((client) => {
@@ -464,19 +475,20 @@ export function AdminClientChat() {
                       className={cn(
                         "w-full p-3 rounded-xl text-left transition-all group",
                         isSelected
-                          ? `${clientTheme.bg} ${clientTheme.border} border ring-2 ${clientTheme.ring}`
-                          : "hover:bg-muted/50 border border-transparent"
+                          ? `bg-gradient-to-r ${clientTheme.primary} shadow-lg ${clientTheme.glow}`
+                          : "hover:bg-slate-800/60 border border-transparent hover:border-slate-700/50"
                       )}
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
                         <div className={cn(
-                          "relative w-10 h-10 rounded-full flex items-center justify-center text-white font-medium text-sm shrink-0",
-                          clientTheme.avatarBg
+                          "relative w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm shrink-0",
+                          isSelected ? "bg-white/20 text-white" : `${clientTheme.avatarBg} text-white`
                         )}>
                           {getInitials(client.full_name)}
                           <div className={cn(
-                            "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card",
+                            "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2",
+                            isSelected ? "border-white/30" : "border-slate-900",
                             client.status === 'completed' ? 'bg-green-500' :
                             client.status === 'pending' ? 'bg-amber-500' : 'bg-blue-500'
                           )} />
@@ -486,29 +498,29 @@ export function AdminClientChat() {
                           <div className="flex items-center justify-between gap-2">
                             <span className={cn(
                               "font-medium truncate text-sm",
-                              isSelected ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"
+                              isSelected ? "text-white" : "text-slate-200 group-hover:text-white"
                             )}>
                               {client.full_name}
                             </span>
                             <ChevronRight className={cn(
                               "h-4 w-4 shrink-0 transition-transform",
-                              isSelected ? clientTheme.accent : "text-muted-foreground opacity-0 group-hover:opacity-100",
+                              isSelected ? "text-white/70" : "text-slate-600 opacity-0 group-hover:opacity-100",
                               isSelected && "translate-x-0.5"
                             )} />
                           </div>
                           <div className="flex items-center gap-1.5 mt-0.5">
                             {client.service_type === 'limpa-nome' ? (
-                              <Shield className="h-3 w-3 text-emerald-500" />
+                              <Shield className={cn("h-3 w-3", isSelected ? "text-white/70" : "text-emerald-500")} />
                             ) : (
-                              <Scale className="h-3 w-3 text-violet-500" />
+                              <Scale className={cn("h-3 w-3", isSelected ? "text-white/70" : "text-violet-500")} />
                             )}
-                            <span className="text-xs text-muted-foreground truncate">
+                            <span className={cn("text-xs truncate", isSelected ? "text-white/70" : "text-slate-400")}>
                               {client.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
                             </span>
                           </div>
                           <div className="flex items-center gap-1 mt-1">
-                            <Clock className="h-3 w-3 text-muted-foreground/60" />
-                            <span className="text-[10px] text-muted-foreground/60">
+                            <Clock className={cn("h-3 w-3", isSelected ? "text-white/50" : "text-slate-500")} />
+                            <span className={cn("text-[10px]", isSelected ? "text-white/50" : "text-slate-500")}>
                               {formatDistanceToNow(new Date(client.created_at), { addSuffix: true, locale: ptBR })}
                             </span>
                           </div>
@@ -522,54 +534,54 @@ export function AdminClientChat() {
           </div>
         </div>
 
-        {/* Chat Panel - Fixed Layout */}
-        <div className="flex-1 flex flex-col min-w-0">
+        {/* Chat Panel - Fixed Layout with colored border */}
+        <div className="flex-1 flex flex-col min-w-0 bg-slate-950/40">
           {selectedClient && theme ? (
             <>
-              {/* Fixed Chat Header */}
+              {/* Fixed Chat Header with gradient border */}
               <div className={cn(
-                "shrink-0 p-4 border-b border-border/50",
-                "bg-gradient-to-r",
-                theme.primary,
-                "bg-opacity-5"
+                "shrink-0 p-4 border-b-2",
+                theme.headerBg,
+                selectedClient.service_type === 'limpa-nome' 
+                  ? "border-emerald-500/50" 
+                  : "border-violet-500/50"
               )}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={cn(
                       "w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold",
                       theme.avatarBg,
-                      "shadow-lg",
                       theme.glow
                     )}>
                       {getInitials(selectedClient.full_name)}
                     </div>
                     <div>
-                      <h3 className="font-semibold text-foreground">{selectedClient.full_name}</h3>
+                      <h3 className="font-semibold text-white">{selectedClient.full_name}</h3>
                       <div className="flex items-center gap-2 text-sm">
                         {selectedClient.service_type === 'limpa-nome' ? (
-                          <Badge className={cn("gap-1 text-[10px]", theme.badge)}>
+                          <Badge className="gap-1 text-[10px] bg-emerald-500/20 text-emerald-300 border-emerald-500/30">
                             <Shield className="h-3 w-3" />
                             Limpa Nome
                           </Badge>
                         ) : (
-                          <Badge className={cn("gap-1 text-[10px]", theme.badge)}>
+                          <Badge className="gap-1 text-[10px] bg-violet-500/20 text-violet-300 border-violet-500/30">
                             <Scale className="h-3 w-3" />
                             Módulo Fiscal
                           </Badge>
                         )}
-                        <span className="text-muted-foreground text-xs">{selectedClient.email}</span>
+                        <span className="text-slate-400 text-xs">{selectedClient.email}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-xs text-slate-300 border-slate-600">
                       {getStatusLabel(selectedClient.status)}
                     </Badge>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => setShowDocumentRequest(!showDocumentRequest)}
-                      className="gap-2"
+                      className="gap-2 border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white"
                     >
                       <FileCheck className="h-4 w-4" />
                       <span className="hidden sm:inline">Solicitar Doc</span>
@@ -585,12 +597,12 @@ export function AdminClientChat() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="shrink-0 overflow-hidden border-b border-border/50 bg-muted/30"
+                    className="shrink-0 overflow-hidden border-b border-slate-700/50 bg-slate-900/50"
                   >
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-sm text-foreground">Selecione o tipo de documento:</h4>
-                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowDocumentRequest(false)}>
+                        <h4 className="font-medium text-sm text-white">Selecione o tipo de documento:</h4>
+                        <Button variant="ghost" size="icon" className="h-6 w-6 text-slate-400 hover:text-white" onClick={() => setShowDocumentRequest(false)}>
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
@@ -600,7 +612,7 @@ export function AdminClientChat() {
                             key={doc.id}
                             variant="outline"
                             size="sm"
-                            className="justify-start gap-2 h-auto py-2"
+                            className="justify-start gap-2 h-auto py-2 border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-slate-600"
                             onClick={() => handleDocumentRequest(doc.id, doc.label)}
                           >
                             <doc.icon className={cn("h-4 w-4", theme.accent)} />
@@ -614,21 +626,21 @@ export function AdminClientChat() {
               </AnimatePresence>
 
               {/* Scrollable Messages Area */}
-              <div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-background/50 to-background/80">
+              <div className="flex-1 overflow-y-auto p-4 scrollbar-thin scrollbar-thumb-slate-700 scrollbar-track-transparent">
                 <div className="space-y-4 max-w-3xl mx-auto">
                   {messages.length === 0 ? (
                     <div className="text-center py-16">
                       <div className={cn(
-                        "w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center",
-                        theme.bg
+                        "w-20 h-20 rounded-2xl mx-auto mb-4 flex items-center justify-center",
+                        theme.bg,
+                        "border",
+                        theme.border
                       )}>
                         <MessageCircle className={cn("h-10 w-10", theme.accent)} />
                       </div>
-                      <h4 className="text-lg font-medium text-foreground mb-2">Inicie a conversa</h4>
-                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
-                        {selectedClient.service_type === 'limpa-nome' 
-                          ? 'Envie uma mensagem de boas-vindas ou use a IA para gerar uma sugestão.' 
-                          : 'Use o assistente de IA para gerar uma mensagem contextualizada.'}
+                      <h4 className="text-lg font-medium text-white mb-2">Inicie a conversa</h4>
+                      <p className="text-sm text-slate-400 max-w-xs mx-auto">
+                        Use a IA para gerar uma mensagem humanizada como Guilherme.
                       </p>
                     </div>
                   ) : (
@@ -657,15 +669,15 @@ export function AdminClientChat() {
                             
                             <div
                               className={cn(
-                                "rounded-2xl px-4 py-2.5 shadow-sm",
+                                "rounded-2xl px-4 py-2.5 shadow-lg",
                                 isMine
-                                  ? `${theme.messageBg} text-white rounded-br-md`
-                                  : "bg-muted text-foreground rounded-bl-md"
+                                  ? `${theme.messageBg} text-white rounded-br-md ${theme.glow}`
+                                  : "bg-slate-800 text-slate-100 rounded-bl-md border border-slate-700/50"
                               )}
                             >
                               <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
                               <div className={cn("flex items-center gap-1.5 mt-1.5", isMine && "justify-end")}>
-                                <span className={cn("text-[10px]", isMine ? "text-white/60" : "text-muted-foreground")}>
+                                <span className={cn("text-[10px]", isMine ? "text-white/60" : "text-slate-500")}>
                                   {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
                                 </span>
                                 {isMine && (
@@ -686,8 +698,8 @@ export function AdminClientChat() {
                 </div>
               </div>
 
-              {/* Fixed Input Area */}
-              <div className="shrink-0 p-4 border-t border-border/50 bg-card/80 backdrop-blur-sm">
+              {/* Fixed Input Area - Modern glass effect */}
+              <div className="shrink-0 p-4 border-t border-slate-700/50 bg-slate-900/80 backdrop-blur-sm">
                 <form onSubmit={handleSend} className="space-y-3">
                   <div className="flex gap-2 items-end">
                     <Button
@@ -697,24 +709,24 @@ export function AdminClientChat() {
                       onClick={generateAIResponse}
                       disabled={isGeneratingAI}
                       className={cn(
-                        "shrink-0 gap-2 h-10",
+                        "shrink-0 gap-2 h-10 border-slate-600 text-slate-300 hover:bg-slate-800 hover:text-white hover:border-primary/50",
                         isGeneratingAI && "animate-pulse"
                       )}
                     >
                       {isGeneratingAI ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Sparkles className="h-4 w-4 text-amber-500" />
+                        <Bot className="h-4 w-4 text-primary" />
                       )}
-                      <span className="hidden sm:inline">Gerar com IA</span>
+                      <span className="hidden sm:inline">Gerar como Guilherme</span>
                     </Button>
                     
                     <div className="flex-1 relative">
                       <Input
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
-                        placeholder="Digite sua mensagem..."
-                        className="h-10 pr-4 bg-background/50 border-border/50"
+                        placeholder="Digite sua mensagem como Guilherme..."
+                        className="h-10 pr-4 bg-slate-800/50 border-slate-700/50 text-white placeholder:text-slate-500 focus:border-primary/50"
                         disabled={isSending}
                       />
                     </div>
@@ -726,7 +738,7 @@ export function AdminClientChat() {
                         "shrink-0 h-10 w-10 p-0 rounded-full",
                         "bg-gradient-to-r",
                         theme.primary,
-                        "hover:opacity-90 shadow-lg",
+                        "hover:opacity-90",
                         theme.glow
                       )}
                     >
@@ -744,7 +756,7 @@ export function AdminClientChat() {
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: -5 }}
-                        className="text-xs text-muted-foreground flex items-center gap-1.5"
+                        className="text-xs text-slate-400 flex items-center gap-1.5"
                       >
                         <Sparkles className="h-3 w-3 text-amber-500" />
                         Revise a mensagem antes de enviar.
@@ -755,13 +767,13 @@ export function AdminClientChat() {
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-muted/20 to-background">
+            <div className="flex-1 flex items-center justify-center">
               <div className="text-center">
-                <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-6">
-                  <MessageCircle className="h-12 w-12 text-muted-foreground/40" />
+                <div className="w-24 h-24 rounded-2xl bg-slate-800/50 flex items-center justify-center mx-auto mb-6 border border-slate-700/50">
+                  <MessageCircle className="h-12 w-12 text-slate-600" />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-2">Selecione um cliente</h3>
-                <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                <h3 className="text-xl font-semibold text-white mb-2">Selecione um cliente</h3>
+                <p className="text-slate-400 text-sm max-w-xs mx-auto">
                   Escolha um cliente na lista para iniciar ou continuar o atendimento
                 </p>
               </div>
