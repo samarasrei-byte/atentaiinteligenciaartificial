@@ -94,12 +94,10 @@ Toque em um botão abaixo! 👇`
 };
 
 const QUICK_QUESTIONS = [
-  { label: 'O que é IBS?', keyword: 'ibs', icon: Calculator },
-  { label: 'Como funciona CBS?', keyword: 'cbs', icon: ShieldCheck },
-  { label: 'Impacto no MEI', keyword: 'mei', icon: Zap },
-  { label: 'Cashback tributário', keyword: 'cashback', icon: Gift },
-  { label: 'Cronograma', keyword: 'cronograma', icon: Clock },
-  { label: 'Cesta Básica', keyword: 'cesta', icon: Sparkles },
+  { label: 'O que é IBS?', shortLabel: 'IBS', keyword: 'ibs', icon: Calculator },
+  { label: 'Como funciona CBS?', shortLabel: 'CBS', keyword: 'cbs', icon: ShieldCheck },
+  { label: 'Impacto no MEI', shortLabel: 'MEI', keyword: 'mei', icon: Zap },
+  { label: 'Cashback', shortLabel: 'Cashback', keyword: 'cashback', icon: Gift },
 ];
 
 interface Message {
@@ -324,31 +322,18 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
 
               {/* Quick Questions - Chips Style */}
               <div className="px-2.5 md:px-3 py-2 bg-[#202c33]/50 border-t border-white/5">
-                <div className="flex flex-wrap gap-1.5 md:gap-2">
-                  {QUICK_QUESTIONS.slice(0, 4).map((q) => (
+                <div className="flex gap-1.5 md:gap-2 justify-center">
+                  {QUICK_QUESTIONS.map((q) => (
                     <Button 
                       key={q.keyword}
                       variant="outline" 
                       size="sm"
                       onClick={() => handleQuickQuestion(q.keyword, q.label)}
-                      className="text-[10px] md:text-xs gap-1 md:gap-1.5 bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-2 md:px-3 h-7 md:h-8"
+                      className="text-[11px] md:text-xs gap-1 md:gap-1.5 bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-2.5 md:px-3 h-8 md:h-8 flex-shrink-0"
                     >
-                      <q.icon className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                      <span className="hidden xs:inline">{q.label}</span>
-                      <span className="xs:hidden">{q.label.split(' ')[0]}</span>
-                    </Button>
-                  ))}
-                  {/* Show remaining on larger screens */}
-                  {QUICK_QUESTIONS.slice(4).map((q) => (
-                    <Button 
-                      key={q.keyword}
-                      variant="outline" 
-                      size="sm"
-                      onClick={() => handleQuickQuestion(q.keyword, q.label)}
-                      className="hidden sm:flex text-[10px] md:text-xs gap-1 md:gap-1.5 bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-2 md:px-3 h-7 md:h-8"
-                    >
-                      <q.icon className="w-2.5 h-2.5 md:w-3 md:h-3" />
-                      {q.label}
+                      <q.icon className="w-3 h-3 md:w-3.5 md:h-3.5" />
+                      <span className="md:hidden">{q.shortLabel}</span>
+                      <span className="hidden md:inline">{q.label}</span>
                     </Button>
                   ))}
                 </div>
