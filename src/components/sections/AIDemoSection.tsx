@@ -232,17 +232,17 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 max-w-6xl mx-auto items-stretch">
           {/* Chat Demo - WhatsApp Style */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="lg:col-span-2 order-1"
+            className="lg:col-span-2 order-1 flex"
           >
-            <Card className="bg-[#0b141a] border-0 shadow-2xl overflow-hidden rounded-xl md:rounded-2xl">
+            <Card className="bg-[#0b141a] border-0 shadow-2xl overflow-hidden rounded-xl md:rounded-2xl flex flex-col w-full">
               {/* Chat Header - WhatsApp Style */}
-              <div className="bg-[#202c33] p-2.5 md:p-3 flex items-center justify-between">
+              <div className="bg-[#202c33] p-2.5 md:p-3 flex items-center justify-between shrink-0">
                 <div className="flex items-center gap-2.5 md:gap-3">
                   <div className="relative">
                     <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-primary to-emerald-500 rounded-full flex items-center justify-center">
@@ -265,10 +265,10 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 </div>
               </div>
 
-              {/* Messages - WhatsApp Style */}
+              {/* Messages - Flex grow area */}
               <CardContent 
-                className="p-2.5 md:p-3 min-h-[180px] md:min-h-[200px] max-h-[260px] md:max-h-[320px] overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
-                style={{ backgroundColor: '#0b141a' }}
+                className="p-2.5 md:p-3 flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
+                style={{ backgroundColor: '#0b141a', minHeight: '180px', maxHeight: '280px' }}
               >
                 {messages.map((msg, i) => (
                   <div 
@@ -320,8 +320,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 <div ref={messagesEndRef} />
               </CardContent>
 
-              {/* Quick Questions - Chips Style */}
-              <div className="px-2.5 md:px-3 py-2 bg-[#202c33]/50 border-t border-white/5">
+              {/* Quick Questions - Fixed at bottom */}
+              <div className="px-2.5 md:px-3 py-2 bg-[#202c33]/50 border-t border-white/5 shrink-0">
                 <div className="flex gap-1.5 md:gap-2 justify-center">
                   {QUICK_QUESTIONS.map((q) => (
                     <Button 
@@ -339,22 +339,22 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 </div>
               </div>
 
-              {/* Input - WhatsApp Style */}
-              <div className="p-2 bg-[#202c33] flex gap-2 items-center">
+              {/* Input - Fixed at bottom, aligned with CTA */}
+              <div className="p-2.5 md:p-3 bg-[#202c33] flex gap-2 items-center shrink-0">
                 <Input 
                   placeholder="Digite sua pergunta..." 
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSend()}
-                  className="flex-1 bg-[#2a3942] border-0 text-white text-sm placeholder:text-slate-400 rounded-full px-3 md:px-4 h-9 md:h-10 focus-visible:ring-1 focus-visible:ring-emerald-500"
+                  className="flex-1 bg-[#2a3942] border-0 text-white text-sm placeholder:text-slate-400 rounded-full px-4 h-11 md:h-12 focus-visible:ring-1 focus-visible:ring-emerald-500"
                 />
                 <Button 
                   onClick={handleSend} 
                   size="icon" 
-                  className="bg-emerald-600 hover:bg-emerald-500 rounded-full h-9 w-9 md:h-10 md:w-10 shrink-0"
+                  className="bg-emerald-600 hover:bg-emerald-500 rounded-full h-11 w-11 md:h-12 md:w-12 shrink-0"
                   disabled={!input.trim()}
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-4 w-4 md:h-5 md:w-5" />
                 </Button>
               </div>
             </Card>
