@@ -29,7 +29,7 @@ interface ProfileOption {
 
 const ProfileSelector = () => {
   const navigate = useNavigate();
-  const { user, loading, hasRole, checkAffiliateStatus, checkPartnerStatus } = useAuth();
+  const { user, loading, hasRole, checkAffiliateStatus } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [availableProfiles, setAvailableProfiles] = useState<ProfileOption[]>([]);
 
@@ -56,12 +56,9 @@ const ProfileSelector = () => {
           ]);
         };
 
-        const [isAffiliate, isPartner] = await Promise.all([
-          checkWithTimeout(checkAffiliateStatus(), false),
-          checkWithTimeout(checkPartnerStatus(), false)
-        ]).catch(err => {
-          console.error('Error checking statuses:', err);
-          return [false, false];
+        const isAffiliate = await checkWithTimeout(checkAffiliateStatus(), false).catch(err => {
+          console.error('Error checking affiliate status:', err);
+          return false;
         });
 
         if (!mounted) return;
@@ -89,18 +86,6 @@ const ProfileSelector = () => {
             icon: <Calculator className="h-6 w-6" />,
             route: '/contador',
             color: 'bg-blue-500',
-            available: true
-          });
-        }
-
-        if (isPartner) {
-          profiles.push({
-            id: 'parceiro',
-            label: 'Parceiro',
-            description: 'Dashboard de parceiro com solicitações e comissões',
-            icon: <Users className="h-6 w-6" />,
-            route: '/parceiro',
-            color: 'bg-emerald-500',
             available: true
           });
         }

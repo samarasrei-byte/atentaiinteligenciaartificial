@@ -52,8 +52,6 @@ export function Footer({ onNavigate }: FooterProps) {
   const partnerLinks = [
     { label: "Contadores", to: "/contadores-publico", highlight: false },
     { label: "Seja Afiliado", to: "/afiliado/cadastro", highlight: true },
-    { label: "Seja Parceiro", to: "/parceiro/onboarding", highlight: true },
-    { label: "Login Parceiro", to: "/parceiro/login", highlight: false },
     { label: "Login Afiliado", to: "/auth", highlight: false },
   ];
 
