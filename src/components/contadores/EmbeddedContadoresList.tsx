@@ -46,13 +46,25 @@ export function EmbeddedContadoresList() {
 
   const fetchContadores = async () => {
     try {
-      const { data, error } = await supabase
-        .from('contador_profiles')
-        .select(`
-          *,
-          profile:profiles!contador_profiles_user_id_fkey(full_name, avatar_url)
-        `)
-        .eq('available', true);
+      // Use the secure view that excludes sensitive Stripe information
+      const { data: contadorData, error } = await supabase
+        .from('contador_profiles_public')
+        .select('*');
+      
+      if (error) throw error;
+
+      // Fetch profile info separately to get names/avatars
+      const userIds = (contadorData || []).map(c => c.user_id);
+      const { data: profilesData } = await supabase
+        .from('profiles')
+        .select('user_id, full_name, avatar_url')
+        .in('user_id', userIds);
+
+      // Join the data
+      const data = (contadorData || []).map(contador => ({
+        ...contador,
+        profile: profilesData?.find(p => p.user_id === contador.user_id)
+      }));
 
       if (error) throw error;
       
