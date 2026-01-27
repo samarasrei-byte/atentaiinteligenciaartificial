@@ -226,29 +226,31 @@ export function AdminClientChat() {
     setIsGeneratingAI(true);
 
     try {
+      // Build rich context for the AI
       const context = selectedClient.service_type === 'limpa-nome' 
-        ? `Cliente solicitou serviço Limpa Nome. Nome: ${selectedClient.full_name}. Status: ${selectedClient.status}. Valor da dívida: R$ ${((selectedClient.debt_amount_cents || 0) / 100).toFixed(2)}. Últimas mensagens: ${messages.slice(-5).map(m => m.content).join(' | ')}`
-        : `Cliente solicitou análise fiscal. Nome: ${selectedClient.full_name}. CNPJ: ${selectedClient.cnpj}. Status: ${selectedClient.status}. Valor identificado: R$ ${((selectedClient.identified_value_cents || 0) / 100).toFixed(2)}.`;
+        ? `Serviço: Limpa Nome (Recuperação de Crédito). Valor da dívida: R$ ${((selectedClient.debt_amount_cents || 0) / 100).toFixed(2)}. CPF: ${selectedClient.cpf || 'Não informado'}.`
+        : `Serviço: Módulo Fiscal. CNPJ: ${selectedClient.cnpj || 'Não informado'}. Valor identificado: R$ ${((selectedClient.identified_value_cents || 0) / 100).toFixed(2)}.`;
 
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-chat`, {
+      // Build conversation history
+      const conversationHistory = messages.length > 0 
+        ? messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'Admin' : 'Cliente'}]: ${m.content}`).join('\n')
+        : 'Primeiro contato - sem histórico anterior';
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-admin-response`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
         },
         body: JSON.stringify({
-          messages: [
-            {
-              role: 'user',
-              content: `Você é um assistente especialista em ${selectedClient.service_type === 'limpa-nome' ? 'recuperação de crédito e limpeza de nome' : 'análise fiscal e tributária'}. 
-              
-Gere uma resposta MUITO HUMANA e acolhedora para o cliente. Seja empático, use linguagem natural e amigável. NÃO use jargões técnicos demais. O tom deve ser de quem realmente se importa com o cliente.
-
-Contexto: ${context}
-
-Gere uma resposta curta (2-3 parágrafos) para dar continuidade ao atendimento. Se for o primeiro contato, dê boas-vindas. Se já houver conversa, continue naturalmente.`
-            }
-          ],
+          clientName: selectedClient.full_name,
+          serviceType: selectedClient.service_type,
+          status: selectedClient.status,
+          context,
+          conversationHistory,
+          action: messages.length === 0 
+            ? 'Gerar mensagem de boas-vindas acolhedora para primeiro contato'
+            : 'Gerar resposta de acompanhamento natural para continuar o atendimento',
         }),
       });
 
@@ -277,8 +279,20 @@ Gere uma resposta curta (2-3 parágrafos) para dar continuidade ao atendimento. 
           }
         }
 
-        setNewMessage(aiResponse);
-        toast({ title: '✨ Resposta gerada pela IA', description: 'Revise antes de enviar.' });
+        // Clean up the response - remove the prefix if present
+        const cleanResponse = aiResponse.replace(/^🧠\s*Sugestão de resposta para envio:\s*/i, '').trim();
+        setNewMessage(cleanResponse);
+        toast({ 
+          title: '🧠 Sugestão gerada pela AtentAI', 
+          description: 'Revise e edite antes de enviar ao cliente.' 
+        });
+      } else {
+        const errorData = await response.json();
+        toast({ 
+          title: 'Erro ao gerar sugestão', 
+          description: errorData.error || 'Tente novamente.',
+          variant: 'destructive' 
+        });
       }
     } catch (error) {
       console.error('AI generation error:', error);
