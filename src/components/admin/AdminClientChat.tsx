@@ -3,11 +3,8 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -16,12 +13,10 @@ import {
   Loader2,
   Check,
   CheckCheck,
-  Paperclip,
   FileText,
   X,
   Users,
   Sparkles,
-  Bot,
   Shield,
   Scale,
   RefreshCw,
@@ -29,7 +24,10 @@ import {
   File,
   User,
   Search,
-  Clock
+  Clock,
+  Paperclip,
+  Zap,
+  ChevronRight
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -77,6 +75,32 @@ const documentTypes = [
   { id: 'outro', label: 'Outro Documento', icon: Paperclip },
 ];
 
+// Service color schemes
+const serviceThemes = {
+  'limpa-nome': {
+    primary: 'from-emerald-500 to-teal-600',
+    accent: 'text-emerald-400',
+    bg: 'bg-emerald-500/10',
+    border: 'border-emerald-500/20',
+    ring: 'ring-emerald-500/30',
+    badge: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
+    avatarBg: 'bg-gradient-to-br from-emerald-500 to-teal-600',
+    messageBg: 'bg-gradient-to-r from-emerald-600 to-teal-600',
+    glow: 'shadow-emerald-500/20',
+  },
+  'fiscal': {
+    primary: 'from-violet-500 to-purple-600',
+    accent: 'text-violet-400',
+    bg: 'bg-violet-500/10',
+    border: 'border-violet-500/20',
+    ring: 'ring-violet-500/30',
+    badge: 'bg-violet-500/20 text-violet-300 border-violet-500/30',
+    avatarBg: 'bg-gradient-to-br from-violet-500 to-purple-600',
+    messageBg: 'bg-gradient-to-r from-violet-600 to-purple-600',
+    glow: 'shadow-violet-500/20',
+  }
+};
+
 export function AdminClientChat() {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -90,10 +114,18 @@ export function AdminClientChat() {
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal'>('all');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const theme = selectedClient ? serviceThemes[selectedClient.service_type] : null;
+
+  // Auto-scroll to bottom
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
 
   // Load all clients
   useEffect(() => {
@@ -103,7 +135,6 @@ export function AdminClientChat() {
   const loadClients = async () => {
     setIsLoading(true);
     try {
-      // Fetch both limpa-nome and fiscal requests
       const [limpaNomeRes, fiscalRes] = await Promise.all([
         supabase
           .from('credit_repair_requests')
@@ -125,7 +156,6 @@ export function AdminClientChat() {
         service_type: 'fiscal' as const,
       }));
 
-      // Combine and sort by created_at
       const combined = [...limpaNome, ...fiscal].sort((a, b) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
@@ -143,7 +173,6 @@ export function AdminClientChat() {
     if (!selectedClient || !user) return;
 
     const loadMessages = async () => {
-      // Only limpa-nome has chat messages table currently
       if (selectedClient.service_type === 'limpa-nome') {
         const { data } = await supabase
           .from('credit_repair_chat_messages')
@@ -159,7 +188,6 @@ export function AdminClientChat() {
 
     loadMessages();
 
-    // Subscribe to realtime updates
     if (selectedClient.service_type === 'limpa-nome') {
       const channel = supabase
         .channel(`admin-chat-${selectedClient.id}`)
@@ -183,13 +211,6 @@ export function AdminClientChat() {
     }
   }, [selectedClient, user]);
 
-  // Auto-scroll to bottom
-  useEffect(() => {
-    if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-    }
-  }, [messages]);
-
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || !selectedClient || isSending) return;
@@ -212,7 +233,6 @@ export function AdminClientChat() {
         setNewMessage('');
       }
     } else {
-      // For fiscal, we could create a similar chat system
       toast({ title: 'Mensagem enviada', description: 'Notificação enviada ao cliente.' });
       setNewMessage('');
     }
@@ -226,12 +246,10 @@ export function AdminClientChat() {
     setIsGeneratingAI(true);
 
     try {
-      // Build rich context for the AI
       const context = selectedClient.service_type === 'limpa-nome' 
         ? `Serviço: Limpa Nome (Recuperação de Crédito). Valor da dívida: R$ ${((selectedClient.debt_amount_cents || 0) / 100).toFixed(2)}. CPF: ${selectedClient.cpf || 'Não informado'}.`
         : `Serviço: Módulo Fiscal. CNPJ: ${selectedClient.cnpj || 'Não informado'}. Valor identificado: R$ ${((selectedClient.identified_value_cents || 0) / 100).toFixed(2)}.`;
 
-      // Build conversation history
       const conversationHistory = messages.length > 0 
         ? messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'Admin' : 'Cliente'}]: ${m.content}`).join('\n')
         : 'Primeiro contato - sem histórico anterior';
@@ -279,7 +297,6 @@ export function AdminClientChat() {
           }
         }
 
-        // Clean up the response - remove the prefix if present
         const cleanResponse = aiResponse.replace(/^🧠\s*Sugestão de resposta para envio:\s*/i, '').trim();
         setNewMessage(cleanResponse);
         toast({ 
@@ -317,188 +334,249 @@ export function AdminClientChat() {
     return matchesSearch && matchesTab;
   });
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'pending': return 'bg-amber-500/10 text-amber-600 border-amber-500/20';
-      case 'in_progress': case 'analyzing': return 'bg-blue-500/10 text-blue-600 border-blue-500/20';
-      case 'completed': return 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20';
-      default: return 'bg-muted text-muted-foreground';
-    }
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending: 'Aguardando',
+      in_progress: 'Em Análise',
+      analyzing: 'Analisando',
+      completed: 'Concluído',
+      cancelled: 'Cancelado',
+    };
+    return labels[status] || status;
   };
 
   const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
 
-  const unreadCount = (clientId: string) => {
-    // Count unread messages for a specific client
-    return 0; // Would need to track this per-client
-  };
+  const limpaNomeCount = clients.filter(c => c.service_type === 'limpa-nome').length;
+  const fiscalCount = clients.filter(c => c.service_type === 'fiscal').length;
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-64">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      <div className="flex items-center justify-center h-[600px]">
+        <div className="flex flex-col items-center gap-4">
+          <div className="relative">
+            <div className="w-16 h-16 rounded-full border-4 border-primary/20 border-t-primary animate-spin" />
+            <Zap className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-primary" />
+          </div>
+          <p className="text-muted-foreground">Carregando atendimentos...</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <MessageCircle className="h-6 w-6 text-primary" />
-            Central de Atendimento
-          </h2>
-          <p className="text-muted-foreground">Chat com clientes de Limpa Nome e Módulo Fiscal</p>
+    <div className="h-[calc(100vh-200px)] min-h-[600px] flex flex-col">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4 shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-primary to-primary/60 shadow-lg shadow-primary/20">
+            <MessageCircle className="h-6 w-6 text-primary-foreground" />
+          </div>
+          <div>
+            <h2 className="text-xl font-bold text-foreground">Central de Atendimento</h2>
+            <p className="text-sm text-muted-foreground">{clients.length} clientes ativos</p>
+          </div>
         </div>
-        <Button variant="outline" size="sm" onClick={loadClients}>
-          <RefreshCw className="h-4 w-4 mr-2" />
+        <Button variant="outline" size="sm" onClick={loadClients} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
           Atualizar
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 h-[calc(100vh-300px)] min-h-[500px]">
-        {/* Client List */}
-        <Card className="lg:col-span-4 flex flex-col">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 mb-3">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input 
-                  placeholder="Buscar cliente..." 
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-9"
-                />
-              </div>
+      {/* Main Container - Fixed Height */}
+      <div className="flex-1 flex gap-4 min-h-0 overflow-hidden rounded-2xl border border-border/50 bg-card/50 backdrop-blur-sm">
+        
+        {/* Client List Panel */}
+        <div className="w-80 shrink-0 flex flex-col border-r border-border/50 bg-muted/20">
+          {/* Search & Filters */}
+          <div className="p-4 shrink-0 space-y-3 border-b border-border/50">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Buscar cliente..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 bg-background/50 border-border/50"
+              />
             </div>
-            <Tabs value={activeServiceTab} onValueChange={(v) => setActiveServiceTab(v as any)}>
-              <TabsList className="w-full">
-                <TabsTrigger value="all" className="flex-1">
-                  <Users className="h-4 w-4 mr-1" />
-                  Todos
-                </TabsTrigger>
-                <TabsTrigger value="limpa-nome" className="flex-1">
-                  <Shield className="h-4 w-4 mr-1" />
-                  Limpa Nome
-                </TabsTrigger>
-                <TabsTrigger value="fiscal" className="flex-1">
-                  <Scale className="h-4 w-4 mr-1" />
-                  Fiscal
-                </TabsTrigger>
-              </TabsList>
-            </Tabs>
-          </CardHeader>
-          <CardContent className="flex-1 overflow-hidden p-0">
-            <ScrollArea className="h-full">
-              <div className="p-3 space-y-2">
-                {filteredClients.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Users className="h-8 w-8 mx-auto mb-2 opacity-50" />
-                    <p>Nenhum cliente encontrado</p>
-                  </div>
-                ) : (
-                  filteredClients.map((client) => (
+            
+            {/* Service Tabs */}
+            <div className="flex gap-1 p-1 rounded-lg bg-background/50">
+              <button
+                onClick={() => setActiveServiceTab('all')}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  activeServiceTab === 'all' 
+                    ? "bg-primary text-primary-foreground shadow-sm" 
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                )}
+              >
+                <Users className="h-3.5 w-3.5" />
+                Todos
+                <span className="ml-1 opacity-70">{clients.length}</span>
+              </button>
+              <button
+                onClick={() => setActiveServiceTab('limpa-nome')}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  activeServiceTab === 'limpa-nome' 
+                    ? "bg-emerald-500 text-white shadow-sm shadow-emerald-500/20" 
+                    : "text-muted-foreground hover:text-emerald-400 hover:bg-emerald-500/10"
+                )}
+              >
+                <Shield className="h-3.5 w-3.5" />
+                <span className="hidden xl:inline">Limpa</span>
+                <span className="opacity-70">{limpaNomeCount}</span>
+              </button>
+              <button
+                onClick={() => setActiveServiceTab('fiscal')}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  activeServiceTab === 'fiscal' 
+                    ? "bg-violet-500 text-white shadow-sm shadow-violet-500/20" 
+                    : "text-muted-foreground hover:text-violet-400 hover:bg-violet-500/10"
+                )}
+              >
+                <Scale className="h-3.5 w-3.5" />
+                <span className="hidden xl:inline">Fiscal</span>
+                <span className="opacity-70">{fiscalCount}</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Scrollable Client List */}
+          <div className="flex-1 overflow-y-auto">
+            <div className="p-2 space-y-1">
+              {filteredClients.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users className="h-10 w-10 mx-auto mb-3 text-muted-foreground/40" />
+                  <p className="text-sm text-muted-foreground">Nenhum cliente encontrado</p>
+                </div>
+              ) : (
+                filteredClients.map((client) => {
+                  const clientTheme = serviceThemes[client.service_type];
+                  const isSelected = selectedClient?.id === client.id;
+                  
+                  return (
                     <motion.button
                       key={client.id}
                       onClick={() => setSelectedClient(client)}
                       className={cn(
-                        "w-full p-3 rounded-xl text-left transition-all",
-                        selectedClient?.id === client.id
-                          ? "bg-primary/10 border border-primary/20"
-                          : "bg-muted/30 hover:bg-muted/50 border border-transparent"
+                        "w-full p-3 rounded-xl text-left transition-all group",
+                        isSelected
+                          ? `${clientTheme.bg} ${clientTheme.border} border ring-2 ${clientTheme.ring}`
+                          : "hover:bg-muted/50 border border-transparent"
                       )}
                       whileTap={{ scale: 0.98 }}
                     >
                       <div className="flex items-center gap-3">
-                        <Avatar className="h-10 w-10">
-                          <AvatarFallback className={cn(
-                            client.service_type === 'limpa-nome' 
-                              ? 'bg-emerald-500/10 text-emerald-600' 
-                              : 'bg-blue-500/10 text-blue-600'
-                          )}>
-                            {getInitials(client.full_name)}
-                          </AvatarFallback>
-                        </Avatar>
+                        <div className={cn(
+                          "relative w-10 h-10 rounded-full flex items-center justify-center text-white font-medium text-sm shrink-0",
+                          clientTheme.avatarBg
+                        )}>
+                          {getInitials(client.full_name)}
+                          <div className={cn(
+                            "absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-card",
+                            client.status === 'completed' ? 'bg-green-500' :
+                            client.status === 'pending' ? 'bg-amber-500' : 'bg-blue-500'
+                          )} />
+                        </div>
+                        
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center justify-between gap-2">
-                            <span className="font-medium truncate text-foreground">{client.full_name}</span>
-                            <Badge variant="outline" className={cn("text-[10px] shrink-0", getStatusColor(client.status))}>
-                              {client.status}
-                            </Badge>
+                            <span className={cn(
+                              "font-medium truncate text-sm",
+                              isSelected ? "text-foreground" : "text-foreground/80 group-hover:text-foreground"
+                            )}>
+                              {client.full_name}
+                            </span>
+                            <ChevronRight className={cn(
+                              "h-4 w-4 shrink-0 transition-transform",
+                              isSelected ? clientTheme.accent : "text-muted-foreground opacity-0 group-hover:opacity-100",
+                              isSelected && "translate-x-0.5"
+                            )} />
                           </div>
-                          <div className="flex items-center gap-2 mt-1">
+                          <div className="flex items-center gap-1.5 mt-0.5">
                             {client.service_type === 'limpa-nome' ? (
                               <Shield className="h-3 w-3 text-emerald-500" />
                             ) : (
-                              <Scale className="h-3 w-3 text-blue-500" />
+                              <Scale className="h-3 w-3 text-violet-500" />
                             )}
-                            <span className="text-xs text-muted-foreground truncate">{client.email}</span>
+                            <span className="text-xs text-muted-foreground truncate">
+                              {client.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
+                            </span>
                           </div>
                           <div className="flex items-center gap-1 mt-1">
-                            <Clock className="h-3 w-3 text-muted-foreground" />
-                            <span className="text-[10px] text-muted-foreground">
+                            <Clock className="h-3 w-3 text-muted-foreground/60" />
+                            <span className="text-[10px] text-muted-foreground/60">
                               {formatDistanceToNow(new Date(client.created_at), { addSuffix: true, locale: ptBR })}
                             </span>
                           </div>
                         </div>
                       </div>
                     </motion.button>
-                  ))
-                )}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
+                  );
+                })
+              )}
+            </div>
+          </div>
+        </div>
 
-        {/* Chat Area */}
-        <Card className="lg:col-span-8 flex flex-col">
-          {selectedClient ? (
+        {/* Chat Panel - Fixed Layout */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {selectedClient && theme ? (
             <>
-              {/* Chat Header */}
-              <CardHeader className="border-b pb-3">
+              {/* Fixed Chat Header */}
+              <div className={cn(
+                "shrink-0 p-4 border-b border-border/50",
+                "bg-gradient-to-r",
+                theme.primary,
+                "bg-opacity-5"
+              )}>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Avatar className="h-12 w-12">
-                      <AvatarFallback className={cn(
-                        selectedClient.service_type === 'limpa-nome' 
-                          ? 'bg-emerald-500/10 text-emerald-600' 
-                          : 'bg-blue-500/10 text-blue-600'
-                      )}>
-                        {getInitials(selectedClient.full_name)}
-                      </AvatarFallback>
-                    </Avatar>
+                    <div className={cn(
+                      "w-12 h-12 rounded-full flex items-center justify-center text-white font-semibold",
+                      theme.avatarBg,
+                      "shadow-lg",
+                      theme.glow
+                    )}>
+                      {getInitials(selectedClient.full_name)}
+                    </div>
                     <div>
-                      <CardTitle className="text-lg">{selectedClient.full_name}</CardTitle>
-                      <CardDescription className="flex items-center gap-2">
+                      <h3 className="font-semibold text-foreground">{selectedClient.full_name}</h3>
+                      <div className="flex items-center gap-2 text-sm">
                         {selectedClient.service_type === 'limpa-nome' ? (
-                          <>
-                            <Shield className="h-4 w-4 text-emerald-500" />
+                          <Badge className={cn("gap-1 text-[10px]", theme.badge)}>
+                            <Shield className="h-3 w-3" />
                             Limpa Nome
-                          </>
+                          </Badge>
                         ) : (
-                          <>
-                            <Scale className="h-4 w-4 text-blue-500" />
-                            Análise Fiscal
-                          </>
+                          <Badge className={cn("gap-1 text-[10px]", theme.badge)}>
+                            <Scale className="h-3 w-3" />
+                            Módulo Fiscal
+                          </Badge>
                         )}
-                        <span>•</span>
-                        <span>{selectedClient.email}</span>
-                      </CardDescription>
+                        <span className="text-muted-foreground text-xs">{selectedClient.email}</span>
+                      </div>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="text-xs">
+                      {getStatusLabel(selectedClient.status)}
+                    </Badge>
                     <Button 
                       variant="outline" 
                       size="sm"
                       onClick={() => setShowDocumentRequest(!showDocumentRequest)}
+                      className="gap-2"
                     >
-                      <FileCheck className="h-4 w-4 mr-2" />
-                      Solicitar Documento
+                      <FileCheck className="h-4 w-4" />
+                      <span className="hidden sm:inline">Solicitar Doc</span>
                     </Button>
                   </div>
                 </div>
-              </CardHeader>
+              </div>
 
               {/* Document Request Panel */}
               <AnimatePresence>
@@ -507,11 +585,11 @@ export function AdminClientChat() {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="border-b overflow-hidden bg-muted/30"
+                    className="shrink-0 overflow-hidden border-b border-border/50 bg-muted/30"
                   >
                     <div className="p-4">
                       <div className="flex items-center justify-between mb-3">
-                        <h4 className="font-medium text-sm">Selecione o tipo de documento:</h4>
+                        <h4 className="font-medium text-sm text-foreground">Selecione o tipo de documento:</h4>
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowDocumentRequest(false)}>
                           <X className="h-4 w-4" />
                         </Button>
@@ -525,7 +603,7 @@ export function AdminClientChat() {
                             className="justify-start gap-2 h-auto py-2"
                             onClick={() => handleDocumentRequest(doc.id, doc.label)}
                           >
-                            <doc.icon className="h-4 w-4 text-primary" />
+                            <doc.icon className={cn("h-4 w-4", theme.accent)} />
                             <span className="text-xs">{doc.label}</span>
                           </Button>
                         ))}
@@ -535,100 +613,122 @@ export function AdminClientChat() {
                 )}
               </AnimatePresence>
 
-              {/* Messages */}
-              <CardContent className="flex-1 overflow-hidden p-0">
-                <ScrollArea ref={scrollRef} className="h-full p-4">
-                  <div className="space-y-4">
-                    {messages.length === 0 ? (
-                      <div className="text-center py-8">
-                        <MessageCircle className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
-                        <p className="text-muted-foreground text-sm">
-                          {selectedClient.service_type === 'limpa-nome' 
-                            ? 'Nenhuma mensagem ainda. Comece a conversa!' 
-                            : 'Chat disponível apenas para Limpa Nome. Use notificações para Fiscal.'}
-                        </p>
+              {/* Scrollable Messages Area */}
+              <div className="flex-1 overflow-y-auto p-4 bg-gradient-to-b from-background/50 to-background/80">
+                <div className="space-y-4 max-w-3xl mx-auto">
+                  {messages.length === 0 ? (
+                    <div className="text-center py-16">
+                      <div className={cn(
+                        "w-20 h-20 rounded-full mx-auto mb-4 flex items-center justify-center",
+                        theme.bg
+                      )}>
+                        <MessageCircle className={cn("h-10 w-10", theme.accent)} />
                       </div>
-                    ) : (
-                      messages.map((message) => {
-                        const isMine = message.sender_id === user?.id;
-                        return (
-                          <motion.div
-                            key={message.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className={cn("flex", isMine ? "justify-end" : "justify-start")}
-                          >
-                            <div className={cn("flex items-end gap-2 max-w-[80%]", isMine && "flex-row-reverse")}>
-                              {!isMine && (
-                                <Avatar className="h-8 w-8">
-                                  <AvatarFallback className="bg-muted text-muted-foreground text-xs">
-                                    {getInitials(selectedClient.full_name)}
-                                  </AvatarFallback>
-                                </Avatar>
+                      <h4 className="text-lg font-medium text-foreground mb-2">Inicie a conversa</h4>
+                      <p className="text-sm text-muted-foreground max-w-xs mx-auto">
+                        {selectedClient.service_type === 'limpa-nome' 
+                          ? 'Envie uma mensagem de boas-vindas ou use a IA para gerar uma sugestão.' 
+                          : 'Use o assistente de IA para gerar uma mensagem contextualizada.'}
+                      </p>
+                    </div>
+                  ) : (
+                    messages.map((message, idx) => {
+                      const isMine = message.sender_id === user?.id;
+                      const showAvatar = !isMine && (idx === 0 || messages[idx - 1].sender_id === user?.id);
+                      
+                      return (
+                        <motion.div
+                          key={message.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: idx * 0.02 }}
+                          className={cn("flex", isMine ? "justify-end" : "justify-start")}
+                        >
+                          <div className={cn("flex items-end gap-2 max-w-[75%]", isMine && "flex-row-reverse")}>
+                            {!isMine && showAvatar && (
+                              <div className={cn(
+                                "w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-medium shrink-0",
+                                theme.avatarBg
+                              )}>
+                                {getInitials(selectedClient.full_name)}
+                              </div>
+                            )}
+                            {!isMine && !showAvatar && <div className="w-8 shrink-0" />}
+                            
+                            <div
+                              className={cn(
+                                "rounded-2xl px-4 py-2.5 shadow-sm",
+                                isMine
+                                  ? `${theme.messageBg} text-white rounded-br-md`
+                                  : "bg-muted text-foreground rounded-bl-md"
                               )}
-                              <div
-                                className={cn(
-                                  "rounded-2xl px-4 py-2",
-                                  isMine
-                                    ? "bg-primary text-primary-foreground rounded-br-sm"
-                                    : "bg-muted text-foreground rounded-bl-sm"
+                            >
+                              <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                              <div className={cn("flex items-center gap-1.5 mt-1.5", isMine && "justify-end")}>
+                                <span className={cn("text-[10px]", isMine ? "text-white/60" : "text-muted-foreground")}>
+                                  {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
+                                </span>
+                                {isMine && (
+                                  message.read_at ? (
+                                    <CheckCheck className="h-3 w-3 text-white/60" />
+                                  ) : (
+                                    <Check className="h-3 w-3 text-white/60" />
+                                  )
                                 )}
-                              >
-                                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                                <div className={cn("flex items-center gap-1 mt-1", isMine && "justify-end")}>
-                                  <span className={cn("text-xs", isMine ? "text-primary-foreground/70" : "text-muted-foreground")}>
-                                    {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
-                                  </span>
-                                  {isMine && (
-                                    message.read_at ? (
-                                      <CheckCheck className="h-3 w-3 text-primary-foreground/70" />
-                                    ) : (
-                                      <Check className="h-3 w-3 text-primary-foreground/70" />
-                                    )
-                                  )}
-                                </div>
                               </div>
                             </div>
-                          </motion.div>
-                        );
-                      })
-                    )}
-                  </div>
-                </ScrollArea>
-              </CardContent>
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                  <div ref={messagesEndRef} />
+                </div>
+              </div>
 
-              {/* Input */}
-              <div className="p-4 border-t bg-muted/30">
+              {/* Fixed Input Area */}
+              <div className="shrink-0 p-4 border-t border-border/50 bg-card/80 backdrop-blur-sm">
                 <form onSubmit={handleSend} className="space-y-3">
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 items-end">
                     <Button
                       type="button"
                       variant="outline"
                       size="sm"
                       onClick={generateAIResponse}
                       disabled={isGeneratingAI}
-                      className="shrink-0"
+                      className={cn(
+                        "shrink-0 gap-2 h-10",
+                        isGeneratingAI && "animate-pulse"
+                      )}
                     >
                       {isGeneratingAI ? (
-                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                        <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Sparkles className="h-4 w-4 mr-2 text-amber-500" />
+                        <Sparkles className="h-4 w-4 text-amber-500" />
                       )}
-                      Gerar com IA
+                      <span className="hidden sm:inline">Gerar com IA</span>
                     </Button>
+                    
                     <div className="flex-1 relative">
                       <Input
                         value={newMessage}
                         onChange={(e) => setNewMessage(e.target.value)}
                         placeholder="Digite sua mensagem..."
-                        className="pr-20"
+                        className="h-10 pr-4 bg-background/50 border-border/50"
                         disabled={isSending}
                       />
                     </div>
+                    
                     <Button 
                       type="submit" 
                       disabled={!newMessage.trim() || isSending}
-                      className="shrink-0"
+                      className={cn(
+                        "shrink-0 h-10 w-10 p-0 rounded-full",
+                        "bg-gradient-to-r",
+                        theme.primary,
+                        "hover:opacity-90 shadow-lg",
+                        theme.glow
+                      )}
                     >
                       {isSending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
@@ -637,26 +737,37 @@ export function AdminClientChat() {
                       )}
                     </Button>
                   </div>
-                  {newMessage && (
-                    <p className="text-xs text-muted-foreground">
-                      💡 Revise a mensagem antes de enviar. A IA pode gerar sugestões que precisam de ajuste.
-                    </p>
-                  )}
+                  
+                  <AnimatePresence>
+                    {newMessage && (
+                      <motion.p 
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="text-xs text-muted-foreground flex items-center gap-1.5"
+                      >
+                        <Sparkles className="h-3 w-3 text-amber-500" />
+                        Revise a mensagem antes de enviar.
+                      </motion.p>
+                    )}
+                  </AnimatePresence>
                 </form>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center">
+            <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-muted/20 to-background">
               <div className="text-center">
-                <MessageCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4 opacity-30" />
-                <h3 className="text-lg font-medium text-foreground mb-2">Selecione um cliente</h3>
-                <p className="text-muted-foreground text-sm">
-                  Escolha um cliente na lista para iniciar o atendimento
+                <div className="w-24 h-24 rounded-full bg-muted/30 flex items-center justify-center mx-auto mb-6">
+                  <MessageCircle className="h-12 w-12 text-muted-foreground/40" />
+                </div>
+                <h3 className="text-xl font-semibold text-foreground mb-2">Selecione um cliente</h3>
+                <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                  Escolha um cliente na lista para iniciar ou continuar o atendimento
                 </p>
               </div>
             </div>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );
