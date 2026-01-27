@@ -222,17 +222,21 @@ export default function PartnerPanel() {
     
     setIsLoading(true);
     try {
-      const { data: partnerUser, error: partnerUserError } = await supabase
+      // NOTE: User can have multiple partner records - use .limit(1) to avoid errors
+      const { data: partnerUsers, error: partnerUserError } = await supabase
         .from('credit_repair_partner_users')
         .select('partner_id')
         .eq('user_id', user.id)
-        .single();
+        .order('is_primary', { ascending: false })
+        .limit(1);
 
-      if (partnerUserError || !partnerUser) {
+      if (partnerUserError || !partnerUsers || partnerUsers.length === 0) {
         toast({ title: 'Acesso negado', description: 'Você não está vinculado a uma empresa parceira.', variant: 'destructive' });
         navigate('/dashboard');
         return;
       }
+      
+      const partnerUser = partnerUsers[0];
 
       const { data: partnerData, error: partnerError } = await supabase
         .from('credit_repair_partners')
