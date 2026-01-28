@@ -58,11 +58,7 @@ const BIContabilidadeLanding = () => {
   const [activeMetric, setActiveMetric] = useState(0);
 
   const handleCTA = () => {
-    if (user) {
-      navigate('/meu-painel');
-    } else {
-      navigate('/auth?redirect=/meu-painel');
-    }
+    navigate('/bi-contabilidade/onboarding');
   };
 
   const scrollToSection = (section: string) => {
