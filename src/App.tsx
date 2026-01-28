@@ -76,6 +76,7 @@ import AffiliateOfferPage from "./pages/AffiliateOfferPage";
 import PartnerInvite from "./pages/PartnerInvite";
 import PublicOnboarding from "./pages/PublicOnboarding";
 import MinhasSolicitacoesPage from "./pages/MinhasSolicitacoesPage";
+import UserPanelBI from "./pages/UserPanelBI";
 import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
 import LimpaNomeLanding from "./pages/LimpaNomeLanding";
 import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
@@ -170,6 +171,11 @@ const App = () => (
               <Route path="/minhas-solicitacoes" element={
                 <ProtectedRoute>
                   <MinhasSolicitacoesPage />
+                </ProtectedRoute>
+              } />
+              <Route path="/meu-painel" element={
+                <ProtectedRoute>
+                  <UserPanelBI />
                 </ProtectedRoute>
               } />
               {/* Protected routes - require authentication */}
