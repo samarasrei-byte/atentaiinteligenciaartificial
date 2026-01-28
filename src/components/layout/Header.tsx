@@ -10,6 +10,7 @@ interface HeaderProps {
 export function Header({ onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  // Navigation menu items - Updated 2026-01-28
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
