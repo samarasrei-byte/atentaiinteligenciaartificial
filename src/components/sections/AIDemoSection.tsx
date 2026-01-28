@@ -240,9 +240,9 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
             viewport={{ once: true }}
             className="lg:col-span-2 order-1 flex"
           >
-            <Card className="bg-[#0b141a] border-0 shadow-2xl overflow-hidden rounded-xl md:rounded-2xl flex flex-col w-full">
+            <Card className="bg-[#0b141a] border-0 shadow-2xl overflow-hidden rounded-xl md:rounded-2xl flex flex-col w-full h-[420px] md:h-[480px]">
               {/* Chat Header - WhatsApp Style */}
-              <div className="bg-[#202c33] p-2.5 md:p-3 flex items-center justify-between shrink-0">
+              <div className="bg-[#202c33] p-2.5 md:p-3 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2.5 md:gap-3">
                   <div className="relative">
                     <div className="w-9 h-9 md:w-10 md:h-10 bg-gradient-to-br from-primary to-emerald-500 rounded-full flex items-center justify-center">
@@ -265,10 +265,10 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 </div>
               </div>
 
-              {/* Messages - Flex grow area */}
-              <CardContent 
-                className="p-2.5 md:p-3 flex-1 overflow-y-auto space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent"
-                style={{ backgroundColor: '#0b141a', minHeight: '180px', maxHeight: '280px' }}
+              {/* Messages - Fixed height scrollable area */}
+              <div 
+                className="flex-1 overflow-y-auto p-2.5 md:p-3 space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent min-h-0"
+                style={{ backgroundColor: '#0b141a' }}
               >
                 {messages.map((msg, i) => (
                   <div 
@@ -318,11 +318,11 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 
                 {/* Scroll anchor */}
                 <div ref={messagesEndRef} />
-              </CardContent>
+              </div>
 
               {/* Quick Questions - Fixed at bottom */}
-              <div className="px-2.5 md:px-3 py-2 bg-[#202c33]/50 border-t border-white/5 shrink-0">
-                <div className="flex gap-1.5 md:gap-2 justify-center">
+              <div className="px-2.5 md:px-3 py-2 bg-[#202c33]/50 border-t border-white/5 flex-shrink-0">
+                <div className="flex gap-1.5 md:gap-2 justify-center overflow-x-auto">
                   {QUICK_QUESTIONS.map((q) => (
                     <Button 
                       key={q.keyword}
@@ -339,8 +339,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 </div>
               </div>
 
-              {/* Input - Fixed at bottom, aligned with CTA */}
-              <div className="p-2.5 md:p-3 bg-[#202c33] flex gap-2 items-center shrink-0">
+              {/* Input - Fixed at bottom */}
+              <div className="p-2.5 md:p-3 bg-[#202c33] flex gap-2 items-center flex-shrink-0">
                 <Input 
                   placeholder="Digite sua pergunta..." 
                   value={input}
@@ -351,7 +351,7 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 <Button 
                   onClick={handleSend} 
                   size="icon" 
-                  className="bg-emerald-600 hover:bg-emerald-500 rounded-full h-11 w-11 md:h-12 md:w-12 shrink-0"
+                  className="bg-emerald-600 hover:bg-emerald-500 rounded-full h-11 w-11 md:h-12 md:w-12 flex-shrink-0"
                   disabled={!input.trim()}
                 >
                   <Send className="h-4 w-4 md:h-5 md:w-5" />
