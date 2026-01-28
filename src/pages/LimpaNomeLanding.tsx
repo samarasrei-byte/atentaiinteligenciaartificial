@@ -248,7 +248,7 @@ export default function LimpaNomeLanding() {
             <motion.div variants={itemVariants} className="flex justify-center mb-10 sm:mb-12 px-4">
               <Button 
                 size="lg" 
-                onClick={() => navigate(`/parceiro/onboarding?service=limpa-nome&plan=${selectedPlan}`)}
+                onClick={() => navigate('/limpa-nome/onboarding')}
                 className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 transition-all duration-300 group"
               >
                 <Users className="h-5 w-5 mr-2" />
@@ -403,7 +403,8 @@ export default function LimpaNomeLanding() {
                   </div>
 
                   <Button 
-                    onClick={() => navigate(`/parceiro/onboarding?service=limpa-nome&plan=${selectedPlan}`)}
+                    onClick={() => navigate('/limpa-nome/onboarding')}
+                    className="w-full"
                   >
                     <Handshake className="h-5 w-5 mr-2" />
                     Conectar com Guilherme Barros
@@ -478,7 +479,7 @@ export default function LimpaNomeLanding() {
             </p>
             <Button 
               size="lg"
-              onClick={() => navigate(`/parceiro/onboarding?service=limpa-nome&plan=${selectedPlan}`)}
+              onClick={() => navigate('/limpa-nome/onboarding')}
               className="h-16 px-12 text-lg bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600"
             >
               <Users className="h-5 w-5 mr-2" />

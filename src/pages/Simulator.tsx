@@ -290,6 +290,8 @@ const Simulator = () => {
                     <p className="text-xs text-cyan-400">
                       Alíquota de ICMS para {brazilianStates.find(s => s.value === state)?.label}: {stateICMSRates[state]}%
                     </p>
+                  )}
+                </div>
               )}
 
               {/* Year Selector */}
@@ -297,8 +299,6 @@ const Simulator = () => {
                 value={selectedYear} 
                 onChange={setSelectedYear}
               />
-                </div>
-              )}
 
               <Button
                 onClick={handleSimulate}
