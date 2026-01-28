@@ -32,6 +32,7 @@ import {
   Bell,
   CreditCard,
   Briefcase,
+  Brain,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -78,6 +79,14 @@ const sidebarGroups: SidebarGroup[] = [
     items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
+    ],
+  },
+  {
+    id: 'bi-accounting',
+    label: 'BI + Contabilidade',
+    icon: Brain,
+    items: [
+      { icon: Brain, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
     ],
   },
   {
