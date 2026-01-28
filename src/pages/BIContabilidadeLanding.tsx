@@ -398,15 +398,15 @@ const BIContabilidadeLanding = () => {
                               : 'bg-white/5 border border-white/5'
                           }`}
                         >
-                          <div className="flex items-center gap-2 mb-2">
-                            <metric.icon className={`h-4 w-4 ${activeMetric === index ? 'text-indigo-300' : 'text-slate-400'}`} />
-                            <p className="text-xs text-slate-400">{metric.label}</p>
-                          </div>
-                          <p className={`text-2xl font-bold ${activeMetric === index ? 'text-white' : 'text-slate-300'}`}>
-                            {metric.value}{metric.suffix}
-                          </p>
-                        </div>
-                      ))}
+                                        <div className="flex items-center gap-2 mb-2">
+                                          <metric.icon className={`h-4 w-4 ${activeMetric === index ? 'text-indigo-200' : 'text-indigo-300'}`} />
+                                          <p className={`text-xs font-medium ${activeMetric === index ? 'text-indigo-100' : 'text-indigo-200'}`}>{metric.label}</p>
+                                        </div>
+                                        <p className={`text-2xl font-bold ${activeMetric === index ? 'text-white' : 'text-white/90'}`}>
+                                          {metric.value}{metric.suffix}
+                                        </p>
+                                      </div>
+                                    ))}
                     </div>
 
                     {/* Chart Placeholder */}
