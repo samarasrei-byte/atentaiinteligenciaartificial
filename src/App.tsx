@@ -86,6 +86,7 @@ import PartnerGuilhermePanel from "./pages/PartnerGuilhermePanel";
 import MarketplaceServicePage from "./pages/MarketplaceServicePage";
 import SobrePage from "./pages/SobrePage";
 import SuportePage from "./pages/SuportePage";
+import BIContabilidadeLanding from "./pages/BIContabilidadeLanding";
 
 const queryClient = new QueryClient();
 
@@ -141,6 +142,7 @@ const App = () => (
               <Route path="/modulo-fiscal" element={<ModuloFiscalLanding />} />
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
+              <Route path="/bi-contabilidade" element={<BIContabilidadeLanding />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />

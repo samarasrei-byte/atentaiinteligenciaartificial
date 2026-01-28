@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   LayoutDashboard, 
@@ -10,7 +9,8 @@ import {
   Zap,
   Bot,
   User,
-  ShieldCheck
+  ShieldCheck,
+  Bell
 } from 'lucide-react';
 import { BIDashboard } from './BIDashboard';
 import { BIAIChat } from './BIAIChat';
@@ -18,6 +18,7 @@ import { BIAnomalies } from './BIAnomalies';
 import { BIReports } from './BIReports';
 import { BIAutomations } from './BIAutomations';
 import { BIRequestsInbox } from './BIRequestsInbox';
+import { BIRealtimeNotifications } from './BIRealtimeNotifications';
 
 export const BIAccountingModule: React.FC = () => {
   const [activeTab, setActiveTab] = useState('inbox');
@@ -86,7 +87,14 @@ export const BIAccountingModule: React.FC = () => {
         </TabsList>
 
         <TabsContent value="inbox" className="space-y-4">
-          <BIRequestsInbox />
+          <div className="grid lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <BIRequestsInbox />
+            </div>
+            <div className="lg:col-span-1">
+              <BIRealtimeNotifications />
+            </div>
+          </div>
         </TabsContent>
 
         <TabsContent value="dashboard" className="space-y-4">

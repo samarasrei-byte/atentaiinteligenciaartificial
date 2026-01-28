@@ -24,6 +24,7 @@ import {
   CreditCard,
   Users,
   Rocket,
+  Brain,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
@@ -322,6 +323,23 @@ export const ServicesHubModern: React.FC = () => {
       iconGradient: 'from-rose-500 to-pink-500',
       onClick: () => navigate('/ir'),
       badge: 'Completo',
+    },
+    {
+      title: 'BI+ Contabilidade™',
+      description: 'Inteligência artificial com análise humana especializada',
+      icon: Brain,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      features: [
+        'IA + Validação Humana',
+        'Dashboards financeiros',
+        'Análise gratuita',
+      ],
+      gradient: 'from-indigo-500/40 to-violet-500/40',
+      iconGradient: 'from-indigo-500 to-violet-500',
+      onClick: () => navigate('/bi-contabilidade'),
+      badge: 'Novo',
     },
     {
       title: 'Consultoria Empresarial',
