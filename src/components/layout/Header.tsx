@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, MessageCircle, LogIn, Shield, Briefcase, Users } from "lucide-react";
+import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 interface HeaderProps {
@@ -13,7 +13,7 @@ export function Header({ onNavigate }: HeaderProps) {
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
-    { label: "Consultar IA", icon: MessageCircle, section: "ai" },
+    { label: "BI Contabilidade", icon: Brain, href: "/bi-contabilidade" },
     { label: "Serviços", icon: Briefcase, href: "/servicos" },
     { label: "Seja Afiliado", icon: Users, href: "/afiliado/cadastro" },
   ];
