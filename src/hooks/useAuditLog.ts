@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 export type AuditActionType = 
   | 'login_success'
   | 'login_failed'
+  | 'signup_success'
+  | 'signup_failed'
   | 'logout'
   | 'route_access_allowed'
   | 'route_access_denied'

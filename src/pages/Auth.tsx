@@ -278,12 +278,45 @@ const Auth = () => {
       
       if (error) {
         let message = 'Erro ao criar conta';
-        if (error.message.includes('User already registered')) {
-          message = 'Este email já está cadastrado';
+        const errorCode = error.message?.toLowerCase() || '';
+        const errorBody = (error as any)?.code?.toLowerCase() || '';
+        
+        // Handle various signup errors with better messages
+        if (errorCode.includes('user already registered') || errorCode.includes('already been registered')) {
+          message = 'Este email já está cadastrado. Tente fazer login.';
+        } else if (errorCode.includes('invalid email')) {
+          message = 'Email inválido. Por favor, verifique o formato.';
+        } else if (errorCode.includes('weak_password') || errorBody.includes('weak_password') || errorCode.includes('pwned')) {
+          message = 'Senha muito fraca ou já vazada. Use uma senha mais forte e única.';
+        } else if (errorCode.includes('password')) {
+          message = 'Senha deve ter pelo menos 6 caracteres.';
+        } else if (errorCode.includes('rate limit') || errorCode.includes('too many requests')) {
+          message = 'Muitas tentativas. Aguarde um momento e tente novamente.';
+        } else if (errorCode.includes('network') || errorCode.includes('fetch')) {
+          message = 'Erro de conexão. Verifique sua internet.';
+        } else if (error.status === 422) {
+          // Check for weak password in JSON response
+          if (errorCode.includes('weak') || errorCode.includes('easy to guess')) {
+            message = 'Senha muito fraca ou já vazada. Use uma senha mais forte e única.';
+          } else {
+            message = 'Dados inválidos. Verifique email e senha.';
+          }
         }
+        
+        console.error('[AUTH] Signup error:', error);
+        
+        await logAuditEvent({
+          userEmail: email,
+          actionType: 'signup_failed',
+          routeAttempted: '/auth',
+          success: false,
+          failureReason: message,
+          metadata: { error_code: error.status, error_message: error.message }
+        });
+        
         toast({
           variant: 'destructive',
-          title: 'Erro',
+          title: 'Erro no cadastro',
           description: message,
         });
       } else {
