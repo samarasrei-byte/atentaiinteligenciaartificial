@@ -39,6 +39,7 @@ import AuditLogViewer from '@/components/admin/AuditLogViewer';
 import { AdminClientChat } from '@/components/admin/AdminClientChat';
 import { BIAccountingModule } from '@/components/admin/bi';
 import { AdminAuditPage } from '@/components/admin/audit';
+import { RevenuePartnerSplitDashboard } from '@/components/admin/RevenuePartnerSplitDashboard';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -559,6 +560,7 @@ const AdminPanel = () => {
           {activeTab === 'audit-logs' && <AuditLogViewer />}
           {activeTab === 'audit-page' && <AdminAuditPage />}
           {activeTab === 'bi-accounting' && <BIAccountingModule />}
+          {activeTab === 'partner-split' && <RevenuePartnerSplitDashboard />}
 
           {activeTab === 'panel-contador' && (
             <Card className="bg-card border-border shadow-soft">

@@ -137,6 +137,7 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Financeiro',
     icon: Wallet,
     items: [
+      { icon: DollarSign, label: 'Divisão por Sócio', tabId: 'partner-split' },
       { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
       { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
       { icon: CreditCard, label: 'Receitas & Pagamentos', tabId: 'metrics' },
