@@ -1,38 +1,40 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  Activity,
-  Users,
-  Target,
+  MessageSquare,
+  BarChart3,
   Shield,
+  Scale,
+  ShoppingBag,
+  Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
   ChevronDown,
-  LayoutDashboard,
+  Sparkles,
+  Users,
+  Building2,
+  CreditCard,
+  Bell,
+  FileText,
   TrendingUp,
-  Calendar,
-  DollarSign,
-  BarChart3,
-  Headphones,
-  UserCheck,
-  PieChart,
   Wallet,
+  Headphones,
+  Target,
+  PieChart,
+  Calendar,
   Star,
+  Brain,
+  Activity,
+  User,
+  UserCheck,
   MessagesSquare,
   MessageCircle,
-  User,
-  Settings,
-  Sparkles,
-  Scale,
-  Building2,
-  FileText,
-  Bell,
-  CreditCard,
   Briefcase,
-  Brain,
+  LayoutDashboard,
+  DollarSign,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -52,6 +54,7 @@ interface SidebarItem {
   label: string;
   tabId: string;
   isLive?: boolean;
+  badge?: string | number;
 }
 
 interface SidebarGroup {
@@ -62,51 +65,53 @@ interface SidebarGroup {
   defaultOpen?: boolean;
 }
 
-interface AdminSidebarProps {
+interface StripeSidebarProps {
   collapsed: boolean;
   onToggle: () => void;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
+  variant?: 'admin' | 'contador' | 'autonomo' | 'empresa';
 }
 
-// Estrutura hierárquica organizada por modelo mental do administrador
-const sidebarGroups: SidebarGroup[] = [
+// Estrutura para Admin
+const adminGroups: SidebarGroup[] = [
   {
     id: 'central',
-    label: 'Central IA',
-    icon: Sparkles,
+    label: 'Central',
+    icon: MessageSquare,
     defaultOpen: true,
     items: [
-      { icon: MessageCircle, label: 'Chat Inteligente', tabId: 'smart-chat', isLive: true },
-      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+      { icon: MessageSquare, label: 'Chat IA', tabId: 'smart-chat', isLive: true },
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
       { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
     ],
   },
   {
-    id: 'bi-accounting',
+    id: 'bi',
     label: 'BI + Contabilidade',
     icon: Brain,
     items: [
       { icon: Brain, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
+      { icon: BarChart3, label: 'Métricas SaaS', tabId: 'saas-metrics' },
+      { icon: DollarSign, label: 'Previsão', tabId: 'revenue-forecast' },
     ],
   },
   {
-    id: 'analytics',
-    label: 'Analytics',
-    icon: BarChart3,
-    items: [
-      { icon: Sparkles, label: 'Métricas SaaS', tabId: 'saas-metrics' },
-      { icon: DollarSign, label: 'Previsão de Receita', tabId: 'revenue-forecast' },
-      { icon: TrendingUp, label: 'Churn & Retenção', tabId: 'churn' },
-      { icon: Target, label: 'Análise de Cohort', tabId: 'cohort' },
-    ],
-  },
-  {
-    id: 'operacao',
-    label: 'Operação',
+    id: 'servicos',
+    label: 'Serviços',
     icon: Briefcase,
     items: [
-      { icon: Users, label: 'Usuários', tabId: 'users' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
+      { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
+    ],
+  },
+  {
+    id: 'usuarios',
+    label: 'Usuários',
+    icon: Users,
+    items: [
+      { icon: Users, label: 'Todos', tabId: 'users' },
       { icon: Building2, label: 'Empresas', tabId: 'empresas' },
       { icon: User, label: 'Autônomos', tabId: 'autonomos' },
       { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
@@ -114,23 +119,14 @@ const sidebarGroups: SidebarGroup[] = [
   },
   {
     id: 'crescimento',
-    label: 'Parceiros & Crescimento',
+    label: 'Crescimento',
     icon: TrendingUp,
     items: [
       { icon: Building2, label: 'Parceiros', tabId: 'partners' },
       { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
-      { icon: Star, label: 'Cupons de Afiliados', tabId: 'affiliate-coupons' },
-    ],
-  },
-  {
-    id: 'produtos',
-    label: 'Produtos & Serviços',
-    icon: Scale,
-    items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-      { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
-      { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
-      { icon: Star, label: 'Cashback', tabId: 'cashback' },
+      { icon: Star, label: 'Cupons', tabId: 'affiliate-coupons' },
+      { icon: Target, label: 'Cohort', tabId: 'cohort' },
+      { icon: TrendingUp, label: 'Churn', tabId: 'churn' },
     ],
   },
   {
@@ -138,10 +134,11 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Financeiro',
     icon: Wallet,
     items: [
-      { icon: DollarSign, label: 'Divisão por Sócio', tabId: 'partner-split' },
+      { icon: DollarSign, label: 'Divisão Sócios', tabId: 'partner-split' },
       { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
       { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-      { icon: CreditCard, label: 'Receitas & Pagamentos', tabId: 'metrics' },
+      { icon: CreditCard, label: 'Pagamentos', tabId: 'metrics' },
+      { icon: Star, label: 'Cashback', tabId: 'cashback' },
     ],
   },
   {
@@ -149,8 +146,8 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Comunicação',
     icon: MessagesSquare,
     items: [
-      { icon: MessageCircle, label: 'Chat com Clientes', tabId: 'client-chat', isLive: true },
-      { icon: MessagesSquare, label: 'Mensagens em Massa', tabId: 'mass-messages' },
+      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'client-chat', isLive: true },
+      { icon: MessagesSquare, label: 'Mensagens', tabId: 'mass-messages' },
       { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
       { icon: Headphones, label: 'Suporte', tabId: 'support' },
     ],
@@ -160,28 +157,74 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Sistema',
     icon: Settings,
     items: [
-      { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
-      { icon: FileText, label: 'Página de Auditoria', tabId: 'audit-page' },
-      { icon: FileText, label: 'Logs de Auditoria', tabId: 'audit-logs' },
-      { icon: Settings, label: 'Configurações', tabId: 'settings' },
+      { icon: Shield, label: 'Roles', tabId: 'roles' },
+      { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
+      { icon: FileText, label: 'Logs', tabId: 'audit-logs' },
+      { icon: Settings, label: 'Config', tabId: 'settings' },
     ],
   },
 ];
 
-const AdminSidebar: React.FC<AdminSidebarProps> = ({
+// Estrutura simplificada para Autônomo
+const autonomoGroups: SidebarGroup[] = [
+  {
+    id: 'central',
+    label: 'Central',
+    icon: MessageSquare,
+    defaultOpen: true,
+    items: [
+      { icon: MessageSquare, label: 'Chat IA', tabId: 'smart-chat', isLive: true },
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'dashboard' },
+    ],
+  },
+  {
+    id: 'servicos',
+    label: 'Meus Serviços',
+    icon: Briefcase,
+    defaultOpen: true,
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal' },
+      { icon: BarChart3, label: 'BI', tabId: 'bi' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    icon: ShoppingBag,
+    items: [
+      { icon: ShoppingBag, label: 'Serviços', tabId: 'servicos' },
+      { icon: Star, label: 'Upgrade', tabId: 'upgrade' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    icon: Settings,
+    items: [
+      { icon: FileText, label: 'Documentos', tabId: 'documentos' },
+      { icon: CreditCard, label: 'Pagamentos', tabId: 'pagamentos' },
+      { icon: Settings, label: 'Configurações', tabId: 'config' },
+    ],
+  },
+];
+
+export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   collapsed,
   onToggle,
-  activeTab = 'overview',
+  activeTab = 'smart-chat',
   onTabChange,
+  variant = 'admin',
 }) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
   
+  const groups = variant === 'admin' ? adminGroups : autonomoGroups;
+
   // Estado para grupos abertos
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
-    sidebarGroups.forEach(group => {
-      // Abre o grupo que contém o item ativo ou grupos marcados como defaultOpen
+    groups.forEach(group => {
       const hasActiveItem = group.items.some(item => item.tabId === activeTab);
       initial[group.id] = hasActiveItem || group.defaultOpen || false;
     });
@@ -216,7 +259,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-sm',
+          'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 group relative',
           'touch-manipulation active:scale-[0.98]',
           active
             ? 'bg-primary/10 text-primary'
@@ -229,11 +272,16 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         )} />
         {!collapsed && (
           <>
-            <span className="flex-1 text-left font-medium">{item.label}</span>
+            <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
             {item.isLive && (
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+              </span>
+            )}
+            {item.badge && (
+              <span className="bg-primary/10 text-primary text-xs font-medium px-1.5 py-0.5 rounded-full">
+                {item.badge}
               </span>
             )}
           </>
@@ -248,13 +296,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="bg-popover text-popover-foreground border text-xs px-3 py-1.5">
-            <div className="flex items-center gap-2">
-              {item.label}
-              {item.isLive && (
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              )}
-            </div>
+          <TooltipContent side="right" className="text-xs px-3 py-1.5 flex items-center gap-2">
+            {item.label}
+            {item.isLive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
           </TooltipContent>
         </Tooltip>
       );
@@ -269,9 +313,8 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     const hasActiveItem = group.items.some(item => item.tabId === activeTab);
 
     if (collapsed) {
-      // No modo colapsado, mostrar apenas os ícones dos items
       return (
-        <div className="space-y-1">
+        <div className="space-y-0.5">
           {group.items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
@@ -284,23 +327,23 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <CollapsibleTrigger asChild>
           <button
             className={cn(
-              'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group',
+              'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 group',
               hasActiveItem
                 ? 'text-foreground'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
             )}
           >
-            <Icon className="h-4 w-4 shrink-0" />
-            <span className="flex-1 text-left text-xs font-semibold uppercase tracking-wider">
+            <Icon className="h-4 w-4 shrink-0 opacity-60" />
+            <span className="flex-1 text-left text-xs font-semibold uppercase tracking-wider opacity-80">
               {group.label}
             </span>
             <ChevronDown className={cn(
-              'h-4 w-4 transition-transform duration-200',
+              'h-3.5 w-3.5 opacity-50 transition-transform duration-200',
               isOpen && 'rotate-180'
             )} />
           </button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="pl-3 pt-1 space-y-0.5">
+        <CollapsibleContent className="pl-2 pt-0.5 space-y-0.5">
           {group.items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
@@ -315,53 +358,55 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
           'bg-card border-r border-border',
-          collapsed ? 'w-16' : 'w-64'
+          collapsed ? 'w-16' : 'w-60'
         )}
       >
-        {/* Logo */}
+        {/* Logo - Stripe Style */}
         <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-          <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+          <div className={cn('flex items-center gap-2.5', collapsed && 'justify-center w-full')}>
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md">
               <Sparkles className="h-4 w-4 text-primary-foreground" />
             </div>
             {!collapsed && (
               <div>
-                <span className="text-base font-bold text-foreground">AtentAI</span>
-                <span className="block text-[10px] text-primary font-medium -mt-0.5">Admin</span>
+                <span className="text-base font-bold text-foreground tracking-tight">AtentAI</span>
+                <span className="block text-[10px] text-primary font-medium -mt-0.5 tracking-wide">
+                  {variant === 'admin' ? 'Admin' : variant === 'autonomo' ? 'Autônomo' : variant}
+                </span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Toggle Button */}
+        {/* Toggle Button - Minimal */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-card border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
+          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
         >
           {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto overscroll-contain">
-          {sidebarGroups.map((group) => (
+        {/* Navigation - Clean Stripe Style */}
+        <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto overscroll-contain scrollbar-thin">
+          {groups.map((group) => (
             <SidebarGroupComponent key={group.id} group={group} />
           ))}
         </nav>
 
-        {/* User & Logout */}
+        {/* User Section - Minimal */}
         <div className="px-2 py-3 border-t border-border">
           {!collapsed && (
             <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-bold text-primary">
-                  {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
+              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-sm font-semibold text-primary">
+                  {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-foreground truncate">
-                  {profile?.full_name?.split(' ')[0] || 'Admin'}
+                  {profile?.full_name?.split(' ')[0] || 'Usuário'}
                 </p>
                 <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
@@ -372,7 +417,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all',
+                  'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all',
                   'text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
                   'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
@@ -383,7 +428,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-popover text-popover-foreground border text-xs">
+              <TooltipContent side="right" className="text-xs">
                 Sair
               </TooltipContent>
             )}
@@ -394,4 +439,4 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
   );
 };
 
-export default AdminSidebar;
+export default StripeSidebar;

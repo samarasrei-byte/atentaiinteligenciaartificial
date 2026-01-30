@@ -40,7 +40,9 @@ import { AdminClientChat } from '@/components/admin/AdminClientChat';
 import { BIAccountingModule } from '@/components/admin/bi';
 import { AdminAuditPage } from '@/components/admin/audit';
 import { RevenuePartnerSplitDashboard } from '@/components/admin/RevenuePartnerSplitDashboard';
-import { 
+import { SmartChatHub } from '@/components/smart-chat';
+import StripeSidebar from '@/components/layout/StripeSidebar';
+import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
   CreditCard, Clock, CheckCircle, AlertCircle, XCircle, RefreshCw, Menu, Headphones,
@@ -299,6 +301,13 @@ const AdminPanel = () => {
         </header>
 
         <div className="dashboard-content">
+          {/* Smart Chat - Central IA */}
+          {activeTab === 'smart-chat' && (
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <SmartChatHub />
+            </div>
+          )}
+
           {activeTab === 'overview' && (
             <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
