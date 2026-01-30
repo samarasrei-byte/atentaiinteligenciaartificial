@@ -875,8 +875,11 @@ export type Database = {
       company_opening_documents: {
         Row: {
           created_at: string
+          deleted_at: string | null
           document_name: string
           document_type: string
+          expiration_notified_at: string | null
+          expires_at: string | null
           file_path: string
           file_size_bytes: number | null
           id: string
@@ -891,8 +894,11 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          deleted_at?: string | null
           document_name: string
           document_type: string
+          expiration_notified_at?: string | null
+          expires_at?: string | null
           file_path: string
           file_size_bytes?: number | null
           id?: string
@@ -907,8 +913,11 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          deleted_at?: string | null
           document_name?: string
           document_type?: string
+          expiration_notified_at?: string | null
+          expires_at?: string | null
           file_path?: string
           file_size_bytes?: number | null
           id?: string
@@ -1424,6 +1433,51 @@ export type Database = {
           question_count?: number
           updated_at?: string
           usage_date?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      document_expiration_logs: {
+        Row: {
+          created_at: string
+          deleted_from_storage: boolean | null
+          document_id: string
+          document_name: string
+          document_type: string
+          expired_at: string
+          file_path: string
+          id: string
+          metadata: Json | null
+          original_created_at: string
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          deleted_from_storage?: boolean | null
+          document_id: string
+          document_name: string
+          document_type: string
+          expired_at?: string
+          file_path: string
+          id?: string
+          metadata?: Json | null
+          original_created_at: string
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          deleted_from_storage?: boolean | null
+          document_id?: string
+          document_name?: string
+          document_type?: string
+          expired_at?: string
+          file_path?: string
+          id?: string
+          metadata?: Json | null
+          original_created_at?: string
+          request_id?: string
           user_id?: string
         }
         Relationships: []
@@ -2306,6 +2360,74 @@ export type Database = {
       }
     }
     Views: {
+      active_company_documents: {
+        Row: {
+          created_at: string | null
+          deleted_at: string | null
+          document_name: string | null
+          document_type: string | null
+          expiration_notified_at: string | null
+          expires_at: string | null
+          file_path: string | null
+          file_size_bytes: number | null
+          id: string | null
+          mime_type: string | null
+          rejection_reason: string | null
+          request_id: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          deleted_at?: string | null
+          document_name?: string | null
+          document_type?: string | null
+          expiration_notified_at?: string | null
+          expires_at?: string | null
+          file_path?: string | null
+          file_size_bytes?: number | null
+          id?: string | null
+          mime_type?: string | null
+          rejection_reason?: string | null
+          request_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          deleted_at?: string | null
+          document_name?: string | null
+          document_type?: string | null
+          expiration_notified_at?: string | null
+          expires_at?: string | null
+          file_path?: string | null
+          file_size_bytes?: number | null
+          id?: string | null
+          mime_type?: string | null
+          rejection_reason?: string | null
+          request_id?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "company_opening_documents_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "company_opening_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       contador_profiles_public: {
         Row: {
           available: boolean | null
@@ -2387,6 +2509,8 @@ export type Database = {
         Args: { p_contador_id: string; p_request_user_id: string }
         Returns: boolean
       }
+      notify_expiring_documents: { Args: never; Returns: number }
+      soft_delete_expired_documents: { Args: never; Returns: number }
       validate_affiliate_coupon: {
         Args: { p_code: string; p_service_type?: string }
         Returns: Json
