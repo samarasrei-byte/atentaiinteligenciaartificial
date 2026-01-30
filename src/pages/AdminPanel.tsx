@@ -38,6 +38,7 @@ import { AffiliateCouponManagement } from '@/components/admin/AffiliateCouponMan
 import AuditLogViewer from '@/components/admin/AuditLogViewer';
 import { AdminClientChat } from '@/components/admin/AdminClientChat';
 import { BIAccountingModule } from '@/components/admin/bi';
+import { AdminAuditPage } from '@/components/admin/audit';
 import { 
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -556,6 +557,7 @@ const AdminPanel = () => {
           {activeTab === 'affiliates' && <AffiliateManagement />}
           {activeTab === 'affiliate-coupons' && <AffiliateCouponManagement />}
           {activeTab === 'audit-logs' && <AuditLogViewer />}
+          {activeTab === 'audit-page' && <AdminAuditPage />}
           {activeTab === 'bi-accounting' && <BIAccountingModule />}
 
           {activeTab === 'panel-contador' && (

@@ -159,6 +159,7 @@ const sidebarGroups: SidebarGroup[] = [
     icon: Settings,
     items: [
       { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
+      { icon: FileText, label: 'Página de Auditoria', tabId: 'audit-page' },
       { icon: FileText, label: 'Logs de Auditoria', tabId: 'audit-logs' },
       { icon: Settings, label: 'Configurações', tabId: 'settings' },
     ],
