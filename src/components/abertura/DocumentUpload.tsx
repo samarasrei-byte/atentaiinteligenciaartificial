@@ -51,6 +51,28 @@ const STATUS_CONFIG: Record<string, { label: string; color: string; icon: React.
   },
 };
 
+// Calculate days until expiration
+const getDaysUntilExpiration = (expiresAt: string | null): number | null => {
+  if (!expiresAt) return null;
+  const now = new Date();
+  const expires = new Date(expiresAt);
+  const diffTime = expires.getTime() - now.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
+const getExpirationBadge = (expiresAt: string | null) => {
+  const days = getDaysUntilExpiration(expiresAt);
+  if (days === null) return null;
+  
+  if (days <= 0) {
+    return { label: 'Expirado', color: 'bg-red-500/20 text-red-400 border-red-500/30' };
+  }
+  if (days <= 7) {
+    return { label: `Expira em ${days}d`, color: 'bg-amber-500/20 text-amber-400 border-amber-500/30' };
+  }
+  return { label: `${days}d restantes`, color: 'bg-slate-500/20 text-slate-400 border-slate-500/30' };
+};
+
 const DocumentUpload: React.FC<DocumentUploadProps> = ({ requestId }) => {
   const { user } = useAuth();
   const queryClient = useQueryClient();
@@ -273,13 +295,19 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ requestId }) => {
             <p className="text-sm font-medium text-foreground">Documentos enviados:</p>
             {documents.map((doc) => {
               const statusConfig = STATUS_CONFIG[doc.status] || STATUS_CONFIG.pending;
+              const expirationBadge = getExpirationBadge((doc as any).expires_at);
+              const isExpired = getDaysUntilExpiration((doc as any).expires_at) !== null && 
+                               getDaysUntilExpiration((doc as any).expires_at)! <= 0;
+              
               return (
                 <div
                   key={doc.id}
-                  className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                  className={`flex items-center justify-between p-3 rounded-lg ${
+                    isExpired ? 'bg-red-500/10 border border-red-500/20' : 'bg-muted/50'
+                  }`}
                 >
                   <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <FileText className="h-5 w-5 text-muted-foreground shrink-0" />
+                    <FileText className={`h-5 w-5 shrink-0 ${isExpired ? 'text-red-400' : 'text-muted-foreground'}`} />
                     <div className="min-w-0">
                       <p className="font-medium text-sm text-foreground truncate">
                         {getDocumentTypeLabel(doc.document_type)}
@@ -289,7 +317,13 @@ const DocumentUpload: React.FC<DocumentUploadProps> = ({ requestId }) => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 flex-wrap justify-end">
+                    {expirationBadge && (
+                      <Badge className={`${expirationBadge.color} text-xs border`}>
+                        <Clock className="h-3 w-3 mr-1" />
+                        {expirationBadge.label}
+                      </Badge>
+                    )}
                     <Badge className={`${statusConfig.color} text-xs`}>
                       {statusConfig.icon}
                       <span className="ml-1">{statusConfig.label}</span>
