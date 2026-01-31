@@ -24,7 +24,8 @@ import {
   User,
   Search,
   Paperclip,
-  Bot
+  Bot,
+  CreditCard
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -108,6 +109,7 @@ export function AdminClientChat() {
   const [isSending, setIsSending] = useState(false);
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
+  const [showPaymentRequest, setShowPaymentRequest] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal'>('all');
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -325,6 +327,32 @@ Guilherme`);
     setShowDocumentRequest(false);
   };
 
+  const handlePaymentRequest = () => {
+    if (!selectedClient) return;
+    
+    const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
+    const serviceLabel = selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal';
+    const price = selectedClient.service_type === 'limpa-nome' ? 'R$ 780,00' : 'R$ 450,00';
+    
+    setNewMessage(`Olá, ${firstName}! 👋
+
+Seguem os detalhes do seu serviço de **${serviceLabel}**:
+
+💰 **Valor: ${price}**
+✅ Pagamento 100% seguro via Stripe
+📋 Parcelamento disponível
+
+Clique no botão abaixo para concluir o pagamento e dar início ao seu processo:
+
+🔗 [LINK DE PAGAMENTO SERÁ INSERIDO AUTOMATICAMENTE]
+
+Qualquer dúvida sobre pagamento, me chame aqui!
+
+Abraço,
+Guilherme`);
+    setShowPaymentRequest(false);
+  };
+
   const filteredClients = clients.filter(client => {
     const matchesSearch = client.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          client.email.toLowerCase().includes(searchTerm.toLowerCase());
@@ -518,7 +546,16 @@ Guilherme`);
                     <Button 
                       variant="ghost" 
                       size="sm"
-                      onClick={() => setShowDocumentRequest(!showDocumentRequest)}
+                      onClick={() => { setShowPaymentRequest(!showPaymentRequest); setShowDocumentRequest(false); }}
+                      className="gap-2 text-white hover:bg-white/10"
+                    >
+                      <CreditCard className="h-4 w-4" />
+                      <span className="hidden sm:inline">Pagar</span>
+                    </Button>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => { setShowDocumentRequest(!showDocumentRequest); setShowPaymentRequest(false); }}
                       className="gap-2 text-white hover:bg-white/10"
                     >
                       <FileCheck className="h-4 w-4" />
@@ -527,6 +564,44 @@ Guilherme`);
                   </div>
                 </div>
               </div>
+
+              {/* Painel de Pagamento - Fixo */}
+              <AnimatePresence>
+                {showPaymentRequest && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="shrink-0 overflow-hidden border-b border-slate-200 bg-gradient-to-r from-emerald-50 to-green-50"
+                  >
+                    <div className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-emerald-600">
+                            <CreditCard className="h-5 w-5 text-white" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-sm text-slate-900">Enviar Link de Pagamento</h4>
+                            <p className="text-xs text-slate-500">
+                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome • R$ 780,00' : 'Análise Fiscal • R$ 450,00'}
+                            </p>
+                          </div>
+                        </div>
+                        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowPaymentRequest(false)}>
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                      <Button
+                        onClick={handlePaymentRequest}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Gerar mensagem com link de pagamento
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               {/* Painel de Documentos - Fixo */}
               <AnimatePresence>
