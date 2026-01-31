@@ -16,17 +16,18 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 interface PaymentLinkMessageProps {
-  serviceType: 'limpanome' | 'fiscal' | 'bi-contabilidade';
+  serviceType: 'limpanome' | 'limpanome-pj';
   servicePriceCents: number;
   requestId: string;
   isPaid?: boolean;
   className?: string;
 }
 
+// Apenas Limpa Nome tem checkout direto via Stripe
+// Análise Fiscal e BI são vendidos via chat (success fee / sob consulta)
 const serviceLabels = {
-  'limpanome': { name: 'Limpa Nome', icon: Shield, gradient: 'from-emerald-500 to-green-600' },
-  'fiscal': { name: 'Análise Fiscal', icon: Sparkles, gradient: 'from-violet-500 to-purple-600' },
-  'bi-contabilidade': { name: 'BI+ Contabilidade', icon: Sparkles, gradient: 'from-indigo-500 to-blue-600' },
+  'limpanome': { name: 'Limpa Nome PF', icon: Shield, gradient: 'from-emerald-500 to-green-600' },
+  'limpanome-pj': { name: 'Limpa Nome CNPJ', icon: Shield, gradient: 'from-emerald-500 to-green-600' },
 };
 
 /**
@@ -61,10 +62,11 @@ export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
     setIsLoading(true);
 
     try {
-      const functionMap = {
+      // Apenas Limpa Nome usa checkout direto via Stripe
+      // Análise Fiscal e BI são vendidos via chat (success fee / sob consulta)
+      const functionMap: Record<string, string> = {
         'limpanome': 'create-credit-repair-payment',
-        'fiscal': 'create-fiscal-payment',
-        'bi-contabilidade': 'create-fiscal-payment',
+        'limpanome-pj': 'create-credit-repair-payment',
       };
 
       const { data, error } = await supabase.functions.invoke(functionMap[serviceType], {
