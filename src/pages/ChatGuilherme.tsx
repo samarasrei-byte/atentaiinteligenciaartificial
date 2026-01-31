@@ -17,6 +17,9 @@ import {
   Bot, User, Clock, Download, Heart
 } from 'lucide-react';
 import { ServicePaywallBanner } from '@/components/subscription/ServicePaywallBanner';
+import { ServiceStatusCard, ServiceType as StatusServiceType } from '@/components/chat/ServiceStatusCard';
+import { StatusUpdateMessage } from '@/components/chat/StatusUpdateMessage';
+import { useServiceStatus } from '@/hooks/useServiceStatus';
 
 // WhatsApp Business Icon SVG component
 const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { className?: string; connected?: boolean }) => (
@@ -38,10 +41,17 @@ const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { cla
 interface Message {
   id: string;
   content: string;
-  sender: 'user' | 'specialist';
+  sender: 'user' | 'specialist' | 'system';
   timestamp: Date;
   attachmentUrl?: string;
   attachmentName?: string;
+  isStatusUpdate?: boolean;
+  statusData?: {
+    type: 'status_change' | 'document_received' | 'document_analyzed';
+    stepIndex: number;
+    previousStepIndex?: number;
+    documentName?: string;
+  };
 }
 
 interface ServiceContext {
@@ -87,8 +97,25 @@ export default function ChatGuilherme() {
   const scrollRef = useRef<HTMLDivElement>(null);
   
   const serviceParam = searchParams.get('servico') || 'geral';
-  const requestId = searchParams.get('request');
+  const requestId = searchParams.get('request') || undefined;
   const context = serviceContexts[serviceParam] || serviceContexts['geral'];
+  
+  // Get status service type (only for trackable services)
+  const statusServiceType: StatusServiceType | null = 
+    serviceParam === 'limpanome' ? 'limpanome' : 
+    serviceParam === 'analise-fiscal' ? 'analise-fiscal' : null;
+  
+  // Service status tracking hook
+  const { 
+    currentStepIndex, 
+    lastUpdatedAt, 
+    isLoading: statusLoading,
+    steps: serviceSteps 
+  } = useServiceStatus(
+    statusServiceType || 'limpanome',
+    requestId,
+    user?.id
+  );
   
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -338,56 +365,86 @@ export default function ChatGuilherme() {
               </div>
             </CardHeader>
             
+            {/* Status Card - Fixed at top of messages */}
+            {statusServiceType && (
+              <div className="shrink-0 px-4 pt-4 pb-2 border-b border-border/50 bg-muted/30">
+                <ServiceStatusCard
+                  serviceType={statusServiceType}
+                  currentStepIndex={currentStepIndex}
+                  lastUpdatedAt={lastUpdatedAt}
+                  compact
+                />
+              </div>
+            )}
+            
             {/* Messages */}
             <CardContent className="flex-1 min-h-0 p-0">
-              <ScrollArea className="h-[calc(100vh-320px)] p-4">
+              <ScrollArea className={`${statusServiceType ? 'h-[calc(100vh-400px)]' : 'h-[calc(100vh-320px)]'} p-4`}>
                 <div className="space-y-4">
                   <AnimatePresence>
-                    {messages.map((message) => (
-                      <motion.div
-                        key={message.id}
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div className={`max-w-[80%] rounded-2xl p-4 ${
-                          message.sender === 'user' 
-                            ? 'bg-primary text-primary-foreground' 
-                            : 'bg-slate-100 text-slate-900'
-                        }`}>
-                          <div className="flex items-start gap-2">
-                            {message.sender === 'specialist' && (
-                              <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
-                                <span className="text-white text-sm font-bold">G</span>
-                              </div>
-                            )}
-                            <div className="flex-1">
-                              <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-                              
-                              {message.attachmentUrl && (
-                                <a 
-                                  href={message.attachmentUrl} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="inline-flex items-center gap-1.5 mt-2 text-xs underline"
-                                >
-                                  <Download className="h-3.5 w-3.5" />
-                                  {message.attachmentName}
-                                </a>
+                    {messages.map((message) => {
+                      // Render status update messages differently
+                      if (message.isStatusUpdate && message.statusData && statusServiceType) {
+                        return (
+                          <StatusUpdateMessage
+                            key={message.id}
+                            type={message.statusData.type}
+                            serviceType={statusServiceType}
+                            stepIndex={message.statusData.stepIndex}
+                            previousStepIndex={message.statusData.previousStepIndex}
+                            documentName={message.statusData.documentName}
+                            timestamp={message.timestamp}
+                            isNew={Date.now() - message.timestamp.getTime() < 5000}
+                          />
+                        );
+                      }
+                      
+                      return (
+                        <motion.div
+                          key={message.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                        >
+                          <div className={`max-w-[80%] rounded-2xl p-4 ${
+                            message.sender === 'user' 
+                              ? 'bg-primary text-primary-foreground' 
+                              : 'bg-slate-100 text-slate-900'
+                          }`}>
+                            <div className="flex items-start gap-2">
+                              {message.sender === 'specialist' && (
+                                <div className="h-8 w-8 rounded-full bg-emerald-600 flex items-center justify-center shrink-0">
+                                  <span className="text-white text-sm font-bold">G</span>
+                                </div>
                               )}
-                              
-                              <p className={`text-xs mt-1 ${
-                                message.sender === 'user' ? 'text-white/70' : 'text-slate-500'
-                              }`}>
-                                <Clock className="h-3 w-3 inline mr-1" />
-                                {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                              </p>
+                              <div className="flex-1">
+                                <p className="whitespace-pre-wrap text-sm">{message.content}</p>
+                                
+                                {message.attachmentUrl && (
+                                  <a 
+                                    href={message.attachmentUrl} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1.5 mt-2 text-xs underline"
+                                  >
+                                    <Download className="h-3.5 w-3.5" />
+                                    {message.attachmentName}
+                                  </a>
+                                )}
+                                
+                                <p className={`text-xs mt-1 ${
+                                  message.sender === 'user' ? 'text-white/70' : 'text-slate-500'
+                                }`}>
+                                  <Clock className="h-3 w-3 inline mr-1" />
+                                  {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                                </p>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                        </motion.div>
+                      );
+                    })}
                   </AnimatePresence>
                   <div ref={scrollRef} />
                 </div>
