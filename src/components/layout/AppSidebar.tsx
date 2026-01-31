@@ -35,6 +35,9 @@ import {
   Bell,
   Target,
   MessageCircle,
+  Calculator,
+  Clock,
+  FileBarChart,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -67,6 +70,17 @@ interface AppSidebarProps {
   onTabChange?: (tab: string) => void;
 }
 
+// Ferramentas Gratuitas (compartilhadas)
+const freeToolsGroup: SidebarGroup = {
+  id: 'ferramentas-gratuitas',
+  label: 'Ferramentas Gratuitas',
+  items: [
+    { icon: Calculator, label: 'Ferramentas LC 214', tabId: 'ferramentas-lc214' },
+    { icon: FileBarChart, label: 'Simulador Transição', tabId: 'transicao' },
+    { icon: Clock, label: 'Timeline Reforma', tabId: 'timeline' },
+  ],
+};
+
 // EMPRESA - BI centrado
 const empresaGroups: SidebarGroup[] = [
   {
@@ -87,6 +101,7 @@ const empresaGroups: SidebarGroup[] = [
       { icon: Bell, label: 'Notificações', tabId: 'notifications' },
     ],
   },
+  freeToolsGroup,
   {
     id: 'marketplace',
     label: 'Marketplace',
@@ -127,6 +142,7 @@ const autonomoGroups: SidebarGroup[] = [
       { icon: Bell, label: 'Alertas', tabId: 'notifications' },
     ],
   },
+  freeToolsGroup,
   {
     id: 'marketplace',
     label: 'Marketplace',
@@ -166,6 +182,7 @@ const contadorGroups: SidebarGroup[] = [
       { icon: Bell, label: 'Notificações', tabId: 'notifications' },
     ],
   },
+  freeToolsGroup,
   {
     id: 'marketplace',
     label: 'Marketplace',
@@ -214,6 +231,15 @@ const partnerGroups: SidebarGroup[] = [
       { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
     ],
   },
+  {
+    id: 'comunicacao',
+    label: 'Comunicação',
+    items: [
+      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+    ],
+  },
+  freeToolsGroup,
   {
     id: 'comunicacao',
     label: 'Comunicação',
@@ -277,6 +303,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   const handleItemClick = (tabId: string) => {
+    // Ferramentas gratuitas → navegação externa
+    const externalRoutes: Record<string, string> = {
+      'ferramentas-lc214': '/ferramentas-lc214',
+      'transicao': '/transicao',
+      'timeline': '/timeline-reforma',
+    };
+
+    if (externalRoutes[tabId]) {
+      navigate(externalRoutes[tabId]);
+      return;
+    }
+
     if (onTabChange) {
       onTabChange(tabId);
       window.scrollTo({ top: 0, behavior: "instant" });

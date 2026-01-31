@@ -30,6 +30,7 @@ import {
   Star,
   Users,
   BadgeCheck,
+  Brain,
 } from 'lucide-react';
 
 const categories = [
@@ -96,6 +97,29 @@ const socialProof = [
 
 // Service configurations with all information needed
 const serviceConfigs: ServiceCardConfig[] = [
+  // BI+ Contabilidade - NOVO
+  {
+    key: 'bi_contabilidade',
+    name: 'BI+ Contabilidade',
+    description: 'Inteligência financeira com IA + análise humana especializada.',
+    targetAudience: 'Para empresas que querem controle total',
+    features: [
+      'Dashboard em tempo real',
+      'IA + Análise humana dedicada',
+      'Insights automáticos e alertas',
+      'Suporte especializado do César',
+    ],
+    guarantees: ['Atendimento humano', 'IA + Especialista'],
+    basePrice: 199000,
+    discountPercent: 10,
+    badge: 'popular',
+    cta: 'Contratar BI+',
+    color: 'purple',
+    icon: Brain,
+    serviceType: 'bi_contabilidade',
+    checkoutRoute: '/bi-contabilidade/onboarding',
+    category: 'consultoria',
+  },
   // Limpa Nome PF
   {
     key: 'credit_repair_pf',
