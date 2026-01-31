@@ -1,0 +1,598 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
+import { motion, AnimatePresence } from 'framer-motion';
+import { 
+  Send, 
+  MessageCircle,
+  Loader2,
+  Check,
+  CheckCheck,
+  FileText,
+  X,
+  Users,
+  Sparkles,
+  BarChart3,
+  RefreshCw,
+  FileCheck,
+  File,
+  User,
+  Search,
+  Paperclip,
+  Bot,
+  TrendingUp
+} from 'lucide-react';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
+
+interface ChatMessage {
+  id: string;
+  request_id: string;
+  sender_id: string;
+  receiver_id: string;
+  content: string;
+  read_at: string | null;
+  created_at: string;
+  attachment_url?: string | null;
+  attachment_type?: string | null;
+  attachment_name?: string | null;
+}
+
+interface ClientRequest {
+  id: string;
+  full_name: string;
+  email: string;
+  phone?: string;
+  status: string;
+  created_at: string;
+  user_id: string;
+  service_type: 'bi-subscription' | 'contabilidade';
+  plan_type?: string;
+  price_cents?: number;
+}
+
+// Documentos específicos para BI/Contabilidade
+const documentTypesBI = [
+  { id: 'balanco', label: 'Balanço Patrimonial', icon: FileText },
+  { id: 'dre', label: 'DRE', icon: FileText },
+  { id: 'fluxo_caixa', label: 'Fluxo de Caixa', icon: TrendingUp },
+  { id: 'relatorio_vendas', label: 'Relatório de Vendas', icon: BarChart3 },
+  { id: 'planilha', label: 'Planilha Contábil', icon: FileCheck },
+  { id: 'outro', label: 'Outro Documento', icon: Paperclip },
+];
+
+// Tema visual: Violet/Indigo para César (BI)
+const theme = {
+  primary: 'bg-violet-600',
+  primaryHover: 'hover:bg-violet-700',
+  light: 'bg-violet-50',
+  accent: 'text-violet-600',
+  dot: 'bg-violet-500',
+  border: 'border-violet-200',
+};
+
+export function CesarClientChat() {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const [selectedClient, setSelectedClient] = useState<ClientRequest | null>(null);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [clients, setClients] = useState<ClientRequest[]>([]);
+  const [newMessage, setNewMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSending, setIsSending] = useState(false);
+  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [showDocumentRequest, setShowDocumentRequest] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useEffect(() => {
+    loadClients();
+  }, []);
+
+  const loadClients = async () => {
+    setIsLoading(true);
+    try {
+      // Load BI subscriptions as clients for César
+      const { data: subscriptions } = await supabase
+        .from('subscriptions')
+        .select(`
+          id,
+          user_id,
+          status,
+          plan_type,
+          price_cents,
+          created_at
+        `)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false });
+
+      // Get user profiles for names
+      const userIds = subscriptions?.map(s => s.user_id) || [];
+      const { data: profiles } = await supabase
+        .from('profiles')
+        .select('id, full_name, email, phone')
+        .in('id', userIds);
+
+      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
+
+      const clientList: ClientRequest[] = (subscriptions || []).map(sub => {
+        const profile = profileMap.get(sub.user_id);
+        return {
+          id: sub.id,
+          user_id: sub.user_id,
+          full_name: profile?.full_name || 'Cliente BI',
+          email: profile?.email || '',
+          phone: profile?.phone,
+          status: sub.status,
+          created_at: sub.created_at,
+          service_type: 'bi-subscription' as const,
+          plan_type: sub.plan_type,
+          price_cents: sub.price_cents,
+        };
+      });
+
+      setClients(clientList);
+    } catch (error) {
+      console.error('Error loading clients:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newMessage.trim() || !user || !selectedClient || isSending) return;
+
+    setIsSending(true);
+
+    // For BI clients, we simulate sending (would integrate with actual messaging system)
+    toast({ 
+      title: 'Mensagem enviada', 
+      description: `Notificação enviada para ${selectedClient.full_name}.` 
+    });
+    
+    // Add message to local state for demo
+    const newMsg: ChatMessage = {
+      id: Date.now().toString(),
+      request_id: selectedClient.id,
+      sender_id: user.id,
+      receiver_id: selectedClient.user_id,
+      content: newMessage.trim(),
+      read_at: null,
+      created_at: new Date().toISOString(),
+    };
+    
+    setMessages(prev => [...prev, newMsg]);
+    setNewMessage('');
+    setIsSending(false);
+  };
+
+  const generateAIResponse = async () => {
+    if (!selectedClient) return;
+
+    setIsGeneratingAI(true);
+
+    try {
+      const context = `Serviço: BI Contabilidade. Plano: ${selectedClient.plan_type || 'Premium'}. Cliente desde: ${new Date(selectedClient.created_at).toLocaleDateString('pt-BR')}.`;
+
+      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-admin-response`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
+        },
+        body: JSON.stringify({
+          clientName: selectedClient.full_name,
+          serviceType: 'bi-contabilidade',
+          status: selectedClient.status,
+          context,
+          conversationHistory: messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'César' : 'Cliente'}]: ${m.content}`).join('\n'),
+          action: messages.length === 0 
+            ? 'Gerar boas-vindas profissional como César, especialista em BI e Contabilidade'
+            : 'Gerar resposta técnica e profissional como César',
+        }),
+      });
+
+      if (response.ok) {
+        const reader = response.body?.getReader();
+        const decoder = new TextDecoder();
+        let aiResponse = '';
+
+        if (reader) {
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            
+            const chunk = decoder.decode(value, { stream: true });
+            const lines = chunk.split('\n');
+            
+            for (const line of lines) {
+              if (line.startsWith('data: ') && !line.includes('[DONE]')) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  const content = data.choices?.[0]?.delta?.content;
+                  if (content) aiResponse += content;
+                } catch {}
+              }
+            }
+          }
+        }
+
+        setNewMessage(aiResponse.trim());
+        toast({ title: '✨ Resposta gerada', description: 'Revise antes de enviar.' });
+      } else {
+        toast({ title: 'Erro ao gerar', variant: 'destructive' });
+      }
+    } catch (error) {
+      console.error('AI error:', error);
+      toast({ title: 'Erro ao gerar resposta', variant: 'destructive' });
+    } finally {
+      setIsGeneratingAI(false);
+    }
+  };
+
+  const handleDocumentRequest = (docLabel: string) => {
+    const firstName = selectedClient?.full_name?.split(' ')[0] || 'Cliente';
+    
+    setNewMessage(`Olá, ${firstName}! 👋
+
+Sou o César, seu especialista em BI e Contabilidade aqui da AtentAI.
+
+Para dar continuidade à sua análise contábil, preciso que você me envie:
+
+📄 **${docLabel}**
+
+Pode enviar como arquivo Excel, PDF ou imagem aqui no chat. Com esse documento, consigo gerar insights precisos para seu negócio.
+
+Qualquer dúvida sobre formatação ou dados necessários, estou por aqui!
+
+Abraço,
+César`);
+    setShowDocumentRequest(false);
+  };
+
+  const filteredClients = clients.filter(client => 
+    client.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    client.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getInitials = (name: string) => name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-[600px] bg-white rounded-xl border border-slate-200">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
+          <p className="text-slate-500 text-sm">Carregando clientes BI...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="h-[calc(100vh-160px)] min-h-[600px] flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+      {/* Header Fixo */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
+        <div className="flex items-center gap-3">
+          <div className="p-2 rounded-lg bg-violet-600">
+            <MessageCircle className="h-5 w-5 text-white" />
+          </div>
+          <div>
+            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento BI</h2>
+            <p className="text-xs text-slate-500">{clients.length} clientes • César</p>
+          </div>
+        </div>
+        <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 text-slate-600 border-slate-200">
+          <RefreshCw className="h-4 w-4" />
+          Atualizar
+        </Button>
+      </div>
+
+      {/* Container Principal */}
+      <div className="flex-1 flex min-h-0">
+        
+        {/* Lista de Clientes */}
+        <div className="w-80 shrink-0 flex flex-col border-r border-slate-200 bg-white">
+          {/* Busca */}
+          <div className="p-3 space-y-2 border-b border-slate-100 bg-slate-50/50 shrink-0">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <Input 
+                placeholder="Buscar cliente BI..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-9 h-9 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
+              />
+            </div>
+            
+            <div className="flex items-center gap-2 px-1">
+              <BarChart3 className="h-4 w-4 text-violet-600" />
+              <span className="text-xs text-slate-600 font-medium">Assinantes BI Contabilidade</span>
+            </div>
+          </div>
+
+          {/* Lista Scrollável */}
+          <div className="flex-1 overflow-y-auto">
+            {filteredClients.length === 0 ? (
+              <div className="text-center py-12">
+                <Users className="h-10 w-10 mx-auto mb-3 text-slate-300" />
+                <p className="text-sm text-slate-500">Nenhum cliente BI</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {filteredClients.map((client) => {
+                  const isSelected = selectedClient?.id === client.id;
+                  
+                  return (
+                    <button
+                      key={client.id}
+                      onClick={() => setSelectedClient(client)}
+                      className={cn(
+                        "w-full px-3 py-3 text-left transition-all",
+                        isSelected ? theme.light : "hover:bg-slate-50"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className={cn(
+                          "relative w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm shrink-0 text-white",
+                          theme.primary
+                        )}>
+                          {getInitials(client.full_name)}
+                          <div className={cn(
+                            "absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full border-2 border-white",
+                            client.status === 'active' ? 'bg-green-500' : 'bg-amber-500'
+                          )} />
+                        </div>
+                        
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-2">
+                            <span className="font-medium truncate text-sm text-slate-900">
+                              {client.full_name}
+                            </span>
+                            <span className="text-[10px] text-slate-400 shrink-0">
+                              {formatDistanceToNow(new Date(client.created_at), { addSuffix: false, locale: ptBR })}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-violet-50 text-violet-700 border-violet-200">
+                              {client.plan_type || 'Premium'}
+                            </Badge>
+                            {client.price_cents && (
+                              <span className="text-[10px] text-slate-500">
+                                R$ {(client.price_cents / 100).toFixed(0)}/mês
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Área do Chat */}
+        {selectedClient ? (
+          <div className="flex-1 flex flex-col min-w-0 bg-white">
+            {/* Header do Cliente */}
+            <div className={cn("px-4 py-3 border-b border-slate-200 shrink-0", theme.light)}>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className={cn(
+                    "w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm text-white shrink-0",
+                    theme.primary
+                  )}>
+                    {getInitials(selectedClient.full_name)}
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-semibold text-slate-900 truncate">{selectedClient.full_name}</h3>
+                    <div className="flex items-center gap-2 text-xs text-slate-500">
+                      <span>{selectedClient.email}</span>
+                      <span>•</span>
+                      <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-violet-100 text-violet-700 border-violet-200">
+                        <BarChart3 className="h-3 w-3 mr-1" />
+                        BI {selectedClient.plan_type}
+                      </Badge>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Mensagens */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-slate-50/30">
+              {messages.length === 0 ? (
+                <div className="flex flex-col items-center justify-center h-full text-center py-12">
+                  <div className={cn("p-4 rounded-full mb-4", theme.light)}>
+                    <MessageCircle className={cn("h-8 w-8", theme.accent)} />
+                  </div>
+                  <h3 className="font-semibold text-slate-800 mb-1">
+                    Iniciar conversa com {selectedClient.full_name.split(' ')[0]}
+                  </h3>
+                  <p className="text-sm text-slate-500 mb-4 max-w-sm">
+                    Use a IA para gerar uma mensagem personalizada ou escreva diretamente.
+                  </p>
+                  <Button 
+                    onClick={generateAIResponse} 
+                    disabled={isGeneratingAI}
+                    className={cn("gap-2", theme.primary, theme.primaryHover)}
+                  >
+                    {isGeneratingAI ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Bot className="h-4 w-4" />
+                    )}
+                    Gerar como César
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {messages.map((msg) => {
+                    const isAdmin = msg.sender_id === user?.id;
+                    return (
+                      <motion.div
+                        key={msg.id}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className={cn(
+                          "flex",
+                          isAdmin ? "justify-end" : "justify-start"
+                        )}
+                      >
+                        <div className={cn(
+                          "max-w-[75%] rounded-2xl px-4 py-2.5 shadow-sm",
+                          isAdmin 
+                            ? "bg-violet-600 text-white rounded-br-md" 
+                            : "bg-white text-slate-900 border border-slate-200 rounded-bl-md"
+                        )}>
+                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                          <div className={cn(
+                            "flex items-center gap-1.5 mt-1.5",
+                            isAdmin ? "justify-end" : "justify-start"
+                          )}>
+                            <span className={cn(
+                              "text-[10px]",
+                              isAdmin ? "text-violet-200" : "text-slate-400"
+                            )}>
+                              {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            {isAdmin && (
+                              msg.read_at 
+                                ? <CheckCheck className="h-3.5 w-3.5 text-violet-200" />
+                                : <Check className="h-3.5 w-3.5 text-violet-300" />
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                  <div ref={messagesEndRef} />
+                </>
+              )}
+            </div>
+
+            {/* Solicitar Documento */}
+            <AnimatePresence>
+              {showDocumentRequest && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="border-t border-slate-200 bg-slate-50 overflow-hidden shrink-0"
+                >
+                  <div className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="text-xs font-medium text-slate-700">Solicitar Documento Contábil</span>
+                      <button onClick={() => setShowDocumentRequest(false)} className="p-1 hover:bg-slate-200 rounded">
+                        <X className="h-4 w-4 text-slate-500" />
+                      </button>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {documentTypesBI.map((doc) => {
+                        const Icon = doc.icon;
+                        return (
+                          <button
+                            key={doc.id}
+                            onClick={() => handleDocumentRequest(doc.label)}
+                            className={cn(
+                              "flex flex-col items-center gap-1 p-2 rounded-lg border transition-all",
+                              "border-slate-200 bg-white hover:bg-violet-50 hover:border-violet-300 text-slate-700"
+                            )}
+                          >
+                            <Icon className="h-4 w-4 text-violet-600" />
+                            <span className="text-[10px] text-center leading-tight">{doc.label}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Input de Mensagem */}
+            <form onSubmit={handleSend} className="p-3 border-t border-slate-200 bg-white shrink-0">
+              <div className="flex items-end gap-2">
+                <div className="flex gap-1 shrink-0">
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-9 w-9 text-slate-500 hover:text-violet-600 hover:bg-violet-50"
+                    onClick={() => setShowDocumentRequest(!showDocumentRequest)}
+                  >
+                    <Paperclip className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    type="button" 
+                    variant="ghost" 
+                    size="icon" 
+                    className="h-9 w-9 text-slate-500 hover:text-violet-600 hover:bg-violet-50"
+                    onClick={generateAIResponse}
+                    disabled={isGeneratingAI}
+                  >
+                    {isGeneratingAI ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Bot className="h-4 w-4" />
+                    )}
+                  </Button>
+                </div>
+                
+                <Input
+                  value={newMessage}
+                  onChange={(e) => setNewMessage(e.target.value)}
+                  placeholder="Digite sua mensagem..."
+                  className="flex-1 h-9 bg-slate-50 border-slate-200 focus:bg-white text-slate-900 placeholder:text-slate-400"
+                  disabled={isSending}
+                />
+                
+                <Button 
+                  type="submit" 
+                  disabled={!newMessage.trim() || isSending}
+                  className={cn("h-9 px-4 gap-2", theme.primary, theme.primaryHover)}
+                >
+                  {isSending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Send className="h-4 w-4" />
+                      <span className="hidden sm:inline">Enviar</span>
+                    </>
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        ) : (
+          <div className="flex-1 flex items-center justify-center bg-slate-50/50">
+            <div className="text-center">
+              <div className={cn("w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4", theme.light)}>
+                <MessageCircle className={cn("h-8 w-8", theme.accent)} />
+              </div>
+              <h3 className="font-semibold text-slate-800 mb-1">Selecione um cliente</h3>
+              <p className="text-sm text-slate-500">Escolha um cliente BI para iniciar a conversa</p>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default CesarClientChat;

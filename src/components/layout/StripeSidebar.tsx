@@ -108,11 +108,18 @@ const adminGroups: SidebarGroup[] = [
       { icon: MessageCircle, label: 'Chat – César', tabId: 'cesar-chat', isLive: true },
       { icon: FileText, label: 'Documentos', tabId: 'cesar-docs' },
       { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
+    ],
+  },
+  {
+    id: 'metricas',
+    label: 'Métricas & Análises',
+    icon: TrendingUp,
+    items: [
       { icon: TrendingUp, label: 'Métricas SaaS', tabId: 'saas-metrics' },
       { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast' },
       { icon: Target, label: 'Churn & Retenção', tabId: 'churn' },
       { icon: PieChart, label: 'Análise Cohort', tabId: 'cohort' },
-      { icon: AlertTriangle, label: 'Alertas Performance', tabId: 'cesar-alerts' },
+      { icon: AlertTriangle, label: 'Alertas Performance', tabId: 'performance-alerts' },
     ],
   },
   {
