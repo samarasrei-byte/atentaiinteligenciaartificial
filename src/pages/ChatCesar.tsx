@@ -12,8 +12,9 @@ import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, Paperclip, BarChart3, FileText, MessageCircle,
-  ArrowLeft, Clock, Download, Loader2, Brain
+  ArrowLeft, Clock, Download, Loader2, Brain, Heart
 } from 'lucide-react';
+import { ServicePaywallBanner } from '@/components/subscription/ServicePaywallBanner';
 
 // WhatsApp Business Icon SVG component
 const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { className?: string; connected?: boolean }) => (
@@ -91,6 +92,15 @@ export default function ChatCesar() {
   const [isSending, setIsSending] = useState(false);
   const [isWhatsAppConnected, setIsWhatsAppConnected] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isPaid, setIsPaid] = useState(false);
+  
+  // Service pricing map
+  const servicePricing = {
+    'bi-contabilidade': 199000, // R$ 1.990 (exemplo)
+    'contabilidade': 99000, // R$ 990
+    'relatorios': 0, // Incluso em planos
+    'geral': 0,
+  };
   
   useEffect(() => {
     const loadData = async () => {
@@ -243,6 +253,17 @@ export default function ChatCesar() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Minhas Solicitações
           </Button>
+          
+          {/* Payment Banner - Shows when service is not paid */}
+          {servicePricing[context.type as keyof typeof servicePricing] > 0 && (
+            <div className="mb-4">
+              <ServicePaywallBanner
+                serviceType={context.type as 'limpanome' | 'fiscal' | 'bi-contabilidade'}
+                servicePriceCents={servicePricing[context.type as keyof typeof servicePricing]}
+                isPaid={isPaid}
+              />
+            </div>
+          )}
           
           <Card className="flex-1 flex flex-col min-h-0 shadow-lg">
             <CardHeader className="shrink-0 border-b bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-t-lg p-4">
