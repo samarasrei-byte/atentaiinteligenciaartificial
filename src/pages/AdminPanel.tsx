@@ -24,7 +24,7 @@ import { ContadoresManagement } from '@/components/admin/ContadoresManagement';
 import { CreditRepairManagement } from '@/components/admin/CreditRepairManagement';
 import CashbackMetricsDashboard from '@/components/admin/CashbackMetricsDashboard';
 import { FiscalAnalysisManagement } from '@/components/admin/FiscalAnalysisManagement';
-import { FloatingAIAgent } from '@/components/ai/FloatingAIAgent';
+// FloatingAIAgent removido por solicitação - Assistente Analytics oculto
 import { ChurnAnalytics } from '@/components/admin/ChurnAnalytics';
 import { CohortAnalysis } from '@/components/admin/CohortAnalysis';
 import { MassMessaging } from '@/components/admin/MassMessaging';
@@ -754,8 +754,7 @@ const AdminPanel = () => {
         </div>
       </main>
       
-      {/* Floating AI Agent - Analytics for Admin */}
-      <FloatingAIAgent context="admin" />
+      {/* FloatingAIAgent - Oculto por solicitação */}
     </div>
   );
 };
