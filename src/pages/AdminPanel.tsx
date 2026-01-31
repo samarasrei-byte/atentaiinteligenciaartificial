@@ -46,11 +46,13 @@ import StripeSidebar from '@/components/layout/StripeSidebar';
 import GuilhermeChatHub from '@/components/admin/GuilhermeChatHub';
 import CesarChatHub from '@/components/admin/CesarChatHub';
 import DocumentsCentral from '@/components/admin/DocumentsCentral';
+import AdminIntegrationsHub from '@/components/admin/AdminIntegrationsHub';
+import AdminAlertsHub from '@/components/admin/AdminAlertsHub';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
   CreditCard, Clock, CheckCircle, AlertCircle, XCircle, RefreshCw, Menu, Headphones,
-  Building2, User, Scale, FileText, Bell,
+  Building2, User, Scale, FileText, Bell, Zap, Key, Lock,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -747,6 +749,92 @@ const AdminPanel = () => {
                   <Button onClick={() => window.open('/contador', '_blank')}>
                     Abrir em nova aba
                   </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* =====================================================
+              ALERTAS - Central de Alertas
+           ===================================================== */}
+          {activeTab === 'alerts' && (
+            <AdminAlertsHub onNavigate={handleTabChange} />
+          )}
+
+          {/* =====================================================
+              CONFIGURAÇÕES - Integrações, APIs, Segurança
+           ===================================================== */}
+          {activeTab === 'integrations' && (
+            <AdminIntegrationsHub />
+          )}
+
+          {activeTab === 'whatsapp-config' && (
+            <AdminIntegrationsHub />
+          )}
+
+          {activeTab === 'asaas-config' && (
+            <AdminIntegrationsHub />
+          )}
+
+          {activeTab === 'api-keys' && (
+            <AdminIntegrationsHub />
+          )}
+
+          {activeTab === 'security' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-red-100">
+                    <Lock className="h-6 w-6 text-red-600" />
+                  </div>
+                  <div>
+                    <CardTitle>Segurança</CardTitle>
+                    <CardDescription>Configurações de segurança e acesso</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="p-4 rounded-lg border bg-muted/30">
+                  <h4 className="font-semibold mb-2">Autenticação em Duas Etapas (2FA)</h4>
+                  <p className="text-sm text-muted-foreground mb-3">Adicione uma camada extra de segurança à sua conta</p>
+                  <Button variant="outline">Configurar 2FA</Button>
+                </div>
+                <div className="p-4 rounded-lg border bg-muted/30">
+                  <h4 className="font-semibold mb-2">Sessões Ativas</h4>
+                  <p className="text-sm text-muted-foreground mb-3">Gerencie dispositivos conectados à sua conta</p>
+                  <Button variant="outline">Ver Sessões</Button>
+                </div>
+                <div className="p-4 rounded-lg border bg-muted/30">
+                  <h4 className="font-semibold mb-2">Logs de Acesso</h4>
+                  <p className="text-sm text-muted-foreground mb-3">Histórico de acessos e tentativas de login</p>
+                  <Button variant="outline" onClick={() => handleTabChange('audit-page')}>Ver Logs</Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'profile' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-primary/10">
+                    <User className="h-6 w-6 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Meu Perfil</CardTitle>
+                    <CardDescription>Informações da sua conta de administrador</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="flex items-center gap-4 p-4 rounded-lg bg-muted/30">
+                  <div className="h-16 w-16 rounded-full bg-gradient-to-br from-primary to-indigo-600 flex items-center justify-center">
+                    <span className="text-2xl font-bold text-white">A</span>
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-lg">Administrador</h3>
+                    <p className="text-muted-foreground">{user?.email}</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>

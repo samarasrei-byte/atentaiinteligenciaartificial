@@ -3,10 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  MessageSquare,
-  BarChart3,
-  Shield,
-  Scale,
+  MessageCircle,
+  LayoutDashboard,
+  FileText,
   ShoppingBag,
   Settings,
   LogOut,
@@ -15,25 +14,17 @@ import {
   ChevronDown,
   Sparkles,
   Users,
-  Building2,
   CreditCard,
   Bell,
-  FileText,
-  TrendingUp,
-  Wallet,
-  Target,
-  PieChart,
-  Star,
-  Brain,
-  Activity,
   User,
-  UserCheck,
-  MessagesSquare,
-  MessageCircle,
-  LayoutDashboard,
-  DollarSign,
+  Brain,
+  Shield,
+  Scale,
+  BarChart3,
+  Wallet,
   Zap,
-  AlertTriangle,
+  MessageSquare,
+  Star,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -62,6 +53,8 @@ interface SidebarGroup {
   icon: React.ElementType;
   items: SidebarItem[];
   defaultOpen?: boolean;
+  isPerson?: boolean;
+  personGradient?: string;
 }
 
 interface StripeSidebarProps {
@@ -69,11 +62,23 @@ interface StripeSidebarProps {
   onToggle: () => void;
   activeTab?: string;
   onTabChange?: (tab: string) => void;
-  variant?: 'admin' | 'contador' | 'autonomo' | 'empresa';
+  variant?: 'admin' | 'contador' | 'autonomo' | 'empresa' | 'afiliado';
 }
 
-// Estrutura para Admin - Sidebar DEFINITIVA
-// REGRA: Chat é o CORE. Documentos fluem do chat. Serviços são contexto.
+/**
+ * SIDEBAR FINAL - ADMIN
+ * 
+ * Estrutura definitiva com 9 grupos principais:
+ * 1. Dashboard
+ * 2. Chat – Guilherme (Atendimento / Limpa Nome / Análise Fiscal)
+ * 3. Chat – César (BI & Contabilidade)
+ * 4. Documentos
+ * 5. Serviços
+ * 6. Marketplace
+ * 7. Usuários
+ * 8. Financeiro
+ * 9. Configurações
+ */
 const adminGroups: SidebarGroup[] = [
   {
     id: 'dashboard',
@@ -82,7 +87,6 @@ const adminGroups: SidebarGroup[] = [
     defaultOpen: true,
     items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-      { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
       { icon: Bell, label: 'Alertas', tabId: 'alerts' },
     ],
   },
@@ -91,12 +95,12 @@ const adminGroups: SidebarGroup[] = [
     label: 'Guilherme',
     icon: User,
     defaultOpen: true,
+    isPerson: true,
+    personGradient: 'from-emerald-500 to-teal-600',
     items: [
-      { icon: MessageCircle, label: 'Chat – Guilherme', tabId: 'guilherme-chat', isLive: true },
-      { icon: FileText, label: 'Documentos', tabId: 'guilherme-docs' },
+      { icon: MessageCircle, label: 'Chat', tabId: 'guilherme-chat', isLive: true },
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
-      { icon: Bell, label: 'Alertas Serviços', tabId: 'guilherme-alerts' },
     ],
   },
   {
@@ -104,22 +108,11 @@ const adminGroups: SidebarGroup[] = [
     label: 'César',
     icon: Brain,
     defaultOpen: true,
+    isPerson: true,
+    personGradient: 'from-violet-500 to-indigo-600',
     items: [
-      { icon: MessageCircle, label: 'Chat – César', tabId: 'cesar-chat', isLive: true },
-      { icon: FileText, label: 'Documentos', tabId: 'cesar-docs' },
+      { icon: MessageCircle, label: 'Chat', tabId: 'cesar-chat', isLive: true },
       { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
-    ],
-  },
-  {
-    id: 'metricas',
-    label: 'Métricas & Análises',
-    icon: TrendingUp,
-    items: [
-      { icon: TrendingUp, label: 'Métricas SaaS', tabId: 'saas-metrics' },
-      { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast' },
-      { icon: Target, label: 'Churn & Retenção', tabId: 'churn' },
-      { icon: PieChart, label: 'Análise Cohort', tabId: 'cohort' },
-      { icon: AlertTriangle, label: 'Alertas Performance', tabId: 'performance-alerts' },
     ],
   },
   {
@@ -128,9 +121,6 @@ const adminGroups: SidebarGroup[] = [
     icon: FileText,
     items: [
       { icon: FileText, label: 'Central de Documentos', tabId: 'documents-central' },
-      { icon: Shield, label: 'Docs Limpa Nome', tabId: 'docs-limpa-nome' },
-      { icon: Scale, label: 'Docs Fiscal', tabId: 'docs-fiscal' },
-      { icon: BarChart3, label: 'Docs Contábeis', tabId: 'docs-bi' },
     ],
   },
   {
@@ -149,7 +139,28 @@ const adminGroups: SidebarGroup[] = [
     icon: ShoppingBag,
     items: [
       { icon: Star, label: 'Ativar Serviços', tabId: 'marketplace-activate' },
-      { icon: TrendingUp, label: 'Upgrade', tabId: 'marketplace-upgrade' },
+    ],
+  },
+  {
+    id: 'usuarios',
+    label: 'Usuários',
+    icon: Users,
+    items: [
+      { icon: Users, label: 'Todos os Usuários', tabId: 'users' },
+      { icon: Shield, label: 'Roles', tabId: 'roles' },
+      { icon: Users, label: 'Contadores', tabId: 'contadores' },
+      { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
+      { icon: Users, label: 'Parceiros', tabId: 'partners' },
+    ],
+  },
+  {
+    id: 'financeiro',
+    label: 'Financeiro',
+    icon: Wallet,
+    items: [
+      { icon: Wallet, label: 'Receitas', tabId: 'revenue' },
+      { icon: CreditCard, label: 'Assinaturas', tabId: 'subscriptions' },
+      { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
     ],
   },
   {
@@ -164,17 +175,11 @@ const adminGroups: SidebarGroup[] = [
       { icon: User, label: 'Perfil', tabId: 'profile' },
       { icon: Shield, label: 'Segurança', tabId: 'security' },
       { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
-      { icon: Shield, label: 'Roles', tabId: 'roles' },
-      { icon: Users, label: 'Usuários', tabId: 'users' },
-      { icon: Building2, label: 'Parceiros', tabId: 'partners' },
-      { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
-      { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
-      { icon: Wallet, label: 'Financeiro', tabId: 'financial' },
     ],
   },
 ];
 
-// Estrutura simplificada para Autônomo
+// Estrutura para Autônomo (mesmo design, itens diferentes)
 const autonomoGroups: SidebarGroup[] = [
   {
     id: 'central',
@@ -182,7 +187,7 @@ const autonomoGroups: SidebarGroup[] = [
     icon: MessageSquare,
     defaultOpen: true,
     items: [
-      { icon: MessageSquare, label: 'Chat IA', tabId: 'smart-chat', isLive: true },
+      { icon: MessageSquare, label: 'Chat IA', tabId: 'ai-chat', isLive: true },
       { icon: LayoutDashboard, label: 'Dashboard', tabId: 'dashboard' },
     ],
   },
@@ -194,7 +199,6 @@ const autonomoGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal' },
-      { icon: BarChart3, label: 'BI', tabId: 'bi' },
     ],
   },
   {
@@ -218,19 +222,157 @@ const autonomoGroups: SidebarGroup[] = [
   },
 ];
 
+// Estrutura para Contador (mesmo design)
+const contadorGroups: SidebarGroup[] = [
+  {
+    id: 'central',
+    label: 'Central',
+    icon: LayoutDashboard,
+    defaultOpen: true,
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
+    ],
+  },
+  {
+    id: 'servicos',
+    label: 'Serviços',
+    icon: ShoppingBag,
+    defaultOpen: true,
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
+      { icon: FileText, label: 'Abertura Empresa', tabId: 'abertura' },
+      { icon: FileText, label: 'IR', tabId: 'ir' },
+      { icon: FileText, label: 'Certidões', tabId: 'certidoes' },
+    ],
+  },
+  {
+    id: 'financeiro',
+    label: 'Financeiro',
+    icon: Wallet,
+    items: [
+      { icon: Wallet, label: 'Ganhos', tabId: 'earnings' },
+      { icon: Wallet, label: 'Saques', tabId: 'saques' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    icon: Settings,
+    items: [
+      { icon: User, label: 'Perfil', tabId: 'profile' },
+      { icon: Settings, label: 'Stripe Connect', tabId: 'stripe-connect' },
+    ],
+  },
+];
+
+// Estrutura para Empresa (mesmo design)
+const empresaGroups: SidebarGroup[] = [
+  {
+    id: 'central',
+    label: 'Central',
+    icon: LayoutDashboard,
+    defaultOpen: true,
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+      { icon: MessageCircle, label: 'Chat IA', tabId: 'ai-chat', isLive: true },
+    ],
+  },
+  {
+    id: 'servicos',
+    label: 'Serviços',
+    icon: ShoppingBag,
+    defaultOpen: true,
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal' },
+      { icon: BarChart3, label: 'BI', tabId: 'bi' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    icon: ShoppingBag,
+    items: [
+      { icon: ShoppingBag, label: 'Serviços', tabId: 'servicos' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    icon: Settings,
+    items: [
+      { icon: FileText, label: 'Documentos', tabId: 'documentos' },
+      { icon: CreditCard, label: 'Pagamentos', tabId: 'pagamentos' },
+      { icon: User, label: 'Perfil', tabId: 'profile' },
+    ],
+  },
+];
+
+// Estrutura para Afiliado (mesmo design)
+const afiliadoGroups: SidebarGroup[] = [
+  {
+    id: 'central',
+    label: 'Central',
+    icon: LayoutDashboard,
+    defaultOpen: true,
+    items: [
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+    ],
+  },
+  {
+    id: 'leads',
+    label: 'Leads',
+    icon: Users,
+    defaultOpen: true,
+    items: [
+      { icon: Users, label: 'Meus Leads', tabId: 'leads' },
+      { icon: Star, label: 'Cupons', tabId: 'cupons' },
+    ],
+  },
+  {
+    id: 'financeiro',
+    label: 'Financeiro',
+    icon: Wallet,
+    items: [
+      { icon: Wallet, label: 'Comissões', tabId: 'comissoes' },
+      { icon: Wallet, label: 'Saques', tabId: 'saques' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    icon: Settings,
+    items: [
+      { icon: User, label: 'Perfil', tabId: 'profile' },
+    ],
+  },
+];
+
 export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   collapsed,
   onToggle,
-  activeTab = 'smart-chat',
+  activeTab = 'overview',
   onTabChange,
   variant = 'admin',
 }) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
   
-  const groups = variant === 'admin' ? adminGroups : autonomoGroups;
+  const getGroups = () => {
+    switch (variant) {
+      case 'admin': return adminGroups;
+      case 'contador': return contadorGroups;
+      case 'autonomo': return autonomoGroups;
+      case 'empresa': return empresaGroups;
+      case 'afiliado': return afiliadoGroups;
+      default: return adminGroups;
+    }
+  };
+  
+  const groups = getGroups();
 
-  // Estado para grupos abertos
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     groups.forEach(group => {
@@ -316,14 +458,10 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
     return content;
   };
 
-  // Verifica se é um grupo de pessoa (Guilherme/César)
-  const isPersonGroup = (groupId: string) => groupId === 'guilherme' || groupId === 'cesar';
-
   const SidebarGroupComponent = ({ group }: { group: SidebarGroup }) => {
     const Icon = group.icon;
     const isOpen = openGroups[group.id];
     const hasActiveItem = group.items.some(item => item.tabId === activeTab);
-    const isPerson = isPersonGroup(group.id);
 
     if (collapsed) {
       return (
@@ -341,18 +479,16 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
           <button
             className={cn(
               'w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group',
-              isPerson && 'bg-slate-900/50 border border-slate-800/50',
+              group.isPerson && 'bg-slate-900/50 border border-slate-800/50',
               hasActiveItem
                 ? 'text-white'
                 : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
             )}
           >
-            {isPerson ? (
+            {group.isPerson ? (
               <div className={cn(
-                'h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-sm',
-                group.id === 'guilherme' 
-                  ? 'bg-gradient-to-br from-emerald-500 to-teal-600' 
-                  : 'bg-gradient-to-br from-violet-500 to-indigo-600'
+                'h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-sm bg-gradient-to-br',
+                group.personGradient
               )}>
                 {group.label[0]}
               </div>
@@ -361,7 +497,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
             )}
             <span className={cn(
               'flex-1 text-left tracking-wide',
-              isPerson ? 'text-sm font-semibold text-white' : 'text-xs font-semibold uppercase text-slate-500'
+              group.isPerson ? 'text-sm font-semibold text-white' : 'text-xs font-semibold uppercase text-slate-500'
             )}>
               {group.label}
             </span>
@@ -373,7 +509,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
         </CollapsibleTrigger>
         <CollapsibleContent className={cn(
           'pt-1 space-y-1',
-          isPerson ? 'pl-3 ml-4 border-l border-slate-800/50' : 'pl-2'
+          group.isPerson ? 'pl-3 ml-4 border-l border-slate-800/50' : 'pl-2'
         )}>
           {group.items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
@@ -381,6 +517,17 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
         </CollapsibleContent>
       </Collapsible>
     );
+  };
+
+  const getVariantLabel = () => {
+    switch (variant) {
+      case 'admin': return 'Painel Administrativo';
+      case 'contador': return 'Painel Contador';
+      case 'autonomo': return 'Painel Autônomo';
+      case 'empresa': return 'Painel Empresa';
+      case 'afiliado': return 'Painel Afiliado';
+      default: return 'Painel';
+    }
   };
 
   return (
@@ -392,7 +539,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
           collapsed ? 'w-16' : 'w-72'
         )}
       >
-        {/* Logo - Premium Dark */}
+        {/* Logo */}
         <div className="flex items-center justify-between px-5 py-5 border-b border-slate-800/50">
           <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
             <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
@@ -402,14 +549,14 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
               <div>
                 <span className="text-lg font-bold text-white tracking-tight">AtentAI</span>
                 <span className="block text-[11px] text-violet-400 font-medium -mt-0.5 tracking-wide">
-                  {variant === 'admin' ? 'Painel Administrativo' : variant === 'autonomo' ? 'Autônomo' : variant}
+                  {getVariantLabel()}
                 </span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Toggle Button - Premium */}
+        {/* Toggle */}
         <Button
           variant="ghost"
           size="icon"
@@ -419,14 +566,14 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
           {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
 
-        {/* Navigation - Premium Dark */}
+        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-slate-700">
           {groups.map((group) => (
             <SidebarGroupComponent key={group.id} group={group} />
           ))}
         </nav>
 
-        {/* User Section - Premium */}
+        {/* User */}
         <div className="px-3 py-4 border-t border-slate-800/50">
           {!collapsed && (
             <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-slate-900/50">
