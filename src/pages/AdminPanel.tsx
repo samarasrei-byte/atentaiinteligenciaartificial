@@ -10,21 +10,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
-import AdminSidebarV2, { AdminSection } from '@/components/layout/AdminSidebarV2';
-import { SectionTabs } from '@/components/admin/sections/SectionTabs';
-import { 
-  dashboardTabs, 
-  biContabilidadeTabs, 
-  comunicacaoTabGroups, 
-  marketplaceTabs, 
-  gestaoTabGroups,
-  configuracoesTabs,
-} from '@/components/admin/sections/tabConfigs';
-import { ConnectionsSection } from '@/components/admin/sections/ConnectionsSection';
+import AdminSidebar from '@/components/layout/AdminSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
 import { ActivityFeed } from '@/components/dashboard/ActivityFeed';
 import { RevenueChart } from '@/components/dashboard/RevenueChart';
+import { QuickAction } from '@/components/dashboard/QuickAction';
 import { UsageMetrics } from '@/components/dashboard/UsageMetrics';
+import { PlanDistributionChart } from '@/components/dashboard/PlanDistributionChart';
 import { AdminSupportPanel } from '@/components/support/AdminSupportPanel';
 import { AdminWithdrawalPanel } from '@/components/support/AdminWithdrawalPanel';
 import { RealtimeNotifications } from '@/components/admin/RealtimeNotifications';
@@ -49,10 +41,12 @@ import { BIAccountingModule } from '@/components/admin/bi';
 import { AdminAuditPage } from '@/components/admin/audit';
 import { RevenuePartnerSplitDashboard } from '@/components/admin/RevenuePartnerSplitDashboard';
 import { SmartChatHub } from '@/components/smart-chat';
+import StripeSidebar from '@/components/layout/StripeSidebar';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
-  TrendingUp, BarChart3, Activity, Wallet, CreditCard, Clock, CheckCircle, 
-  AlertCircle, XCircle, RefreshCw, Menu, Building2, User, Scale, Brain,
+  TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
+  CreditCard, Clock, CheckCircle, AlertCircle, XCircle, RefreshCw, Menu, Headphones,
+  Building2, User, Scale,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -111,16 +105,6 @@ interface StatsData {
   contadorPlanCount: number;
 }
 
-// Default tabs for each section
-const defaultTabsForSection: Record<AdminSection, string> = {
-  'dashboard': 'overview',
-  'bi-contabilidade': 'bi-accounting',
-  'comunicacao': 'client-chat',
-  'marketplace': 'limpa-nome',
-  'gestao': 'users',
-  'configuracoes': 'connections',
-};
-
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -144,14 +128,7 @@ const AdminPanel = () => {
     consultationsCompletedThisWeek: 0, simulatorPlanCount: 0, premiumPlanCount: 0, contadorPlanCount: 0,
   });
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Section and Tab state
-  const [activeSection, setActiveSection] = useState<AdminSection>(
-    (searchParams.get('section') as AdminSection) || 'dashboard'
-  );
-  const [activeTab, setActiveTab] = useState(
-    searchParams.get('tab') || defaultTabsForSection[activeSection]
-  );
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
@@ -178,6 +155,8 @@ const AdminPanel = () => {
   const fetchAdminData = async () => {
     try {
       const startOfMonth = new Date(); startOfMonth.setDate(1); startOfMonth.setHours(0, 0, 0, 0);
+      const startOfWeek = new Date(); startOfWeek.setDate(startOfWeek.getDate() - 7); startOfWeek.setHours(0, 0, 0, 0);
+      const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
 
       const [profilesRes, contadorRes, subscriptionsRes, consultationsRes, paymentsRes, simulationsRes, messagesRes, pendingRes, monthlyRes, newUsersRes, allSubs, allConsult] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact' }),
@@ -210,7 +189,7 @@ const AdminPanel = () => {
       setSubscriptions(allSubs.data || []);
       setConsultations(allConsult.data || []);
 
-      // Fetch monthly chart data
+      // Fetch real monthly revenue data for chart
       const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
       const revenueData: { month: string; receita: number; assinaturas: number }[] = [];
       
@@ -227,9 +206,11 @@ const AdminPanel = () => {
             .gte('created_at', monthStart).lt('created_at', monthEnd),
         ]);
         
+        const monthRevenue = (paymentsMonth.data || []).reduce((sum, p) => sum + p.amount_cents, 0);
+        
         revenueData.push({
           month: monthNames[date.getMonth()],
-          receita: (paymentsMonth.data || []).reduce((sum, p) => sum + p.amount_cents, 0),
+          receita: monthRevenue,
           assinaturas: subsMonth.count || 0,
         });
       }
@@ -251,24 +232,16 @@ const AdminPanel = () => {
   };
 
   const handleRefresh = async () => { setIsRefreshing(true); await fetchAdminData(); toast({ title: 'Dados atualizados!' }); };
-  
-  const handleSectionChange = (section: AdminSection) => {
-    setActiveSection(section);
-    const defaultTab = defaultTabsForSection[section];
-    setActiveTab(defaultTab);
-    setSearchParams({ section, tab: defaultTab });
-    setMobileMenuOpen(false);
-  };
-
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = (tab: string) => { 
     if (tab === 'roles') {
       navigate('/admin/roles');
       return;
     }
-    setActiveTab(tab);
-    setSearchParams({ section: activeSection, tab });
+    // Painéis externos agora são tabs embutidas no admin (não mais navegação externa)
+    setActiveTab(tab); 
+    setSearchParams({ tab }); 
+    setMobileMenuOpen(false); 
   };
-
   const formatCurrency = (cents: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
   const getRoleBadge = (role: string) => {
     const c: Record<string, string> = { admin: 'bg-destructive', contador: 'bg-info', user: 'bg-muted' };
@@ -293,129 +266,50 @@ const AdminPanel = () => {
 
   const filteredUsers = users.filter((u) => u.email.toLowerCase().includes(searchTerm.toLowerCase()) || u.profile?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()));
 
-  // Get current section tabs
-  const getCurrentTabs = () => {
-    switch (activeSection) {
-      case 'dashboard': return { tabs: dashboardTabs };
-      case 'bi-contabilidade': return { tabs: biContabilidadeTabs };
-      case 'comunicacao': return { groups: comunicacaoTabGroups };
-      case 'marketplace': return { tabs: marketplaceTabs };
-      case 'gestao': return { groups: gestaoTabGroups };
-      case 'configuracoes': return { tabs: configuracoesTabs };
-      default: return { tabs: [] };
-    }
-  };
-
-  const getSectionTitle = () => {
-    switch (activeSection) {
-      case 'dashboard': return 'Dashboard';
-      case 'bi-contabilidade': return 'BI & Contabilidade';
-      case 'comunicacao': return 'Comunicação';
-      case 'marketplace': return 'Marketplace';
-      case 'gestao': return 'Gestão';
-      case 'configuracoes': return 'Configurações';
-    }
-  };
-
   if (authLoading || isLoading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="text-center space-y-4">
-          <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
-            <Brain className="h-6 w-6 text-primary animate-pulse" />
-          </div>
-          <Loader2 className="h-6 w-6 animate-spin text-primary mx-auto" />
-          <p className="text-sm text-muted-foreground">Carregando painel...</p>
-        </div>
-      </div>
-    );
+    return <div className="min-h-screen flex items-center justify-center bg-background"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Mobile Overlay */}
-      {mobileMenuOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" 
-          onClick={() => setMobileMenuOpen(false)} 
-        />
-      )}
-      
-      {/* Sidebar - Desktop */}
+    <div className="dashboard-layout">
+      {mobileMenuOpen && <div className="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm" onClick={() => setMobileMenuOpen(false)} />}
       <div className="hidden lg:block">
-        <AdminSidebarV2 
-          collapsed={sidebarCollapsed} 
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} 
-          activeSection={activeSection} 
-          onSectionChange={handleSectionChange} 
-        />
+        <AdminSidebar collapsed={sidebarCollapsed} onToggle={() => setSidebarCollapsed(!sidebarCollapsed)} activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
-
-      {/* Sidebar - Mobile */}
       <div className={`lg:hidden fixed inset-y-0 left-0 z-50 transition-transform duration-300 ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <AdminSidebarV2 
-          collapsed={false} 
-          onToggle={() => setMobileMenuOpen(false)} 
-          activeSection={activeSection} 
-          onSectionChange={handleSectionChange} 
-        />
+        <AdminSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
       
-      {/* Main Content */}
-      <main className={`transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-[72px]' : 'lg:ml-64'}`}>
-        {/* Header */}
-        <header className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b border-border/50">
-          <div className="flex items-center justify-between px-4 lg:px-6 py-4">
+      <main className={`dashboard-main transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-60'}`}>
+        <header className="dashboard-header">
+          <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <Button 
-                variant="ghost" 
-                size="icon" 
-                className="lg:hidden" 
-                onClick={() => setMobileMenuOpen(true)}
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
+              <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileMenuOpen(true)}><Menu className="h-5 w-5" /></Button>
+              <div className="p-2 rounded-xl bg-destructive/10 hidden sm:flex"><Shield className="h-6 w-6 text-destructive" /></div>
               <div>
-                <h1 className="text-lg lg:text-xl font-bold text-foreground">{getSectionTitle()}</h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">
-                  Painel Administrativo AtentAI
-                </p>
+                <h1 className="text-lg lg:text-2xl font-bold">Painel Admin</h1>
+                <p className="text-sm text-muted-foreground hidden sm:block">Controle total do AtentAI</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <NotificationCenter 
-                notifications={notifications} 
-                unreadCount={unreadCount} 
-                onMarkAsRead={markAsRead} 
-                onMarkAllAsRead={markAllAsRead} 
-                onClear={clearNotifications} 
-              />
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleRefresh} 
-                disabled={isRefreshing} 
-                className="hidden sm:flex"
-              >
-                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />
-                Atualizar
+            <div className="flex items-center gap-3">
+              <NotificationCenter notifications={notifications} unreadCount={unreadCount} onMarkAsRead={markAsRead} onMarkAllAsRead={markAllAsRead} onClear={clearNotifications} />
+              <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isRefreshing} className="hidden sm:flex">
+                <RefreshCw className={`h-4 w-4 mr-2 ${isRefreshing ? 'animate-spin' : ''}`} />Atualizar
               </Button>
             </div>
           </div>
-
-          {/* Section Tabs */}
-          <SectionTabs
-            {...getCurrentTabs()}
-            activeTab={activeTab}
-            onTabChange={handleTabChange}
-          />
         </header>
 
-        {/* Content Area */}
-        <div className="p-4 lg:p-6">
-          {/* ========== DASHBOARD ========== */}
-          {activeSection === 'dashboard' && activeTab === 'overview' && (
-            <div className="space-y-6">
+        <div className="dashboard-content">
+          {/* Smart Chat - Central IA */}
+          {activeTab === 'smart-chat' && (
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <SmartChatHub />
+            </div>
+          )}
+
+          {activeTab === 'overview' && (
+            <>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatsCard icon={Users} label="Usuários" value={stats.totalUsers} subtitle={`+${stats.newUsersThisMonth} este mês`} color="primary" />
                 <StatsCard icon={Wallet} label="Receita Total" value={formatCurrency(stats.totalRevenue)} color="success" />
@@ -431,62 +325,17 @@ const AdminPanel = () => {
               </div>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div className="lg:col-span-2"><RevenueChart data={revenueChartData} /></div>
-                <ActivityFeed activities={users.slice(0, 5).map(u => ({ 
-                  id: u.id, 
-                  type: 'signup' as const, 
-                  title: u.profile?.full_name || 'Novo usuário', 
-                  description: u.email, 
-                  timestamp: new Date(u.created_at).toLocaleDateString('pt-BR') 
-                }))} />
-              </div>
-              <RealtimeNotifications />
-            </div>
-          )}
-
-          {activeSection === 'dashboard' && activeTab === 'realtime' && <AdminRealtimeDashboard />}
-
-          {/* ========== BI & CONTABILIDADE ========== */}
-          {activeSection === 'bi-contabilidade' && activeTab === 'bi-accounting' && <BIAccountingModule />}
-          {activeSection === 'bi-contabilidade' && activeTab === 'realtime' && <AdminRealtimeDashboard />}
-          {activeSection === 'bi-contabilidade' && activeTab === 'saas-metrics' && <SaaSMetricsDashboard />}
-          {activeSection === 'bi-contabilidade' && activeTab === 'revenue-forecast' && <RevenueForecastDashboard />}
-          {activeSection === 'bi-contabilidade' && activeTab === 'churn' && <ChurnAnalytics />}
-          {activeSection === 'bi-contabilidade' && activeTab === 'cohort' && <CohortAnalysis />}
-
-          {/* ========== COMUNICAÇÃO ========== */}
-          {activeSection === 'comunicacao' && activeTab === 'client-chat' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">G</div>
-                <div>
-                  <h2 className="font-semibold text-foreground">Central de Atendimento</h2>
-                  <p className="text-sm text-muted-foreground">Responsável: <span className="text-emerald-600 font-medium">Guilherme</span></p>
+                <div className="space-y-6">
+                  <ActivityFeed activities={users.slice(0, 5).map(u => ({ id: u.id, type: 'signup' as const, title: u.profile?.full_name || 'Novo usuário', description: u.email, timestamp: new Date(u.created_at).toLocaleDateString('pt-BR') }))} />
                 </div>
               </div>
-              <AdminClientChat />
-            </div>
+              <div className="mt-6">
+                <RealtimeNotifications />
+              </div>
+            </>
           )}
-          {activeSection === 'comunicacao' && activeTab === 'smart-chat' && (
-            <div className="h-[calc(100vh-200px)]">
-              <SmartChatHub />
-            </div>
-          )}
-          {activeSection === 'comunicacao' && activeTab === 'churn-notifications' && <ChurnNotificationSystem />}
-          {activeSection === 'comunicacao' && activeTab === 'kpi-alerts' && (
-            <div className="h-[calc(100vh-200px)]">
-              <SmartChatHub />
-            </div>
-          )}
-          {activeSection === 'comunicacao' && activeTab === 'mass-messages' && <MassMessaging />}
-          {activeSection === 'comunicacao' && activeTab === 'support' && <AdminSupportPanel />}
 
-          {/* ========== MARKETPLACE ========== */}
-          {activeSection === 'marketplace' && activeTab === 'limpa-nome' && <CreditRepairManagement />}
-          {activeSection === 'marketplace' && activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
-          {activeSection === 'marketplace' && activeTab === 'cashback' && <CashbackMetricsDashboard />}
-
-          {/* ========== GESTÃO ========== */}
-          {activeSection === 'gestao' && activeTab === 'users' && (
+          {activeTab === 'users' && (
             <Card className="bg-card border-border shadow-soft">
               <CardHeader>
                 <div className="flex items-center justify-between flex-wrap gap-4">
@@ -529,12 +378,78 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
           )}
-          {activeSection === 'gestao' && activeTab === 'contadores' && <ContadoresManagement />}
-          {activeSection === 'gestao' && activeTab === 'partners' && <PartnerManagement />}
-          {activeSection === 'gestao' && activeTab === 'affiliates' && <AffiliateManagement />}
-          {activeSection === 'gestao' && activeTab === 'affiliate-coupons' && <AffiliateCouponManagement />}
-          {activeSection === 'gestao' && activeTab === 'partner-split' && <RevenuePartnerSplitDashboard />}
-          {activeSection === 'gestao' && activeTab === 'subscriptions' && (
+
+          {activeTab === 'metrics' && <UsageMetrics data={{ aiQuestionsToday: stats.aiQuestionsToday, aiQuestionsThisWeek: stats.aiQuestionsThisWeek, aiQuestionsThisMonth: stats.aiQuestionsThisMonth, simulationsToday: stats.simulationsToday, simulationsThisWeek: stats.simulationsThisWeek, simulationsThisMonth: stats.simulationsThisMonth, activeUsersToday: stats.activeUsersToday, activeUsersThisWeek: stats.activeUsersThisWeek, consultationsScheduledThisWeek: 0, consultationsCompletedThisWeek: 0, averageResponseTime: 2.5, peakHour: '14:00' }} />}
+          
+          {activeTab === 'contadores' && <ContadoresManagement />}
+
+          {/* Empresas - Lista de empresas cadastradas */}
+          {activeTab === 'empresas' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <Building2 className="h-5 w-5 text-primary" />
+                      Gestão de Empresas
+                    </CardTitle>
+                    <CardDescription>Empresas cadastradas na plataforma</CardDescription>
+                  </div>
+                  <Button variant="outline" onClick={() => window.open('/empresa', '_blank')}>
+                    Ver Painel Empresa
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <Building2 className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-muted-foreground">Gestão detalhada de empresas em desenvolvimento.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Dados das empresas podem ser visualizados na aba "Usuários" com filtros.</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Autônomos - Lista de autônomos cadastrados */}
+          {activeTab === 'autonomos' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <User className="h-5 w-5 text-emerald-500" />
+                      Gestão de Autônomos
+                    </CardTitle>
+                    <CardDescription>Profissionais autônomos cadastrados</CardDescription>
+                  </div>
+                  <Button variant="outline" onClick={() => window.open('/autonomo', '_blank')}>
+                    Ver Painel Autônomo
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="text-center py-8">
+                  <User className="h-12 w-12 mx-auto mb-4 text-muted-foreground opacity-50" />
+                  <p className="text-muted-foreground">Gestão detalhada de autônomos em desenvolvimento.</p>
+                  <p className="text-sm text-muted-foreground mt-2">Profissionais autônomos podem ser identificados pela role "autonomo".</p>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+          
+          {activeTab === 'revenue' && (
+            <div className="space-y-6">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <StatsCard icon={Wallet} label="Receita Total" value={formatCurrency(stats.totalRevenue)} color="success" />
+                <StatsCard icon={DollarSign} label="Este Mês" value={formatCurrency(stats.monthlyRevenue)} color="success" />
+                <StatsCard icon={CreditCard} label="Assinaturas" value={stats.totalSubscriptions} color="info" />
+                <StatsCard icon={TrendingUp} label="Crescimento" value="+15%" color="success" />
+              </div>
+              <RevenueChart data={revenueChartData} />
+            </div>
+          )}
+
+          {activeTab === 'subscriptions' && (
             <Card className="bg-card border-border shadow-soft">
               <CardHeader><CardTitle>Assinaturas</CardTitle></CardHeader>
               <CardContent>
@@ -555,76 +470,158 @@ const AdminPanel = () => {
               </CardContent>
             </Card>
           )}
-          {activeSection === 'gestao' && activeTab === 'withdrawals' && <AdminWithdrawalPanel />}
-          {activeSection === 'gestao' && activeTab === 'metrics' && (
-            <UsageMetrics data={{ 
-              aiQuestionsToday: stats.aiQuestionsToday, 
-              aiQuestionsThisWeek: stats.aiQuestionsThisWeek, 
-              aiQuestionsThisMonth: stats.aiQuestionsThisMonth, 
-              simulationsToday: stats.simulationsToday, 
-              simulationsThisWeek: stats.simulationsThisWeek, 
-              simulationsThisMonth: stats.simulationsThisMonth, 
-              activeUsersToday: stats.activeUsersToday, 
-              activeUsersThisWeek: stats.activeUsersThisWeek, 
-              consultationsScheduledThisWeek: 0, 
-              consultationsCompletedThisWeek: 0, 
-              averageResponseTime: 2.5, 
-              peakHour: '14:00' 
-            }} />
-          )}
-          {activeSection === 'gestao' && activeTab === 'audit-page' && <AdminAuditPage />}
-          {activeSection === 'gestao' && activeTab === 'audit-logs' && <AuditLogViewer />}
 
-          {/* ========== CONFIGURAÇÕES ========== */}
-          {activeSection === 'configuracoes' && activeTab === 'connections' && <ConnectionsSection />}
-          {activeSection === 'configuracoes' && activeTab === 'profile' && (
-            <Card className="bg-card border-border shadow-soft max-w-2xl">
-              <CardHeader>
-                <CardTitle>Perfil do Administrador</CardTitle>
-                <CardDescription>Gerencie suas informações pessoais</CardDescription>
-              </CardHeader>
+          {activeTab === 'consultations' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader><CardTitle>Consultas</CardTitle></CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Configurações de perfil em desenvolvimento.</p>
+                <div className="space-y-3">
+                  {consultations.map((c) => (
+                    <div key={c.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
+                      <div>
+                        <p className="font-medium">Consulta #{c.id.slice(0, 8)}</p>
+                        <p className="text-sm text-muted-foreground">{new Date(c.created_at).toLocaleDateString('pt-BR')}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-bold">{formatCurrency(c.price_cents)}</p>
+                        {getStatusBadge(c.status)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </CardContent>
             </Card>
           )}
-          {activeSection === 'configuracoes' && activeTab === 'account' && (
-            <Card className="bg-card border-border shadow-soft max-w-2xl">
-              <CardHeader>
-                <CardTitle>Conta / Empresa</CardTitle>
-                <CardDescription>Dados fiscais e informações da empresa</CardDescription>
+
+          {activeTab === 'withdrawals' && <AdminWithdrawalPanel />}
+          {activeTab === 'support' && <AdminSupportPanel />}
+          {activeTab === 'limpa-nome' && <CreditRepairManagement />}
+          {activeTab === 'cashback' && <CashbackMetricsDashboard />}
+          {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
+          {activeTab === 'realtime' && <AdminRealtimeDashboard />}
+          {activeTab === 'revenue-forecast' && <RevenueForecastDashboard />}
+          {activeTab === 'churn' && <ChurnAnalytics />}
+          {activeTab === 'churn-notifications' && <ChurnNotificationSystem />}
+          {activeTab === 'cohort' && <CohortAnalysis />}
+          {activeTab === 'mass-messages' && <MassMessaging />}
+          {activeTab === 'client-chat' && <AdminClientChat />}
+          {activeTab === 'saas-metrics' && <SaaSMetricsDashboard />}
+          {activeTab === 'partners' && <PartnerManagement />}
+          {activeTab === 'settings' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader><CardTitle>Configurações</CardTitle><CardDescription>Ajustes do sistema</CardDescription></CardHeader>
+              <CardContent><p className="text-muted-foreground">Configurações do sistema em desenvolvimento.</p></CardContent>
+            </Card>
+          )}
+
+          {activeTab === 'panel-empresa' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Building2 className="h-5 w-5 text-purple-500" />
+                    Visualizando Painel Empresa
+                  </CardTitle>
+                  <CardDescription>Modo de visualização admin - sem edição</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('overview')}>
+                  Voltar ao Admin
+                </Button>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Configurações de conta em desenvolvimento.</p>
+                <div className="p-6 bg-muted/30 rounded-lg border-2 border-dashed border-purple-500/30 text-center">
+                  <p className="text-muted-foreground mb-4">Preview do painel de empresas está disponível.</p>
+                  <Button onClick={() => window.open('/empresa', '_blank')}>
+                    Abrir em nova aba
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
-          {activeSection === 'configuracoes' && activeTab === 'security' && (
-            <Card className="bg-card border-border shadow-soft max-w-2xl">
-              <CardHeader>
-                <CardTitle>Segurança</CardTitle>
-                <CardDescription>Senha, 2FA e sessões ativas</CardDescription>
+
+          {activeTab === 'panel-autonomo' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <User className="h-5 w-5 text-emerald-500" />
+                    Visualizando Painel Autônomo
+                  </CardTitle>
+                  <CardDescription>Modo de visualização admin - sem edição</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('overview')}>
+                  Voltar ao Admin
+                </Button>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Configurações de segurança em desenvolvimento.</p>
+                <div className="p-6 bg-muted/30 rounded-lg border-2 border-dashed border-emerald-500/30 text-center">
+                  <p className="text-muted-foreground mb-4">Preview do painel de autônomos está disponível.</p>
+                  <Button onClick={() => window.open('/autonomo', '_blank')}>
+                    Abrir em nova aba
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
-          {activeSection === 'configuracoes' && activeTab === 'settings' && (
-            <Card className="bg-card border-border shadow-soft max-w-2xl">
-              <CardHeader>
-                <CardTitle>Configurações Gerais</CardTitle>
-                <CardDescription>Ajustes do sistema</CardDescription>
+
+          {activeTab === 'affiliates' && <AffiliateManagement />}
+          {activeTab === 'affiliate-coupons' && <AffiliateCouponManagement />}
+          {activeTab === 'audit-logs' && <AuditLogViewer />}
+          {activeTab === 'audit-page' && <AdminAuditPage />}
+          {activeTab === 'bi-accounting' && <BIAccountingModule />}
+          {activeTab === 'partner-split' && <RevenuePartnerSplitDashboard />}
+
+          {/* Chat Central de Atendimento - Guilherme */}
+          {activeTab === 'client-chat' && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
+                  G
+                </div>
+                <div>
+                  <h2 className="font-semibold text-foreground">Central de Atendimento</h2>
+                  <p className="text-sm text-muted-foreground">Responsável: <span className="text-emerald-600 font-medium">Guilherme</span></p>
+                </div>
+              </div>
+              <AdminClientChat />
+            </div>
+          )}
+
+          {/* KPI Alerts Hub */}
+          {activeTab === 'kpi-alerts' && (
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <SmartChatHub />
+            </div>
+          )}
+
+          {activeTab === 'panel-contador' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader className="flex flex-row items-center justify-between">
+                <div>
+                  <CardTitle className="flex items-center gap-2">
+                    <Scale className="h-5 w-5 text-blue-500" />
+                    Visualizando Painel Contador
+                  </CardTitle>
+                  <CardDescription>Modo de visualização admin - sem edição</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setActiveTab('overview')}>
+                  Voltar ao Admin
+                </Button>
               </CardHeader>
               <CardContent>
-                <p className="text-muted-foreground">Configurações gerais em desenvolvimento.</p>
+                <div className="p-6 bg-muted/30 rounded-lg border-2 border-dashed border-blue-500/30 text-center">
+                  <p className="text-muted-foreground mb-4">Preview do painel de contadores está disponível.</p>
+                  <Button onClick={() => window.open('/contador', '_blank')}>
+                    Abrir em nova aba
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           )}
         </div>
       </main>
       
-      {/* Floating AI Agent */}
+      {/* Floating AI Agent - Analytics for Admin */}
       <FloatingAIAgent context="admin" />
     </div>
   );
