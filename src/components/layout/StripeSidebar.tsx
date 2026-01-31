@@ -21,10 +21,8 @@ import {
   FileText,
   TrendingUp,
   Wallet,
-  Headphones,
   Target,
   PieChart,
-  Calendar,
   Star,
   Brain,
   Activity,
@@ -32,9 +30,10 @@ import {
   UserCheck,
   MessagesSquare,
   MessageCircle,
-  Briefcase,
   LayoutDashboard,
   DollarSign,
+  Zap,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -73,37 +72,58 @@ interface StripeSidebarProps {
   variant?: 'admin' | 'contador' | 'autonomo' | 'empresa';
 }
 
-// Estrutura para Admin
+// Estrutura para Admin - Sidebar com nomes próprios
 const adminGroups: SidebarGroup[] = [
   {
-    id: 'central',
-    label: 'Central',
-    icon: MessageSquare,
+    id: 'dashboard',
+    label: 'Dashboard',
+    icon: LayoutDashboard,
     defaultOpen: true,
     items: [
-      { icon: MessageSquare, label: 'Chat IA', tabId: 'smart-chat', isLive: true },
-      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
+      { icon: Bell, label: 'Alertas', tabId: 'alerts' },
     ],
   },
   {
-    id: 'bi',
-    label: 'BI + Contabilidade',
-    icon: Brain,
+    id: 'guilherme',
+    label: 'Guilherme',
+    icon: User,
+    defaultOpen: true,
     items: [
-      { icon: Brain, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
-      { icon: BarChart3, label: 'Métricas SaaS', tabId: 'saas-metrics' },
-      { icon: DollarSign, label: 'Previsão', tabId: 'revenue-forecast' },
-    ],
-  },
-  {
-    id: 'servicos',
-    label: 'Serviços',
-    icon: Briefcase,
-    items: [
+      { icon: MessageCircle, label: 'Chat', tabId: 'guilherme-chat', isLive: true },
+      { icon: FileText, label: 'Documentos', tabId: 'guilherme-docs' },
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-      { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
-      { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
+      { icon: MessagesSquare, label: 'Comunicação', tabId: 'client-chat', isLive: true },
+      { icon: Bell, label: 'Alertas Serviços', tabId: 'service-alerts' },
+    ],
+  },
+  {
+    id: 'cesar',
+    label: 'César',
+    icon: Brain,
+    defaultOpen: true,
+    items: [
+      { icon: MessageCircle, label: 'Chat', tabId: 'cesar-chat', isLive: true },
+      { icon: FileText, label: 'Documentos', tabId: 'cesar-docs' },
+      { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
+      { icon: Activity, label: 'Tempo Real', tabId: 'bi-realtime', isLive: true },
+      { icon: TrendingUp, label: 'Métricas SaaS', tabId: 'saas-metrics' },
+      { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast' },
+      { icon: Target, label: 'Churn & Retenção', tabId: 'churn' },
+      { icon: PieChart, label: 'Análise Cohort', tabId: 'cohort' },
+      { icon: AlertTriangle, label: 'Alertas Performance', tabId: 'performance-alerts' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    icon: ShoppingBag,
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'mp-limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'mp-fiscal' },
+      { icon: Star, label: 'Upgrade / Ativação', tabId: 'mp-upgrade' },
     ],
   },
   {
@@ -115,18 +135,8 @@ const adminGroups: SidebarGroup[] = [
       { icon: Building2, label: 'Empresas', tabId: 'empresas' },
       { icon: User, label: 'Autônomos', tabId: 'autonomos' },
       { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
-    ],
-  },
-  {
-    id: 'crescimento',
-    label: 'Crescimento',
-    icon: TrendingUp,
-    items: [
       { icon: Building2, label: 'Parceiros', tabId: 'partners' },
       { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
-      { icon: Star, label: 'Cupons', tabId: 'affiliate-coupons' },
-      { icon: Target, label: 'Cohort', tabId: 'cohort' },
-      { icon: TrendingUp, label: 'Churn', tabId: 'churn' },
     ],
   },
   {
@@ -142,25 +152,18 @@ const adminGroups: SidebarGroup[] = [
     ],
   },
   {
-    id: 'comunicacao',
-    label: 'Comunicação',
-    icon: MessagesSquare,
-    items: [
-      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'client-chat', isLive: true },
-      { icon: MessagesSquare, label: 'Mensagens', tabId: 'mass-messages' },
-      { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
-      { icon: Headphones, label: 'Suporte', tabId: 'support' },
-    ],
-  },
-  {
-    id: 'sistema',
-    label: 'Sistema',
+    id: 'configuracoes',
+    label: 'Configurações',
     icon: Settings,
     items: [
-      { icon: Shield, label: 'Roles', tabId: 'roles' },
+      { icon: Zap, label: 'Integrações', tabId: 'integrations' },
+      { icon: MessageSquare, label: 'WhatsApp API', tabId: 'whatsapp-config' },
+      { icon: CreditCard, label: 'Asaas API', tabId: 'asaas-config' },
+      { icon: Settings, label: 'API Keys', tabId: 'api-keys' },
+      { icon: User, label: 'Perfil', tabId: 'profile' },
+      { icon: Shield, label: 'Segurança', tabId: 'security' },
       { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
-      { icon: FileText, label: 'Logs', tabId: 'audit-logs' },
-      { icon: Settings, label: 'Config', tabId: 'settings' },
+      { icon: Shield, label: 'Roles', tabId: 'roles' },
     ],
   },
 ];
@@ -180,7 +183,7 @@ const autonomoGroups: SidebarGroup[] = [
   {
     id: 'servicos',
     label: 'Meus Serviços',
-    icon: Briefcase,
+    icon: ShoppingBag,
     defaultOpen: true,
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
@@ -259,16 +262,16 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 group relative',
+          'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
           'touch-manipulation active:scale-[0.98]',
           active
-            ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            ? 'bg-gradient-to-r from-violet-500/20 to-indigo-500/10 text-white border border-violet-500/30'
+            : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
         )}
       >
         <Icon className={cn(
           'h-4 w-4 shrink-0 transition-colors',
-          active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+          active ? 'text-violet-400' : 'text-slate-500 group-hover:text-slate-300'
         )} />
         {!collapsed && (
           <>
@@ -280,14 +283,14 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
               </span>
             )}
             {item.badge && (
-              <span className="bg-primary/10 text-primary text-xs font-medium px-1.5 py-0.5 rounded-full">
+              <span className="bg-violet-500/20 text-violet-300 text-xs font-medium px-2 py-0.5 rounded-full">
                 {item.badge}
               </span>
             )}
           </>
         )}
         {active && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r-full" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-gradient-to-b from-violet-400 to-indigo-500 rounded-r-full" />
         )}
       </button>
     );
@@ -296,7 +299,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="text-xs px-3 py-1.5 flex items-center gap-2">
+          <TooltipContent side="right" className="text-xs px-3 py-2 flex items-center gap-2 bg-slate-800 border-slate-700 text-white">
             {item.label}
             {item.isLive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
           </TooltipContent>
@@ -307,15 +310,19 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
     return content;
   };
 
+  // Verifica se é um grupo de pessoa (Guilherme/César)
+  const isPersonGroup = (groupId: string) => groupId === 'guilherme' || groupId === 'cesar';
+
   const SidebarGroupComponent = ({ group }: { group: SidebarGroup }) => {
     const Icon = group.icon;
     const isOpen = openGroups[group.id];
     const hasActiveItem = group.items.some(item => item.tabId === activeTab);
+    const isPerson = isPersonGroup(group.id);
 
     if (collapsed) {
       return (
-        <div className="space-y-0.5">
-          {group.items.map((item) => (
+        <div className="space-y-1 py-1">
+          {group.items.slice(0, 2).map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
         </div>
@@ -327,23 +334,41 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
         <CollapsibleTrigger asChild>
           <button
             className={cn(
-              'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-150 group',
+              'w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all duration-200 group',
+              isPerson && 'bg-slate-900/50 border border-slate-800/50',
               hasActiveItem
-                ? 'text-foreground'
-                : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
+                ? 'text-white'
+                : 'text-slate-400 hover:text-white hover:bg-slate-800/30'
             )}
           >
-            <Icon className="h-4 w-4 shrink-0 opacity-60" />
-            <span className="flex-1 text-left text-xs font-semibold uppercase tracking-wider opacity-80">
+            {isPerson ? (
+              <div className={cn(
+                'h-8 w-8 rounded-full flex items-center justify-center text-white font-bold text-sm',
+                group.id === 'guilherme' 
+                  ? 'bg-gradient-to-br from-emerald-500 to-teal-600' 
+                  : 'bg-gradient-to-br from-violet-500 to-indigo-600'
+              )}>
+                {group.label[0]}
+              </div>
+            ) : (
+              <Icon className="h-4 w-4 shrink-0 text-slate-500" />
+            )}
+            <span className={cn(
+              'flex-1 text-left tracking-wide',
+              isPerson ? 'text-sm font-semibold text-white' : 'text-xs font-semibold uppercase text-slate-500'
+            )}>
               {group.label}
             </span>
             <ChevronDown className={cn(
-              'h-3.5 w-3.5 opacity-50 transition-transform duration-200',
+              'h-4 w-4 text-slate-500 transition-transform duration-200',
               isOpen && 'rotate-180'
             )} />
           </button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="pl-2 pt-0.5 space-y-0.5">
+        <CollapsibleContent className={cn(
+          'pt-1 space-y-1',
+          isPerson ? 'pl-3 ml-4 border-l border-slate-800/50' : 'pl-2'
+        )}>
           {group.items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
@@ -357,58 +382,58 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-card border-r border-border',
-          collapsed ? 'w-16' : 'w-60'
+          'bg-slate-950 border-r border-slate-800/50',
+          collapsed ? 'w-16' : 'w-72'
         )}
       >
-        {/* Logo - Stripe Style */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-          <div className={cn('flex items-center gap-2.5', collapsed && 'justify-center w-full')}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-md">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
+        {/* Logo - Premium Dark */}
+        <div className="flex items-center justify-between px-5 py-5 border-b border-slate-800/50">
+          <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
+            <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-violet-500/20">
+              <Sparkles className="h-5 w-5 text-white" />
             </div>
             {!collapsed && (
               <div>
-                <span className="text-base font-bold text-foreground tracking-tight">AtentAI</span>
-                <span className="block text-[10px] text-primary font-medium -mt-0.5 tracking-wide">
-                  {variant === 'admin' ? 'Admin' : variant === 'autonomo' ? 'Autônomo' : variant}
+                <span className="text-lg font-bold text-white tracking-tight">AtentAI</span>
+                <span className="block text-[11px] text-violet-400 font-medium -mt-0.5 tracking-wide">
+                  {variant === 'admin' ? 'Painel Administrativo' : variant === 'autonomo' ? 'Autônomo' : variant}
                 </span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Toggle Button - Minimal */}
+        {/* Toggle Button - Premium */}
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
+          className="absolute -right-3 top-8 h-6 w-6 rounded-full bg-slate-900 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 hidden lg:flex shadow-lg"
         >
           {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
 
-        {/* Navigation - Clean Stripe Style */}
-        <nav className="flex-1 px-2 py-3 space-y-1 overflow-y-auto overscroll-contain scrollbar-thin">
+        {/* Navigation - Premium Dark */}
+        <nav className="flex-1 px-3 py-4 space-y-2 overflow-y-auto overscroll-contain scrollbar-thin scrollbar-track-slate-900 scrollbar-thumb-slate-700">
           {groups.map((group) => (
             <SidebarGroupComponent key={group.id} group={group} />
           ))}
         </nav>
 
-        {/* User Section - Minimal */}
-        <div className="px-2 py-3 border-t border-border">
+        {/* User Section - Premium */}
+        <div className="px-3 py-4 border-t border-slate-800/50">
           {!collapsed && (
-            <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-semibold text-primary">
+            <div className="flex items-center gap-3 px-3 py-3 mb-2 rounded-xl bg-slate-900/50">
+              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-lg">
+                <span className="text-sm font-bold text-white">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-sm font-semibold text-white truncate">
                   {profile?.full_name?.split(' ')[0] || 'Usuário'}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
+                <p className="text-xs text-slate-400 truncate">{user?.email}</p>
               </div>
             </div>
           )}
@@ -417,18 +442,18 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all',
-                  'text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
+                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all',
+                  'text-slate-400 hover:bg-red-500/10 hover:text-red-400',
                   'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
                 )}
               >
                 <LogOut className="h-4 w-4" />
-                {!collapsed && <span className="text-sm">Sair</span>}
+                {!collapsed && <span className="text-sm font-medium">Sair</span>}
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="text-xs">
+              <TooltipContent side="right" className="text-xs bg-slate-800 border-slate-700 text-white">
                 Sair
               </TooltipContent>
             )}
