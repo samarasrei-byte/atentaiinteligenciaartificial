@@ -167,28 +167,29 @@ const serviceConfigs: ServiceCardConfig[] = [
     serviceType: 'credit_repair_pj',
     category: 'empresarial',
   },
-  // Análise Fiscal - FREE
+  // Análise Fiscal - SEM PREÇO FIXO (Success Fee via chat, igual ao BI)
   {
     key: 'fiscal_analysis',
-    name: 'Análise Fiscal',
-    description: 'Entenda seus riscos fiscais e descubra oportunidades de economia.',
+    name: 'Análise Fiscal Inteligente',
+    description: 'Recuperação de créditos tributários e otimização fiscal com análise especializada.',
     targetAudience: 'Para empresas que querem economizar',
     features: [
       'Análise completa gratuita',
       'Identificação de créditos tributários',
-      'Relatório detalhado',
+      'Pagamento apenas no êxito (50%)',
     ],
     guarantees: ['Sem risco', 'Pagamento no êxito'],
     basePrice: 0,
     discountPercent: 0,
     badge: 'free',
-    cta: 'Solicitar análise gratuita',
+    cta: 'Solicitar análise',
     color: 'emerald',
     icon: Scale,
     serviceType: 'fiscal_analysis',
     isFree: true,
     successFee: true,
-    checkoutRoute: '/modulo-fiscal',
+    isCustomPricing: true, // Venda via chat com Guilherme, sem checkout direto
+    checkoutRoute: '/chat/guilherme?servico=fiscal', // Redireciona para chat
     category: 'empresarial',
   },
   // Consulta com Contador
