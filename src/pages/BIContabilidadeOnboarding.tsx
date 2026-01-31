@@ -37,7 +37,11 @@ import {
   BarChart3,
   Target,
   Eye,
-  Lock
+  EyeOff,
+  Lock,
+  KeyRound,
+  Heart,
+  Users
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
@@ -52,6 +56,7 @@ interface OnboardingData {
   email: string;
   phone: string;
   cpfCnpj: string;
+  password: string; // SaaS: Account creation
   
   // Business Info
   businessType: 'pf' | 'pj' | '';
@@ -131,6 +136,8 @@ const STEPS = [
   { id: 2, title: 'Empresa', icon: Building2, description: 'Dados do negócio' },
   { id: 3, title: 'Documentos', icon: FileText, description: 'Envie arquivos' },
   { id: 4, title: 'Detalhes', icon: Target, description: 'Necessidades' },
+  { id: 5, title: 'Criar Conta', icon: Lock, description: 'Acesso ao painel' },
+  { id: 6, title: 'Confirmação', icon: CheckCircle2, description: 'Tudo pronto!' },
 ];
 
 const BIContabilidadeOnboarding = () => {
@@ -143,12 +150,15 @@ const BIContabilidadeOnboarding = () => {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [selectedDocCategory, setSelectedDocCategory] = useState('');
   const [documents, setDocuments] = useState<UploadedDocument[]>([]);
+  const [requestId, setRequestId] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   
   const [formData, setFormData] = useState<OnboardingData>({
     fullName: '',
     email: user?.email || '',
     phone: '',
     cpfCnpj: '',
+    password: '',
     businessType: '',
     companyName: '',
     taxRegime: '',
@@ -240,20 +250,25 @@ const BIContabilidadeOnboarding = () => {
         return true; // Documents are optional but encouraged
       case 4:
         return Boolean(formData.mainConcern && formData.urgency);
+      case 5:
+        return Boolean(formData.email && formData.password && formData.password.length >= 6);
+      case 6:
+        return true;
       default:
         return true;
     }
   };
 
-  const handleSubmit = async () => {
+  // Step 4 → 5: Create service request FIRST (before account)
+  const handleCreateRequest = async () => {
     setIsSubmitting(true);
 
     try {
-      // Create fiscal analysis request
+      // Create fiscal analysis request with null user_id (will be linked after account creation)
       const { data: request, error: requestError } = await supabase
         .from('fiscal_analysis_requests')
         .insert({
-          user_id: user?.id || null,
+          user_id: user?.id || null, // Will be updated after account creation
           full_name: formData.fullName,
           email: formData.email,
           phone: formData.phone,
@@ -298,22 +313,9 @@ const BIContabilidadeOnboarding = () => {
         }
       }
 
-      // Create notification for the user
-      if (user?.id) {
-        await supabase.from('service_notifications').insert({
-          user_id: user.id,
-          title: '🎉 Solicitação BI+ Contabilidade Enviada!',
-          message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
-          notification_type: 'service_created',
-          service_type: 'bi-contabilidade',
-          metadata: { requestId: request.id },
-        });
-      }
-
-      toast.success('Solicitação enviada! Abrindo chat com César...');
-      
-      // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT
-      navigate(`/chat/cesar?servico=bi-contabilidade&request=${request.id}`);
+      setRequestId(request.id);
+      toast.success('Solicitação criada! Agora crie sua conta.');
+      setStep(5); // Go to account creation step
     } catch (error: any) {
       console.error('Submit error:', error);
       toast.error('Erro ao enviar solicitação. Tente novamente.');
@@ -322,11 +324,104 @@ const BIContabilidadeOnboarding = () => {
     }
   };
 
+  // Step 5 → 6: Create account and link request
+  const handleCreateAccount = async () => {
+    if (!formData.email || !formData.password) {
+      toast.error('Preencha email e senha');
+      return;
+    }
+    
+    if (formData.password.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Create account
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: formData.fullName,
+          },
+        },
+      });
+
+      if (signUpError) {
+        if (signUpError.message?.includes('already registered')) {
+          // Try to login instead
+          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password,
+          });
+          
+          if (loginError) throw loginError;
+          
+          if (loginData.user && requestId) {
+            await supabase
+              .from('fiscal_analysis_requests')
+              .update({ user_id: loginData.user.id })
+              .eq('id', requestId);
+              
+            // Create notification
+            await supabase.from('service_notifications').insert({
+              user_id: loginData.user.id,
+              title: '🎉 Solicitação BI+ Contabilidade Enviada!',
+              message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
+              notification_type: 'service_created',
+              service_type: 'bi-contabilidade',
+              metadata: { requestId },
+            });
+          }
+        } else {
+          throw signUpError;
+        }
+      } else if (authData.user && requestId) {
+        // Link request to new user
+        await supabase
+          .from('fiscal_analysis_requests')
+          .update({ user_id: authData.user.id })
+          .eq('id', requestId);
+          
+        // Create notification
+        await supabase.from('service_notifications').insert({
+          user_id: authData.user.id,
+          title: '🎉 Solicitação BI+ Contabilidade Enviada!',
+          message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
+          notification_type: 'service_created',
+          service_type: 'bi-contabilidade',
+          metadata: { requestId },
+        });
+      }
+
+      toast.success('Conta criada! Redirecionando para seu painel...');
+      setStep(6); // Go to confirmation step
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      toast.error(error.message || 'Erro ao criar conta. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Final step: Redirect to chat
+  const handleFinish = () => {
+    // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT com César
+    navigate(`/chat/cesar?servico=bi-contabilidade&request=${requestId}`);
+  };
+
   const nextStep = () => {
-    if (step < 4) {
+    if (step === 4) {
+      // Step 4 → Create request, then go to Step 5
+      handleCreateRequest();
+    } else if (step === 5) {
+      // Step 5 → Create account, then go to Step 6
+      handleCreateAccount();
+    } else if (step < 6) {
       setStep(step + 1);
-    } else {
-      handleSubmit();
     }
   };
 
@@ -1067,78 +1162,235 @@ const BIContabilidadeOnboarding = () => {
                         </div>
                       </div>
                     )}
+
+                    {/* Step 5: Create Account (SaaS Pattern) */}
+                    {step === 5 && (
+                      <div className="space-y-6">
+                        <div className="text-center">
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ type: "spring", duration: 0.6 }}
+                            className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center"
+                          >
+                            <User className="h-10 w-10 text-indigo-400" />
+                          </motion.div>
+                          <h2 className="text-2xl font-bold text-white mb-2">
+                            Crie sua conta para acompanhar
+                          </h2>
+                          <p className="text-slate-400">
+                            Sua solicitação já foi criada! Agora crie uma conta para acessar seu painel.
+                          </p>
+                        </div>
+
+                        {/* Benefits reminder */}
+                        <div className="bg-slate-800/50 rounded-xl p-4 max-w-md mx-auto space-y-2 border border-slate-700">
+                          <p className="text-xs font-medium text-white flex items-center gap-2">
+                            <Sparkles className="h-4 w-4 text-indigo-400" />
+                            Com sua conta você terá:
+                          </p>
+                          <ul className="space-y-1 text-xs text-slate-400">
+                            <li className="flex items-center gap-2">
+                              <Check className="h-3 w-3 text-indigo-400" />
+                              Chat direto com César (seu especialista BI)
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="h-3 w-3 text-indigo-400" />
+                              Dashboard com insights em tempo real
+                            </li>
+                            <li className="flex items-center gap-2">
+                              <Check className="h-3 w-3 text-indigo-400" />
+                              Documentos já anexados ao seu caso
+                            </li>
+                          </ul>
+                        </div>
+
+                        <div className="max-w-md mx-auto space-y-4">
+                          <div className="space-y-2">
+                            <Label className="text-slate-300 flex items-center gap-2">
+                              <Mail className="h-4 w-4 text-slate-500" />
+                              Email
+                            </Label>
+                            <Input
+                              type="email"
+                              placeholder="seu@email.com"
+                              value={formData.email}
+                              onChange={(e) => updateFormData('email', e.target.value)}
+                              className="h-12 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
+                              required
+                            />
+                          </div>
+
+                          <div className="space-y-2">
+                            <Label className="text-slate-300 flex items-center gap-2">
+                              <KeyRound className="h-4 w-4 text-slate-500" />
+                              Senha
+                            </Label>
+                            <div className="relative">
+                              <Input
+                                type={showPassword ? "text" : "password"}
+                                placeholder="Mínimo 6 caracteres"
+                                value={formData.password}
+                                onChange={(e) => updateFormData('password', e.target.value)}
+                                className="h-12 pr-12 bg-slate-800/50 border-slate-700 text-white placeholder:text-slate-500"
+                                required
+                                minLength={6}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white transition-colors"
+                              >
+                                {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Step 6: Confirmation & Redirect to Chat */}
+                    {step === 6 && (
+                      <div className="space-y-8 text-center">
+                        <motion.div
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          transition={{ type: "spring", duration: 0.6 }}
+                          className="w-24 h-24 mx-auto rounded-3xl bg-gradient-to-br from-emerald-500/20 to-green-500/20 flex items-center justify-center"
+                        >
+                          <CheckCircle2 className="h-12 w-12 text-emerald-400" />
+                        </motion.div>
+                        
+                        <div>
+                          <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
+                            Tudo pronto! 🎉
+                          </h2>
+                          <p className="text-slate-400">
+                            Seu painel está configurado. César já foi notificado.
+                          </p>
+                        </div>
+
+                        <div className="grid gap-4 max-w-md mx-auto">
+                          <div className="flex items-center gap-4 p-5 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                            <CheckCircle2 className="h-6 w-6 text-emerald-400 shrink-0" />
+                            <div className="text-left">
+                              <p className="font-medium text-white">Solicitação criada</p>
+                              <p className="text-sm text-slate-400">Seus dados e documentos foram salvos</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
+                            <Brain className="h-6 w-6 text-indigo-400 shrink-0" />
+                            <div className="text-left">
+                              <p className="font-medium text-white">Chat com César</p>
+                              <p className="text-sm text-slate-400">Seu especialista BI já está disponível</p>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-4 p-5 rounded-xl bg-slate-900/80 border-2 border-pink-500/40 shadow-lg shadow-pink-500/10">
+                            <div className="p-2 rounded-full bg-pink-500/20 border border-pink-500/30">
+                              <Heart className="h-5 w-5 text-pink-400" />
+                            </div>
+                            <div className="text-left">
+                              <p className="font-bold text-pink-400">ATENDIMENTO HUMANO GARANTIDO</p>
+                              <p className="text-sm text-white/80">IA acelera. Humano decide.</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button 
+                          onClick={handleFinish}
+                          size="lg"
+                          className="h-14 px-12 text-lg bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 group"
+                        >
+                          Abrir meu painel e chat
+                          <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                        </Button>
+                      </div>
+                    )}
                   </motion.div>
                 </AnimatePresence>
 
-                {/* Navigation */}
-                <motion.div
-                  className="flex gap-4 mt-8 pt-6 border-t border-slate-700/50"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.4 }}
-                >
-                  <Button
-                    variant="outline"
-                    onClick={prevStep}
-                    disabled={step === 1 || isSubmitting}
-                    className="flex-1 h-12 border-slate-600 hover:bg-slate-800 text-white"
+                {/* Navigation - Hide on step 6 */}
+                {step !== 6 && (
+                  <motion.div
+                    className="flex gap-4 mt-8 pt-6 border-t border-slate-700/50"
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
                   >
-                    <ArrowLeft className="h-4 w-4 mr-2" />
-                    Voltar
-                  </Button>
+                    <Button
+                      variant="outline"
+                      onClick={prevStep}
+                      disabled={step === 1 || step === 5 || isSubmitting}
+                      className="flex-1 h-12 border-slate-600 hover:bg-slate-800 text-white"
+                    >
+                      <ArrowLeft className="h-4 w-4 mr-2" />
+                      Voltar
+                    </Button>
 
-                  <Button
-                    onClick={nextStep}
-                    disabled={!canProceed() || isSubmitting}
-                    className={cn(
-                      "flex-1 h-12 relative overflow-hidden",
-                      "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500",
-                      canProceed() && !isSubmitting && "shadow-lg shadow-indigo-500/30"
-                    )}
-                  >
-                    {/* Shine effect */}
-                    <motion.div
-                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
-                      initial={{ x: "-100%" }}
-                      animate={canProceed() ? { x: "200%" } : {}}
-                      transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
-                    />
-
-                    <span className="relative z-10 flex items-center justify-center">
-                      {isSubmitting ? (
-                        <>
-                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                          Enviando...
-                        </>
-                      ) : step === 4 ? (
-                        <>
-                          <Zap className="h-4 w-4 mr-2" />
-                          Enviar Solicitação
-                          <motion.span
-                            animate={{ scale: [1, 1.2, 1] }}
-                            transition={{ duration: 0.5, repeat: Infinity }}
-                          >
-                            <CheckCircle2 className="h-4 w-4 ml-2" />
-                          </motion.span>
-                        </>
-                      ) : (
-                        <>
-                          Próximo
-                          <motion.span
-                            className="ml-2"
-                            animate={{ x: [0, 5, 0] }}
-                            transition={{ duration: 1, repeat: Infinity }}
-                          >
-                            <ArrowRight className="h-4 w-4" />
-                          </motion.span>
-                        </>
+                    <Button
+                      onClick={nextStep}
+                      disabled={!canProceed() || isSubmitting}
+                      className={cn(
+                        "flex-1 h-12 relative overflow-hidden",
+                        "bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500",
+                        canProceed() && !isSubmitting && "shadow-lg shadow-indigo-500/30"
                       )}
-                    </span>
-                  </Button>
-                </motion.div>
+                    >
+                      {/* Shine effect */}
+                      <motion.div
+                        className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -skew-x-12"
+                        initial={{ x: "-100%" }}
+                        animate={canProceed() ? { x: "200%" } : {}}
+                        transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 2 }}
+                      />
+
+                      <span className="relative z-10 flex items-center justify-center">
+                        {isSubmitting ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            {step === 4 ? 'Criando solicitação...' : step === 5 ? 'Criando conta...' : 'Enviando...'}
+                          </>
+                        ) : step === 4 ? (
+                          <>
+                            <Zap className="h-4 w-4 mr-2" />
+                            Criar Solicitação
+                            <motion.span
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 0.5, repeat: Infinity }}
+                            >
+                              <ArrowRight className="h-4 w-4 ml-2" />
+                            </motion.span>
+                          </>
+                        ) : step === 5 ? (
+                          <>
+                            <User className="h-4 w-4 mr-2" />
+                            Criar Conta
+                            <motion.span
+                              animate={{ scale: [1, 1.2, 1] }}
+                              transition={{ duration: 0.5, repeat: Infinity }}
+                            >
+                              <CheckCircle2 className="h-4 w-4 ml-2" />
+                            </motion.span>
+                          </>
+                        ) : (
+                          <>
+                            Próximo
+                            <motion.span
+                              className="ml-2"
+                              animate={{ x: [0, 5, 0] }}
+                              transition={{ duration: 1, repeat: Infinity }}
+                            >
+                              <ArrowRight className="h-4 w-4" />
+                            </motion.span>
+                          </>
+                        )}
+                      </span>
+                    </Button>
+                  </motion.div>
+                )}
 
                 {/* Quick tip */}
-                {!isSubmitting && (
+                {!isSubmitting && step !== 6 && (
                   <motion.p
                     className="text-center text-xs text-slate-500 mt-4 flex items-center justify-center gap-1"
                     initial={{ opacity: 0 }}
