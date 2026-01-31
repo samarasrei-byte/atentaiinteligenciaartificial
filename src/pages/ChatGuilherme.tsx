@@ -14,8 +14,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, Paperclip, Shield, Scale, MessageCircle,
   ArrowLeft, Phone, FileText, CheckCircle, Loader2,
-  Bot, User, Clock, Download
+  Bot, User, Clock, Download, Heart
 } from 'lucide-react';
+import { ServicePaywallBanner } from '@/components/subscription/ServicePaywallBanner';
 
 // WhatsApp Business Icon SVG component
 const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { className?: string; connected?: boolean }) => (
@@ -94,8 +95,17 @@ export default function ChatGuilherme() {
   const [isSending, setIsSending] = useState(false);
   const [isWhatsAppConnected, setIsWhatsAppConnected] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
+  const [isPaid, setIsPaid] = useState(false);
   
-  // Load user profile and initial messages
+  // Service pricing map
+  const servicePricing = {
+    'limpanome': 78000, // R$ 780
+    'analise-fiscal': 0, // Pago no êxito
+    'abertura-empresa': 50000, // R$ 500
+    'geral': 0,
+  };
+  
+  // Load user profile, check payment status, and initial messages
   useEffect(() => {
     const loadData = async () => {
       if (!user) return;
@@ -109,14 +119,28 @@ export default function ChatGuilherme() {
       
       setUserProfile(profile);
       
-      // Check for existing conversation / request
+      // Check payment status if we have a request ID
+      if (requestId && context.type === 'limpanome') {
+        const { data: request } = await supabase
+          .from('credit_repair_requests')
+          .select('payment_status')
+          .eq('id', requestId)
+          .single();
+        
+        setIsPaid(request?.payment_status === 'paid');
+      } else if (requestId && (context.type === 'analise-fiscal' || context.type === 'abertura-empresa')) {
+        // For fiscal, check fiscal_analysis_requests
+        // For now, assume not paid until we verify
+        setIsPaid(false);
+      }
+      
       // Load welcome message based on context
       const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name);
       setMessages(welcomeMessages);
     };
     
     loadData();
-  }, [user, context.type]);
+  }, [user, context.type, requestId]);
   
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -263,6 +287,17 @@ export default function ChatGuilherme() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Minhas Solicitações
           </Button>
+          
+          {/* Payment Banner - Shows when service is not paid */}
+          {servicePricing[context.type as keyof typeof servicePricing] > 0 && (
+            <div className="mb-4">
+              <ServicePaywallBanner
+                serviceType={context.type as 'limpanome' | 'fiscal' | 'bi-contabilidade'}
+                servicePriceCents={servicePricing[context.type as keyof typeof servicePricing]}
+                isPaid={isPaid}
+              />
+            </div>
+          )}
           
           {/* Chat Card */}
           <Card className="flex-1 flex flex-col min-h-0 shadow-lg">

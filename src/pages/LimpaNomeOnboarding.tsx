@@ -22,9 +22,17 @@ import {
   Handshake,
   Sparkles,
   Heart,
-  Building2
+  Building2,
+  Mail,
+  KeyRound,
+  Eye,
+  EyeOff,
+  Loader2
 } from "lucide-react";
 import { MaskedInput } from "@/components/ui/masked-input";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { useAuth } from "@/contexts/AuthContext";
 
 const debtTypes = [
   { id: 'bank', label: 'Dívida bancária', icon: Landmark, description: 'Cheque especial, conta corrente' },
@@ -37,20 +45,28 @@ const steps = [
   { id: 1, title: 'Introdução' },
   { id: 2, title: 'Seus dados' },
   { id: 3, title: 'Situação' },
-  { id: 4, title: 'Confirmação' },
+  { id: 4, title: 'Criar conta' },
+  { id: 5, title: 'Confirmação' },
 ];
 
 export default function LimpaNomeOnboarding() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [searchParams] = useSearchParams();
   const planParam = searchParams.get('plan');
   const selectedPlan = (planParam === 'pj' ? 'pj' : 'pf') as 'pf' | 'pj';
   
   const [currentStep, setCurrentStep] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [requestId, setRequestId] = useState<string | null>(null);
+  
   const [formData, setFormData] = useState({
     name: '',
     cpf: '',
     whatsapp: '',
+    email: '',
+    password: '',
     debtTypes: [] as string[],
   });
 
@@ -70,7 +86,7 @@ export default function LimpaNomeOnboarding() {
   };
 
   const nextStep = () => {
-    if (currentStep < 4) {
+    if (currentStep < 5) {
       setCurrentStep(prev => prev + 1);
     }
   };
@@ -81,16 +97,108 @@ export default function LimpaNomeOnboarding() {
     }
   };
 
-  const handleFinish = () => {
-    // Save to localStorage for the next page
-    localStorage.setItem('limpa_nome_lead', JSON.stringify({
-      ...formData,
-      plan: selectedPlan,
-      createdAt: new Date().toISOString()
-    }));
+  // Step 3 → 4: Create service request FIRST (before account)
+  const handleCreateRequest = async () => {
+    setIsLoading(true);
+    try {
+      // Create the service request with null user_id (will be linked after account creation)
+      const { data, error } = await supabase
+        .from('credit_repair_requests')
+        .insert({
+          user_id: user?.id || null, // Will be updated after account creation if guest
+          full_name: formData.name,
+          email: formData.email || null,
+          phone: formData.whatsapp,
+          cpf: formData.cpf,
+          status: 'pending',
+          payment_status: 'pending',
+          debt_amount_cents: 0,
+          debt_description: formData.debtTypes.join(', '),
+          bureaus_selected: ['serasa', 'spc', 'boa_vista'],
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      
+      setRequestId(data.id);
+      toast.success('Solicitação criada! Agora crie sua conta.');
+      nextStep();
+    } catch (error: any) {
+      console.error('Error creating request:', error);
+      toast.error('Erro ao criar solicitação. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Step 4 → 5: Create account and link request
+  const handleCreateAccount = async () => {
+    if (!formData.email || !formData.password) {
+      toast.error('Preencha email e senha');
+      return;
+    }
     
-    // Navigate to payment page
-    navigate(`/limpa-nome?plan=${selectedPlan}&prefilled=true`);
+    if (formData.password.length < 6) {
+      toast.error('A senha deve ter pelo menos 6 caracteres');
+      return;
+    }
+
+    setIsLoading(true);
+    try {
+      // Create account
+      const { data: authData, error: signUpError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+          data: {
+            full_name: formData.name,
+          },
+        },
+      });
+
+      if (signUpError) {
+        if (signUpError.message?.includes('already registered')) {
+          // Try to login instead
+          const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+            email: formData.email,
+            password: formData.password,
+          });
+          
+          if (loginError) throw loginError;
+          
+          if (loginData.user && requestId) {
+            await supabase
+              .from('credit_repair_requests')
+              .update({ user_id: loginData.user.id })
+              .eq('id', requestId);
+          }
+        } else {
+          throw signUpError;
+        }
+      } else if (authData.user && requestId) {
+        // Link request to new user
+        await supabase
+          .from('credit_repair_requests')
+          .update({ user_id: authData.user.id })
+          .eq('id', requestId);
+      }
+
+      toast.success('Conta criada! Redirecionando para seu painel...');
+      nextStep();
+    } catch (error: any) {
+      console.error('Auth error:', error);
+      toast.error(error.message || 'Erro ao criar conta. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Final step: Redirect to chat
+  const handleFinish = () => {
+    // Redirect to chat with Guilherme (service handler)
+    navigate(`/chat/guilherme?servico=limpanome&request=${requestId}`);
   };
 
   return (
@@ -395,22 +503,149 @@ export default function LimpaNomeOnboarding() {
                         Voltar
                       </Button>
                       <Button 
-                        onClick={nextStep}
-                        disabled={formData.debtTypes.length === 0}
+                        onClick={handleCreateRequest}
+                        disabled={formData.debtTypes.length === 0 || isLoading}
                         size="lg"
                         className="h-12 px-8 bg-gradient-to-r from-primary to-rose-500 hover:from-primary/90 hover:to-rose-500/90"
                       >
-                        Continuar
-                        <ArrowRight className="h-4 w-4 ml-2" />
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            Continuar
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </>
+                        )}
                       </Button>
                     </div>
                   </motion.div>
                 )}
 
-                {/* Step 4 - Confirmation */}
+                {/* Step 4 - Create Account (NEW - SaaS Pattern) */}
                 {currentStep === 4 && (
                   <motion.div
                     key="step4"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-8"
+                  >
+                    <div className="text-center">
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", duration: 0.6 }}
+                        className="w-20 h-20 mx-auto mb-4 rounded-full bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center"
+                      >
+                        <User className="h-10 w-10 text-primary" />
+                      </motion.div>
+                      <h2 className="text-2xl font-bold text-foreground mb-2">
+                        Crie sua conta para acompanhar
+                      </h2>
+                      <p className="text-muted-foreground">
+                        Sua solicitação já foi criada! Agora crie uma conta para acessar seu painel.
+                      </p>
+                    </div>
+
+                    {/* Benefits reminder */}
+                    <div className="bg-muted/50 rounded-xl p-4 max-w-md mx-auto space-y-2">
+                      <p className="text-xs font-medium text-foreground flex items-center gap-2">
+                        <Sparkles className="h-4 w-4 text-primary" />
+                        Com sua conta você terá:
+                      </p>
+                      <ul className="space-y-1 text-xs text-muted-foreground">
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-3 w-3 text-primary" />
+                          Chat direto com Guilherme (seu especialista)
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-3 w-3 text-primary" />
+                          Acompanhamento em tempo real
+                        </li>
+                        <li className="flex items-center gap-2">
+                          <CheckCircle className="h-3 w-3 text-primary" />
+                          Notificações de progresso
+                        </li>
+                      </ul>
+                    </div>
+
+                    <div className="max-w-md mx-auto space-y-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="email" className="flex items-center gap-2">
+                          <Mail className="h-4 w-4 text-muted-foreground" />
+                          Email
+                        </Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          placeholder="seu@email.com"
+                          value={formData.email}
+                          onChange={(e) => handleInputChange('email', e.target.value)}
+                          className="h-12"
+                          required
+                        />
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="password" className="flex items-center gap-2">
+                          <KeyRound className="h-4 w-4 text-muted-foreground" />
+                          Senha
+                        </Label>
+                        <div className="relative">
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Mínimo 6 caracteres"
+                            value={formData.password}
+                            onChange={(e) => handleInputChange('password', e.target.value)}
+                            className="h-12 pr-12"
+                            required
+                            minLength={6}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                          >
+                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-4 justify-center pt-4">
+                      <Button 
+                        onClick={prevStep}
+                        variant="outline"
+                        size="lg"
+                        className="h-12 px-6"
+                      >
+                        <ArrowLeft className="h-4 w-4 mr-2" />
+                        Voltar
+                      </Button>
+                      <Button 
+                        onClick={handleCreateAccount}
+                        disabled={!formData.email || formData.password.length < 6 || isLoading}
+                        size="lg"
+                        className="h-12 px-8 bg-gradient-to-r from-primary to-rose-500 hover:from-primary/90 hover:to-rose-500/90"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            Criar conta
+                            <ArrowRight className="h-4 w-4 ml-2" />
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Step 5 - Confirmation & Redirect to Chat */}
+                {currentStep === 5 && (
+                  <motion.div
+                    key="step5"
                     initial={{ opacity: 0, x: 20 }}
                     animate={{ opacity: 1, x: 0 }}
                     exit={{ opacity: 0, x: -20 }}
@@ -426,10 +661,10 @@ export default function LimpaNomeOnboarding() {
                         <CheckCircle className="h-12 w-12 text-green-500" />
                       </motion.div>
                       <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
-                        Conexão iniciada com sucesso!
+                        Tudo pronto! 🎉
                       </h2>
                       <p className="text-muted-foreground">
-                        Você está a um passo de limpar seu nome.
+                        Seu painel está configurado. Guilherme já foi notificado.
                       </p>
                     </div>
 
@@ -437,53 +672,36 @@ export default function LimpaNomeOnboarding() {
                       <div className="flex items-center gap-4 p-5 rounded-xl bg-green-500/10 border border-green-500/20">
                         <CheckCircle className="h-6 w-6 text-green-500 shrink-0" />
                         <div>
-                          <p className="font-medium text-foreground">Conexão iniciada com sucesso</p>
-                          <p className="text-sm text-muted-foreground">Seus dados foram recebidos</p>
+                          <p className="font-medium text-foreground">Solicitação criada</p>
+                          <p className="text-sm text-muted-foreground">Seus dados foram salvos com segurança</p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4 p-5 rounded-xl bg-blue-500/10 border border-blue-500/20">
                         <Users className="h-6 w-6 text-blue-500 shrink-0" />
                         <div>
-                          <p className="font-medium text-foreground">Um parceiro humano irá analisar seu caso</p>
-                          <p className="text-sm text-muted-foreground">Análise personalizada garantida</p>
+                          <p className="font-medium text-foreground">Chat com Guilherme</p>
+                          <p className="text-sm text-muted-foreground">Seu especialista já está disponível</p>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 p-5 rounded-xl bg-primary/10 border border-primary/20">
-                        <Handshake className="h-6 w-6 text-primary shrink-0" />
+                      <div className="flex items-center gap-4 p-5 rounded-xl bg-slate-900/80 border-2 border-pink-500/40 shadow-lg shadow-pink-500/10">
+                        <div className="p-2 rounded-full bg-pink-500/20 border border-pink-500/30">
+                          <Heart className="h-5 w-5 text-pink-400" />
+                        </div>
                         <div>
-                          <p className="font-medium text-foreground">Parceria séria e responsável</p>
-                          <p className="text-sm text-muted-foreground">Profissionais verificados</p>
+                          <p className="font-bold text-pink-400">ATENDIMENTO HUMANO GARANTIDO</p>
+                          <p className="text-sm text-foreground/80">Nada é automático – parceiros reais</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="text-center space-y-3">
-                      <p className="text-muted-foreground">
-                        O parceiro entrará em contato com você pelo WhatsApp para dar continuidade à análise.
-                      </p>
-                      <div className="flex items-center justify-center gap-2">
-                        <Sparkles className="h-5 w-5 text-amber-500" />
-                        <span className="font-medium text-muted-foreground">Atendimento humano garantido</span>
-                      </div>
-                    </div>
-
-                    <div className="flex gap-4 justify-center pt-4">
-                      <Button 
-                        onClick={prevStep}
-                        variant="outline"
-                        size="lg"
-                        className="h-12 px-6"
-                      >
-                        <ArrowLeft className="h-4 w-4 mr-2" />
-                        Voltar
-                      </Button>
+                    <div className="flex justify-center pt-4">
                       <Button 
                         onClick={handleFinish}
                         size="lg"
-                        className="h-14 px-12 text-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                        className="h-14 px-12 text-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 group"
                       >
-                        Finalizar
-                        <ArrowRight className="h-5 w-5 ml-2" />
+                        Abrir meu painel e chat
+                        <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                       </Button>
                     </div>
                   </motion.div>
