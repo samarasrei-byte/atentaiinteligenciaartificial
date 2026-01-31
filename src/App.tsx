@@ -88,6 +88,8 @@ import SobrePage from "./pages/SobrePage";
 import SuportePage from "./pages/SuportePage";
 import BIContabilidadeLanding from "./pages/BIContabilidadeLanding";
 import BIContabilidadeOnboarding from "./pages/BIContabilidadeOnboarding";
+import ChatGuilherme from "./pages/ChatGuilherme";
+import ChatCesar from "./pages/ChatCesar";
 
 const queryClient = new QueryClient();
 
@@ -287,6 +289,18 @@ const App = () => (
               <Route path="/consultations" element={
                 <ProtectedRoute>
                   <ConsultationHistory />
+                </ProtectedRoute>
+              } />
+              
+              {/* Unified Chat Routes - Final destination for all services */}
+              <Route path="/chat/guilherme" element={
+                <ProtectedRoute>
+                  <ChatGuilherme />
+                </ProtectedRoute>
+              } />
+              <Route path="/chat/cesar" element={
+                <ProtectedRoute>
+                  <ChatCesar />
                 </ProtectedRoute>
               } />
               
