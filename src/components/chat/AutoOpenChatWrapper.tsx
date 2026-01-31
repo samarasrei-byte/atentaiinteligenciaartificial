@@ -33,12 +33,12 @@ export function useAutoOpenChat() {
     
     const checkActiveRequests = async () => {
       try {
-        // Check for active Limpa Nome request
+        // Check for active Limpa Nome request (Guilherme)
         const { data: creditRepair } = await supabase
           .from('credit_repair_requests')
           .select('id, status, payment_status')
           .eq('user_id', user.id)
-          .in('status', ['pending', 'in_progress', 'documents_pending', 'under_review'])
+          .in('status', ['pending', 'in_progress', 'documents_pending', 'under_review', 'in_analysis', 'negotiation'])
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -53,19 +53,39 @@ export function useAutoOpenChat() {
           return;
         }
 
-        // Check for active company opening request  
+        // Check for active Fiscal Analysis request (Guilherme)
+        const { data: fiscalAnalysis } = await supabase
+          .from('fiscal_analysis_requests')
+          .select('id, status')
+          .eq('user_id', user.id)
+          .in('status', ['pending', 'in_progress', 'documents_pending', 'under_review', 'collecting_docs', 'in_analysis', 'opportunities_found', 'adjustments'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (fiscalAnalysis) {
+          toast({
+            title: 'Análise Fiscal em andamento',
+            description: 'Você tem uma análise fiscal ativa. Abrindo chat...',
+          });
+          setHasChecked(true);
+          navigate(`/chat/guilherme?servico=analise-fiscal&request=${fiscalAnalysis.id}`);
+          return;
+        }
+
+        // Check for active company opening request (Guilherme)
         const { data: companyOpening } = await supabase
           .from('company_opening_requests')
           .select('id, status')
           .eq('user_id', user.id)
-          .in('status', ['pending', 'in_progress', 'documents_pending', 'under_review'])
+          .in('status', ['pending', 'in_progress', 'documents_pending', 'under_review', 'analyzing'])
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
 
         if (companyOpening) {
           toast({
-            title: 'Solicitação em andamento',
+            title: 'Abertura de Empresa em andamento',
             description: 'Você tem uma abertura de empresa em análise. Abrindo chat...',
           });
           setHasChecked(true);
@@ -73,7 +93,7 @@ export function useAutoOpenChat() {
           return;
         }
 
-        // Check for active fiscal/IR request
+        // Check for active IR request (César - BI related)
         const { data: irRequest } = await supabase
           .from('ir_requests')
           .select('id, status')
@@ -85,14 +105,15 @@ export function useAutoOpenChat() {
 
         if (irRequest) {
           toast({
-            title: 'Solicitação em andamento',
-            description: 'Você tem uma solicitação fiscal ativa. Abrindo chat...',
+            title: 'Declaração IR em andamento',
+            description: 'Você tem uma solicitação de IR ativa. Abrindo chat...',
           });
           setHasChecked(true);
           navigate(`/chat/cesar?servico=bi-contabilidade&request=${irRequest.id}`);
           return;
         }
 
+        // No active requests - mark as checked
         setHasChecked(true);
       } catch (error) {
         console.error('Error checking active requests:', error);
