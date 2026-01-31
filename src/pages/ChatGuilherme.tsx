@@ -326,11 +326,11 @@ export default function ChatGuilherme() {
                     {context.label}
                   </Badge>
                   
-                  {/* WhatsApp Business Status */}
+                  {/* Chat Status - WhatsApp Business Icon */}
                   <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/10">
                     <WhatsAppBusinessIcon connected={isWhatsAppConnected} className="h-5 w-5" />
                     <span className="text-xs text-white/80 hidden sm:inline">
-                      WhatsApp Business
+                      Chat
                     </span>
                     <span className={`h-2 w-2 rounded-full ${isWhatsAppConnected ? 'bg-green-400' : 'bg-gray-400'}`} />
                   </div>
@@ -437,7 +437,7 @@ export default function ChatGuilherme() {
               </div>
               
               <p className="text-xs text-slate-500 mt-2 text-center">
-                💬 Chat • 📲 WhatsApp Business conectado
+                💬 Chat conectado • Atendimento humano garantido
               </p>
             </div>
           </Card>
