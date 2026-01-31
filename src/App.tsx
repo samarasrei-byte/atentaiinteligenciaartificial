@@ -91,6 +91,7 @@ import BIContabilidadeOnboarding from "./pages/BIContabilidadeOnboarding";
 import CesarBILanding from "./pages/CesarBILanding";
 import ChatGuilherme from "./pages/ChatGuilherme";
 import ChatCesar from "./pages/ChatCesar";
+import LimpaNomePaymentSuccess from "./pages/LimpaNomePaymentSuccess";
 
 const queryClient = new QueryClient();
 
@@ -142,6 +143,7 @@ const App = () => (
               <Route path="/limpa-nome" element={<LimpaNomeLanding />} />
               <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
               <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
+              <Route path="/limpa-nome/sucesso" element={<LimpaNomePaymentSuccess />} />
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscalLanding />} />
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
