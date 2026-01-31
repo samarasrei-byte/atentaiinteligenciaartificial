@@ -274,6 +274,7 @@ const BIContabilidadeOnboarding = () => {
             urgency: formData.urgency,
             additionalInfo: formData.additionalInfo,
             documentsCount: documents.length,
+            source: 'bi-contabilidade-onboarding',
           }),
         })
         .select()
@@ -297,8 +298,22 @@ const BIContabilidadeOnboarding = () => {
         }
       }
 
-      toast.success('Solicitação enviada com sucesso! Entraremos em contato em breve.');
-      navigate('/meu-painel');
+      // Create notification for the user
+      if (user?.id) {
+        await supabase.from('service_notifications').insert({
+          user_id: user.id,
+          title: '🎉 Solicitação BI+ Contabilidade Enviada!',
+          message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
+          notification_type: 'service_created',
+          service_type: 'bi-contabilidade',
+          metadata: { requestId: request.id },
+        });
+      }
+
+      toast.success('Solicitação enviada! Abrindo chat com César...');
+      
+      // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT
+      navigate(`/chat/cesar?servico=bi-contabilidade&request=${request.id}`);
     } catch (error: any) {
       console.error('Submit error:', error);
       toast.error('Erro ao enviar solicitação. Tente novamente.');

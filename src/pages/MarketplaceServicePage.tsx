@@ -19,6 +19,14 @@ import {
 } from 'lucide-react';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
 import { MaskedInput } from '@/components/ui/masked-input';
+import { 
+  getChatUrl, 
+  createLimpaNomeRequest, 
+  createFiscalRequest, 
+  createBIRequest,
+  getResponsiblePerson,
+  ServiceType 
+} from '@/lib/serviceFlowUtils';
 
 interface ServiceConfig {
   key: string;
@@ -242,52 +250,77 @@ export default function MarketplaceServicePage() {
     setIsSubmitting(true);
 
     try {
-      // Find active partner (Guilherme)
-      const { data: partnerData } = await supabase
-        .from('credit_repair_partners')
-        .select('id')
-        .eq('is_active', true)
-        .limit(1)
-        .single();
-
-      const partnerId = partnerData?.id || null;
-
-      // Create request based on service type
+      // Map service key to ServiceType
+      const serviceTypeMap: Record<string, ServiceType> = {
+        'consultation': 'limpanome', // Default to limpanome for consultation
+        'company_opening': 'abertura-empresa',
+        'certificate': 'certidao',
+        'ir_simples': 'ir',
+        'ir_completo': 'ir',
+        'fiscal_analysis': 'analise-fiscal',
+        'business_consulting': 'bi-contabilidade',
+      };
+      
+      const serviceType = serviceTypeMap[serviceConfig.key] || 'limpanome';
+      const responsible = getResponsiblePerson(serviceType);
+      
+      // Create request based on service type - ALL redirect to chat
       if (serviceConfig.key === 'fiscal_analysis') {
-        // Create fiscal request
-        const { error } = await supabase
-          .from('fiscal_analysis_requests')
-          .insert({
-            user_id: user?.id || null,
-            partner_id: partnerId,
-            full_name: formData.fullName,
-            email: formData.email,
-            phone: formData.phone,
-            company_name: formData.companyName || 'A definir',
-            cnpj: formData.cnpj || '',
-            tax_regime: 'a_definir',
-            status: 'pending',
-          });
-
-        if (error) throw error;
-
-        toast({ title: 'Solicitação enviada!', description: 'Um especialista entrará em contato.' });
-        navigate('/minhas-solicitacoes');
+        const result = await createFiscalRequest({
+          serviceType: 'analise-fiscal',
+          userId: user?.id,
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          cpf: formData.cpf,
+          cnpj: formData.cnpj,
+          additionalData: {
+            companyName: formData.companyName,
+            notes: formData.notes,
+          },
+        });
+        
+        toast({ 
+          title: '✅ Solicitação enviada!', 
+          description: `Abrindo chat com ${responsible === 'guilherme' ? 'Guilherme' : 'César'}...` 
+        });
+        navigate(result.chatUrl);
+        
+      } else if (serviceConfig.key === 'business_consulting') {
+        const result = await createBIRequest({
+          serviceType: 'bi-contabilidade',
+          userId: user?.id,
+          fullName: formData.fullName,
+          email: formData.email,
+          phone: formData.phone,
+          cpf: formData.cpf,
+          cnpj: formData.cnpj,
+          additionalData: {
+            companyName: formData.companyName,
+            notes: formData.notes,
+            source: 'marketplace-consulting',
+          },
+        });
+        
+        toast({ 
+          title: '✅ Solicitação enviada!', 
+          description: 'Abrindo chat com César...' 
+        });
+        navigate(result.chatUrl);
+        
       } else {
-        // For other services, create a credit repair request or redirect
-        if (serviceConfig.key === 'ir_simples' || serviceConfig.key === 'ir_completo') {
-          navigate('/ir');
-        } else if (serviceConfig.key === 'company_opening') {
-          navigate('/abertura-empresa');
-        } else if (serviceConfig.key === 'certificate') {
-          navigate('/certidoes');
-        } else if (serviceConfig.key === 'consultation') {
-          navigate('/contadores-publico');
-        } else if (serviceConfig.key === 'business_consulting') {
-          // Create a generic consultation request
-          toast({ title: 'Solicitação enviada!', description: 'Redirecionando para contadores...' });
-          navigate('/contadores-publico');
-        }
+        // For other services, redirect to their specific pages first OR directly to chat
+        const redirectMap: Record<string, string> = {
+          'ir_simples': '/ir',
+          'ir_completo': '/ir',
+          'company_opening': '/abertura-empresa',
+          'certificate': '/certidoes',
+          'consultation': '/chat/guilherme?servico=geral',
+        };
+        
+        const redirectUrl = redirectMap[serviceConfig.key] || '/chat/guilherme?servico=geral';
+        toast({ title: 'Redirecionando...', description: 'Aguarde um momento.' });
+        navigate(redirectUrl);
       }
     } catch (error) {
       console.error('Error creating request:', error);
