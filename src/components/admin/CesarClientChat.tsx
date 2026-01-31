@@ -203,6 +203,7 @@ export function CesarClientChat() {
           action: messages.length === 0 
             ? 'Gerar boas-vindas profissional como César, especialista em BI e Contabilidade'
             : 'Gerar resposta técnica e profissional como César',
+          persona: 'cesar', // Explicitly set César persona
         }),
       });
 
