@@ -196,21 +196,38 @@ serve(async (req) => {
       context, 
       conversationHistory,
       action,
-      persona = 'guilherme' // Default persona
+      persona = 'guilherme',
+      // NEW: Service context fields for intelligent responses
+      currentStep,
+      currentStepIndex,
+      totalSteps,
+      documentsReceived,
+      lastDocumentName,
+      requestId,
     } = await req.json();
+
+    // Validate that we have minimum required context
+    if (!clientName || !serviceType) {
+      return new Response(JSON.stringify({ 
+        error: 'Contexto insuficiente. Forneça pelo menos clientName e serviceType.' 
+      }), {
+        status: 400,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
 
     // Select the appropriate system prompt based on persona
     const isCesar = persona === 'cesar' || serviceType === 'bi-contabilidade' || serviceType === 'bi-subscription';
     const systemPrompt = isCesar ? CESAR_SYSTEM_PROMPT : GUILHERME_SYSTEM_PROMPT;
     const personaName = isCesar ? 'César' : 'Guilherme';
 
-    logStep('Persona selected', { persona: personaName, serviceType });
+    logStep('Persona selected', { persona: personaName, serviceType, currentStep });
 
-    // Build contextual prompt
+    // Build contextual prompt with service progress
     let modeContext = '';
     
     if (isCesar) {
-      if (serviceType === 'bi-subscription' || serviceType === 'bi') {
+      if (serviceType === 'bi-subscription' || serviceType === 'bi' || serviceType === 'bi-contabilidade') {
         modeContext = `MODO: 📊 BUSINESS INTELLIGENCE
 Tom requerido: Estratégico, orientado a dados, insights acionáveis.
 Objetivo: Auxiliar cliente com análise de BI e tomada de decisão baseada em dados.`;
@@ -220,7 +237,7 @@ Tom requerido: Técnico, preciso, orientado a compliance.
 Objetivo: Auxiliar cliente com questões contábeis e análise financeira.`;
       }
     } else {
-      modeContext = serviceType === 'limpa-nome' 
+      modeContext = serviceType === 'limpanome' || serviceType === 'limpa-nome'
         ? `MODO: 🧹 LIMPA NOME (Crédito)
 Tom requerido: Empático, tranquilizador, acolhedor.
 Objetivo: Ajudar cliente com recuperação de crédito/limpeza de nome.`
@@ -231,17 +248,48 @@ Objetivo: Auxiliar cliente com análise e questões fiscais.`;
 
     const statusEmoji = status === 'pending' ? '🟡' : status === 'completed' ? '🟢' : '🔵';
 
+    // Build progress context
+    let progressContext = '';
+    if (currentStep && totalSteps) {
+      progressContext = `
+📊 PROGRESSO DO SERVIÇO:
+- Etapa Atual: ${currentStepIndex + 1}/${totalSteps} - "${currentStep}"
+- Status: ${statusEmoji} ${status}`;
+    }
+
+    // Build documents context
+    let documentsContext = '';
+    if (documentsReceived && documentsReceived.length > 0) {
+      documentsContext = `
+📎 DOCUMENTOS RECEBIDOS: ${documentsReceived.join(', ')}`;
+      if (lastDocumentName) {
+        documentsContext += `\n- Último documento: "${lastDocumentName}"`;
+      }
+    } else {
+      documentsContext = `
+📎 DOCUMENTOS RECEBIDOS: Nenhum ainda`;
+    }
+
     const userPrompt = `${modeContext}
 
 INFORMAÇÕES DO CLIENTE:
 - Nome: ${clientName}
-- Status: ${statusEmoji} ${status}
-- Contexto: ${context}
+- ID da Solicitação: ${requestId || 'N/A'}
+${progressContext}
+${documentsContext}
+
+CONTEXTO ADICIONAL: ${context || 'Sem contexto adicional'}
 
 HISTÓRICO DA CONVERSA:
 ${conversationHistory || 'Primeiro contato'}
 
 AÇÃO SOLICITADA: ${action || `Gerar resposta de acompanhamento como ${personaName}`}
+
+⚠️ IMPORTANTE: 
+- Mencione a etapa atual do processo na mensagem
+- Se houver documentos pendentes, solicite-os de forma amigável
+- Sempre informe os próximos passos claros
+- Assinatura: "${personaName}"
 
 Gere uma sugestão de resposta seguindo todas as diretrizes do sistema.`;
 

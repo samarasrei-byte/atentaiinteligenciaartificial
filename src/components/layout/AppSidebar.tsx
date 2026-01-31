@@ -81,24 +81,24 @@ const freeToolsGroup: SidebarGroup = {
   ],
 };
 
-// EMPRESA - BI centrado
+// EMPRESA - Chat + BI centrado
 const empresaGroups: SidebarGroup[] = [
-  {
-    id: 'bi',
-    label: 'BI Contabilidade',
-    items: [
-      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
-      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-      { icon: TrendingUp, label: 'Economize', tabId: 'economia' },
-    ],
-  },
   {
     id: 'comunicacao',
     label: 'Comunicação',
     items: [
-      { icon: MessageCircle, label: 'Chat Especialista', tabId: 'chat-contador', isLive: true },
+      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true },
+      { icon: Brain, label: 'Chat César (BI)', tabId: 'chat-cesar', isLive: true },
       { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
       { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    items: [
+      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+      { icon: TrendingUp, label: 'Economize', tabId: 'economia' },
     ],
   },
   freeToolsGroup,
@@ -121,25 +121,25 @@ const empresaGroups: SidebarGroup[] = [
   },
 ];
 
-// AUTÔNOMO - BI centrado
+// AUTÔNOMO - Chat + Dashboard centrado
 const autonomoGroups: SidebarGroup[] = [
-  {
-    id: 'bi',
-    label: 'BI Contabilidade',
-    items: [
-      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
-      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'dashboard' },
-      { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
-      { icon: Target, label: 'Metas', tabId: 'metas' },
-    ],
-  },
   {
     id: 'comunicacao',
     label: 'Comunicação',
     items: [
-      { icon: MessageCircle, label: 'Chat Especialista', tabId: 'chat-contador', isLive: true },
+      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true },
+      { icon: Brain, label: 'Chat César (BI)', tabId: 'chat-cesar', isLive: true },
       { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
       { icon: Bell, label: 'Alertas', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    items: [
+      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'dashboard' },
+      { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
+      { icon: Target, label: 'Metas', tabId: 'metas' },
     ],
   },
   freeToolsGroup,
@@ -220,34 +220,26 @@ const contadorGroups: SidebarGroup[] = [
   },
 ];
 
-// PARTNER
+// PARTNER - Comunicação centrada (sem duplicações)
 const partnerGroups: SidebarGroup[] = [
   {
-    id: 'bi',
-    label: 'BI Contabilidade',
+    id: 'comunicacao',
+    label: 'Comunicação',
     items: [
-      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
+      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true },
+      { icon: Brain, label: 'Chat César (BI)', tabId: 'chat-cesar', isLive: true },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'dashboard',
+    label: 'Dashboard',
+    items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
     ],
   },
-  {
-    id: 'comunicacao',
-    label: 'Comunicação',
-    items: [
-      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
-    ],
-  },
   freeToolsGroup,
-  {
-    id: 'comunicacao',
-    label: 'Comunicação',
-    items: [
-      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
-    ],
-  },
   {
     id: 'marketplace',
     label: 'Marketplace',
@@ -303,6 +295,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   const handleItemClick = (tabId: string) => {
+    // Chat Guilherme e César → navegação direta
+    const chatRoutes: Record<string, string> = {
+      'chat-guilherme': '/chat/guilherme',
+      'chat-cesar': '/chat/cesar',
+    };
+
+    if (chatRoutes[tabId]) {
+      navigate(chatRoutes[tabId]);
+      return;
+    }
+
     // Ferramentas gratuitas → navegação externa
     const externalRoutes: Record<string, string> = {
       'ferramentas-lc214': '/ferramentas-lc214',

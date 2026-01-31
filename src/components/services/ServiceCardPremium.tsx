@@ -35,6 +35,7 @@ export interface ServiceCardConfig {
   isFree?: boolean;
   successFee?: boolean;
   category?: string;
+  isCustomPricing?: boolean; // For services with no fixed price (sold via chat)
 }
 
 interface ServiceCardPremiumProps {
@@ -239,7 +240,14 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
 
             {/* Pricing Section */}
             <div className="py-4 border-t border-slate-100 mb-4">
-              {service.isFree ? (
+              {service.isCustomPricing ? (
+                <div>
+                  <span className="text-xl font-bold text-purple-600">Sob Consulta</span>
+                  <p className="text-xs text-slate-500 mt-1">
+                    Fale com o César para uma proposta personalizada
+                  </p>
+                </div>
+              ) : service.isFree ? (
                 <div>
                   <span className="text-2xl font-bold text-emerald-600">Gratuito</span>
                   {service.successFee && (

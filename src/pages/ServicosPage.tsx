@@ -97,7 +97,7 @@ const socialProof = [
 
 // Service configurations with all information needed
 const serviceConfigs: ServiceCardConfig[] = [
-  // BI+ Contabilidade - NOVO
+  // BI+ Contabilidade - SEM PREÇO FIXO (Sob consulta via chat)
   {
     key: 'bi_contabilidade',
     name: 'BI+ Contabilidade',
@@ -110,15 +110,18 @@ const serviceConfigs: ServiceCardConfig[] = [
       'Suporte especializado do César',
     ],
     guarantees: ['Atendimento humano', 'IA + Especialista'],
-    basePrice: 199000,
-    discountPercent: 10,
+    basePrice: 0, // Sem preço fixo - sob consulta
+    discountPercent: 0,
     badge: 'popular',
-    cta: 'Contratar BI+',
+    cta: 'Falar com César',
     color: 'purple',
     icon: Brain,
     serviceType: 'bi_contabilidade',
-    checkoutRoute: '/bi-contabilidade/onboarding',
+    checkoutRoute: '/chat/cesar?servico=bi-contabilidade', // Redireciona para chat
     category: 'consultoria',
+    isFree: false,
+    successFee: false,
+    isCustomPricing: true, // Flag para indicar preço sob consulta
   },
   // Limpa Nome PF
   {
