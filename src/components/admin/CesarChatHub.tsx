@@ -1,20 +1,25 @@
 import React from 'react';
-import { BarChart3, FileText, TrendingUp, AlertTriangle, Bell, Brain, Activity, DollarSign } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { BarChart3, FileText, TrendingUp, Bell, Activity, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { SmartChatHub } from '@/components/smart-chat';
+import { CesarClientChat } from './CesarClientChat';
 
 /**
  * CesarChatHub - Central de BI & Contabilidade
  * 
  * RESPONSÁVEL: César
- * SERVIÇOS: BI Completo, Métricas SaaS, Contabilidade
+ * SERVIÇOS: BI Completo, Contabilidade, Comunicação com Clientes BI
  * 
  * REGRA DE NEGÓCIO:
- * - Insights de dados e KPIs passam por aqui
- * - Documentos contábeis enviados no chat vão para Central de Documentos
+ * - Chat de comunicação com clientes de BI/Contabilidade
+ * - Documentos enviados no chat vão para Central de Documentos
  * - WhatsApp integrado (instância César)
  * - Mesma experiência visual do chat do Guilherme
+ * 
+ * REMOVIDO daqui (agora no sidebar):
+ * - Métricas SaaS
+ * - Churn Rate
+ * - Análise de Cohort
+ * - Alertas de Performance
  */
 export const CesarChatHub: React.FC = () => {
   return (
@@ -34,18 +39,18 @@ export const CesarChatHub: React.FC = () => {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
                 </span>
               </h1>
-              <p className="text-violet-100 text-sm">BI & Contabilidade Estratégica</p>
+              <p className="text-violet-100 text-sm">BI & Contabilidade • Comunicação com Clientes</p>
             </div>
           </div>
           
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="bg-white/10 text-white border-white/20 gap-2">
               <BarChart3 className="h-3.5 w-3.5" />
-              BI
+              BI Completo
             </Badge>
             <Badge variant="outline" className="bg-white/10 text-white border-white/20 gap-2">
-              <TrendingUp className="h-3.5 w-3.5" />
-              Métricas
+              <FileText className="h-3.5 w-3.5" />
+              Contabilidade
             </Badge>
           </div>
         </div>
@@ -53,23 +58,23 @@ export const CesarChatHub: React.FC = () => {
         {/* Quick Stats */}
         <div className="flex items-center gap-6 mt-4 text-violet-100 text-sm">
           <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
-            <span>KPIs em tempo real</span>
+            <MessageCircle className="h-4 w-4" />
+            <span>Atendimento BI</span>
           </div>
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            <span>5 relatórios pendentes</span>
+            <span>Docs contábeis</span>
           </div>
           <div className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" />
-            <span>2 alertas performance</span>
+            <Activity className="h-4 w-4" />
+            <span>Relatórios</span>
           </div>
         </div>
       </div>
       
-      {/* Smart Chat Hub - Reutiliza o componente existente */}
+      {/* Chat Component - Igual ao do Guilherme */}
       <div className="flex-1 min-h-0">
-        <SmartChatHub />
+        <CesarClientChat />
       </div>
     </div>
   );
