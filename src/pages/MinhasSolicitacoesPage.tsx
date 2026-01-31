@@ -11,6 +11,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from '@/components/ui/sheet';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
+import { LimpaNomeUpgradeCard } from '@/components/limpa-nome/LimpaNomeUpgradeCard';
 import {
   ArrowLeft,
   Shield,
@@ -272,7 +273,11 @@ const MinhasSolicitacoesPage = () => {
   };
 
   const renderCreditRepairCard = (request: CreditRepairRequest) => (
-    <Card key={request.id} className="hover:border-emerald-500/50 transition-colors">
+    <Card 
+      key={request.id} 
+      className="hover:border-emerald-500/50 transition-colors cursor-pointer"
+      onClick={() => navigate(`/chat/guilherme?servico=limpanome&request=${request.id}`)}
+    >
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -287,21 +292,30 @@ const MinhasSolicitacoesPage = () => {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="text-right">
-              <p className="text-sm text-muted-foreground">Dívida</p>
-              <p className="font-semibold text-destructive">{formatCurrency(request.debt_amount_cents)}</p>
-            </div>
-            {getStatusBadge(request.status)}
-            {request.partner_id && (
-              <Button
-                variant="default"
-                size="sm"
-                onClick={() => openPartnerChat('credit_repair', request.id, request.partner_id!)}
-              >
-                <MessageCircle className="h-4 w-4" />
-                Chat com Guilherme Barros
-              </Button>
+            {request.payment_status === 'paid' ? (
+              <Badge variant="outline" className="bg-emerald-50 text-emerald-700">
+                <CheckCircle className="h-3 w-3 mr-1" />
+                Pago
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="bg-amber-50 text-amber-700">
+                <Clock className="h-3 w-3 mr-1" />
+                Aguardando Pagamento
+              </Badge>
             )}
+            {getStatusBadge(request.status)}
+            <Button
+              variant="default"
+              size="sm"
+              className="bg-emerald-600 hover:bg-emerald-700"
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/chat/guilherme?servico=limpanome&request=${request.id}`);
+              }}
+            >
+              <MessageCircle className="h-4 w-4 mr-2" />
+              Chat com Guilherme
+            </Button>
           </div>
         </div>
         {renderPartnerBadge(request.partner_id)}
@@ -607,6 +621,11 @@ const MinhasSolicitacoesPage = () => {
               )}
             </TabsContent>
           </Tabs>
+        )}
+        
+        {/* Upgrade Card - Show for users with active Limpa Nome */}
+        {creditRepairRequests.some(r => r.payment_status === 'paid') && (
+          <LimpaNomeUpgradeCard className="mt-8 max-w-md" />
         )}
       </main>
 

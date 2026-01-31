@@ -151,6 +151,7 @@ export default function ChatGuilherme() {
       setUserProfile(profile);
       
       // Check payment status if we have a request ID
+      let isPaidRequest = false;
       if (requestId && context.type === 'limpanome') {
         const { data: request } = await supabase
           .from('credit_repair_requests')
@@ -158,11 +159,12 @@ export default function ChatGuilherme() {
           .eq('id', requestId)
           .single();
         
-        setIsPaid(request?.payment_status === 'paid');
+        isPaidRequest = request?.payment_status === 'paid';
+        setIsPaid(isPaidRequest);
       }
       
-      // Load welcome message based on context
-      const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name);
+      // Load welcome message based on context (with payment status for Limpa Nome)
+      const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name, isPaidRequest);
       setMessages(welcomeMessages);
     };
     
@@ -174,17 +176,29 @@ export default function ChatGuilherme() {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
   
-  const getWelcomeMessages = (serviceType: string, userName?: string): Message[] => {
+  const getWelcomeMessages = (serviceType: string, userName?: string, isPaidService?: boolean): Message[] => {
     const name = userName?.split(' ')[0] || 'Cliente';
     
-    const baseMessages: Message[] = [
-      {
-        id: 'welcome-1',
-        content: `Olá, ${name}! 👋\n\nSou Guilherme, seu especialista em ${serviceContexts[serviceType]?.label || 'serviços'}. Recebi sua solicitação e estou aqui para te ajudar.`,
+    const baseMessages: Message[] = [];
+    
+    // Special welcome for paid Limpa Nome
+    if (serviceType === 'limpanome' && isPaidService) {
+      baseMessages.push({
+        id: 'welcome-paid-1',
+        content: `Olá! 👋\nSeu pagamento foi confirmado com sucesso.\n\nPara iniciarmos o processo de Limpa Nome, envie aqui no chat os documentos abaixo:\n\n📄 Documento com foto (RG ou CNH)\n📄 CPF\n📄 Comprovante de residência\n\nAssim que recebermos os documentos, nossa equipe dará andamento imediato no seu atendimento. 😊`,
         sender: 'specialist',
         timestamp: new Date(),
-      },
-    ];
+      });
+      return baseMessages;
+    }
+    
+    // Standard welcome
+    baseMessages.push({
+      id: 'welcome-1',
+      content: `Olá, ${name}! 👋\n\nSou Guilherme, seu especialista em ${serviceContexts[serviceType]?.label || 'serviços'}. Recebi sua solicitação e estou aqui para te ajudar.`,
+      sender: 'specialist',
+      timestamp: new Date(),
+    });
     
     if (serviceType === 'limpanome') {
       baseMessages.push({
