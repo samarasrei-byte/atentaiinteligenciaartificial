@@ -280,7 +280,7 @@ const AdminPanel = () => {
         <AdminSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} activeTab={activeTab} onTabChange={handleTabChange} />
       </div>
       
-      <main className={`dashboard-main transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`dashboard-main transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-14' : 'lg:ml-60'}`}>
         <header className="dashboard-header">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -570,6 +570,29 @@ const AdminPanel = () => {
           {activeTab === 'audit-page' && <AdminAuditPage />}
           {activeTab === 'bi-accounting' && <BIAccountingModule />}
           {activeTab === 'partner-split' && <RevenuePartnerSplitDashboard />}
+
+          {/* Chat Central de Atendimento - Guilherme */}
+          {activeTab === 'client-chat' && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
+                  G
+                </div>
+                <div>
+                  <h2 className="font-semibold text-foreground">Central de Atendimento</h2>
+                  <p className="text-sm text-muted-foreground">Responsável: <span className="text-emerald-600 font-medium">Guilherme</span></p>
+                </div>
+              </div>
+              <AdminClientChat />
+            </div>
+          )}
+
+          {/* KPI Alerts Hub */}
+          {activeTab === 'kpi-alerts' && (
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <SmartChatHub />
+            </div>
+          )}
 
           {activeTab === 'panel-contador' && (
             <Card className="bg-card border-border shadow-soft">

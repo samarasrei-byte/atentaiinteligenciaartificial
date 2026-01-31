@@ -45,7 +45,7 @@ export const SmartChatHub: React.FC = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Olá! Sou a **IA Central** do AtentAI. Posso te ajudar com:\n\n- 📊 **KPIs em tempo real** de todos os serviços\n- 🔔 **Alertas de performance** e anomalias\n- 💡 **Insights automáticos** e recomendações\n\nO que você gostaria de saber?',
+      content: 'Olá! Sou o **assistente de BI do César**. Posso te ajudar com:\n\n- 📊 **KPIs em tempo real** de todos os serviços\n- 🔔 **Alertas de performance** e anomalias\n- 💡 **Insights automáticos** e recomendações estratégicas\n- 📈 **Análise de dados** contábeis e financeiros\n\nO que você gostaria de analisar?',
       timestamp: new Date(),
     }
   ]);
@@ -161,8 +161,10 @@ export const SmartChatHub: React.FC = () => {
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">Central Inteligente</h1>
-              <p className="text-xs text-muted-foreground">Chat + KPIs + Alertas em tempo real</p>
+              <h1 className="text-lg font-semibold text-foreground">Chat BI Contabilidade</h1>
+              <p className="text-xs text-muted-foreground">
+                <span className="text-primary font-medium">César</span> • KPIs + Alertas em tempo real
+              </p>
             </div>
           </div>
 
