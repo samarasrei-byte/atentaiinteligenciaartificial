@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
 import { 
   ChevronRight, ChevronLeft, CheckCircle2, 
-  AlertCircle, Loader2 
+  Loader2, FileText, Clock
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -16,8 +15,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { ServiceType, SERVICE_STEPS } from './ServiceStatusCard';
-import { useServiceStatus } from '@/hooks/useServiceStatus';
+import { useServiceStatus, ServiceType } from '@/hooks/useServiceStatus';
 
 interface AdminStatusControlProps {
   serviceType: ServiceType;
@@ -142,7 +140,7 @@ export const AdminStatusControl: React.FC<AdminStatusControlProps> = ({
       {/* Current Status */}
       <div className="flex items-center gap-3">
         <div className={cn('p-2 rounded-lg', colors.bg)}>
-          {currentStep && <currentStep.icon className={cn('h-5 w-5', colors.text)} />}
+          <FileText className={cn('h-5 w-5', colors.text)} />
         </div>
         <div className="flex-1">
           <p className="text-sm font-medium">{currentStep?.label}</p>
@@ -184,20 +182,23 @@ export const AdminStatusControl: React.FC<AdminStatusControlProps> = ({
             <SelectValue placeholder="Selecionar etapa" />
           </SelectTrigger>
           <SelectContent>
-            {steps.map((step, index) => {
-              const StepIcon = step.icon;
-              return (
-                <SelectItem key={step.id} value={index.toString()}>
-                  <div className="flex items-center gap-2">
-                    <StepIcon className="h-4 w-4" />
-                    <span>{step.label}</span>
-                    {index === currentStepIndex && (
-                      <Badge variant="secondary" className="text-[10px] ml-auto">Atual</Badge>
-                    )}
-                  </div>
-                </SelectItem>
-              );
-            })}
+            {steps.map((step, index) => (
+              <SelectItem key={step.id} value={index.toString()}>
+                <div className="flex items-center gap-2">
+                  {index < currentStepIndex ? (
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                  ) : index === currentStepIndex ? (
+                    <Clock className="h-4 w-4 text-primary" />
+                  ) : (
+                    <FileText className="h-4 w-4 text-muted-foreground" />
+                  )}
+                  <span>{step.label}</span>
+                  {index === currentStepIndex && (
+                    <Badge variant="secondary" className="text-[10px] ml-auto">Atual</Badge>
+                  )}
+                </div>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 
