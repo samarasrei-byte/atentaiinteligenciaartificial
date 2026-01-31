@@ -3,19 +3,26 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Header } from '@/components/layout/Header';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Send, Paperclip, BarChart3, FileText, MessageCircle,
-  ArrowLeft, Clock, Download, Loader2, Brain, Heart
+  ArrowLeft, Loader2, Brain
 } from 'lucide-react';
-import { ServicePaywallBanner } from '@/components/subscription/ServicePaywallBanner';
-import { ServiceStatusCard, ServiceType as StatusServiceType } from '@/components/chat/ServiceStatusCard';
+
+// Premium components
+import { 
+  PremiumChatLayout, 
+  ChatContainer, 
+  ChatHeader, 
+  ChatMessagesArea, 
+  ChatInputArea 
+} from '@/components/chat/PremiumChatLayout';
+import { PremiumMessageBubble } from '@/components/chat/PremiumMessageBubble';
+import { ServiceStatusHeader, ServiceType as StatusServiceType } from '@/components/chat/ServiceStatusHeader';
 import { StatusUpdateMessage } from '@/components/chat/StatusUpdateMessage';
 import { useServiceStatus } from '@/hooks/useServiceStatus';
 
@@ -105,7 +112,6 @@ export default function ChatCesar() {
   const { 
     currentStepIndex, 
     lastUpdatedAt, 
-    isLoading: statusLoading 
   } = useServiceStatus(
     statusServiceType || 'bi-contabilidade',
     requestId,
@@ -115,17 +121,8 @@ export default function ChatCesar() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
-  const [isWhatsAppConnected, setIsWhatsAppConnected] = useState(true);
+  const [isWhatsAppConnected] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
-  const [isPaid, setIsPaid] = useState(false);
-  
-  // Service pricing map
-  const servicePricing = {
-    'bi-contabilidade': 199000, // R$ 1.990 (exemplo)
-    'contabilidade': 99000, // R$ 990
-    'relatorios': 0, // Incluso em planos
-    'geral': 0,
-  };
   
   useEffect(() => {
     const loadData = async () => {
@@ -263,157 +260,109 @@ export default function ChatCesar() {
   
   const ServiceIcon = context.icon;
   
+  // Specialist avatar component
+  const SpecialistAvatar = () => (
+    <div className="h-9 w-9 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 flex items-center justify-center shadow-sm">
+      <span className="text-white text-sm font-bold">C</span>
+    </div>
+  );
+  
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50/80 flex flex-col">
       <Header onNavigate={() => navigate('/')} />
       
-      <main className="flex-1 pt-20 pb-4 flex flex-col max-h-screen">
-        <div className="container max-w-3xl mx-auto px-4 flex-1 flex flex-col min-h-0">
+      <main className="flex-1 pt-20 pb-6">
+        <PremiumChatLayout>
+          {/* Back button */}
           <Button 
             variant="ghost" 
             size="sm" 
-            className="mb-4 w-fit"
+            className="mb-4 w-fit -ml-2"
             onClick={() => navigate('/minhas-solicitacoes')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Minhas Solicitações
           </Button>
           
-          {/* Payment Banner - Shows when service is not paid */}
-          {servicePricing[context.type as keyof typeof servicePricing] > 0 && (
-            <div className="mb-4">
-              <ServicePaywallBanner
-                serviceType={context.type as 'limpanome' | 'fiscal' | 'bi-contabilidade'}
-                servicePriceCents={servicePricing[context.type as keyof typeof servicePricing]}
-                isPaid={isPaid}
-              />
-            </div>
-          )}
-          
-          <Card className="flex-1 flex flex-col min-h-0 shadow-lg">
-            <CardHeader className="shrink-0 border-b bg-gradient-to-r from-violet-600 to-indigo-600 text-white rounded-t-lg p-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
-                    <span className="text-xl font-bold">C</span>
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-lg flex items-center gap-2">
-                      Chat – César
-                      <span className="relative flex h-2.5 w-2.5">
-                        <span className="animate-ping absolute h-full w-full rounded-full bg-white opacity-75" />
-                        <span className="relative rounded-full h-2.5 w-2.5 bg-white" />
-                      </span>
-                    </h2>
-                    <p className="text-violet-100 text-sm">BI & Contabilidade</p>
-                  </div>
+          {/* Chat Container */}
+          <ChatContainer className="h-[calc(100vh-180px)] min-h-[500px]">
+            {/* Header - Violet/Indigo gradient for César */}
+            <ChatHeader
+              avatar={
+                <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
+                  <span className="text-xl font-bold text-white">C</span>
                 </div>
-                
-                <div className="flex items-center gap-2">
-                  <Badge className={`${context.color} text-white gap-1.5`}>
+              }
+              title="Chat – César"
+              subtitle="BI & Contabilidade"
+              badges={
+                <>
+                  <Badge className={`${context.color} text-white gap-1.5 text-xs`}>
                     <ServiceIcon className="h-3.5 w-3.5" />
                     {context.label}
                   </Badge>
                   
-                  <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white/10">
-                    <WhatsAppBusinessIcon connected={isWhatsAppConnected} className="h-5 w-5" />
-                    <span className="text-xs text-white/80 hidden sm:inline">
-                      Chat
-                    </span>
+                  <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/10">
+                    <WhatsAppBusinessIcon connected={isWhatsAppConnected} className="h-4 w-4" />
+                    <span className="text-xs text-white/80">Chat</span>
                     <span className={`h-2 w-2 rounded-full ${isWhatsAppConnected ? 'bg-green-400' : 'bg-gray-400'}`} />
                   </div>
-                </div>
-              </div>
-            </CardHeader>
+                </>
+              }
+              className="bg-gradient-to-r from-violet-600 to-indigo-600"
+            />
             
-            {/* Status Card - Fixed at top of messages */}
+            {/* Status Card - Fixed at top */}
             {statusServiceType && (
-              <div className="shrink-0 px-4 pt-4 pb-2 border-b border-border/50 bg-muted/30">
-                <ServiceStatusCard
-                  serviceType={statusServiceType}
-                  currentStepIndex={currentStepIndex}
-                  lastUpdatedAt={lastUpdatedAt}
-                  compact
-                />
-              </div>
+              <ServiceStatusHeader
+                serviceType={statusServiceType}
+                currentStepIndex={currentStepIndex}
+                lastUpdatedAt={lastUpdatedAt}
+              />
             )}
             
-            <CardContent className="flex-1 min-h-0 p-0">
-              <ScrollArea className={`${statusServiceType ? 'h-[calc(100vh-400px)]' : 'h-[calc(100vh-320px)]'} p-4`}>
-                <div className="space-y-4">
-                  <AnimatePresence>
-                    {messages.map((message) => {
-                      // Render status update messages differently
-                      if (message.isStatusUpdate && message.statusData && statusServiceType) {
-                        return (
-                          <StatusUpdateMessage
-                            key={message.id}
-                            type={message.statusData.type}
-                            serviceType={statusServiceType}
-                            stepIndex={message.statusData.stepIndex}
-                            previousStepIndex={message.statusData.previousStepIndex}
-                            documentName={message.statusData.documentName}
-                            timestamp={message.timestamp}
-                            isNew={Date.now() - message.timestamp.getTime() < 5000}
-                          />
-                        );
-                      }
-                      
-                      return (
-                        <motion.div
-                          key={message.id}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                          <div className={`max-w-[80%] rounded-2xl p-4 ${
-                            message.sender === 'user' 
-                              ? 'bg-primary text-primary-foreground' 
-                              : 'bg-slate-100 text-slate-900'
-                          }`}>
-                            <div className="flex items-start gap-2">
-                              {message.sender === 'specialist' && (
-                                <div className="h-8 w-8 rounded-full bg-violet-600 flex items-center justify-center shrink-0">
-                                  <span className="text-white text-sm font-bold">C</span>
-                                </div>
-                              )}
-                              <div className="flex-1">
-                                <p className="whitespace-pre-wrap text-sm">{message.content}</p>
-                                
-                                {message.attachmentUrl && (
-                                  <a 
-                                    href={message.attachmentUrl} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="inline-flex items-center gap-1.5 mt-2 text-xs underline"
-                                  >
-                                    <Download className="h-3.5 w-3.5" />
-                                    {message.attachmentName}
-                                  </a>
-                                )}
-                                
-                                <p className={`text-xs mt-1 ${
-                                  message.sender === 'user' ? 'text-white/70' : 'text-slate-500'
-                                }`}>
-                                  <Clock className="h-3 w-3 inline mr-1" />
-                                  {message.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
-                                </p>
-                              </div>
-                            </div>
-                          </div>
-                        </motion.div>
-                      );
-                    })}
-                  </AnimatePresence>
-                  <div ref={scrollRef} />
-                </div>
-              </ScrollArea>
-            </CardContent>
+            {/* Messages Area */}
+            <ChatMessagesArea>
+              <AnimatePresence>
+                {messages.map((message) => {
+                  // Render status update messages differently
+                  if (message.isStatusUpdate && message.statusData && statusServiceType) {
+                    return (
+                      <StatusUpdateMessage
+                        key={message.id}
+                        type={message.statusData.type}
+                        serviceType={statusServiceType}
+                        stepIndex={message.statusData.stepIndex}
+                        previousStepIndex={message.statusData.previousStepIndex}
+                        documentName={message.statusData.documentName}
+                        timestamp={message.timestamp}
+                        isNew={Date.now() - message.timestamp.getTime() < 5000}
+                      />
+                    );
+                  }
+                  
+                  return (
+                    <PremiumMessageBubble
+                      key={message.id}
+                      content={message.content}
+                      sender={message.sender}
+                      timestamp={message.timestamp}
+                      avatar={message.sender === 'specialist' ? <SpecialistAvatar /> : undefined}
+                      senderName={message.sender === 'specialist' ? 'César' : undefined}
+                      attachmentUrl={message.attachmentUrl}
+                      attachmentName={message.attachmentName}
+                      isNew={Date.now() - message.timestamp.getTime() < 3000}
+                    />
+                  );
+                })}
+              </AnimatePresence>
+              <div ref={scrollRef} />
+            </ChatMessagesArea>
             
-            <div className="shrink-0 border-t p-4 bg-white rounded-b-lg">
-              <div className="flex items-end gap-2">
-                <label className="cursor-pointer">
+            {/* Input Area */}
+            <ChatInputArea>
+              <div className="flex items-end gap-3">
+                <label className="cursor-pointer shrink-0">
                   <input 
                     type="file" 
                     className="hidden" 
@@ -435,14 +384,14 @@ export default function ChatCesar() {
                     }
                   }}
                   placeholder="Digite sua mensagem..."
-                  className="flex-1 min-h-[40px] max-h-32 resize-none"
+                  className="flex-1 min-h-[42px] max-h-32 resize-none rounded-xl border-slate-200 focus:border-violet-300 focus:ring-violet-200"
                   rows={1}
                 />
                 
                 <Button 
                   onClick={handleSendMessage} 
                   disabled={!newMessage.trim() || isSending}
-                  className="h-10 w-10 rounded-full"
+                  className="h-10 w-10 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-700 hover:to-indigo-700 shrink-0"
                 >
                   {isSending ? (
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -452,12 +401,12 @@ export default function ChatCesar() {
                 </Button>
               </div>
               
-              <p className="text-xs text-slate-500 mt-2 text-center">
-                💬 Chat conectado • Atendimento humano garantido
+              <p className="text-xs text-slate-500 mt-2.5 text-center">
+                📊 Chat conectado • Especialista em BI & Contabilidade
               </p>
-            </div>
-          </Card>
-        </div>
+            </ChatInputArea>
+          </ChatContainer>
+        </PremiumChatLayout>
       </main>
     </div>
   );

@@ -1,6 +1,40 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { ServiceType, SERVICE_STEPS } from '@/components/chat/ServiceStatusCard';
+
+// Define types locally to avoid circular dependencies
+export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade';
+
+interface ServiceStep {
+  id: string;
+  label: string;
+}
+
+const SERVICE_STEPS: Record<ServiceType, ServiceStep[]> = {
+  'limpanome': [
+    { id: 'received', label: 'Solicitação recebida' },
+    { id: 'documents', label: 'Documentos analisados' },
+    { id: 'pending', label: 'Pendência identificada' },
+    { id: 'negotiation', label: 'Negociação em andamento' },
+    { id: 'deal', label: 'Acordo fechado' },
+    { id: 'completed', label: 'Limpa Nome concluído' },
+  ],
+  'analise-fiscal': [
+    { id: 'received', label: 'Solicitação recebida' },
+    { id: 'collecting', label: 'Coleta de documentos' },
+    { id: 'analysis', label: 'Análise técnica' },
+    { id: 'opportunities', label: 'Oportunidades encontradas' },
+    { id: 'adjustments', label: 'Ajustes / regularização' },
+    { id: 'completed', label: 'Análise concluída' },
+  ],
+  'bi-contabilidade': [
+    { id: 'received', label: 'Solicitação recebida' },
+    { id: 'collecting', label: 'Coleta de documentos' },
+    { id: 'ai_processing', label: 'Processamento com IA' },
+    { id: 'validation', label: 'Validação humana' },
+    { id: 'insights', label: 'Insights prontos' },
+    { id: 'completed', label: 'Relatório entregue' },
+  ],
+};
 
 interface ServiceStatusData {
   currentStepIndex: number;
