@@ -2310,6 +2310,45 @@ export type Database = {
         }
         Relationships: []
       }
+      user_welcome_chats: {
+        Row: {
+          chat_type: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message_content: string
+          message_date: string
+          read_at: string | null
+          service_context: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chat_type: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_content: string
+          message_date?: string
+          read_at?: string | null
+          service_context?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chat_type?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message_content?: string
+          message_date?: string
+          read_at?: string | null
+          service_context?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       withdrawal_requests: {
         Row: {
           amount_cents: number

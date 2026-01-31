@@ -38,6 +38,7 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { useAutoWelcomeMessages } from '@/hooks/useAutoWelcomeMessages';
 
 interface SidebarItem {
   icon: React.ElementType;
@@ -45,6 +46,7 @@ interface SidebarItem {
   tabId: string;
   isLive?: boolean;
   badge?: string | number;
+  chatBadge?: 'guilherme' | 'cesar';
 }
 
 interface SidebarGroup {
@@ -98,7 +100,7 @@ const adminGroups: SidebarGroup[] = [
     isPerson: true,
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
-      { icon: MessageCircle, label: 'Chat', tabId: 'guilherme-chat', isLive: true },
+      { icon: MessageCircle, label: 'Chat', tabId: 'guilherme-chat', isLive: true, chatBadge: 'guilherme' },
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
     ],
@@ -111,7 +113,7 @@ const adminGroups: SidebarGroup[] = [
     isPerson: true,
     personGradient: 'from-violet-500 to-indigo-600',
     items: [
-      { icon: MessageCircle, label: 'Chat', tabId: 'cesar-chat', isLive: true },
+      { icon: MessageCircle, label: 'Chat', tabId: 'cesar-chat', isLive: true, chatBadge: 'cesar' },
       { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
     ],
   },
@@ -182,13 +184,25 @@ const adminGroups: SidebarGroup[] = [
 // Estrutura para Autônomo (mesmo design, itens diferentes)
 const autonomoGroups: SidebarGroup[] = [
   {
-    id: 'central',
-    label: 'Central',
+    id: 'atendimento',
+    label: 'Atendimento',
     icon: MessageSquare,
     defaultOpen: true,
+    isPerson: true,
+    personGradient: 'from-emerald-500 to-teal-600',
     items: [
-      { icon: MessageSquare, label: 'Chat IA', tabId: 'ai-chat', isLive: true },
+      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
+      { icon: MessageCircle, label: 'Chat César', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
+    ],
+  },
+  {
+    id: 'central',
+    label: 'Central',
+    icon: LayoutDashboard,
+    defaultOpen: true,
+    items: [
       { icon: LayoutDashboard, label: 'Dashboard', tabId: 'dashboard' },
+      { icon: MessageSquare, label: 'Chat IA', tabId: 'ai-chat' },
     ],
   },
   {
@@ -270,13 +284,25 @@ const contadorGroups: SidebarGroup[] = [
 // Estrutura para Empresa (mesmo design)
 const empresaGroups: SidebarGroup[] = [
   {
+    id: 'atendimento',
+    label: 'Atendimento',
+    icon: MessageSquare,
+    defaultOpen: true,
+    isPerson: true,
+    personGradient: 'from-emerald-500 to-teal-600',
+    items: [
+      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
+      { icon: MessageCircle, label: 'Chat César', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
+    ],
+  },
+  {
     id: 'central',
     label: 'Central',
     icon: LayoutDashboard,
     defaultOpen: true,
     items: [
       { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-      { icon: MessageCircle, label: 'Chat IA', tabId: 'ai-chat', isLive: true },
+      { icon: MessageCircle, label: 'Chat IA', tabId: 'ai-chat' },
     ],
   },
   {
@@ -359,6 +385,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
+  const { unreadGuilherme, unreadCesar, markAsRead, hasBIAccess } = useAutoWelcomeMessages();
   
   const getGroups = () => {
     switch (variant) {
@@ -391,24 +418,37 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
     navigate('/');
   };
 
-  const handleItemClick = (tabId: string) => {
+  const handleItemClick = (tabId: string, chatBadge?: 'guilherme' | 'cesar') => {
     if (tabId === 'roles') {
       navigate('/admin/roles');
       return;
     }
+    
+    // Mark chat as read when clicked
+    if (chatBadge) {
+      markAsRead(chatBadge);
+    }
+    
     if (onTabChange) {
       onTabChange(tabId);
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 
+  // Get unread count for a chat badge type
+  const getUnreadCount = (chatBadge?: 'guilherme' | 'cesar') => {
+    if (!chatBadge) return 0;
+    return chatBadge === 'guilherme' ? unreadGuilherme : unreadCesar;
+  };
+
   const SidebarLink = ({ item }: { item: SidebarItem }) => {
     const Icon = item.icon;
     const active = activeTab === item.tabId;
+    const unreadCount = getUnreadCount(item.chatBadge);
 
     const content = (
       <button
-        onClick={() => handleItemClick(item.tabId)}
+        onClick={() => handleItemClick(item.tabId, item.chatBadge)}
         className={cn(
           'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group relative',
           'touch-manipulation active:scale-[0.98]',
@@ -417,14 +457,26 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
             : 'text-slate-400 hover:bg-slate-800/50 hover:text-white'
         )}
       >
-        <Icon className={cn(
-          'h-4 w-4 shrink-0 transition-colors',
-          active ? 'text-violet-400' : 'text-slate-500 group-hover:text-slate-300'
-        )} />
+        <div className="relative">
+          <Icon className={cn(
+            'h-4 w-4 shrink-0 transition-colors',
+            active ? 'text-violet-400' : 'text-slate-500 group-hover:text-slate-300'
+          )} />
+          {/* Unread badge on icon */}
+          {unreadCount > 0 && collapsed && (
+            <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-slate-950" />
+          )}
+        </div>
         {!collapsed && (
           <>
             <span className="flex-1 text-left text-sm font-medium">{item.label}</span>
-            {item.isLive && (
+            {/* Unread count badge */}
+            {unreadCount > 0 && (
+              <span className="bg-red-500 text-white text-xs font-bold min-w-[1.25rem] h-5 px-1.5 rounded-full flex items-center justify-center animate-pulse">
+                {unreadCount}
+              </span>
+            )}
+            {item.isLive && !unreadCount && (
               <span className="relative flex h-2 w-2">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
@@ -449,7 +501,12 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
           <TooltipTrigger asChild>{content}</TooltipTrigger>
           <TooltipContent side="right" className="text-xs px-3 py-2 flex items-center gap-2 bg-slate-800 border-slate-700 text-white">
             {item.label}
-            {item.isLive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
+            {unreadCount > 0 && (
+              <span className="bg-red-500 text-white text-xs font-bold h-4 min-w-4 px-1 rounded-full flex items-center justify-center">
+                {unreadCount}
+              </span>
+            )}
+            {item.isLive && !unreadCount && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
           </TooltipContent>
         </Tooltip>
       );
