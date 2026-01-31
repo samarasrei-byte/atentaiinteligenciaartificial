@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { cn } from '@/lib/utils';
@@ -48,6 +48,7 @@ import { HelpTooltip } from '@/components/ui/help-tooltip';
 import { dashboardTourSteps, featureHelp } from '@/components/tour/tourSteps';
 import { DashboardSkeleton } from '@/components/ui/skeleton-loaders';
 import { PastDueAlert } from '@/components/subscription/PastDueAlert';
+import { useAutoOpenChat } from '@/components/chat/AutoOpenChatWrapper';
 
 interface Company {
   id: string;
@@ -275,6 +276,9 @@ const EmpresaPanel = () => {
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
   
   useScheduleNotifications();
+  
+  // Auto-open chat if user has active request
+  useAutoOpenChat();
   
   // Guided Tour
   const tour = useGuidedTour({

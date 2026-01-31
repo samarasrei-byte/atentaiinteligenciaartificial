@@ -396,7 +396,7 @@ export default function LimpaNomeOnboarding() {
                       </div>
 
                       <div className="space-y-2">
-                        <Label htmlFor="whatsapp">WhatsApp</Label>
+                        <Label htmlFor="whatsapp">Telefone (Chat)</Label>
                         <div className="relative">
                           <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10" />
                           <MaskedInput
@@ -416,7 +416,7 @@ export default function LimpaNomeOnboarding() {
                     </div>
 
                     <div className="flex gap-4 justify-center pt-4">
-                      <Button 
+                      <Button
                         onClick={prevStep}
                         variant="outline"
                         size="lg"
