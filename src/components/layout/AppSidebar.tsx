@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  Activity,
   Users,
   Home,
-  Target,
   FileText,
   Shield,
   LogOut,
@@ -19,7 +17,6 @@ import {
   BarChart3,
   Headphones,
   UserCheck,
-  PieChart,
   Wallet,
   Star,
   Bot,
@@ -33,6 +30,11 @@ import {
   Scale,
   Building2,
   ScrollText,
+  Brain,
+  ShoppingBag,
+  Bell,
+  Target,
+  MessageCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -48,6 +50,13 @@ interface SidebarItem {
   tabId: string;
   badge?: string;
   badgeColor?: string;
+  isLive?: boolean;
+}
+
+interface SidebarGroup {
+  id: string;
+  label: string;
+  items: SidebarItem[];
 }
 
 interface AppSidebarProps {
@@ -58,111 +67,189 @@ interface AppSidebarProps {
   onTabChange?: (tab: string) => void;
 }
 
-const empresaItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-  { icon: Zap, label: 'Piloto Automático', tabId: 'autopilot', badge: 'NEW', badgeColor: 'text-amber-400' },
-  { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: '●', badgeColor: 'text-emerald-400' },
-  { icon: BarChart3, label: 'Métricas', tabId: 'metrics', badge: 'PRO', badgeColor: 'text-primary' },
-  { icon: Target, label: 'PF ou PJ?', tabId: 'pf-pj-decision' },
-  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
-  { icon: MessagesSquare, label: 'Falar com Contador', tabId: 'chat-contador' },
-  { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
-  { icon: BookOpen, label: 'Glossário', tabId: 'glossary' },
-  { icon: History, label: 'Histórico', tabId: 'history' },
-  { icon: User, label: 'Perfil', tabId: 'profile' },
-  { icon: Headphones, label: 'Suporte', tabId: 'support' },
+// EMPRESA - BI centrado
+const empresaGroups: SidebarGroup[] = [
+  {
+    id: 'bi',
+    label: 'BI Contabilidade',
+    items: [
+      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+      { icon: TrendingUp, label: 'Economize', tabId: 'economia' },
+    ],
+  },
+  {
+    id: 'comunicacao',
+    label: 'Comunicação',
+    items: [
+      { icon: MessageCircle, label: 'Chat Especialista', tabId: 'chat-contador', isLive: true },
+      { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    items: [
+      { icon: ShoppingBag, label: 'Serviços', tabId: 'servicos' },
+      { icon: Star, label: 'Upgrade', tabId: 'upgrade' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    items: [
+      { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
+      { icon: User, label: 'Perfil', tabId: 'profile' },
+      { icon: Headphones, label: 'Suporte', tabId: 'support' },
+    ],
+  },
 ];
 
-const userItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
-  { icon: Zap, label: 'Piloto Automático', tabId: 'autopilot', badge: 'NEW', badgeColor: 'text-amber-400' },
-  { icon: TrendingUp, label: 'Economize', tabId: 'economia', badge: '●', badgeColor: 'text-emerald-400' },
-  { icon: BarChart3, label: 'Métricas', tabId: 'metrics', badge: 'PRO', badgeColor: 'text-primary' },
-  { icon: Target, label: 'PF ou PJ?', tabId: 'pf-pj-decision' },
-  { icon: Bot, label: 'Agente IA', tabId: 'ai-chat', badge: 'PRO', badgeColor: 'text-amber-400' },
-  { icon: MessagesSquare, label: 'Falar com Contador', tabId: 'chat-contador' },
-  { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
-  { icon: BookOpen, label: 'Glossário', tabId: 'glossary' },
-  { icon: History, label: 'Histórico', tabId: 'history' },
-  { icon: User, label: 'Perfil', tabId: 'profile' },
-  { icon: Headphones, label: 'Suporte', tabId: 'support' },
+// AUTÔNOMO - BI centrado
+const autonomoGroups: SidebarGroup[] = [
+  {
+    id: 'bi',
+    label: 'BI Contabilidade',
+    items: [
+      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'dashboard' },
+      { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
+      { icon: Target, label: 'Metas', tabId: 'metas' },
+    ],
+  },
+  {
+    id: 'comunicacao',
+    label: 'Comunicação',
+    items: [
+      { icon: MessageCircle, label: 'Chat Especialista', tabId: 'chat-contador', isLive: true },
+      { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
+      { icon: Bell, label: 'Alertas', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    items: [
+      { icon: ShoppingBag, label: 'Serviços', tabId: 'servicos' },
+      { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    items: [
+      { icon: History, label: 'Histórico', tabId: 'history' },
+      { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
+      { icon: User, label: 'Meu Perfil', tabId: 'profile' },
+      { icon: Headphones, label: 'Suporte', tabId: 'support' },
+    ],
+  },
 ];
 
-const adminItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-  { icon: Activity, label: 'Tempo Real', tabId: 'realtime', badge: 'LIVE', badgeColor: 'text-emerald-400' },
-  { icon: Sparkles, label: 'Métricas SaaS', tabId: 'saas-metrics', badge: 'CEO', badgeColor: 'text-amber-400' },
-  { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast', badge: 'NEW', badgeColor: 'text-success' },
-  { icon: TrendingUp, label: 'Churn & Retenção', tabId: 'churn', badge: 'NEW', badgeColor: 'text-destructive' },
-  { icon: Zap, label: 'Notificações Churn', tabId: 'churn-notifications', badge: 'AUTO', badgeColor: 'text-warning' },
-  { icon: Target, label: 'Análise Cohort', tabId: 'cohort', badge: 'NEW', badgeColor: 'text-primary' },
-  { icon: MessagesSquare, label: 'Mensagens Massa', tabId: 'mass-messages', badge: 'NEW', badgeColor: 'text-amber-400' },
-  { icon: Building2, label: 'Parceiros', tabId: 'partners', badge: 'NEW', badgeColor: 'text-success' },
-  { icon: Users, label: 'Afiliados', tabId: 'affiliates', badge: 'NEW', badgeColor: 'text-purple-400' },
-  { icon: Star, label: 'Cupons Afiliados', tabId: 'affiliate-coupons', badge: 'NEW', badgeColor: 'text-amber-400' },
-  { icon: Users, label: 'Usuários', tabId: 'users' },
-  { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
-  { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-  { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
-  { icon: Star, label: 'Cashback', tabId: 'cashback' },
-  { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
-  { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-  { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
-  { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
-  { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
-  { icon: Building2, label: 'Painel Empresa', tabId: 'panel-empresa', badge: 'VIEW', badgeColor: 'text-purple-400' },
-  { icon: User, label: 'Painel Autônomo', tabId: 'panel-autonomo', badge: 'VIEW', badgeColor: 'text-emerald-400' },
-  { icon: Scale, label: 'Painel Contador', tabId: 'panel-contador', badge: 'VIEW', badgeColor: 'text-blue-400' },
-  { icon: Shield, label: 'Logs Auditoria', tabId: 'audit-logs', badge: 'SEC', badgeColor: 'text-red-400' },
-  { icon: Headphones, label: 'Suporte', tabId: 'support' },
-  { icon: Settings, label: 'Config', tabId: 'settings' },
+// CONTADOR - SEM Limpa Nome e Fiscal no sidebar (vão pro Marketplace)
+const contadorGroups: SidebarGroup[] = [
+  {
+    id: 'bi',
+    label: 'BI Contabilidade',
+    items: [
+      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
+      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+      { icon: BarChart3, label: 'Métricas', tabId: 'stats' },
+    ],
+  },
+  {
+    id: 'comunicacao',
+    label: 'Comunicação',
+    items: [
+      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal' },
+      { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening' },
+      { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
+      { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
+    ],
+  },
+  {
+    id: 'clientes',
+    label: 'Clientes',
+    items: [
+      { icon: UserCheck, label: 'Meus Clientes', tabId: 'clients' },
+      { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
+    ],
+  },
+  {
+    id: 'financeiro',
+    label: 'Financeiro',
+    items: [
+      { icon: DollarSign, label: 'Ganhos', tabId: 'earnings' },
+      { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
+      { icon: Star, label: 'Avaliações', tabId: 'reviews' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    items: [
+      { icon: User, label: 'Meu Perfil', tabId: 'profile' },
+    ],
+  },
 ];
 
-const contadorItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-  { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome', badge: 'LIVE', badgeColor: 'text-emerald-400' },
-  { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal', badge: 'LIVE', badgeColor: 'text-violet-400' },
-  { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening', badge: 'NEW', badgeColor: 'text-amber-400' },
-  { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
-  { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
-  { icon: MessagesSquare, label: 'Chat Clientes', tabId: 'chat' },
-  { icon: BarChart3, label: 'Stats', tabId: 'stats' },
-  { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
-  { icon: UserCheck, label: 'Clientes', tabId: 'clients' },
-  { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-  { icon: DollarSign, label: 'Ganhos', tabId: 'earnings' },
-  { icon: Star, label: 'Avaliações', tabId: 'reviews' },
-  { icon: User, label: 'Perfil', tabId: 'profile' },
+// PARTNER
+const partnerGroups: SidebarGroup[] = [
+  {
+    id: 'bi',
+    label: 'BI Contabilidade',
+    items: [
+      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
+      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+      { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
+    ],
+  },
+  {
+    id: 'comunicacao',
+    label: 'Comunicação',
+    items: [
+      { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+    ],
+  },
+  {
+    id: 'marketplace',
+    label: 'Marketplace',
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
+    ],
+  },
+  {
+    id: 'financeiro',
+    label: 'Financeiro',
+    items: [
+      { icon: DollarSign, label: 'Comissões', tabId: 'commissions' },
+      { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
+    ],
+  },
+  {
+    id: 'conta',
+    label: 'Conta',
+    items: [
+      { icon: User, label: 'Meu Perfil', tabId: 'profile' },
+      { icon: Settings, label: 'Configurações', tabId: 'settings' },
+    ],
+  },
 ];
 
-const autonomoItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Início', tabId: 'dashboard' },
-  { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'NEW', badgeColor: 'text-emerald-400' },
-  { icon: BarChart3, label: 'Dashboard Financeiro', tabId: 'financeiro' },
-  { icon: Target, label: 'Metas Financeiras', tabId: 'metas' },
-  { icon: Bot, label: 'Simulador IA', tabId: 'simulator', badge: 'PRO', badgeColor: 'text-amber-400' },
-  { icon: History, label: 'Histórico', tabId: 'history' },
-  { icon: MessagesSquare, label: 'Chat IA', tabId: 'ai-chat', badge: 'IA', badgeColor: 'text-primary' },
-  { icon: Headphones, label: 'Chat Contador', tabId: 'chat-contador' },
-  { icon: Users, label: 'Contadores', tabId: 'contadores' },
-  { icon: BookOpen, label: 'Glossário', tabId: 'glossary' },
-  { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
-  { icon: Headphones, label: 'Suporte', tabId: 'support' },
-  { icon: User, label: 'Meu Perfil', tabId: 'profile' },
-];
-
-const partnerItems: SidebarItem[] = [
-  { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-  { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome', badge: 'LIVE', badgeColor: 'text-emerald-400' },
-  { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal', badge: 'LIVE', badgeColor: 'text-primary' },
-  { icon: Activity, label: 'Notificações', tabId: 'notifications', badge: '●', badgeColor: 'text-amber-400' },
-  { icon: MessagesSquare, label: 'Chat Clientes', tabId: 'chat' },
-  { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
-  { icon: DollarSign, label: 'Comissões', tabId: 'commissions' },
-  { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-  { icon: User, label: 'Meu Perfil', tabId: 'profile' },
-  { icon: Settings, label: 'Configurações', tabId: 'settings' },
-];
+// USER padrão
+const userGroups: SidebarGroup[] = empresaGroups;
 
 const AppSidebar: React.FC<AppSidebarProps> = ({ 
   collapsed, 
@@ -172,19 +259,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   onTabChange
 }) => {
   const navigate = useNavigate();
-  const { user, profile, signOut, hasRole } = useAuth();
+  const { user, profile, signOut } = useAuth();
 
-  const items = variant === 'admin' 
-    ? adminItems 
-    : variant === 'contador' 
-      ? contadorItems 
-      : variant === 'autonomo' 
-        ? autonomoItems 
-        : variant === 'empresa'
-          ? empresaItems
-          : variant === 'partner'
-            ? partnerItems
-            : userItems;
+  const groups = variant === 'contador' 
+    ? contadorGroups 
+    : variant === 'autonomo' 
+      ? autonomoGroups 
+      : variant === 'empresa'
+        ? empresaGroups
+        : variant === 'partner'
+          ? partnerGroups
+          : userGroups;
 
   const handleSignOut = async () => {
     await signOut();
@@ -194,8 +279,17 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const handleItemClick = (tabId: string) => {
     if (onTabChange) {
       onTabChange(tabId);
-      // Scroll to top when changing tabs for better UX
       window.scrollTo({ top: 0, behavior: "instant" });
+    }
+  };
+
+  const getVariantLabel = () => {
+    switch (variant) {
+      case 'contador': return 'Contador';
+      case 'autonomo': return 'Autônomo';
+      case 'empresa': return 'Empresa';
+      case 'partner': return 'Parceiro';
+      default: return 'Usuário';
     }
   };
 
@@ -207,28 +301,30 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          // Aumentado touch target para mobile: min-h-12 (48px) e padding maior
-          'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all duration-200 group relative',
+          'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-150 group relative',
           'touch-manipulation active:scale-[0.98]',
           active
-            ? 'bg-white/10 text-white'
-            : 'text-white/60 hover:bg-white/5 hover:text-white active:bg-white/10'
+            ? 'bg-primary/10 text-primary'
+            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
         )}
       >
         <Icon className={cn(
-          'h-5 w-5 shrink-0 transition-colors',
-          active ? 'text-primary' : 'text-white/60 group-hover:text-white'
+          'h-4 w-4 shrink-0 transition-colors',
+          active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
         )} />
         {!collapsed && (
-          <span className="font-medium text-sm flex-1 text-left">{item.label}</span>
-        )}
-        {!collapsed && item.badge && (
-          <span className={cn('text-[10px] font-bold', item.badgeColor || 'text-primary')}>
-            {item.badge}
-          </span>
+          <>
+            <span className="font-medium text-sm flex-1 text-left truncate">{item.label}</span>
+            {item.isLive && (
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+              </span>
+            )}
+          </>
         )}
         {active && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r-full" />
         )}
       </button>
     );
@@ -237,8 +333,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs px-3 py-1.5">
-            {item.label}
+          <TooltipContent side="right" className="text-xs px-3 py-1.5">
+            <div className="flex items-center gap-2">
+              {item.label}
+              {item.isLive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
+            </div>
           </TooltipContent>
         </Tooltip>
       );
@@ -252,52 +351,64 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-slate-900 safe-area-top overflow-hidden',
-          collapsed ? 'w-16' : 'w-64'
+          'bg-card border-r border-border safe-area-top overflow-hidden',
+          collapsed ? 'w-14' : 'w-60'
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-white/5">
-          <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
-            <div className="h-10 w-10 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <Sparkles className="h-5 w-5 text-white" />
+        <div className="flex items-center justify-between px-3 py-3 border-b border-border">
+          <div className={cn('flex items-center gap-2', collapsed && 'justify-center w-full')}>
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-sm">
+              <Brain className="h-4 w-4 text-primary-foreground" />
             </div>
             {!collapsed && (
-              <span className="text-lg font-bold text-white">AtentAI</span>
+              <div>
+                <span className="text-sm font-bold text-foreground tracking-tight">AtentAI</span>
+                <span className="block text-[9px] text-primary font-medium -mt-0.5">{getVariantLabel()}</span>
+              </div>
             )}
           </div>
         </div>
 
-        {/* Toggle Button - Hidden on mobile for better touch */}
+        {/* Toggle Button */}
         <Button
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-7 h-8 w-8 rounded-full bg-slate-800 border border-white/10 text-white/60 hover:text-white hover:bg-slate-700 hidden lg:flex"
+          className="absolute -right-3 top-6 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
 
-        {/* Navigation - Improved scrolling for mobile */}
-        <nav className="flex-1 px-2 py-3 space-y-0.5 overflow-y-auto overscroll-contain">
-          {items.map((item) => (
-            <SidebarLink key={item.tabId} item={item} />
+        {/* Navigation */}
+        <nav className="flex-1 px-2 py-3 space-y-3 overflow-y-auto overscroll-contain">
+          {groups.map((group) => (
+            <div key={group.id}>
+              {!collapsed && (
+                <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                  {group.label}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {group.items.map((item) => (
+                  <SidebarLink key={item.tabId} item={item} />
+                ))}
+              </div>
+            </div>
           ))}
         </nav>
 
-        {/* No role switchers - each role sees only their panel */}
-
         {/* User & Logout */}
-        <div className="px-2 py-3 border-t border-white/5 safe-area-bottom">
+        <div className="px-2 py-2 border-t border-border">
           {!collapsed && (
-            <div className="flex items-center gap-3 px-4 py-2 mb-2">
-              <div className="h-10 w-10 rounded-full bg-gradient-to-br from-primary/80 to-primary/40 flex items-center justify-center">
-                <span className="text-sm font-bold text-white">
+            <div className="flex items-center gap-2 px-3 py-2 mb-1">
+              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xs font-semibold text-primary">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-white truncate">
+                <p className="text-xs font-medium text-foreground truncate">
                   {profile?.full_name?.split(' ')[0] || 'Usuário'}
                 </p>
               </div>
@@ -308,18 +419,18 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-4 py-3 min-h-12 rounded-xl transition-all',
-                  'text-white/40 hover:bg-red-500/10 hover:text-red-400 active:bg-red-500/20',
+                  'w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all',
+                  'text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
                   'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
                 )}
               >
-                <LogOut className="h-5 w-5" />
-                {!collapsed && <span className="text-sm">Sair</span>}
+                <LogOut className="h-4 w-4" />
+                {!collapsed && <span className="text-xs">Sair</span>}
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-slate-800 text-white border-slate-700 text-xs">
+              <TooltipContent side="right" className="text-xs">
                 Sair
               </TooltipContent>
             )}

@@ -5,7 +5,6 @@ import { cn } from '@/lib/utils';
 import {
   Activity,
   Users,
-  Target,
   Shield,
   LogOut,
   ChevronLeft,
@@ -13,7 +12,6 @@ import {
   ChevronDown,
   LayoutDashboard,
   TrendingUp,
-  Calendar,
   DollarSign,
   BarChart3,
   Headphones,
@@ -31,8 +29,10 @@ import {
   FileText,
   Bell,
   CreditCard,
-  Briefcase,
   Brain,
+  ShoppingBag,
+  Target,
+  Calendar,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -52,6 +52,7 @@ interface SidebarItem {
   label: string;
   tabId: string;
   isLive?: boolean;
+  badge?: string;
 }
 
 interface SidebarGroup {
@@ -69,101 +70,86 @@ interface AdminSidebarProps {
   onTabChange?: (tab: string) => void;
 }
 
-// Estrutura hierárquica organizada por modelo mental do administrador
+// NOVA HIERARQUIA ZANINE: BI → Comunicação → Marketplace → Sistema
 const sidebarGroups: SidebarGroup[] = [
+  // 1️⃣ BI CONTABILIDADE - Produto principal, âncora do sistema
   {
-    id: 'central',
-    label: 'Central IA',
-    icon: Sparkles,
+    id: 'bi-contabilidade',
+    label: 'BI Contabilidade',
+    icon: Brain,
     defaultOpen: true,
     items: [
-      { icon: MessageCircle, label: 'Chat Inteligente', tabId: 'smart-chat', isLive: true },
-      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-      { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
-    ],
-  },
-  {
-    id: 'bi-accounting',
-    label: 'BI + Contabilidade',
-    icon: Brain,
-    items: [
       { icon: Brain, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
-    ],
-  },
-  {
-    id: 'analytics',
-    label: 'Analytics',
-    icon: BarChart3,
-    items: [
-      { icon: Sparkles, label: 'Métricas SaaS', tabId: 'saas-metrics' },
-      { icon: DollarSign, label: 'Previsão de Receita', tabId: 'revenue-forecast' },
+      { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
+      { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
+      { icon: BarChart3, label: 'Métricas SaaS', tabId: 'saas-metrics' },
+      { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast' },
       { icon: TrendingUp, label: 'Churn & Retenção', tabId: 'churn' },
-      { icon: Target, label: 'Análise de Cohort', tabId: 'cohort' },
+      { icon: Target, label: 'Análise Cohort', tabId: 'cohort' },
     ],
   },
+  // 2️⃣ COMUNICAÇÃO - Central de atendimento (Guilherme) + Chat BI (César) + Notificações + Alertas
   {
-    id: 'operacao',
-    label: 'Operação',
-    icon: Briefcase,
+    id: 'comunicacao',
+    label: 'Comunicação',
+    icon: MessagesSquare,
+    defaultOpen: true,
     items: [
-      { icon: Users, label: 'Usuários', tabId: 'users' },
-      { icon: Building2, label: 'Empresas', tabId: 'empresas' },
-      { icon: User, label: 'Autônomos', tabId: 'autonomos' },
-      { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
+      { icon: MessageCircle, label: 'Central de Atendimento', tabId: 'client-chat', isLive: true, badge: 'Guilherme' },
+      { icon: Brain, label: 'Chat BI Contabilidade', tabId: 'smart-chat', isLive: true, badge: 'César' },
+      { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
+      { icon: Sparkles, label: 'Alertas de KPI', tabId: 'kpi-alerts', isLive: true },
+      { icon: MessagesSquare, label: 'Mensagens em Massa', tabId: 'mass-messages' },
+      { icon: Headphones, label: 'Suporte', tabId: 'support' },
     ],
   },
+  // 3️⃣ MARKETPLACE - Limpa Nome, Análise Fiscal, outros serviços
   {
-    id: 'crescimento',
-    label: 'Parceiros & Crescimento',
-    icon: TrendingUp,
-    items: [
-      { icon: Building2, label: 'Parceiros', tabId: 'partners' },
-      { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
-      { icon: Star, label: 'Cupons de Afiliados', tabId: 'affiliate-coupons' },
-    ],
-  },
-  {
-    id: 'produtos',
-    label: 'Produtos & Serviços',
-    icon: Scale,
+    id: 'marketplace',
+    label: 'Marketplace',
+    icon: ShoppingBag,
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-      { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
       { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
       { icon: Star, label: 'Cashback', tabId: 'cashback' },
     ],
   },
+  // 4️⃣ USUÁRIOS & PARCEIROS
+  {
+    id: 'usuarios',
+    label: 'Usuários & Parceiros',
+    icon: Users,
+    items: [
+      { icon: Users, label: 'Todos os Usuários', tabId: 'users' },
+      { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
+      { icon: Building2, label: 'Parceiros', tabId: 'partners' },
+      { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
+      { icon: Star, label: 'Cupons Afiliados', tabId: 'affiliate-coupons' },
+    ],
+  },
+  // 5️⃣ FINANCEIRO
   {
     id: 'financeiro',
     label: 'Financeiro',
     icon: Wallet,
     items: [
-      { icon: DollarSign, label: 'Divisão por Sócio', tabId: 'partner-split' },
+      { icon: DollarSign, label: 'Divisão Sócios', tabId: 'partner-split' },
       { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
       { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-      { icon: CreditCard, label: 'Receitas & Pagamentos', tabId: 'metrics' },
+      { icon: CreditCard, label: 'Pagamentos', tabId: 'metrics' },
     ],
   },
-  {
-    id: 'comunicacao',
-    label: 'Comunicação',
-    icon: MessagesSquare,
-    items: [
-      { icon: MessageCircle, label: 'Chat com Clientes', tabId: 'client-chat', isLive: true },
-      { icon: MessagesSquare, label: 'Mensagens em Massa', tabId: 'mass-messages' },
-      { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
-      { icon: Headphones, label: 'Suporte', tabId: 'support' },
-    ],
-  },
+  // 6️⃣ SISTEMA & ADMIN
   {
     id: 'sistema',
-    label: 'Sistema',
+    label: 'Configurações',
     icon: Settings,
     items: [
       { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
-      { icon: FileText, label: 'Página de Auditoria', tabId: 'audit-page' },
-      { icon: FileText, label: 'Logs de Auditoria', tabId: 'audit-logs' },
-      { icon: Settings, label: 'Configurações', tabId: 'settings' },
+      { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
+      { icon: FileText, label: 'Logs', tabId: 'audit-logs' },
+      { icon: Settings, label: 'Config', tabId: 'settings' },
     ],
   },
 ];
@@ -171,17 +157,15 @@ const sidebarGroups: SidebarGroup[] = [
 const AdminSidebar: React.FC<AdminSidebarProps> = ({
   collapsed,
   onToggle,
-  activeTab = 'overview',
+  activeTab = 'bi-accounting',
   onTabChange,
 }) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
   
-  // Estado para grupos abertos
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>(() => {
     const initial: Record<string, boolean> = {};
     sidebarGroups.forEach(group => {
-      // Abre o grupo que contém o item ativo ou grupos marcados como defaultOpen
       const hasActiveItem = group.items.some(item => item.tabId === activeTab);
       initial[group.id] = hasActiveItem || group.defaultOpen || false;
     });
@@ -216,7 +200,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       <button
         onClick={() => handleItemClick(item.tabId)}
         className={cn(
-          'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 group relative text-sm',
+          'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-150 group relative text-sm',
           'touch-manipulation active:scale-[0.98]',
           active
             ? 'bg-primary/10 text-primary'
@@ -229,17 +213,22 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         )} />
         {!collapsed && (
           <>
-            <span className="flex-1 text-left font-medium">{item.label}</span>
+            <span className="flex-1 text-left font-medium truncate">{item.label}</span>
             {item.isLive && (
-              <span className="relative flex h-2 w-2">
+              <span className="relative flex h-1.5 w-1.5">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
+              </span>
+            )}
+            {item.badge && (
+              <span className="text-[9px] font-medium text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded">
+                {item.badge}
               </span>
             )}
           </>
         )}
         {active && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-5 bg-primary rounded-r-full" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r-full" />
         )}
       </button>
     );
@@ -248,12 +237,10 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
       return (
         <Tooltip delayDuration={0}>
           <TooltipTrigger asChild>{content}</TooltipTrigger>
-          <TooltipContent side="right" className="bg-popover text-popover-foreground border text-xs px-3 py-1.5">
+          <TooltipContent side="right" className="text-xs px-3 py-1.5">
             <div className="flex items-center gap-2">
               {item.label}
-              {item.isLive && (
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              )}
+              {item.isLive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
             </div>
           </TooltipContent>
         </Tooltip>
@@ -269,10 +256,9 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
     const hasActiveItem = group.items.some(item => item.tabId === activeTab);
 
     if (collapsed) {
-      // No modo colapsado, mostrar apenas os ícones dos items
       return (
-        <div className="space-y-1">
-          {group.items.map((item) => (
+        <div className="space-y-0.5">
+          {group.items.slice(0, 3).map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
         </div>
@@ -284,23 +270,26 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         <CollapsibleTrigger asChild>
           <button
             className={cn(
-              'w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group',
+              'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-150 group',
               hasActiveItem
                 ? 'text-foreground'
                 : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'
             )}
           >
-            <Icon className="h-4 w-4 shrink-0" />
+            <Icon className={cn(
+              'h-4 w-4 shrink-0',
+              hasActiveItem ? 'text-primary' : 'opacity-70'
+            )} />
             <span className="flex-1 text-left text-xs font-semibold uppercase tracking-wider">
               {group.label}
             </span>
             <ChevronDown className={cn(
-              'h-4 w-4 transition-transform duration-200',
+              'h-3.5 w-3.5 opacity-50 transition-transform duration-200',
               isOpen && 'rotate-180'
             )} />
           </button>
         </CollapsibleTrigger>
-        <CollapsibleContent className="pl-3 pt-1 space-y-0.5">
+        <CollapsibleContent className="pl-2 pt-0.5 space-y-0.5">
           {group.items.map((item) => (
             <SidebarLink key={item.tabId} item={item} />
           ))}
@@ -315,55 +304,54 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
           'bg-card border-r border-border',
-          collapsed ? 'w-16' : 'w-64'
+          collapsed ? 'w-14' : 'w-60'
         )}
       >
-        {/* Logo */}
-        <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-          <div className={cn('flex items-center gap-3', collapsed && 'justify-center w-full')}>
-            <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-              <Sparkles className="h-4 w-4 text-primary-foreground" />
+        {/* Logo - Clean Stripe Style */}
+        <div className="flex items-center justify-between px-3 py-3 border-b border-border">
+          <div className={cn('flex items-center gap-2', collapsed && 'justify-center w-full')}>
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-sm">
+              <Brain className="h-4 w-4 text-primary-foreground" />
             </div>
             {!collapsed && (
               <div>
-                <span className="text-base font-bold text-foreground">AtentAI</span>
-                <span className="block text-[10px] text-primary font-medium -mt-0.5">Admin</span>
+                <span className="text-sm font-bold text-foreground tracking-tight">AtentAI</span>
+                <span className="block text-[9px] text-primary font-medium -mt-0.5">Admin</span>
               </div>
             )}
           </div>
         </div>
 
-        {/* Toggle Button */}
+        {/* Toggle Button - Minimal */}
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-7 h-6 w-6 rounded-full bg-card border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
+          className="absolute -right-3 top-6 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
         >
           {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-4 space-y-2 overflow-y-auto overscroll-contain">
+        {/* Navigation - Ultra Clean */}
+        <nav className="flex-1 px-2 py-3 space-y-1.5 overflow-y-auto overscroll-contain scrollbar-thin">
           {sidebarGroups.map((group) => (
             <SidebarGroupComponent key={group.id} group={group} />
           ))}
         </nav>
 
-        {/* User & Logout */}
-        <div className="px-2 py-3 border-t border-border">
+        {/* User Section - Minimal */}
+        <div className="px-2 py-2 border-t border-border">
           {!collapsed && (
-            <div className="flex items-center gap-3 px-3 py-2 mb-2">
-              <div className="h-9 w-9 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-sm font-bold text-primary">
+            <div className="flex items-center gap-2 px-3 py-2 mb-1">
+              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
+                <span className="text-xs font-semibold text-primary">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'A'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-foreground truncate">
+                <p className="text-xs font-medium text-foreground truncate">
                   {profile?.full_name?.split(' ')[0] || 'Admin'}
                 </p>
-                <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
               </div>
             </div>
           )}
@@ -372,18 +360,18 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
               <button
                 onClick={handleSignOut}
                 className={cn(
-                  'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all',
+                  'w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all',
                   'text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
                   'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
                 )}
               >
                 <LogOut className="h-4 w-4" />
-                {!collapsed && <span className="text-sm">Sair</span>}
+                {!collapsed && <span className="text-xs">Sair</span>}
               </button>
             </TooltipTrigger>
             {collapsed && (
-              <TooltipContent side="right" className="bg-popover text-popover-foreground border text-xs">
+              <TooltipContent side="right" className="text-xs">
                 Sair
               </TooltipContent>
             )}
