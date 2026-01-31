@@ -88,6 +88,7 @@ import SobrePage from "./pages/SobrePage";
 import SuportePage from "./pages/SuportePage";
 import BIContabilidadeLanding from "./pages/BIContabilidadeLanding";
 import BIContabilidadeOnboarding from "./pages/BIContabilidadeOnboarding";
+import CesarBILanding from "./pages/CesarBILanding";
 import ChatGuilherme from "./pages/ChatGuilherme";
 import ChatCesar from "./pages/ChatCesar";
 
@@ -147,6 +148,7 @@ const App = () => (
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
               <Route path="/bi-contabilidade" element={<BIContabilidadeLanding />} />
               <Route path="/bi-contabilidade/onboarding" element={<BIContabilidadeOnboarding />} />
+              <Route path="/bi-contabilidade/cesar" element={<CesarBILanding />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
