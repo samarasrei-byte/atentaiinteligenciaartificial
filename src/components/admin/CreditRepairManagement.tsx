@@ -12,8 +12,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 import { CreditRepairChat } from '@/components/limpa-nome/CreditRepairChat';
 import { CreditRepairMetrics } from './CreditRepairMetrics';
-import { PartnerManagement } from './PartnerManagement';
-import { CreditRepairPartnerMetrics } from './CreditRepairPartnerMetrics';
 import { PartnerUserManagement } from './PartnerUserManagement';
 import { PartnerWithdrawalPanel } from './PartnerWithdrawalPanel';
 import { PartnerFinancialDashboard } from './PartnerFinancialDashboard';
@@ -32,12 +30,10 @@ import {
   AlertCircle,
   FileText,
   CreditCard,
-  Building,
   RefreshCw,
   BarChart3,
   Users,
   Wallet,
-  UserPlus
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -220,17 +216,13 @@ export function CreditRepairManagement() {
 
   return (
     <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-5xl grid-cols-7">
+      <TabsList className="grid w-full max-w-3xl grid-cols-5">
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
         </TabsTrigger>
-        <TabsTrigger value="partners" className="flex items-center gap-2">
-          <Building className="h-4 w-4" />
-          Parceiros
-        </TabsTrigger>
-        <TabsTrigger value="partner-users" className="flex items-center gap-2">
-          <UserPlus className="h-4 w-4" />
+        <TabsTrigger value="users" className="flex items-center gap-2">
+          <Users className="h-4 w-4" />
           Usuários
         </TabsTrigger>
         <TabsTrigger value="withdrawals" className="flex items-center gap-2">
@@ -241,21 +233,13 @@ export function CreditRepairManagement() {
           <DollarSign className="h-4 w-4" />
           Financeiro
         </TabsTrigger>
-        <TabsTrigger value="partner-metrics" className="flex items-center gap-2">
-          <Users className="h-4 w-4" />
-          Por Parceiro
-        </TabsTrigger>
         <TabsTrigger value="metrics" className="flex items-center gap-2">
           <BarChart3 className="h-4 w-4" />
           Métricas
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="partners">
-        <PartnerManagement />
-      </TabsContent>
-
-      <TabsContent value="partner-users">
+      <TabsContent value="users">
         <PartnerUserManagement />
       </TabsContent>
 
@@ -265,10 +249,6 @@ export function CreditRepairManagement() {
 
       <TabsContent value="financial">
         <PartnerFinancialDashboard />
-      </TabsContent>
-
-      <TabsContent value="partner-metrics">
-        <CreditRepairPartnerMetrics />
       </TabsContent>
 
       <TabsContent value="metrics">
