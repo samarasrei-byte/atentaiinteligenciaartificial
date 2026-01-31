@@ -42,11 +42,15 @@ import { AdminAuditPage } from '@/components/admin/audit';
 import { RevenuePartnerSplitDashboard } from '@/components/admin/RevenuePartnerSplitDashboard';
 import { SmartChatHub } from '@/components/smart-chat';
 import StripeSidebar from '@/components/layout/StripeSidebar';
+// Novos componentes centralizados
+import GuilhermeChatHub from '@/components/admin/GuilhermeChatHub';
+import CesarChatHub from '@/components/admin/CesarChatHub';
+import DocumentsCentral from '@/components/admin/DocumentsCentral';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
   CreditCard, Clock, CheckCircle, AlertCircle, XCircle, RefreshCw, Menu, Headphones,
-  Building2, User, Scale,
+  Building2, User, Scale, FileText, Bell,
 } from 'lucide-react';
 
 interface UserWithRoles {
@@ -571,19 +575,148 @@ const AdminPanel = () => {
           {activeTab === 'bi-accounting' && <BIAccountingModule />}
           {activeTab === 'partner-split' && <RevenuePartnerSplitDashboard />}
 
-          {/* Chat Central de Atendimento - Guilherme */}
+          {/* =====================================================
+              CHAT GUILHERME - Central de Atendimento
+              Responsável: Guilherme
+              Serviços: Limpa Nome, Análise Fiscal
+           ===================================================== */}
+          {activeTab === 'guilherme-chat' && (
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <GuilhermeChatHub />
+            </div>
+          )}
+
+          {/* Documentos do Guilherme (Limpa Nome + Fiscal) */}
+          {activeTab === 'guilherme-docs' && (
+            <DocumentsCentral filter="limpa-nome" />
+          )}
+
+          {/* Alertas de Serviços do Guilherme */}
+          {activeTab === 'guilherme-alerts' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-emerald-500/10">
+                    <Bell className="h-6 w-6 text-emerald-500" />
+                  </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      Alertas de Serviços
+                      <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200">Guilherme</Badge>
+                    </CardTitle>
+                    <CardDescription>Alertas de Limpa Nome e Análise Fiscal</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <RealtimeNotifications />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* =====================================================
+              CHAT CÉSAR - BI & Contabilidade
+              Responsável: César
+              Serviços: BI, Métricas, Contabilidade
+           ===================================================== */}
+          {activeTab === 'cesar-chat' && (
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <CesarChatHub />
+            </div>
+          )}
+
+          {/* Documentos do César (BI & Contábeis) */}
+          {activeTab === 'cesar-docs' && (
+            <DocumentsCentral filter="bi" />
+          )}
+
+          {/* Alertas de Performance do César */}
+          {activeTab === 'cesar-alerts' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <div className="flex items-center gap-3">
+                  <div className="p-3 rounded-xl bg-violet-500/10">
+                    <AlertCircle className="h-6 w-6 text-violet-500" />
+                  </div>
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      Alertas de Performance
+                      <Badge variant="outline" className="bg-violet-50 text-violet-600 border-violet-200">César</Badge>
+                    </CardTitle>
+                    <CardDescription>Alertas de KPIs, BI e métricas contábeis</CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <ChurnNotificationSystem />
+              </CardContent>
+            </Card>
+          )}
+
+          {/* =====================================================
+              CENTRAL DE DOCUMENTOS
+              Todos os documentos centralizados
+           ===================================================== */}
+          {activeTab === 'documents-central' && (
+            <DocumentsCentral />
+          )}
+          {activeTab === 'docs-limpa-nome' && (
+            <DocumentsCentral filter="limpa-nome" />
+          )}
+          {activeTab === 'docs-fiscal' && (
+            <DocumentsCentral filter="fiscal" />
+          )}
+          {activeTab === 'docs-bi' && (
+            <DocumentsCentral filter="bi" />
+          )}
+
+          {/* =====================================================
+              MARKETPLACE
+           ===================================================== */}
+          {activeTab === 'marketplace-activate' && (
+            <Card className="bg-card border-border shadow-soft">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <Shield className="h-5 w-5 text-primary" />
+                  Ativar Serviços
+                </CardTitle>
+                <CardDescription>Ative serviços para clientes via Marketplace</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Card className="border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 transition-colors cursor-pointer">
+                    <CardContent className="p-6 text-center">
+                      <Shield className="h-12 w-12 mx-auto mb-4 text-emerald-600" />
+                      <h3 className="font-semibold text-emerald-900">Limpa Nome</h3>
+                      <p className="text-sm text-emerald-700 mt-2">Recuperação de crédito</p>
+                      <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700">Ativar</Button>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-violet-200 bg-violet-50/50 hover:bg-violet-50 transition-colors cursor-pointer">
+                    <CardContent className="p-6 text-center">
+                      <Scale className="h-12 w-12 mx-auto mb-4 text-violet-600" />
+                      <h3 className="font-semibold text-violet-900">Análise Fiscal</h3>
+                      <p className="text-sm text-violet-700 mt-2">Recuperação tributária</p>
+                      <Button className="mt-4 bg-violet-600 hover:bg-violet-700">Ativar</Button>
+                    </CardContent>
+                  </Card>
+                  <Card className="border-blue-200 bg-blue-50/50 hover:bg-blue-50 transition-colors cursor-pointer">
+                    <CardContent className="p-6 text-center">
+                      <BarChart3 className="h-12 w-12 mx-auto mb-4 text-blue-600" />
+                      <h3 className="font-semibold text-blue-900">BI Contabilidade</h3>
+                      <p className="text-sm text-blue-700 mt-2">Inteligência de negócios</p>
+                      <Button className="mt-4 bg-blue-600 hover:bg-blue-700">Ativar</Button>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Chat Central de Atendimento LEGADO - Redirecionado para Guilherme */}
           {activeTab === 'client-chat' && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
-                <div className="h-10 w-10 rounded-full bg-emerald-500 flex items-center justify-center text-white font-bold">
-                  G
-                </div>
-                <div>
-                  <h2 className="font-semibold text-foreground">Central de Atendimento</h2>
-                  <p className="text-sm text-muted-foreground">Responsável: <span className="text-emerald-600 font-medium">Guilherme</span></p>
-                </div>
-              </div>
-              <AdminClientChat />
+            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
+              <GuilhermeChatHub />
             </div>
           )}
 

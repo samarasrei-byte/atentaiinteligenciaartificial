@@ -72,7 +72,8 @@ interface StripeSidebarProps {
   variant?: 'admin' | 'contador' | 'autonomo' | 'empresa';
 }
 
-// Estrutura para Admin - Sidebar com nomes próprios
+// Estrutura para Admin - Sidebar DEFINITIVA
+// REGRA: Chat é o CORE. Documentos fluem do chat. Serviços são contexto.
 const adminGroups: SidebarGroup[] = [
   {
     id: 'dashboard',
@@ -91,12 +92,11 @@ const adminGroups: SidebarGroup[] = [
     icon: User,
     defaultOpen: true,
     items: [
-      { icon: MessageCircle, label: 'Chat', tabId: 'guilherme-chat', isLive: true },
+      { icon: MessageCircle, label: 'Chat – Guilherme', tabId: 'guilherme-chat', isLive: true },
       { icon: FileText, label: 'Documentos', tabId: 'guilherme-docs' },
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
-      { icon: MessagesSquare, label: 'Comunicação', tabId: 'client-chat', isLive: true },
-      { icon: Bell, label: 'Alertas Serviços', tabId: 'service-alerts' },
+      { icon: Bell, label: 'Alertas Serviços', tabId: 'guilherme-alerts' },
     ],
   },
   {
@@ -105,15 +105,35 @@ const adminGroups: SidebarGroup[] = [
     icon: Brain,
     defaultOpen: true,
     items: [
-      { icon: MessageCircle, label: 'Chat', tabId: 'cesar-chat', isLive: true },
+      { icon: MessageCircle, label: 'Chat – César', tabId: 'cesar-chat', isLive: true },
       { icon: FileText, label: 'Documentos', tabId: 'cesar-docs' },
       { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
-      { icon: Activity, label: 'Tempo Real', tabId: 'bi-realtime', isLive: true },
       { icon: TrendingUp, label: 'Métricas SaaS', tabId: 'saas-metrics' },
       { icon: DollarSign, label: 'Previsão Receita', tabId: 'revenue-forecast' },
       { icon: Target, label: 'Churn & Retenção', tabId: 'churn' },
       { icon: PieChart, label: 'Análise Cohort', tabId: 'cohort' },
-      { icon: AlertTriangle, label: 'Alertas Performance', tabId: 'performance-alerts' },
+      { icon: AlertTriangle, label: 'Alertas Performance', tabId: 'cesar-alerts' },
+    ],
+  },
+  {
+    id: 'documentos',
+    label: 'Documentos',
+    icon: FileText,
+    items: [
+      { icon: FileText, label: 'Central de Documentos', tabId: 'documents-central' },
+      { icon: Shield, label: 'Docs Limpa Nome', tabId: 'docs-limpa-nome' },
+      { icon: Scale, label: 'Docs Fiscal', tabId: 'docs-fiscal' },
+      { icon: BarChart3, label: 'Docs Contábeis', tabId: 'docs-bi' },
+    ],
+  },
+  {
+    id: 'servicos',
+    label: 'Serviços',
+    icon: ShoppingBag,
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
+      { icon: BarChart3, label: 'BI Contabilidade', tabId: 'bi-accounting' },
     ],
   },
   {
@@ -121,34 +141,8 @@ const adminGroups: SidebarGroup[] = [
     label: 'Marketplace',
     icon: ShoppingBag,
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'mp-limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'mp-fiscal' },
-      { icon: Star, label: 'Upgrade / Ativação', tabId: 'mp-upgrade' },
-    ],
-  },
-  {
-    id: 'usuarios',
-    label: 'Usuários',
-    icon: Users,
-    items: [
-      { icon: Users, label: 'Todos', tabId: 'users' },
-      { icon: Building2, label: 'Empresas', tabId: 'empresas' },
-      { icon: User, label: 'Autônomos', tabId: 'autonomos' },
-      { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
-      { icon: Building2, label: 'Parceiros', tabId: 'partners' },
-      { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
-    ],
-  },
-  {
-    id: 'financeiro',
-    label: 'Financeiro',
-    icon: Wallet,
-    items: [
-      { icon: DollarSign, label: 'Divisão Sócios', tabId: 'partner-split' },
-      { icon: PieChart, label: 'Assinaturas', tabId: 'subscriptions' },
-      { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-      { icon: CreditCard, label: 'Pagamentos', tabId: 'metrics' },
-      { icon: Star, label: 'Cashback', tabId: 'cashback' },
+      { icon: Star, label: 'Ativar Serviços', tabId: 'marketplace-activate' },
+      { icon: TrendingUp, label: 'Upgrade', tabId: 'marketplace-upgrade' },
     ],
   },
   {
@@ -164,6 +158,11 @@ const adminGroups: SidebarGroup[] = [
       { icon: Shield, label: 'Segurança', tabId: 'security' },
       { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
       { icon: Shield, label: 'Roles', tabId: 'roles' },
+      { icon: Users, label: 'Usuários', tabId: 'users' },
+      { icon: Building2, label: 'Parceiros', tabId: 'partners' },
+      { icon: Users, label: 'Afiliados', tabId: 'affiliates' },
+      { icon: UserCheck, label: 'Contadores', tabId: 'contadores' },
+      { icon: Wallet, label: 'Financeiro', tabId: 'financial' },
     ],
   },
 ];
