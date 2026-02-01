@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -13,10 +13,14 @@ import {
   Check,
   Trophy,
   TrendingDown,
-  TrendingUp
+  TrendingUp,
+  User,
+  Building2
 } from 'lucide-react';
 import { formatCurrency, formatCurrencyInput, parseCurrencyInput, sectors } from '@/lib/taxData';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 const REGIME_DATA = {
   simples: {
@@ -70,14 +74,103 @@ interface RegimeResult {
   newSystemRate: number;
 }
 
+interface UserCompanyData {
+  monthlyRevenue: number;
+  sector: string;
+}
+
 export function EmbeddedRegimeComparator() {
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const [annualRevenue, setAnnualRevenue] = useState('');
   const [sector, setSector] = useState('');
   const [marginRate, setMarginRate] = useState('15');
   const [isSimulating, setIsSimulating] = useState(false);
   const [results, setResults] = useState<RegimeResult[] | null>(null);
+  const [userCompanyData, setUserCompanyData] = useState<UserCompanyData | null>(null);
+  const [isLoadingUserData, setIsLoadingUserData] = useState(false);
+  const [useOwnData, setUseOwnData] = useState(false);
+
+  // Fetch user's company or autonomo data on mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      if (!user) return;
+      
+      setIsLoadingUserData(true);
+      try {
+        // Try fetching company data first
+        const { data: companyData } = await supabase
+          .from('companies')
+          .select('monthly_revenue_cents, sector')
+          .eq('user_id', user.id)
+          .single();
+
+        if (companyData) {
+          setUserCompanyData({
+            monthlyRevenue: companyData.monthly_revenue_cents,
+            sector: companyData.sector,
+          });
+          return;
+        }
+
+        // If no company, try autonomo profile
+        const { data: autonomoData } = await supabase
+          .from('autonomo_profiles')
+          .select('monthly_revenue_average_cents, profession_category')
+          .eq('user_id', user.id)
+          .single();
+
+        if (autonomoData) {
+          const sectorMapping: Record<string, string> = {
+            saude: 'saude',
+            tecnologia: 'tecnologia',
+            juridico: 'servicos',
+            consultoria: 'servicos',
+            educacao: 'educacao',
+            design: 'servicos',
+            marketing: 'servicos',
+            engenharia: 'servicos',
+            financeiro: 'servicos',
+            outro: 'servicos',
+          };
+          
+          setUserCompanyData({
+            monthlyRevenue: autonomoData.monthly_revenue_average_cents || 0,
+            sector: sectorMapping[autonomoData.profession_category || 'outro'] || 'servicos',
+          });
+        }
+      } catch (error) {
+        console.log('No user data found for pre-fill');
+      } finally {
+        setIsLoadingUserData(false);
+      }
+    };
+
+    fetchUserData();
+  }, [user]);
+
+  // Handle "Usar a sua" - pre-fill with user's data
+  const handleUseOwnData = () => {
+    if (!userCompanyData) {
+      toast({
+        variant: 'destructive',
+        title: 'Dados não encontrados',
+        description: 'Complete o cadastro da empresa primeiro.',
+      });
+      return;
+    }
+
+    const annualRevenueCents = userCompanyData.monthlyRevenue * 12;
+    setAnnualRevenue(formatCurrencyInput(String(annualRevenueCents)));
+    setSector(userCompanyData.sector);
+    setUseOwnData(true);
+    
+    toast({
+      title: 'Dados carregados!',
+      description: 'Seu faturamento e setor foram preenchidos automaticamente.',
+    });
+  };
 
   const calculateRegimeComparison = () => {
     const revenue = parseCurrencyInput(annualRevenue);
@@ -152,6 +245,12 @@ export function EmbeddedRegimeComparator() {
 
   const handleRevenueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnnualRevenue(formatCurrencyInput(e.target.value));
+    setUseOwnData(false);
+  };
+
+  const handleSectorChange = (value: string) => {
+    setSector(value);
+    setUseOwnData(false);
   };
 
   const bestRegime = results?.[0];
@@ -179,6 +278,26 @@ export function EmbeddedRegimeComparator() {
             <CardDescription>Informe os dados para comparação</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
+            {/* Quick Fill Button */}
+            {userCompanyData && userCompanyData.monthlyRevenue > 0 && (
+              <Button
+                variant={useOwnData ? "default" : "outline"}
+                size="sm"
+                className="w-full"
+                onClick={handleUseOwnData}
+                disabled={isLoadingUserData}
+              >
+                {isLoadingUserData ? (
+                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                ) : useOwnData ? (
+                  <Check className="h-4 w-4 mr-2" />
+                ) : (
+                  <User className="h-4 w-4 mr-2" />
+                )}
+                {useOwnData ? 'Usando seus dados' : 'Usar meus dados'}
+              </Button>
+            )}
+
             <div className="space-y-2">
               <Label>Faturamento Anual</Label>
               <Input
@@ -186,11 +305,16 @@ export function EmbeddedRegimeComparator() {
                 value={annualRevenue}
                 onChange={handleRevenueChange}
               />
+              {useOwnData && userCompanyData && (
+                <p className="text-xs text-primary">
+                  Calculado: {formatCurrency(userCompanyData.monthlyRevenue / 100)} × 12 meses
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">
               <Label>Setor de Atuação</Label>
-              <Select value={sector} onValueChange={setSector}>
+              <Select value={sector} onValueChange={handleSectorChange}>
                 <SelectTrigger>
                   <SelectValue placeholder="Selecione o setor" />
                 </SelectTrigger>

@@ -93,6 +93,8 @@ import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineRe
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
+import { UserSettings } from '@/components/user-panel/UserSettings';
+import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 
 const EmbeddedAIAgent = () => {
   return (
@@ -653,8 +655,14 @@ const EmpresaPanel = () => {
             <TaxTransitionSimulator embedded />
           </div>
         );
+      case 'simulacao-completa':
+      case 'comparar-regimes':
+        return <EmbeddedRegimeComparator />;
       case 'timeline':
         return <EmbeddedTimelineReforma variant="empresa" />;
+      case 'settings':
+      case 'configuracoes':
+        return <UserSettings />;
       case 'servicos':
       case 'ver-todos-servicos':
         return <AllServicesHub />;

@@ -86,6 +86,8 @@ import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineRe
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
+import { UserSettings } from '@/components/user-panel/UserSettings';
+import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 
 interface AutonomoProfile {
   id: string;
@@ -612,8 +614,14 @@ const AutonomoPanel: React.FC = () => {
             <TaxTransitionSimulator embedded />
           </div>
         );
+      case 'simulacao-completa':
+      case 'comparar-regimes':
+        return <EmbeddedRegimeComparator />;
       case 'timeline':
         return <EmbeddedTimelineReforma variant="autonomo" />;
+      case 'settings':
+      case 'configuracoes':
+        return <UserSettings />;
       case 'servicos':
       case 'ver-todos-servicos':
         return <AllServicesHub />;
