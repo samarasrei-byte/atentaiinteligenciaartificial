@@ -74,10 +74,34 @@ interface AppSidebarProps {
   onTabChange?: (tab: string) => void;
 }
 
-// Ferramentas Gratuitas (compartilhadas)
-const freeToolsGroup: SidebarGroup = {
-  id: 'ferramentas-gratuitas',
-  label: 'Ferramentas Gratuitas',
+// ============================================================
+// ESTRUTURA OFICIAL DO MENU (Conforme especificação)
+// ============================================================
+
+// VISÃO GERAL
+const visaoGeralGroup: SidebarGroup = {
+  id: 'visao-geral',
+  label: 'Visão Geral',
+  items: [
+    { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+    { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+  ],
+};
+
+// INTELIGÊNCIA & IA
+const iaGroup: SidebarGroup = {
+  id: 'inteligencia-ia',
+  label: 'Inteligência & IA',
+  items: [
+    { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
+    { icon: Sparkles, label: 'Ferramentas Gratuitas', tabId: 'ferramentas-gratuitas' },
+  ],
+};
+
+// REFORMA TRIBUTÁRIA (LC 214)
+const reformaGroup: SidebarGroup = {
+  id: 'reforma-tributaria',
+  label: 'Reforma Tributária (LC 214)',
   items: [
     { icon: Calculator, label: 'Ferramentas LC 214', tabId: 'ferramentas-lc214' },
     { icon: FileBarChart, label: 'Simulador Transição', tabId: 'transicao' },
@@ -85,57 +109,58 @@ const freeToolsGroup: SidebarGroup = {
   ],
 };
 
-// EMPRESA - Dashboard + Marketplace
+// SERVIÇOS
+const servicosGroup: SidebarGroup = {
+  id: 'servicos',
+  label: 'Serviços',
+  items: [
+    { icon: ShoppingBag, label: 'Contratar Serviços', tabId: 'servicos' },
+    { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
+    { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
+    { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
+    { icon: TrendingUp, label: 'Ver Todos', tabId: 'ver-todos-servicos' },
+  ],
+};
+
+// MINHA CONTA
+const contaGroup: SidebarGroup = {
+  id: 'conta',
+  label: 'Minha Conta',
+  items: [
+    { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
+    { icon: User, label: 'Perfil', tabId: 'profile' },
+    { icon: Headphones, label: 'Suporte', tabId: 'support' },
+  ],
+};
+
+// EMPRESA - Estrutura padrão
 const empresaGroups: SidebarGroup[] = [
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    items: [
-      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
-      { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
-    ],
-  },
-  freeToolsGroup,
-  {
-    id: 'marketplace',
-    label: 'Contratar Serviços',
-    items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
-      { icon: TrendingUp, label: 'Ver Todos', tabId: 'servicos' },
-    ],
-  },
-  {
-    id: 'conta',
-    label: 'Minha Conta',
-    items: [
-      { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
-      { icon: User, label: 'Perfil', tabId: 'profile' },
-      { icon: Headphones, label: 'Suporte', tabId: 'support' },
-    ],
-  },
+  visaoGeralGroup,
+  iaGroup,
+  reformaGroup,
+  servicosGroup,
+  contaGroup,
 ];
 
-// AUTÔNOMO - Dashboard + Marketplace
+// AUTÔNOMO - Mesma estrutura base + itens específicos
 const autonomoGroups: SidebarGroup[] = [
+  visaoGeralGroup,
   {
-    id: 'dashboard',
-    label: 'Dashboard',
+    id: 'inteligencia-ia',
+    label: 'Inteligência & IA',
     items: [
-      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'dashboard' },
-      { icon: Bell, label: 'Alertas', tabId: 'notifications' },
+      { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
       { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
       { icon: Target, label: 'Metas', tabId: 'metas' },
-      { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
+      { icon: Sparkles, label: 'Ferramentas Gratuitas', tabId: 'ferramentas-gratuitas' },
     ],
   },
-  freeToolsGroup,
+  reformaGroup,
   {
-    id: 'marketplace',
-    label: 'Contratar Serviços',
+    id: 'servicos',
+    label: 'Serviços',
     items: [
+      { icon: ShoppingBag, label: 'Contratar Serviços', tabId: 'servicos' },
       { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
       { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
@@ -154,22 +179,22 @@ const autonomoGroups: SidebarGroup[] = [
   },
 ];
 
-// CONTADOR - BI + Marketplace
+// CONTADOR - Mesma estrutura + itens específicos
 const contadorGroups: SidebarGroup[] = [
+  visaoGeralGroup,
   {
-    id: 'dashboard',
-    label: 'Dashboard',
+    id: 'inteligencia-ia',
+    label: 'Inteligência & IA',
     items: [
-      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: BarChart3, label: 'Métricas', tabId: 'stats' },
       { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
+      { icon: Sparkles, label: 'Ferramentas Gratuitas', tabId: 'ferramentas-gratuitas' },
     ],
   },
-  freeToolsGroup,
+  reformaGroup,
   {
-    id: 'marketplace',
-    label: 'Contratar Serviços',
+    id: 'servicos',
+    label: 'Serviços',
     items: [
       { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
       { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
@@ -206,27 +231,12 @@ const contadorGroups: SidebarGroup[] = [
   },
 ];
 
-// PARTNER - Dashboard + Marketplace
+// PARTNER - Mesma estrutura + itens específicos
 const partnerGroups: SidebarGroup[] = [
-  {
-    id: 'dashboard',
-    label: 'Dashboard',
-    items: [
-      { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
-      { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
-    ],
-  },
-  freeToolsGroup,
-  {
-    id: 'marketplace',
-    label: 'Contratar Serviços',
-    items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
-    ],
-  },
+  visaoGeralGroup,
+  iaGroup,
+  reformaGroup,
+  servicosGroup,
   {
     id: 'financeiro',
     label: 'Financeiro',

@@ -46,6 +46,7 @@ import {
   ChevronRight,
   Play,
   RefreshCw,
+  Clock,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { brazilianStates } from '@/lib/taxData';
@@ -79,6 +80,7 @@ import { ServiceNotificationBell } from '@/components/notifications/ServiceNotif
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
 import { CashbackHistoryCard } from '@/components/calculator/CashbackHistoryCard';
+import { ComingSoonSection } from '@/components/layout/ComingSoonSection';
 
 interface AutonomoProfile {
   id: string;
@@ -589,6 +591,92 @@ const AutonomoPanel: React.FC = () => {
         );
       case 'profile':
         return renderProfile();
+      case 'notifications':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Notificações</h2>
+              <p className="text-muted-foreground">Acompanhe todas as atualizações importantes</p>
+            </div>
+            <NotificationCenter
+              notifications={notificationsHook.notifications}
+              unreadCount={notificationsHook.unreadCount}
+              onMarkAsRead={notificationsHook.markAsRead}
+              onMarkAllAsRead={notificationsHook.markAllAsRead}
+              onClear={notificationsHook.clearNotifications}
+            />
+          </div>
+        );
+      case 'ferramentas-gratuitas':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Ferramentas Gratuitas</h2>
+              <p className="text-muted-foreground">Acesse recursos gratuitos sobre a Reforma Tributária</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card 
+                className="cursor-pointer hover:bg-muted/50 transition-colors border-primary/20"
+                onClick={() => navigate('/ferramentas-lc214')}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-primary/10">
+                      <Calculator className="h-6 w-6 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground">Ferramentas LC 214</h3>
+                      <p className="text-sm text-muted-foreground">Calculadoras e alertas</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card 
+                className="cursor-pointer hover:bg-muted/50 transition-colors border-emerald-500/20"
+                onClick={() => navigate('/transicao')}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-emerald-500/10">
+                      <TrendingUp className="h-6 w-6 text-emerald-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground">Simulador Transição</h3>
+                      <p className="text-sm text-muted-foreground">Impacto até 2033</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+              <Card 
+                className="cursor-pointer hover:bg-muted/50 transition-colors border-amber-500/20"
+                onClick={() => navigate('/timeline-reforma')}
+              >
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-4">
+                    <div className="p-3 rounded-xl bg-amber-500/10">
+                      <Clock className="h-6 w-6 text-amber-600" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-foreground">Timeline Reforma</h3>
+                      <p className="text-sm text-muted-foreground">Mudanças ano a ano</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        );
+      case 'servicos':
+        return (
+          <div className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold text-foreground">Contratar Serviços</h2>
+              <p className="text-muted-foreground">Explore todos os serviços disponíveis para autônomos</p>
+            </div>
+            <ServicesHubModern />
+          </div>
+        );
+      case 'overview':
       default:
         return renderDashboard();
     }
