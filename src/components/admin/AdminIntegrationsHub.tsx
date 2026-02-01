@@ -155,7 +155,7 @@ export const AdminIntegrationsHub: React.FC = () => {
                     </div>
                     <div>
                       <CardTitle className="text-emerald-900">Instância Guilherme</CardTitle>
-                      <CardDescription>Atendimento ao Cliente • Análise Fiscal • IR</CardDescription>
+                      <CardDescription>Limpa Nome • Análise Fiscal • Atendimento</CardDescription>
                     </div>
                   </div>
                   {getStatusBadge(integrations.whatsapp.guilherme.status)}
@@ -220,7 +220,7 @@ export const AdminIntegrationsHub: React.FC = () => {
                     </div>
                     <div>
                       <CardTitle className="text-violet-900">Instância César</CardTitle>
-                      <CardDescription>Limpa Nome • BI • Contabilidade</CardDescription>
+                      <CardDescription>BI • Contabilidade • Relatórios</CardDescription>
                     </div>
                   </div>
                   {getStatusBadge(integrations.whatsapp.cesar.status)}
