@@ -8,14 +8,12 @@ import { supabase } from '@/integrations/supabase/client';
 import { 
   Inbox, 
   Search, 
-  Filter, 
   Clock, 
   CheckCircle2, 
   AlertCircle, 
   User,
   Building2,
   Scale,
-  Shield,
   FileText,
   ExternalLink
 } from 'lucide-react';
@@ -24,7 +22,7 @@ import { ptBR } from 'date-fns/locale';
 
 interface Request {
   id: string;
-  type: 'credit_repair' | 'fiscal' | 'ir' | 'certificate' | 'company_opening';
+  type: 'fiscal' | 'ir' | 'certificate' | 'company_opening';
   client_name: string;
   status: string;
   created_at: string;
@@ -40,7 +38,6 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
 };
 
 const typeConfig: Record<string, { label: string; icon: React.ElementType; color: string }> = {
-  credit_repair: { label: 'Limpa Nome', icon: Shield, color: 'text-emerald-600' },
   fiscal: { label: 'Análise Fiscal', icon: Scale, color: 'text-violet-600' },
   ir: { label: 'Declaração IR', icon: FileText, color: 'text-blue-600' },
   certificate: { label: 'Certidão', icon: FileText, color: 'text-orange-600' },
@@ -62,9 +59,8 @@ export const BIRequestsInbox: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch all types of requests
-      const [creditRepair, fiscal, ir, certificates, companyOpening] = await Promise.all([
-        supabase.from('credit_repair_requests').select('id, full_name, status, created_at').order('created_at', { ascending: false }).limit(50),
+      // Fetch César's services only (BI + Contabilidade)
+      const [fiscal, ir, certificates, companyOpening] = await Promise.all([
         supabase.from('fiscal_analysis_requests').select('id, full_name, status, created_at').order('created_at', { ascending: false }).limit(50),
         supabase.from('ir_requests').select('id, full_name, status, created_at').order('created_at', { ascending: false }).limit(50),
         supabase.from('certificate_requests').select('id, status, created_at, user_id').order('created_at', { ascending: false }).limit(50),
@@ -72,22 +68,13 @@ export const BIRequestsInbox: React.FC = () => {
       ]);
 
       const allRequests: Request[] = [
-        ...(creditRepair.data || []).map(r => ({
-          id: r.id,
-          type: 'credit_repair' as const,
-          client_name: r.full_name,
-          status: r.status,
-          created_at: r.created_at,
-          responsible: 'Guilherme', // Limpa Nome é responsabilidade do Guilherme
-          priority: 'high' as const
-        })),
         ...(fiscal.data || []).map(r => ({
           id: r.id,
           type: 'fiscal' as const,
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme',
+          responsible: 'César',
           priority: 'medium' as const
         })),
         ...(ir.data || []).map(r => ({
@@ -96,7 +83,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme',
+          responsible: 'César',
           priority: 'medium' as const
         })),
         ...(certificates.data || []).map(r => ({
@@ -105,7 +92,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: 'Cliente',
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme',
+          responsible: 'César',
           priority: 'low' as const
         })),
         ...(companyOpening.data || []).map(r => ({
@@ -114,7 +101,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme',
+          responsible: 'César',
           priority: 'high' as const
         })),
       ];
@@ -189,12 +176,12 @@ export const BIRequestsInbox: React.FC = () => {
         <Card className="bg-white border-slate-200">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-100">
-                <User className="h-5 w-5 text-emerald-600" />
+              <div className="p-2 rounded-lg bg-violet-100">
+                <User className="h-5 w-5 text-violet-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900">Guilherme</p>
-                <p className="text-sm text-slate-500">Limpa Nome • Fiscal</p>
+                <p className="text-2xl font-bold text-slate-900">César</p>
+                <p className="text-sm text-slate-500">BI • Contabilidade</p>
               </div>
             </div>
           </CardContent>
@@ -241,7 +228,6 @@ export const BIRequestsInbox: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos os tipos</SelectItem>
-                <SelectItem value="credit_repair">Limpa Nome</SelectItem>
                 <SelectItem value="fiscal">Análise Fiscal</SelectItem>
                 <SelectItem value="ir">Declaração IR</SelectItem>
                 <SelectItem value="certificate">Certidão</SelectItem>
