@@ -19,6 +19,23 @@ import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice, SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
 import { useNavigate } from 'react-router-dom';
 
+function openCheckoutPopupOrFallback(url: string) {
+  // Most popup blockers allow a window opened synchronously during the click.
+  // So we open a blank window first, then navigate it.
+  const w = window.open('', '_blank');
+  if (!w) {
+    // Fallback: same-tab redirect (always works)
+    window.location.assign(url);
+    return;
+  }
+  try {
+    w.opener = null;
+  } catch {
+    // ignore
+  }
+  w.location.href = url;
+}
+
 interface ServiceConfig {
   id: string;
   name: string;
@@ -150,6 +167,12 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
       return;
     }
 
+    // Open popup immediately to avoid blockers (only for checkout flow)
+    let pendingPopup: Window | null = null;
+    if (config.flowType === 'checkout') {
+      pendingPopup = window.open('', '_blank');
+    }
+
     setIsLoading(true);
 
     try {
@@ -169,7 +192,16 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
         if (error) throw error;
 
         if (data?.url) {
-          window.open(data.url, '_blank');
+          if (pendingPopup) {
+            try {
+              pendingPopup.opener = null;
+            } catch {
+              // ignore
+            }
+            pendingPopup.location.href = data.url;
+          } else {
+            openCheckoutPopupOrFallback(data.url);
+          }
           toast.info('Janela de pagamento aberta. Complete o pagamento para ativar.');
           onSuccess?.();
           onClose();
@@ -207,6 +239,13 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
     } catch (error: any) {
       console.error('Service action error:', error);
       toast.error(error.message || 'Erro ao processar. Tente novamente.');
+      if (pendingPopup) {
+        try {
+          pendingPopup.close();
+        } catch {
+          // ignore
+        }
+      }
     } finally {
       setIsLoading(false);
     }

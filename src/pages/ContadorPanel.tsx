@@ -39,6 +39,7 @@ import { FiscalAnalysisManagement } from '@/components/admin/FiscalAnalysisManag
 import TaxTransitionSimulator from '@/components/simulator/TaxTransitionSimulator';
 import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineReforma';
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
+import ReformaRadar from '@/components/reforma/ReformaRadar';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
 import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
@@ -648,6 +649,8 @@ const ContadorPanel = () => {
           {activeTab === 'ferramentas-gratuitas' && <EmbeddedFerramentasLC214 />}
 
           {activeTab === 'ferramentas-lc214' && <EmbeddedFerramentasLC214 />}
+
+          {activeTab === 'reforma-radar' && <ReformaRadar variant="contador" />}
 
           {activeTab === 'transicao' && (
             <div className="space-y-6">

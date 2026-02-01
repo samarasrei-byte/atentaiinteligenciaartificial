@@ -84,6 +84,7 @@ import { ComingSoonSection } from '@/components/layout/ComingSoonSection';
 import TaxTransitionSimulator from '@/components/simulator/TaxTransitionSimulator';
 import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineReforma';
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
+import ReformaRadar from '@/components/reforma/ReformaRadar';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
 import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
@@ -608,6 +609,8 @@ const AutonomoPanel: React.FC = () => {
         return <EmbeddedFerramentasLC214 />;
       case 'ferramentas-lc214':
         return <EmbeddedFerramentasLC214 />;
+      case 'reforma-radar':
+        return <ReformaRadar variant="autonomo" />;
       case 'transicao':
         return (
           <div className="space-y-6">

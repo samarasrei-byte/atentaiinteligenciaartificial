@@ -196,6 +196,9 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
       return;
     }
 
+    // Open popup immediately to avoid blockers (Stripe Checkout URL comes later)
+    const pendingPopup = window.open('', '_blank');
+
     setIsLoading(true);
 
     try {
@@ -227,8 +230,17 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
       if (error) throw error;
 
       if (data?.url) {
-        // Open Stripe Checkout in new tab
-        window.open(data.url, '_blank');
+        // Navigate the already-opened popup (or fallback to same-tab)
+        if (pendingPopup) {
+          try {
+            pendingPopup.opener = null;
+          } catch {
+            // ignore
+          }
+          pendingPopup.location.href = data.url;
+        } else {
+          window.location.assign(data.url);
+        }
         toast.info('Janela de pagamento aberta. Complete o pagamento para ativar.');
         onSuccess?.();
       } else {
@@ -237,6 +249,13 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
     } catch (error: any) {
       console.error('Payment error:', error);
       toast.error(error.message || 'Erro ao iniciar pagamento. Tente novamente.');
+      if (pendingPopup) {
+        try {
+          pendingPopup.close();
+        } catch {
+          // ignore
+        }
+      }
     } finally {
       setIsLoading(false);
     }
