@@ -35,28 +35,9 @@ export default function LimpaNomeLanding() {
   const [urgencySeconds, setUrgencySeconds] = useState(59);
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
 
-  // Direct checkout - Marketplace flow
-  const handleDirectCheckout = async () => {
-    setIsCheckoutLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-limpa-nome-checkout', {
-        body: { 
-          serviceType: selectedPlan,
-        },
-      });
-
-      if (error) throw error;
-      
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        throw new Error('URL de checkout não retornada');
-      }
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast.error('Erro ao iniciar checkout. Tente novamente.');
-      setIsCheckoutLoading(false);
-    }
+  // CHECKOUT FIRST: Direct navigation to checkout page
+  const handleDirectCheckout = () => {
+    navigate(`/checkout/limpa-nome-${selectedPlan}`);
   };
 
   useEffect(() => {
