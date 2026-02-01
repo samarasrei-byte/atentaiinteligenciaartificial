@@ -38,37 +38,49 @@ const formatNumber = (cents: number) => {
   return new Intl.NumberFormat('pt-BR').format(cents / 100);
 };
 
-// Revenue tier definitions
+// Revenue tier definitions based on annual revenue
+// MEI: até R$ 81.000/ano
+// Microempresa: até R$ 360.000/ano
+// EPP: até R$ 4.800.000/ano
+// Grande Porte: acima de R$ 4.800.000/ano
 const getRevenueTier = (monthlyCents: number) => {
   const annualCents = monthlyCents * 12;
   
+  // MEI limit: R$ 81.000/year = 8.100.000 cents
   if (annualCents <= 8100000) return { 
     label: 'MEI', 
     color: 'from-emerald-500 to-teal-500',
     bgColor: 'bg-emerald-500/10',
     textColor: 'text-emerald-500',
-    borderColor: 'border-emerald-500/30'
+    borderColor: 'border-emerald-500/30',
+    description: 'Microempreendedor Individual'
   };
+  // Microempresa limit: R$ 360.000/year = 36.000.000 cents
   if (annualCents <= 36000000) return { 
     label: 'Microempresa', 
     color: 'from-blue-500 to-cyan-500',
     bgColor: 'bg-blue-500/10',
     textColor: 'text-blue-500',
-    borderColor: 'border-blue-500/30'
+    borderColor: 'border-blue-500/30',
+    description: 'Empresa de Pequeno Porte I'
   };
+  // EPP limit: R$ 4.800.000/year = 480.000.000 cents
   if (annualCents <= 480000000) return { 
     label: 'EPP', 
     color: 'from-purple-500 to-pink-500',
     bgColor: 'bg-purple-500/10',
     textColor: 'text-purple-500',
-    borderColor: 'border-purple-500/30'
+    borderColor: 'border-purple-500/30',
+    description: 'Empresa de Pequeno Porte II'
   };
+  // Grande Porte: above R$ 4.800.000/year
   return { 
     label: 'Grande Porte', 
     color: 'from-amber-500 to-orange-500',
     bgColor: 'bg-amber-500/10',
     textColor: 'text-amber-500',
-    borderColor: 'border-amber-500/30'
+    borderColor: 'border-amber-500/30',
+    description: 'Empresa de Grande Porte'
   };
 };
 

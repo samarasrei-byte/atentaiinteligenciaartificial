@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
@@ -46,6 +46,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
+import { PlanType } from '@/lib/stripe';
 
 interface SidebarItem {
   icon: React.ElementType;
@@ -54,6 +56,8 @@ interface SidebarItem {
   badge?: string;
   badgeColor?: string;
   isLive?: boolean;
+  isService?: boolean; // Flag para serviços do marketplace
+  serviceKey?: string; // Key para o modal de serviço
 }
 
 interface SidebarGroup {
@@ -97,9 +101,9 @@ const empresaGroups: SidebarGroup[] = [
     id: 'marketplace',
     label: 'Contratar Serviços',
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
       { icon: TrendingUp, label: 'Ver Todos', tabId: 'servicos' },
     ],
   },
@@ -132,10 +136,10 @@ const autonomoGroups: SidebarGroup[] = [
     id: 'marketplace',
     label: 'Contratar Serviços',
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
-      { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
+      { icon: Building2, label: 'Abrir Empresa', tabId: 'servico-abertura', isService: true, serviceKey: 'abertura-empresa' },
     ],
   },
   {
@@ -167,9 +171,9 @@ const contadorGroups: SidebarGroup[] = [
     id: 'marketplace',
     label: 'Contratar Serviços',
     items: [
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
       { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening' },
       { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
       { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
@@ -218,9 +222,9 @@ const partnerGroups: SidebarGroup[] = [
     id: 'marketplace',
     label: 'Contratar Serviços',
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
     ],
   },
   {
@@ -254,6 +258,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, profile, signOut } = useAuth();
+  
+  // Modal states
+  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
+  const [selectedServiceKey, setSelectedServiceKey] = useState<string | null>(null);
+  const [selectedPlanType, setSelectedPlanType] = useState<PlanType | null>(null);
+  const [upgradeType, setUpgradeType] = useState<'subscription' | 'service'>('service');
 
   const groups = variant === 'contador' 
     ? contadorGroups 
@@ -270,16 +280,37 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
     navigate('/');
   };
 
-  const handleItemClick = (tabId: string) => {
-    // Serviços do Marketplace → páginas de contratação
-    const serviceRoutes: Record<string, string> = {
-      'servico-limpa-nome': '/limpa-nome',
-      'servico-fiscal': '/modulo-fiscal',
-      'servico-bi': '/bi-contabilidade',
-    };
+  const openServiceModal = (serviceKey: string) => {
+    setSelectedServiceKey(serviceKey);
+    setSelectedPlanType(null);
+    setUpgradeType('service');
+    setUpgradeModalOpen(true);
+  };
 
-    if (serviceRoutes[tabId]) {
-      navigate(serviceRoutes[tabId]);
+  const openSubscriptionModal = () => {
+    // Default to premium plan
+    setSelectedPlanType('premium');
+    setSelectedServiceKey(null);
+    setUpgradeType('subscription');
+    setUpgradeModalOpen(true);
+  };
+
+  const handleItemClick = (item: SidebarItem) => {
+    const { tabId, isService, serviceKey } = item;
+
+    // Se for um serviço do marketplace, abre o modal
+    if (isService && serviceKey) {
+      openServiceModal(serviceKey);
+      return;
+    }
+
+    // Assinatura abre o modal de planos
+    if (tabId === 'subscription') {
+      // Abre o tab de assinatura normalmente para mostrar status atual
+      if (onTabChange) {
+        onTabChange(tabId);
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
       return;
     }
 
@@ -295,6 +326,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       return;
     }
 
+    // Navegação padrão via tab
     if (onTabChange) {
       onTabChange(tabId);
       window.scrollTo({ top: 0, behavior: "instant" });
@@ -317,7 +349,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
     const content = (
       <button
-        onClick={() => handleItemClick(item.tabId)}
+        onClick={() => handleItemClick(item)}
         className={cn(
           'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-150 group relative',
           'touch-manipulation active:scale-[0.98]',
@@ -339,6 +371,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500" />
               </span>
             )}
+            {item.isService && (
+              <Sparkles className="h-3 w-3 text-primary/60" />
+            )}
           </>
         )}
         {active && (
@@ -355,6 +390,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
             <div className="flex items-center gap-2">
               {item.label}
               {item.isLive && <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />}
+              {item.isService && <Sparkles className="h-3 w-3 text-primary" />}
             </div>
           </TooltipContent>
         </Tooltip>
@@ -455,6 +491,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </Tooltip>
         </div>
       </aside>
+
+      {/* Upgrade Modal */}
+      <InPanelUpgradeModal
+        isOpen={upgradeModalOpen}
+        onClose={() => setUpgradeModalOpen(false)}
+        upgradeType={upgradeType}
+        serviceKey={selectedServiceKey || undefined}
+        planType={selectedPlanType || undefined}
+        onSuccess={() => setUpgradeModalOpen(false)}
+      />
     </TooltipProvider>
   );
 };
