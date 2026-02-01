@@ -20,6 +20,7 @@ import OnboardingStepHeader from './OnboardingStepHeader';
 import OnboardingOptionCard from './OnboardingOptionCard';
 import { Card, CardContent } from '@/components/ui/card';
 import FiscalBenefitCard from './FiscalBenefitCard';
+import RevenueBoard from './RevenueBoard';
 
 interface CompanyData {
   company_name: string;
@@ -390,72 +391,22 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
         </div>
       )}
 
-      {/* Step 3: Dados Financeiros */}
+      {/* Step 3: Dados Financeiros - NOVO BOARD MODERNO */}
       {step === 3 && (
         <div className="space-y-6">
           <OnboardingStepHeader
             icon={DollarSign}
             title="Dados Financeiros"
-            description="Informe o faturamento médio mensal"
+            description="Este é o dado mais importante para personalizarmos sua experiência"
           />
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="revenue">Faturamento Mensal Médio *</Label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground font-medium">R$</span>
-                <Input
-                  id="revenue"
-                  type="text"
-                  inputMode="numeric"
-                  value={formData.monthly_revenue_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_cents / 100) : ''}
-                  onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    updateFormData('monthly_revenue_cents', parseInt(value) * 100 || 0);
-                  }}
-                  placeholder="0"
-                  className="pl-10"
-                />
-              </div>
-              <p className="text-sm text-muted-foreground">
-                Faturamento anual estimado: {formatCurrency(formData.monthly_revenue_cents * 12)}
-              </p>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="employees">Número de Funcionários</Label>
-              <div className="relative">
-                <Users className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="employees"
-                  type="number"
-                  min="0"
-                  value={formData.employee_count || ''}
-                  onChange={(e) => updateFormData('employee_count', parseInt(e.target.value) || 0)}
-                  placeholder="0"
-                  className="pl-10"
-                />
-              </div>
-            </div>
-
-            {formData.company_type && formData.monthly_revenue_cents > 0 && (
-              <Card className="bg-primary/5 border-primary/20">
-                <CardContent className="pt-4">
-                  <div className="flex items-start gap-3">
-                    <div className="p-2 rounded-full bg-primary/10">
-                      <Check className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">Análise Prévia</p>
-                      <p className="text-sm text-muted-foreground mt-1">
-                        Com base nos dados informados, vamos calcular os impactos da reforma tributária no seu negócio.
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
+          <RevenueBoard
+            monthlyRevenue={formData.monthly_revenue_cents}
+            employeeCount={formData.employee_count}
+            onRevenueChange={(value) => updateFormData('monthly_revenue_cents', value)}
+            onEmployeeChange={(value) => updateFormData('employee_count', value)}
+            companyType={formData.company_type}
+          />
         </div>
       )}
 
