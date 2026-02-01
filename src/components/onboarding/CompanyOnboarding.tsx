@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
@@ -18,6 +19,7 @@ import OnboardingLayout from './OnboardingLayout';
 import OnboardingStepHeader from './OnboardingStepHeader';
 import OnboardingOptionCard from './OnboardingOptionCard';
 import { Card, CardContent } from '@/components/ui/card';
+import FiscalBenefitCard from './FiscalBenefitCard';
 
 interface CompanyData {
   company_name: string;
@@ -85,8 +87,11 @@ interface CompanyOnboardingProps {
 const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => {
   const { user } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [step, setStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showFiscalBenefit, setShowFiscalBenefit] = useState(false);
+  const [fiscalBenefitHandled, setFiscalBenefitHandled] = useState(false);
   const [formData, setFormData] = useState<CompanyData>({
     company_name: '',
     trade_name: '',
@@ -100,6 +105,9 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
     city: '',
     main_activity: '',
   });
+
+  // Threshold for fiscal benefit: R$ 600.000/month = 60.000.000 cents
+  const FISCAL_BENEFIT_THRESHOLD = 60000000;
 
   const totalSteps = 4;
 
@@ -186,6 +194,12 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   };
 
   const nextStep = () => {
+    // Check if we need to show fiscal benefit after step 3 (financial data)
+    if (step === 3 && formData.monthly_revenue_cents >= FISCAL_BENEFIT_THRESHOLD && !fiscalBenefitHandled) {
+      setShowFiscalBenefit(true);
+      return;
+    }
+    
     if (step < totalSteps) {
       setStep(step + 1);
     } else {
@@ -193,11 +207,58 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
     }
   };
 
+  const handleFiscalBenefitAccept = () => {
+    setFiscalBenefitHandled(true);
+    setShowFiscalBenefit(false);
+    // Navigate to fiscal module after completing onboarding
+    sessionStorage.setItem('pendingFiscalAnalysis', 'true');
+    toast({
+      title: '🎉 Análise Fiscal Reservada!',
+      description: 'Após o cadastro, você será direcionado para sua análise gratuita.',
+    });
+    setStep(step + 1);
+  };
+
+  const handleFiscalBenefitSkip = () => {
+    setFiscalBenefitHandled(true);
+    setShowFiscalBenefit(false);
+    setStep(step + 1);
+  };
+
   const prevStep = () => {
+    if (showFiscalBenefit) {
+      setShowFiscalBenefit(false);
+      return;
+    }
     if (step > 1) {
       setStep(step - 1);
     }
   };
+
+  // If showing fiscal benefit, render only that card
+  if (showFiscalBenefit) {
+    return (
+      <OnboardingLayout
+        title="Benefício Exclusivo"
+        subtitle="Identificamos uma oportunidade especial para sua empresa"
+        icon={Building2}
+        iconColor="from-emerald-500 to-teal-500"
+        steps={steps}
+        currentStep={step}
+        totalSteps={totalSteps}
+        onNext={handleFiscalBenefitSkip}
+        onBack={prevStep}
+        canProceed={true}
+        isSubmitting={false}
+        hideNextButton={true}
+      >
+        <FiscalBenefitCard
+          onAccept={handleFiscalBenefitAccept}
+          onSkip={handleFiscalBenefitSkip}
+        />
+      </OnboardingLayout>
+    );
+  }
 
   return (
     <OnboardingLayout
