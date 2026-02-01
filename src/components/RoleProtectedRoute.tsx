@@ -28,7 +28,11 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
   const loggedRef = useRef(false);
 
   // Check if user has the required role OR is admin (admins can access all panels)
-  const hasAccess = hasRole(requiredRole) || hasRole('admin');
+  // SPECIAL CASE: 'user' role (Empresa panel) is accessible to ALL authenticated users
+  // This ensures anyone who logs in can access the basic empresa panel as a fallback
+  const hasAccess = requiredRole === 'user' 
+    ? !!user 
+    : (hasRole(requiredRole) || hasRole('admin'));
 
   // Log access attempt once
   useEffect(() => {
