@@ -11,7 +11,7 @@ interface Step {
   icon: React.ElementType;
 }
 
-interface OnboardingLayoutProps {
+export interface OnboardingLayoutProps {
   children: React.ReactNode;
   title: string;
   subtitle: string;
@@ -25,6 +25,7 @@ interface OnboardingLayoutProps {
   canProceed: boolean;
   isSubmitting?: boolean;
   submitLabel?: string;
+  hideNextButton?: boolean;
 }
 
 const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
@@ -41,6 +42,7 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
   canProceed,
   isSubmitting = false,
   submitLabel = 'Concluir',
+  hideNextButton = false,
 }) => {
   const isLastStep = currentStep === totalSteps;
 
@@ -148,33 +150,38 @@ const OnboardingLayout: React.FC<OnboardingLayoutProps> = ({
                   variant="outline"
                   onClick={onBack}
                   disabled={currentStep === 1 || isSubmitting}
-                  className="flex-1 h-11 md:h-12 text-sm md:text-base order-2 sm:order-1"
+                  className={cn(
+                    "h-11 md:h-12 text-sm md:text-base order-2 sm:order-1",
+                    hideNextButton ? "flex-1" : "flex-1"
+                  )}
                 >
                   <ArrowLeft className="h-4 w-4 mr-2" />
                   Voltar
                 </Button>
-                <Button
-                  onClick={onNext}
-                  disabled={!canProceed || isSubmitting}
-                  className="flex-1 h-11 md:h-12 text-sm md:text-base bg-primary hover:bg-primary/90 order-1 sm:order-2"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Salvando...
-                    </>
-                  ) : isLastStep ? (
-                    <>
-                      {submitLabel}
-                      <Check className="h-4 w-4 ml-2" />
-                    </>
-                  ) : (
-                    <>
-                      Próximo
-                      <ArrowRight className="h-4 w-4 ml-2" />
-                    </>
-                  )}
-                </Button>
+                {!hideNextButton && (
+                  <Button
+                    onClick={onNext}
+                    disabled={!canProceed || isSubmitting}
+                    className="flex-1 h-11 md:h-12 text-sm md:text-base bg-primary hover:bg-primary/90 order-1 sm:order-2"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Salvando...
+                      </>
+                    ) : isLastStep ? (
+                      <>
+                        {submitLabel}
+                        <Check className="h-4 w-4 ml-2" />
+                      </>
+                    ) : (
+                      <>
+                        Próximo
+                        <ArrowRight className="h-4 w-4 ml-2" />
+                      </>
+                    )}
+                  </Button>
+                )}
               </div>
             </CardContent>
           </Card>

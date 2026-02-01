@@ -133,6 +133,14 @@ const Auth = () => {
       if (pendingOnboardingData) {
         saveOnboardingData(user.id);
       } else {
+        // Check for post-auth redirect first
+        const postAuthRedirect = sessionStorage.getItem('postAuthRedirect');
+        if (postAuthRedirect) {
+          sessionStorage.removeItem('postAuthRedirect');
+          navigate(postAuthRedirect);
+          return;
+        }
+        
         const selectedType = sessionStorage.getItem('selectedUserType');
         if (selectedType) {
           sessionStorage.removeItem('selectedUserType');

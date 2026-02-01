@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Building2, Calculator, Briefcase, ArrowLeft, ArrowRight, Sparkles, Rocket, Star, Shield, Zap } from 'lucide-react';
+import { Building2, Calculator, Briefcase, ArrowLeft, ArrowRight, Sparkles, Rocket, Star, Shield, Zap, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CleanBackground from '@/components/onboarding/CleanBackground';
 
@@ -58,9 +59,19 @@ const userTypeOptions: UserTypeOption[] = [
 
 const UserTypeSelection = () => {
   const navigate = useNavigate();
+  const { user, loading: authLoading } = useAuth();
   const [selectedType, setSelectedType] = useState<UserType | null>(null);
   const [isAnimating, setIsAnimating] = useState(false);
   const [hoveredType, setHoveredType] = useState<UserType | null>(null);
+
+  // CRITICAL: Redirect to auth if not authenticated
+  useEffect(() => {
+    if (!authLoading && !user) {
+      // Store intended destination and redirect to login
+      sessionStorage.setItem('postAuthRedirect', '/comecar');
+      navigate('/auth', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -100,6 +111,30 @@ const UserTypeSelection = () => {
       }, 500);
     }
   };
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Verificando sessão...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Don't render if not authenticated (will redirect)
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
+          <p className="text-muted-foreground">Redirecionando para login...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={cn(
@@ -427,72 +462,19 @@ const UserTypeSelection = () => {
                 )}
               </AnimatePresence>
             </div>
-
-            <Button
-              variant="ghost"
-              className="text-muted-foreground hover:text-foreground transition-all hover:scale-105"
-              onClick={() => navigate('/auth')}
-              disabled={isAnimating}
-            >
-              Já tenho uma conta
-            </Button>
           </motion.div>
           
-          {/* Trust indicators */}
+          {/* Footer info */}
           <motion.div 
-            className="mt-14 flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground"
+            className="text-center mt-16 text-sm text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
           >
-            <span className="flex items-center gap-2">
-              <Shield className="h-4 w-4 text-green-500" />
-              100% Seguro
-            </span>
-            <span className="flex items-center gap-2">
-              <Zap className="h-4 w-4 text-yellow-500" />
-              Configuração em 2 minutos
-            </span>
-            <span className="flex items-center gap-2">
-              <Star className="h-4 w-4 text-purple-500" />
-              +10.000 usuários
-            </span>
-          </motion.div>
-          
-          {/* Quick links */}
-          <motion.div 
-            className="mt-8 pt-6 border-t border-border/50 text-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-          >
-            <p className="text-sm text-muted-foreground mb-3">Quer conhecer mais antes de começar?</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Button 
-                variant="link" 
-                size="sm" 
-                onClick={() => navigate('/planos-perfil')}
-                className="hover:text-primary transition-colors"
-              >
-                Ver todos os planos
-              </Button>
-              <Button 
-                variant="link" 
-                size="sm" 
-                onClick={() => navigate('/faq')}
-                className="hover:text-primary transition-colors"
-              >
-                Perguntas frequentes
-              </Button>
-              <Button 
-                variant="link" 
-                size="sm" 
-                onClick={() => navigate('/servicos')}
-                className="hover:text-primary transition-colors"
-              >
-                Nossos serviços
-              </Button>
-            </div>
+            <p className="flex items-center justify-center gap-2">
+              <Shield className="h-4 w-4" />
+              Seus dados estão seguros e protegidos
+            </p>
           </motion.div>
         </div>
       </div>
