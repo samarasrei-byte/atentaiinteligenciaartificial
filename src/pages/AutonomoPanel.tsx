@@ -86,7 +86,7 @@ import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineRe
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
-import { UserSettings } from '@/components/user-panel/UserSettings';
+import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 
 interface AutonomoProfile {
@@ -621,7 +621,9 @@ const AutonomoPanel: React.FC = () => {
         return <EmbeddedTimelineReforma variant="autonomo" />;
       case 'settings':
       case 'configuracoes':
-        return <UserSettings />;
+      case 'subscription':
+      case 'assinatura':
+        return <UnifiedSettingsPage />;
       case 'servicos':
       case 'ver-todos-servicos':
         return <AllServicesHub />;
