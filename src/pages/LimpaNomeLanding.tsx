@@ -19,9 +19,9 @@ import { motion, useInView } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 
-// Parceiro fixo - César é responsável pelo Limpa Nome
+// Parceiro fixo - Guilherme é responsável pelo Limpa Nome
 const PARTNER_INFO = {
-  name: 'César',
+  name: 'Guilherme Barros',
   role: 'Especialista em Limpa Nome',
   avatar: null,
 };
@@ -207,9 +207,9 @@ export default function LimpaNomeLanding() {
             {/* Partner Preview */}
             <motion.div variants={itemVariants} className="flex justify-center mb-8">
               <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <Avatar className="h-14 w-14 border-2 border-violet-500/30">
-                  <AvatarFallback className="bg-violet-500/20 text-violet-400 text-lg font-bold">
-                    C
+                <Avatar className="h-14 w-14 border-2 border-emerald-500/30">
+                  <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-lg font-bold">
+                    GB
                   </AvatarFallback>
                 </Avatar>
                 <div className="text-left">
