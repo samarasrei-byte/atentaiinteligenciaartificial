@@ -129,7 +129,17 @@ const contaGroup: SidebarGroup = {
   items: [
     { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
     { icon: User, label: 'Perfil', tabId: 'profile' },
+    { icon: Settings, label: 'Configurações', tabId: 'settings' },
     { icon: Headphones, label: 'Suporte', tabId: 'support' },
+  ],
+};
+
+// SIMULAÇÃO - Para comparar regimes
+const simulacaoGroup: SidebarGroup = {
+  id: 'simulacao',
+  label: 'Simulação',
+  items: [
+    { icon: Scale, label: 'Comparar Regimes', tabId: 'simulacao-completa', badge: 'Usar a sua' },
   ],
 };
 
@@ -137,6 +147,7 @@ const contaGroup: SidebarGroup = {
 const empresaGroups: SidebarGroup[] = [
   visaoGeralGroup,
   iaGroup,
+  simulacaoGroup,
   reformaGroup,
   servicosGroup,
   contaGroup,
@@ -155,6 +166,7 @@ const autonomoGroups: SidebarGroup[] = [
       { icon: Sparkles, label: 'Ferramentas Gratuitas', tabId: 'ferramentas-gratuitas' },
     ],
   },
+  simulacaoGroup,
   reformaGroup,
   {
     id: 'servicos',
@@ -174,6 +186,7 @@ const autonomoGroups: SidebarGroup[] = [
       { icon: History, label: 'Histórico', tabId: 'history' },
       { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
       { icon: User, label: 'Meu Perfil', tabId: 'profile' },
+      { icon: Settings, label: 'Configurações', tabId: 'settings' },
       { icon: Headphones, label: 'Suporte', tabId: 'support' },
     ],
   },

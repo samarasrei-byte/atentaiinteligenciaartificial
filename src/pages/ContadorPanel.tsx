@@ -41,6 +41,8 @@ import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineRe
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
+import { UserSettings } from '@/components/user-panel/UserSettings';
+import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 
 interface ContadorProfile {
   id: string;
@@ -653,7 +655,11 @@ const ContadorPanel = () => {
             </div>
           )}
 
+          {(activeTab === 'simulacao-completa' || activeTab === 'comparar-regimes') && <EmbeddedRegimeComparator />}
+
           {activeTab === 'timeline' && <EmbeddedTimelineReforma variant="contador" />}
+
+          {(activeTab === 'settings' || activeTab === 'configuracoes') && <UserSettings />}
 
           {activeTab === 'servicos' && <AllServicesHub />}
 
