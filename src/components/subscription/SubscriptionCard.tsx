@@ -189,7 +189,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90"
               onClick={() => onTabChange?.('upgrade')}
             >
-              Ver Planos
+              Ver Planos Disponíveis
             </Button>
           </div>
         )}
