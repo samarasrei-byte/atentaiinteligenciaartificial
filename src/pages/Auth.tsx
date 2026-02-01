@@ -141,12 +141,15 @@ const Auth = () => {
           return;
         }
         
-        // Check if user selected a type during SIGNUP
+        // Check if user selected a type during SIGNUP (new account only)
         const selectedType = sessionStorage.getItem('selectedUserType');
-        if (selectedType) {
-          // CRITICAL: Store in profile and proceed to onboarding directly
-          // The user should NOT see the profile selector again
+        // Also check if this is a brand new signup (just created account)
+        const isNewSignup = sessionStorage.getItem('isNewSignup') === 'true';
+        
+        if (selectedType && isNewSignup) {
+          // CRITICAL: New user just signed up - proceed to onboarding
           sessionStorage.removeItem('selectedUserType');
+          sessionStorage.removeItem('isNewSignup');
           
           switch (selectedType) {
             case 'autonomo':
@@ -159,11 +162,14 @@ const Auth = () => {
               navigate('/onboarding', { replace: true });
               break;
             default:
-              // For existing users without pending type, go to dashboard router
               navigate('/dashboard', { replace: true });
           }
         } else {
-          // Existing user logging in - go to dashboard router for role detection
+          // Existing user logging in OR new user without type selection
+          // ALWAYS go to dashboard router - it will route to the correct panel
+          // NEVER redirect to /bem-vindo for existing users
+          sessionStorage.removeItem('selectedUserType');
+          sessionStorage.removeItem('isNewSignup');
           navigate('/dashboard', { replace: true });
         }
       }
@@ -341,6 +347,8 @@ const Auth = () => {
           title: 'Conta criada com sucesso!',
           description: 'Bem-vindo ao AtentAI',
         });
+        // Mark this as a new signup so Auth redirect logic knows to use onboarding
+        sessionStorage.setItem('isNewSignup', 'true');
         sessionStorage.setItem('selectedUserType', userType);
       }
     }
