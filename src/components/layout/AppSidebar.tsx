@@ -81,16 +81,16 @@ const freeToolsGroup: SidebarGroup = {
   ],
 };
 
-// EMPRESA - Chat + BI centrado
+// EMPRESA - Chat centrado em SERVIÇOS (não pessoas)
 const empresaGroups: SidebarGroup[] = [
   {
-    id: 'comunicacao',
-    label: 'Comunicação',
+    id: 'servicos-ativos',
+    label: 'Meus Serviços',
     items: [
-      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true },
-      { icon: Brain, label: 'Chat César (BI)', tabId: 'chat-cesar', isLive: true },
+      { icon: Shield, label: 'Chat Limpa Nome', tabId: 'chat-limpa-nome', isLive: true },
+      { icon: Scale, label: 'Chat Análise Fiscal', tabId: 'chat-fiscal', isLive: true },
+      { icon: Brain, label: 'Chat BI Contabilidade', tabId: 'chat-bi', isLive: true },
       { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
     ],
   },
   {
@@ -98,6 +98,7 @@ const empresaGroups: SidebarGroup[] = [
     label: 'Dashboard',
     items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
       { icon: TrendingUp, label: 'Economize', tabId: 'economia' },
     ],
   },
@@ -121,16 +122,16 @@ const empresaGroups: SidebarGroup[] = [
   },
 ];
 
-// AUTÔNOMO - Chat + Dashboard centrado
+// AUTÔNOMO - Chat centrado em SERVIÇOS (não pessoas)
 const autonomoGroups: SidebarGroup[] = [
   {
-    id: 'comunicacao',
-    label: 'Comunicação',
+    id: 'servicos-ativos',
+    label: 'Meus Serviços',
     items: [
-      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true },
-      { icon: Brain, label: 'Chat César (BI)', tabId: 'chat-cesar', isLive: true },
+      { icon: Shield, label: 'Chat Limpa Nome', tabId: 'chat-limpa-nome', isLive: true },
+      { icon: Scale, label: 'Chat Análise Fiscal', tabId: 'chat-fiscal', isLive: true },
+      { icon: Brain, label: 'Chat BI', tabId: 'chat-bi', isLive: true },
       { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
-      { icon: Bell, label: 'Alertas', tabId: 'notifications' },
     ],
   },
   {
@@ -138,6 +139,7 @@ const autonomoGroups: SidebarGroup[] = [
     label: 'Dashboard',
     items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'dashboard' },
+      { icon: Bell, label: 'Alertas', tabId: 'notifications' },
       { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
       { icon: Target, label: 'Metas', tabId: 'metas' },
     ],
@@ -220,14 +222,15 @@ const contadorGroups: SidebarGroup[] = [
   },
 ];
 
-// PARTNER - Comunicação centrada (sem duplicações)
+// PARTNER - Comunicação centrada em SERVIÇOS (não pessoas)
 const partnerGroups: SidebarGroup[] = [
   {
-    id: 'comunicacao',
-    label: 'Comunicação',
+    id: 'servicos-ativos',
+    label: 'Meus Serviços',
     items: [
-      { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true },
-      { icon: Brain, label: 'Chat César (BI)', tabId: 'chat-cesar', isLive: true },
+      { icon: Shield, label: 'Chat Limpa Nome', tabId: 'chat-limpa-nome', isLive: true },
+      { icon: Scale, label: 'Chat Análise Fiscal', tabId: 'chat-fiscal', isLive: true },
+      { icon: Brain, label: 'Chat BI', tabId: 'chat-bi', isLive: true },
       { icon: Bell, label: 'Notificações', tabId: 'notifications' },
     ],
   },
@@ -295,10 +298,11 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   const handleItemClick = (tabId: string) => {
-    // Chat Guilherme e César → navegação direta
+    // Chats de serviços → navegação direta (serviço, não pessoa)
     const chatRoutes: Record<string, string> = {
-      'chat-guilherme': '/chat/guilherme',
-      'chat-cesar': '/chat/cesar',
+      'chat-limpa-nome': '/chat/guilherme', // Limpa Nome → Guilherme
+      'chat-fiscal': '/chat/guilherme',      // Análise Fiscal → Guilherme  
+      'chat-bi': '/chat/cesar',              // BI Contabilidade → César
     };
 
     if (chatRoutes[tabId]) {

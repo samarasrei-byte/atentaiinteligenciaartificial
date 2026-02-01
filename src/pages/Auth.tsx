@@ -141,21 +141,30 @@ const Auth = () => {
           return;
         }
         
+        // Check if user selected a type during SIGNUP
         const selectedType = sessionStorage.getItem('selectedUserType');
         if (selectedType) {
+          // CRITICAL: Store in profile and proceed to onboarding directly
+          // The user should NOT see the profile selector again
           sessionStorage.removeItem('selectedUserType');
+          
           switch (selectedType) {
             case 'autonomo':
-              navigate('/autonomo-onboarding');
+              navigate('/autonomo-onboarding', { replace: true });
               break;
             case 'contador':
-              navigate('/contador-onboarding');
+              navigate('/contador-onboarding', { replace: true });
+              break;
+            case 'empresa':
+              navigate('/onboarding', { replace: true });
               break;
             default:
-              navigate('/dashboard');
+              // For existing users without pending type, go to dashboard router
+              navigate('/dashboard', { replace: true });
           }
         } else {
-          navigate('/dashboard');
+          // Existing user logging in - go to dashboard router for role detection
+          navigate('/dashboard', { replace: true });
         }
       }
     }
