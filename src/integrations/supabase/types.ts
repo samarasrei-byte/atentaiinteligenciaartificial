@@ -1530,6 +1530,122 @@ export type Database = {
         }
         Relationships: []
       }
+      financial_costs: {
+        Row: {
+          amount_cents: number
+          cost_date: string
+          cost_type: string
+          created_at: string
+          description: string | null
+          id: string
+          notes: string | null
+          service_slug: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_cents?: number
+          cost_date?: string
+          cost_type: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          service_slug?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_cents?: number
+          cost_date?: string
+          cost_type?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          notes?: string | null
+          service_slug?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      financial_partners: {
+        Row: {
+          created_at: string
+          email: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          pix_key: string | null
+          pix_key_type: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          pix_key?: string | null
+          pix_key_type?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          pix_key?: string | null
+          pix_key_type?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_split_rules: {
+        Row: {
+          created_at: string
+          effective_from: string
+          effective_until: string | null
+          id: string
+          is_active: boolean | null
+          partner_id: string | null
+          percentage: number
+          service_slug: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          is_active?: boolean | null
+          partner_id?: string | null
+          percentage?: number
+          service_slug: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          effective_from?: string
+          effective_until?: string | null
+          id?: string
+          is_active?: boolean | null
+          partner_id?: string | null
+          percentage?: number
+          service_slug?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "financial_split_rules_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "financial_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       fiscal_analysis_requests: {
         Row: {
           analysis_period_end: string | null
