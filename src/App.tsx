@@ -92,6 +92,8 @@ import CesarBILanding from "./pages/CesarBILanding";
 import ChatGuilherme from "./pages/ChatGuilherme";
 import ChatCesar from "./pages/ChatCesar";
 import LimpaNomePaymentSuccess from "./pages/LimpaNomePaymentSuccess";
+import CheckoutPage from "./pages/CheckoutPage";
+import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
 
 const queryClient = new QueryClient();
 
@@ -133,6 +135,8 @@ const App = () => (
               <Route path="/transicao-tributaria" element={<TransicaoTributaria />} />
               <Route path="/certidoes" element={<CertificatesPage />} />
               <Route path="/servicos" element={<ServicosPage />} />
+              <Route path="/checkout/:serviceSlug" element={<CheckoutPage />} />
+              <Route path="/checkout/sucesso" element={<CheckoutSuccessPage />} />
               <Route path="/marketplace/:serviceSlug" element={<MarketplaceServicePage />} />
               <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
               <Route path="/parceiroatentaigb" element={<PartnerGuilhermePanel />} />

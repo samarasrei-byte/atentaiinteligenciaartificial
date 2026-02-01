@@ -112,19 +112,31 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
   const colors = colorClasses[service.color];
 
   const handleCTAClick = () => {
-    // If Limpa Nome, go to dedicated page
-    if (service.key === 'credit_repair_pf' || service.key === 'credit_repair_pj') {
-      navigate(`/limpa-nome/onboarding?plan=${service.key === 'credit_repair_pf' ? 'pf' : 'pj'}`);
+    // CHECKOUT FIRST: All services with fixed prices go directly to checkout
+    const checkoutRoutes: Record<string, string> = {
+      'credit_repair_pf': '/checkout/limpa-nome-pf',
+      'credit_repair_pj': '/checkout/limpa-nome-pj',
+      'ir_simples': '/checkout/ir-simples',
+      'ir_completo': '/checkout/ir-completo',
+      'company_opening': '/checkout/abertura-empresa',
+      'certificate': '/checkout/certidao',
+      'consultation': '/checkout/consulta-contador',
+    };
+
+    // If service has a checkout route, go directly to checkout
+    const checkoutRoute = checkoutRoutes[service.serviceType];
+    if (checkoutRoute) {
+      navigate(checkoutRoute);
       return;
     }
 
-    // If has specific checkout route
-    if (service.checkoutRoute) {
+    // Services with custom pricing (BI, Fiscal) go to chat
+    if (service.isCustomPricing && service.checkoutRoute) {
       navigate(service.checkoutRoute);
       return;
     }
 
-    // Otherwise, show inline checkout modal
+    // Fallback: show inline checkout modal
     setShowCheckout(true);
   };
 

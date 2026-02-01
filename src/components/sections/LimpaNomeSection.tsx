@@ -179,7 +179,8 @@ export function LimpaNomeSection() {
 
                 const handleCTAClick = (e: React.MouseEvent) => {
                   e.stopPropagation();
-                  navigate(`/limpa-nome/onboarding?plan=${plan.id}`);
+                  // CHECKOUT FIRST: Go directly to checkout, no onboarding
+                  navigate(`/checkout/limpa-nome-${plan.id}`);
                 };
                 
                 return (
