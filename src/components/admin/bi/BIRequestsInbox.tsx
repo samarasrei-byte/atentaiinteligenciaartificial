@@ -78,7 +78,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme',
+          responsible: 'César', // Limpa Nome é responsabilidade do César
           priority: 'high' as const
         })),
         ...(fiscal.data || []).map(r => ({
@@ -189,12 +189,12 @@ export const BIRequestsInbox: React.FC = () => {
         <Card className="bg-white border-slate-200">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-emerald-100">
-                <User className="h-5 w-5 text-emerald-600" />
+              <div className="p-2 rounded-lg bg-violet-100">
+                <User className="h-5 w-5 text-violet-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900">Guilherme</p>
-                <p className="text-sm text-slate-500">Responsável</p>
+                <p className="text-2xl font-bold text-slate-900">César</p>
+                <p className="text-sm text-slate-500">Limpa Nome</p>
               </div>
             </div>
           </CardContent>
