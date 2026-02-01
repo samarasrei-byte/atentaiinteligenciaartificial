@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
@@ -12,15 +10,14 @@ import {
 } from '@/components/ui/dialog';
 import { 
   CreditCard, Shield, Check, Star, Zap, Lock,
-  MessageCircle, FileCheck, Sparkles, Loader2, ArrowRight,
-  Brain, Scale, Building2, Crown, X
+  Sparkles, ArrowRight, Brain, Scale, Building2, Crown, X
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { STRIPE_PLANS, SUBSCRIBER_DISCOUNTS, formatPrice, PlanType, ServiceType } from '@/lib/stripe';
+import { EmbeddedCheckoutForm } from './EmbeddedCheckoutForm';
 
 type UpgradeType = 'subscription' | 'service';
+type CheckoutMode = 'preview' | 'payment';
 
 interface ServiceConfig {
   type: ServiceType;
@@ -64,7 +61,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     type: 'fiscal_analysis',
     name: 'Análise Fiscal',
     description: 'Recuperação de créditos tributários com taxa de sucesso',
-    priceCents: 0, // Free analysis - success fee
+    priceCents: 0,
     features: [
       'Análise 100% gratuita',
       'Identificação de oportunidades',
@@ -151,7 +148,7 @@ interface InPanelUpgradeModalProps {
   isOpen: boolean;
   onClose: () => void;
   upgradeType: UpgradeType;
-  serviceKey?: string; // e.g., 'limpa-nome', 'analise-fiscal'
+  serviceKey?: string;
   planType?: PlanType;
   onSuccess?: () => void;
 }
@@ -164,13 +161,11 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   planType,
   onSuccess,
 }) => {
-  const { user, session, subscription } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
+  const { subscription } = useAuth();
+  const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>('preview');
 
-  // Get config based on upgrade type
   const serviceConfig = serviceKey ? SERVICE_CONFIGS[serviceKey] : null;
   const planConfig = planType ? PLAN_CONFIGS[planType] : null;
-
   const config = upgradeType === 'service' ? serviceConfig : planConfig;
   
   if (!config) {
@@ -180,7 +175,6 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   const Icon = config.icon;
   const isSubscriber = subscription?.subscribed || false;
   
-  // Calculate price with potential discount
   let displayPrice = config.priceCents;
   if (upgradeType === 'service' && serviceConfig && isSubscriber) {
     const discount = SUBSCRIBER_DISCOUNTS[serviceConfig.type];
@@ -189,85 +183,36 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
 
   const priceFormatted = formatPrice(displayPrice);
   const isSuccessFee = upgradeType === 'service' && serviceConfig?.successFee;
+  const isSubscriptionMode = upgradeType === 'subscription';
 
-  const handlePayment = async () => {
-    if (!user || !session) {
-      toast.error('Você precisa estar logado para continuar.');
+  const handleStartPayment = () => {
+    if (isSuccessFee) {
+      // For success fee services, no payment needed upfront
+      onSuccess?.();
+      onClose();
       return;
     }
+    setCheckoutMode('payment');
+  };
 
-    // Open popup immediately to avoid blockers (Stripe Checkout URL comes later)
-    const pendingPopup = window.open('', '_blank');
+  const handlePaymentSuccess = () => {
+    setCheckoutMode('preview');
+    onSuccess?.();
+    onClose();
+  };
 
-    setIsLoading(true);
-
-    try {
-      let edgeFunction: string;
-      let body: Record<string, any>;
-
-      if (upgradeType === 'subscription' && planConfig) {
-        edgeFunction = 'create-checkout';
-        body = { 
-          priceId: STRIPE_PLANS[planConfig.type].priceId,
-        };
-      } else if (upgradeType === 'service' && serviceConfig) {
-        edgeFunction = serviceConfig.edgeFunction;
-        body = { 
-          serviceType: serviceConfig.type,
-          amount: displayPrice,
-        };
-      } else {
-        throw new Error('Configuração inválida');
-      }
-
-      const { data, error } = await supabase.functions.invoke(edgeFunction, {
-        body,
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        // Navigate the already-opened popup (or fallback to same-tab)
-        if (pendingPopup) {
-          try {
-            pendingPopup.opener = null;
-          } catch {
-            // ignore
-          }
-          pendingPopup.location.href = data.url;
-        } else {
-          window.location.assign(data.url);
-        }
-        toast.info('Janela de pagamento aberta. Complete o pagamento para ativar.');
-        onSuccess?.();
-      } else {
-        throw new Error('URL de checkout não retornada');
-      }
-    } catch (error: any) {
-      console.error('Payment error:', error);
-      toast.error(error.message || 'Erro ao iniciar pagamento. Tente novamente.');
-      if (pendingPopup) {
-        try {
-          pendingPopup.close();
-        } catch {
-          // ignore
-        }
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const handleClose = () => {
+    setCheckoutMode('preview');
+    onClose();
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
         {/* Header with gradient */}
         <div className={`bg-gradient-to-br ${config.gradient} p-6 text-white relative`}>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
           >
             <X className="h-4 w-4" />
@@ -300,7 +245,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
               <>
                 <span className="text-4xl font-bold">{priceFormatted}</span>
                 <span className="text-white/70 text-sm">
-                  {upgradeType === 'subscription' ? '/mês' : 'pagamento único'}
+                  {isSubscriptionMode ? '/mês' : 'pagamento único'}
                 </span>
               </>
             )}
@@ -316,45 +261,58 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
         </div>
 
         <div className="p-6 space-y-5">
-          {/* Features */}
-          <div className="space-y-3">
-            <p className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" />
-              O que está incluso:
-            </p>
-            <ul className="space-y-2">
-              {config.features.map((feature, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {checkoutMode === 'preview' ? (
+            <>
+              {/* Features */}
+              <div className="space-y-3">
+                <p className="font-semibold text-sm text-foreground flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  O que está incluso:
+                </p>
+                <ul className="space-y-2">
+                  {config.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* CTA */}
-          <Button
-            onClick={handlePayment}
-            disabled={isLoading}
-            size="lg"
-            className={`w-full h-14 text-lg font-semibold bg-gradient-to-r ${config.gradient} hover:opacity-90 shadow-lg transition-all group`}
-          >
-            {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : (
-              <>
+              {/* CTA */}
+              <Button
+                onClick={handleStartPayment}
+                size="lg"
+                className={`w-full h-14 text-lg font-semibold bg-gradient-to-r ${config.gradient} hover:opacity-90 shadow-lg transition-all group`}
+              >
                 <CreditCard className="h-5 w-5 mr-2" />
-                {upgradeType === 'subscription' ? 'Assinar agora' : 'Contratar serviço'}
+                {isSuccessFee ? 'Solicitar Análise Gratuita' : isSubscriptionMode ? 'Assinar agora' : 'Contratar serviço'}
                 <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </>
-            )}
-          </Button>
+              </Button>
 
-          {/* Security */}
-          <div className="flex items-center justify-center text-xs text-muted-foreground gap-2">
-            <Lock className="h-3 w-3" />
-            Pagamento seguro via Stripe
-          </div>
+              {/* Security */}
+              <div className="flex items-center justify-center text-xs text-muted-foreground gap-2">
+                <Lock className="h-3 w-3" />
+                Pagamento seguro via Stripe
+              </div>
+            </>
+          ) : (
+            /* Embedded Checkout Form */
+            <div className="pt-2">
+              <EmbeddedCheckoutForm
+                amount={displayPrice}
+                serviceType={serviceConfig?.type || planConfig?.type || 'unknown'}
+                serviceName={config.name}
+                onSuccess={handlePaymentSuccess}
+                onCancel={() => setCheckoutMode('preview')}
+                metadata={{
+                  upgrade_type: upgradeType,
+                  service_key: serviceKey,
+                  plan_type: planType,
+                }}
+              />
+            </div>
+          )}
         </div>
       </DialogContent>
     </Dialog>
