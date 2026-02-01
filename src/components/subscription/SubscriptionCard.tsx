@@ -13,6 +13,7 @@ import {
 interface SubscriptionCardProps {
   showManageButton?: boolean;
   compact?: boolean;
+  onTabChange?: (tab: string) => void;
 }
 
 const planLabels: Record<string, { name: string; color: string; icon: any }> = {
@@ -24,6 +25,7 @@ const planLabels: Record<string, { name: string; color: string; icon: any }> = {
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   showManageButton = true,
   compact = false,
+  onTabChange,
 }) => {
   const { subscription, user } = useAuth();
   const { toast } = useToast();
@@ -184,8 +186,8 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
               Desbloqueie recursos premium assinando um de nossos planos
             </p>
             <Button
-              className="bg-gradient-to-r from-teal-500 to-cyan-500 hover:from-teal-600 hover:to-cyan-600"
-              onClick={() => (window.location.href = '/pricing')}
+              className="bg-gradient-to-r from-primary to-primary-glow hover:opacity-90"
+              onClick={() => onTabChange?.('upgrade')}
             >
               Ver Planos
             </Button>

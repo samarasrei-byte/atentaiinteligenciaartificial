@@ -81,39 +81,31 @@ const freeToolsGroup: SidebarGroup = {
   ],
 };
 
-// EMPRESA - Chat centrado em SERVIÇOS (não pessoas)
+// EMPRESA - Dashboard + Marketplace
 const empresaGroups: SidebarGroup[] = [
-  {
-    id: 'servicos-ativos',
-    label: 'Meus Serviços',
-    items: [
-      { icon: Shield, label: 'Chat Limpa Nome', tabId: 'chat-limpa-nome', isLive: true },
-      { icon: Scale, label: 'Chat Análise Fiscal', tabId: 'chat-fiscal', isLive: true },
-      { icon: Brain, label: 'Chat BI Contabilidade', tabId: 'chat-bi', isLive: true },
-      { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
-    ],
-  },
   {
     id: 'dashboard',
     label: 'Dashboard',
     items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: Bell, label: 'Notificações', tabId: 'notifications' },
-      { icon: TrendingUp, label: 'Economize', tabId: 'economia' },
+      { icon: Bot, label: 'Agente IA', tabId: 'ai-chat' },
     ],
   },
   freeToolsGroup,
   {
     id: 'marketplace',
-    label: 'Marketplace',
+    label: 'Contratar Serviços',
     items: [
-      { icon: ShoppingBag, label: 'Serviços', tabId: 'servicos' },
-      { icon: Star, label: 'Upgrade', tabId: 'upgrade' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
+      { icon: TrendingUp, label: 'Ver Todos', tabId: 'servicos' },
     ],
   },
   {
     id: 'conta',
-    label: 'Conta',
+    label: 'Minha Conta',
     items: [
       { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
       { icon: User, label: 'Perfil', tabId: 'profile' },
@@ -122,18 +114,8 @@ const empresaGroups: SidebarGroup[] = [
   },
 ];
 
-// AUTÔNOMO - Chat centrado em SERVIÇOS (não pessoas)
+// AUTÔNOMO - Dashboard + Marketplace
 const autonomoGroups: SidebarGroup[] = [
-  {
-    id: 'servicos-ativos',
-    label: 'Meus Serviços',
-    items: [
-      { icon: Shield, label: 'Chat Limpa Nome', tabId: 'chat-limpa-nome', isLive: true },
-      { icon: Scale, label: 'Chat Análise Fiscal', tabId: 'chat-fiscal', isLive: true },
-      { icon: Brain, label: 'Chat BI', tabId: 'chat-bi', isLive: true },
-      { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
-    ],
-  },
   {
     id: 'dashboard',
     label: 'Dashboard',
@@ -142,20 +124,23 @@ const autonomoGroups: SidebarGroup[] = [
       { icon: Bell, label: 'Alertas', tabId: 'notifications' },
       { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
       { icon: Target, label: 'Metas', tabId: 'metas' },
+      { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
     ],
   },
   freeToolsGroup,
   {
     id: 'marketplace',
-    label: 'Marketplace',
+    label: 'Contratar Serviços',
     items: [
-      { icon: ShoppingBag, label: 'Serviços', tabId: 'servicos' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
       { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa' },
     ],
   },
   {
     id: 'conta',
-    label: 'Conta',
+    label: 'Minha Conta',
     items: [
       { icon: History, label: 'Histórico', tabId: 'history' },
       { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
@@ -165,21 +150,14 @@ const autonomoGroups: SidebarGroup[] = [
   },
 ];
 
-// CONTADOR - SEM Limpa Nome e Fiscal no sidebar (vão pro Marketplace)
+// CONTADOR - BI + Marketplace
 const contadorGroups: SidebarGroup[] = [
   {
-    id: 'bi',
-    label: 'BI Contabilidade',
+    id: 'dashboard',
+    label: 'Dashboard',
     items: [
-      { icon: Brain, label: 'Meu BI', tabId: 'bi', isLive: true },
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: BarChart3, label: 'Métricas', tabId: 'stats' },
-    ],
-  },
-  {
-    id: 'comunicacao',
-    label: 'Comunicação',
-    items: [
       { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
       { icon: Bell, label: 'Notificações', tabId: 'notifications' },
     ],
@@ -187,10 +165,11 @@ const contadorGroups: SidebarGroup[] = [
   freeToolsGroup,
   {
     id: 'marketplace',
-    label: 'Marketplace',
+    label: 'Contratar Serviços',
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
       { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening' },
       { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
       { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
@@ -215,40 +194,33 @@ const contadorGroups: SidebarGroup[] = [
   },
   {
     id: 'conta',
-    label: 'Conta',
+    label: 'Minha Conta',
     items: [
+      { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
       { icon: User, label: 'Meu Perfil', tabId: 'profile' },
     ],
   },
 ];
 
-// PARTNER - Comunicação centrada em SERVIÇOS (não pessoas)
+// PARTNER - Dashboard + Marketplace
 const partnerGroups: SidebarGroup[] = [
-  {
-    id: 'servicos-ativos',
-    label: 'Meus Serviços',
-    items: [
-      { icon: Shield, label: 'Chat Limpa Nome', tabId: 'chat-limpa-nome', isLive: true },
-      { icon: Scale, label: 'Chat Análise Fiscal', tabId: 'chat-fiscal', isLive: true },
-      { icon: Brain, label: 'Chat BI', tabId: 'chat-bi', isLive: true },
-      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
-    ],
-  },
   {
     id: 'dashboard',
     label: 'Dashboard',
     items: [
       { icon: LayoutDashboard, label: 'Visão Geral', tabId: 'overview' },
       { icon: BarChart3, label: 'Métricas', tabId: 'metrics' },
+      { icon: Bell, label: 'Notificações', tabId: 'notifications' },
     ],
   },
   freeToolsGroup,
   {
     id: 'marketplace',
-    label: 'Marketplace',
+    label: 'Contratar Serviços',
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-      { icon: Scale, label: 'Módulo Fiscal', tabId: 'modulo-fiscal' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal' },
+      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi' },
     ],
   },
   {
@@ -261,8 +233,9 @@ const partnerGroups: SidebarGroup[] = [
   },
   {
     id: 'conta',
-    label: 'Conta',
+    label: 'Minha Conta',
     items: [
+      { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
       { icon: User, label: 'Meu Perfil', tabId: 'profile' },
       { icon: Settings, label: 'Configurações', tabId: 'settings' },
     ],
@@ -298,15 +271,15 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   const handleItemClick = (tabId: string) => {
-    // Chats de serviços → navegação direta (serviço, não pessoa)
-    const chatRoutes: Record<string, string> = {
-      'chat-limpa-nome': '/chat/guilherme', // Limpa Nome → Guilherme
-      'chat-fiscal': '/chat/guilherme',      // Análise Fiscal → Guilherme  
-      'chat-bi': '/chat/cesar',              // BI Contabilidade → César
+    // Serviços do Marketplace → páginas de contratação
+    const serviceRoutes: Record<string, string> = {
+      'servico-limpa-nome': '/limpa-nome',
+      'servico-fiscal': '/modulo-fiscal',
+      'servico-bi': '/bi-contabilidade',
     };
 
-    if (chatRoutes[tabId]) {
-      navigate(chatRoutes[tabId]);
+    if (serviceRoutes[tabId]) {
+      navigate(serviceRoutes[tabId]);
       return;
     }
 
@@ -349,13 +322,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           'w-full flex items-center gap-2.5 px-3 py-2 rounded-lg transition-all duration-150 group relative',
           'touch-manipulation active:scale-[0.98]',
           active
-            ? 'bg-primary/10 text-primary'
-            : 'text-muted-foreground hover:bg-muted/50 hover:text-foreground'
+            ? 'bg-sidebar-accent text-sidebar-primary'
+            : 'text-sidebar-foreground/70 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground'
         )}
       >
         <Icon className={cn(
           'h-4 w-4 shrink-0 transition-colors',
-          active ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
+          active ? 'text-sidebar-primary' : 'text-sidebar-foreground/60 group-hover:text-sidebar-foreground'
         )} />
         {!collapsed && (
           <>
@@ -369,7 +342,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           </>
         )}
         {active && (
-          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-primary rounded-r-full" />
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-sidebar-primary rounded-r-full" />
         )}
       </button>
     );
@@ -396,20 +369,20 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
-          'bg-card border-r border-border safe-area-top overflow-hidden',
+          'bg-sidebar border-r border-sidebar-border safe-area-top overflow-hidden',
           collapsed ? 'w-14' : 'w-60'
         )}
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-3 py-3 border-b border-border">
+        <div className="flex items-center justify-between px-3 py-3 border-b border-sidebar-border">
           <div className={cn('flex items-center gap-2', collapsed && 'justify-center w-full')}>
-            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-sm">
-              <Brain className="h-4 w-4 text-primary-foreground" />
+            <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-sidebar-primary to-sidebar-primary/60 flex items-center justify-center shadow-sm">
+              <Brain className="h-4 w-4 text-sidebar-primary-foreground" />
             </div>
             {!collapsed && (
               <div>
-                <span className="text-sm font-bold text-foreground tracking-tight">AtentAI</span>
-                <span className="block text-[9px] text-primary font-medium -mt-0.5">{getVariantLabel()}</span>
+                <span className="text-sm font-bold text-sidebar-foreground tracking-tight">AtentAI</span>
+                <span className="block text-[9px] text-sidebar-primary font-medium -mt-0.5">{getVariantLabel()}</span>
               </div>
             )}
           </div>
@@ -420,7 +393,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           variant="ghost"
           size="icon"
           onClick={onToggle}
-          className="absolute -right-3 top-6 h-6 w-6 rounded-full bg-card border border-border text-muted-foreground hover:text-foreground hidden lg:flex shadow-sm"
+          className="absolute -right-3 top-6 h-6 w-6 rounded-full bg-sidebar border border-sidebar-border text-sidebar-foreground/70 hover:text-sidebar-foreground hidden lg:flex shadow-sm"
         >
           {collapsed ? <ChevronRight className="h-3 w-3" /> : <ChevronLeft className="h-3 w-3" />}
         </Button>
@@ -430,7 +403,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
           {groups.map((group) => (
             <div key={group.id}>
               {!collapsed && (
-                <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+                <p className="px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-sidebar-foreground/50">
                   {group.label}
                 </p>
               )}
@@ -444,16 +417,16 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         </nav>
 
         {/* User & Logout */}
-        <div className="px-2 py-2 border-t border-border">
+        <div className="px-2 py-2 border-t border-sidebar-border">
           {!collapsed && (
             <div className="flex items-center gap-2 px-3 py-2 mb-1">
-              <div className="h-7 w-7 rounded-full bg-primary/10 flex items-center justify-center">
-                <span className="text-xs font-semibold text-primary">
+              <div className="h-7 w-7 rounded-full bg-sidebar-primary/20 flex items-center justify-center">
+                <span className="text-xs font-semibold text-sidebar-primary">
                   {profile?.full_name?.[0] || user?.email?.[0]?.toUpperCase() || 'U'}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground truncate">
+                <p className="text-xs font-medium text-sidebar-foreground truncate">
                   {profile?.full_name?.split(' ')[0] || 'Usuário'}
                 </p>
               </div>
@@ -465,7 +438,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
                 onClick={handleSignOut}
                 className={cn(
                   'w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all',
-                  'text-muted-foreground hover:bg-destructive/10 hover:text-destructive',
+                  'text-sidebar-foreground/60 hover:bg-destructive/20 hover:text-destructive',
                   'touch-manipulation active:scale-[0.98]',
                   collapsed && 'justify-center'
                 )}
