@@ -75,7 +75,7 @@ import AffiliateOnboardingFlow from "./pages/AffiliateOnboardingFlow";
 import AffiliateOfferPage from "./pages/AffiliateOfferPage";
 import PartnerInvite from "./pages/PartnerInvite";
 import PublicOnboarding from "./pages/PublicOnboarding";
-import MinhasSolicitacoesPage from "./pages/MinhasSolicitacoesPage";
+// MinhasSolicitacoesPage removed - functionality integrated into dashboard panels
 import UserPanelBI from "./pages/UserPanelBI";
 import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
 import LimpaNomeLanding from "./pages/LimpaNomeLanding";
@@ -178,9 +178,10 @@ const App = () => (
                   <LimpaNomeStatusPage />
                 </ProtectedRoute>
               } />
+              {/* Redirect old minhas-solicitacoes route to dashboard */}
               <Route path="/minhas-solicitacoes" element={
                 <ProtectedRoute>
-                  <MinhasSolicitacoesPage />
+                  <DashboardRouter />
                 </ProtectedRoute>
               } />
               <Route path="/meu-painel" element={
