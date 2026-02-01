@@ -1533,36 +1533,45 @@ export type Database = {
       financial_costs: {
         Row: {
           amount_cents: number
+          category: string | null
           cost_date: string
           cost_type: string
           created_at: string
           description: string | null
           id: string
+          is_recurring: boolean | null
           notes: string | null
+          recurring_period: string | null
           service_slug: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
           amount_cents?: number
+          category?: string | null
           cost_date?: string
           cost_type: string
           created_at?: string
           description?: string | null
           id?: string
+          is_recurring?: boolean | null
           notes?: string | null
+          recurring_period?: string | null
           service_slug?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
           amount_cents?: number
+          category?: string | null
           cost_date?: string
           cost_type?: string
           created_at?: string
           description?: string | null
           id?: string
+          is_recurring?: boolean | null
           notes?: string | null
+          recurring_period?: string | null
           service_slug?: string | null
           updated_at?: string
           user_id?: string
@@ -1572,6 +1581,7 @@ export type Database = {
       financial_partners: {
         Row: {
           created_at: string
+          display_order: number | null
           email: string | null
           id: string
           is_active: boolean | null
@@ -1582,6 +1592,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          display_order?: number | null
           email?: string | null
           id?: string
           is_active?: boolean | null
@@ -1592,6 +1603,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          display_order?: number | null
           email?: string | null
           id?: string
           is_active?: boolean | null
@@ -1599,6 +1611,51 @@ export type Database = {
           pix_key?: string | null
           pix_key_type?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      financial_revenues: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          notes: string | null
+          plan_name: string | null
+          revenue_date: string
+          revenue_type: string
+          service_slug: string
+          source: string
+          stripe_payment_id: string | null
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          plan_name?: string | null
+          revenue_date?: string
+          revenue_type?: string
+          service_slug: string
+          source?: string
+          stripe_payment_id?: string | null
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          notes?: string | null
+          plan_name?: string | null
+          revenue_date?: string
+          revenue_type?: string
+          service_slug?: string
+          source?: string
+          stripe_payment_id?: string | null
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2685,6 +2742,19 @@ export type Database = {
           p_user_email: string
         }
         Returns: boolean
+      }
+      calculate_partner_share: {
+        Args: {
+          p_amount_cents: number
+          p_date?: string
+          p_service_category: string
+        }
+        Returns: {
+          partner_id: string
+          partner_name: string
+          percentage: number
+          share_cents: number
+        }[]
       }
       check_rate_limit: {
         Args: {
