@@ -14,6 +14,54 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_services: {
+        Row: {
+          bg_color: string | null
+          color: string | null
+          created_at: string | null
+          description: string | null
+          icon: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          price_cents: number | null
+          priority: string | null
+          responsible: Database["public"]["Enums"]["service_responsible"]
+          slug: string
+          updated_at: string | null
+        }
+        Insert: {
+          bg_color?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          price_cents?: number | null
+          priority?: string | null
+          responsible?: Database["public"]["Enums"]["service_responsible"]
+          slug: string
+          updated_at?: string | null
+        }
+        Update: {
+          bg_color?: string | null
+          color?: string | null
+          created_at?: string | null
+          description?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          price_cents?: number | null
+          priority?: string | null
+          responsible?: Database["public"]["Enums"]["service_responsible"]
+          slug?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       affiliate_commissions: {
         Row: {
           affiliate_id: string
@@ -2579,6 +2627,7 @@ export type Database = {
         | "sa_aberta"
         | "cooperativa"
       consultation_status: "pending" | "scheduled" | "completed" | "cancelled"
+      service_responsible: "guilherme" | "cesar" | "contador"
       subscription_status: "active" | "cancelled" | "pending" | "expired"
       tax_regime:
         | "simples_nacional"
@@ -2737,6 +2786,7 @@ export const Constants = {
         "cooperativa",
       ],
       consultation_status: ["pending", "scheduled", "completed", "cancelled"],
+      service_responsible: ["guilherme", "cesar", "contador"],
       subscription_status: ["active", "cancelled", "pending", "expired"],
       tax_regime: [
         "simples_nacional",
