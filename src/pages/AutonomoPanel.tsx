@@ -81,6 +81,11 @@ import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
 import { CashbackHistoryCard } from '@/components/calculator/CashbackHistoryCard';
 import { ComingSoonSection } from '@/components/layout/ComingSoonSection';
+import TaxTransitionSimulator from '@/components/simulator/TaxTransitionSimulator';
+import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineReforma';
+import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
+import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
+import { AllServicesHub } from '@/components/services/AllServicesHub';
 
 interface AutonomoProfile {
   id: string;
@@ -566,17 +571,7 @@ const AutonomoPanel: React.FC = () => {
           </div>
         );
       case 'subscription':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Minha Assinatura</h2>
-              <p className="text-muted-foreground">
-                Gerencie seu plano Autônomo Master
-              </p>
-            </div>
-            <SubscriptionHistoryCard />
-          </div>
-        );
+        return <SubscriptionManagement />;
       case 'support':
         return (
           <div className="space-y-6">
@@ -608,74 +603,20 @@ const AutonomoPanel: React.FC = () => {
           </div>
         );
       case 'ferramentas-gratuitas':
+        return <EmbeddedFerramentasLC214 />;
+      case 'ferramentas-lc214':
+        return <EmbeddedFerramentasLC214 />;
+      case 'transicao':
         return (
           <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Ferramentas Gratuitas</h2>
-              <p className="text-muted-foreground">Acesse recursos gratuitos sobre a Reforma Tributária</p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Card 
-                className="cursor-pointer hover:bg-muted/50 transition-colors border-primary/20"
-                onClick={() => navigate('/ferramentas-lc214')}
-              >
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-primary/10">
-                      <Calculator className="h-6 w-6 text-primary" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">Ferramentas LC 214</h3>
-                      <p className="text-sm text-muted-foreground">Calculadoras e alertas</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card 
-                className="cursor-pointer hover:bg-muted/50 transition-colors border-emerald-500/20"
-                onClick={() => navigate('/transicao')}
-              >
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-emerald-500/10">
-                      <TrendingUp className="h-6 w-6 text-emerald-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">Simulador Transição</h3>
-                      <p className="text-sm text-muted-foreground">Impacto até 2033</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-              <Card 
-                className="cursor-pointer hover:bg-muted/50 transition-colors border-amber-500/20"
-                onClick={() => navigate('/timeline-reforma')}
-              >
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 rounded-xl bg-amber-500/10">
-                      <Clock className="h-6 w-6 text-amber-600" />
-                    </div>
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-foreground">Timeline Reforma</h3>
-                      <p className="text-sm text-muted-foreground">Mudanças ano a ano</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
+            <TaxTransitionSimulator embedded />
           </div>
         );
+      case 'timeline':
+        return <EmbeddedTimelineReforma variant="autonomo" />;
       case 'servicos':
-        return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Contratar Serviços</h2>
-              <p className="text-muted-foreground">Explore todos os serviços disponíveis para autônomos</p>
-            </div>
-            <ServicesHubModern />
-          </div>
-        );
+      case 'ver-todos-servicos':
+        return <AllServicesHub />;
       case 'overview':
       default:
         return renderDashboard();

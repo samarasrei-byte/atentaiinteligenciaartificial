@@ -36,6 +36,11 @@ import {
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { CreditRepairManagement } from '@/components/admin/CreditRepairManagement';
 import { FiscalAnalysisManagement } from '@/components/admin/FiscalAnalysisManagement';
+import TaxTransitionSimulator from '@/components/simulator/TaxTransitionSimulator';
+import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineReforma';
+import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
+import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
+import { AllServicesHub } from '@/components/services/AllServicesHub';
 
 interface ContadorProfile {
   id: string;
@@ -635,6 +640,22 @@ const ContadorPanel = () => {
               </CardContent>
             </Card>
           )}
+
+          {activeTab === 'subscription' && <SubscriptionManagement />}
+
+          {activeTab === 'ferramentas-gratuitas' && <EmbeddedFerramentasLC214 />}
+
+          {activeTab === 'ferramentas-lc214' && <EmbeddedFerramentasLC214 />}
+
+          {activeTab === 'transicao' && (
+            <div className="space-y-6">
+              <TaxTransitionSimulator embedded />
+            </div>
+          )}
+
+          {activeTab === 'timeline' && <EmbeddedTimelineReforma variant="contador" />}
+
+          {activeTab === 'servicos' && <AllServicesHub />}
 
           {activeTab === 'profile' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

@@ -324,17 +324,8 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
       return;
     }
 
-    // Ferramentas gratuitas → navegação externa
-    const externalRoutes: Record<string, string> = {
-      'ferramentas-lc214': '/ferramentas-lc214',
-      'transicao': '/transicao',
-      'timeline': '/timeline-reforma',
-    };
-
-    if (externalRoutes[tabId]) {
-      navigate(externalRoutes[tabId]);
-      return;
-    }
+    // Todas as rotas agora são internas - navegação via tab
+    // Removido redirecionamento externo para manter usuário no painel
 
     // Navegação padrão via tab
     if (onTabChange) {
