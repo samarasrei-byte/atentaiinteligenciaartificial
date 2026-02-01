@@ -160,6 +160,7 @@ const adminGroups: SidebarGroup[] = [
     label: 'Financeiro',
     icon: Wallet,
     items: [
+      { icon: Wallet, label: 'Módulo Completo', tabId: 'financial-module' },
       { icon: Wallet, label: 'Receitas', tabId: 'revenue' },
       { icon: CreditCard, label: 'Assinaturas', tabId: 'subscriptions' },
       { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },

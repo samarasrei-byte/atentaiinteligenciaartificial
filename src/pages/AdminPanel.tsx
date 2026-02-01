@@ -42,6 +42,7 @@ import { AdminAuditPage } from '@/components/admin/audit';
 import { RevenuePartnerSplitDashboard } from '@/components/admin/RevenuePartnerSplitDashboard';
 import { SmartChatHub } from '@/components/smart-chat';
 import StripeSidebar from '@/components/layout/StripeSidebar';
+import { FinancialModule } from '@/components/admin/financial';
 // Novos componentes centralizados
 import GuilhermeChatHub from '@/components/admin/GuilhermeChatHub';
 import CesarChatHub from '@/components/admin/CesarChatHub';
@@ -576,6 +577,7 @@ const AdminPanel = () => {
           {activeTab === 'audit-page' && <AdminAuditPage />}
           {activeTab === 'bi-accounting' && <BIAccountingModule />}
           {activeTab === 'partner-split' && <RevenuePartnerSplitDashboard />}
+          {activeTab === 'financial-module' && <FinancialModule />}
 
           {/* =====================================================
               CHAT GUILHERME - Central de Atendimento
