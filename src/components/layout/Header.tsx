@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users } from "lucide-react";
+import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
   onNavigate: (section: string) => void;
@@ -9,6 +10,7 @@ interface HeaderProps {
 
 export function Header({ onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   // Navigation menu items - Updated 2026-01-28
   const navItems = [
@@ -64,19 +66,31 @@ export function Header({ onNavigate }: HeaderProps) {
             ))}
           </nav>
 
-          {/* CTA Buttons */}
+          {/* CTA Buttons - Show different options based on auth state */}
           <div className="hidden md:flex items-center gap-3">
             <Button variant="outline" size="sm" asChild className="border-primary/50 text-primary hover:bg-primary/10">
               <Link to="/planos-perfil" className="flex items-center gap-2">
                 Ver Planos
               </Link>
             </Button>
-            <Button size="sm" asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
-              <Link to="/auth" className="flex items-center gap-2">
-                <LogIn className="w-4 h-4" />
-                Entrar
-              </Link>
-            </Button>
+            
+            {!loading && user ? (
+              // User is logged in - show Dashboard button
+              <Button size="sm" asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
+                <Link to="/dashboard" className="flex items-center gap-2">
+                  <LayoutDashboard className="w-4 h-4" />
+                  Meu Painel
+                </Link>
+              </Button>
+            ) : (
+              // User is not logged in - show Login button
+              <Button size="sm" asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
+                <Link to="/auth" className="flex items-center gap-2">
+                  <LogIn className="w-4 h-4" />
+                  Entrar
+                </Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -125,15 +139,29 @@ export function Header({ onNavigate }: HeaderProps) {
                 )
               ))}
               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-border/50">
-                <Button 
-                  className="justify-start gap-3 h-12"
-                  asChild
-                >
-                  <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                    <LogIn className="w-5 h-5" />
-                    Entrar / Criar Conta
-                  </Link>
-                </Button>
+                {!loading && user ? (
+                  // User is logged in - show Dashboard button
+                  <Button 
+                    className="justify-start gap-3 h-12"
+                    asChild
+                  >
+                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
+                      <LayoutDashboard className="w-5 h-5" />
+                      Meu Painel
+                    </Link>
+                  </Button>
+                ) : (
+                  // User is not logged in - show Login button
+                  <Button 
+                    className="justify-start gap-3 h-12"
+                    asChild
+                  >
+                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
+                      <LogIn className="w-5 h-5" />
+                      Entrar / Criar Conta
+                    </Link>
+                  </Button>
+                )}
               </div>
             </nav>
           </div>

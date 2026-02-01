@@ -278,10 +278,10 @@ export default function ChatCesar() {
             variant="ghost" 
             size="sm" 
             className="mb-4 w-fit -ml-2"
-            onClick={() => navigate('/minhas-solicitacoes')}
+            onClick={() => navigate('/dashboard')}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Minhas Solicitações
+            Voltar ao Painel
           </Button>
           
           {/* Chat Container */}

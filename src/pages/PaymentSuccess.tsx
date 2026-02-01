@@ -270,10 +270,10 @@ export default function PaymentSuccess() {
             {user ? (
               <Button 
                 size="lg" 
-                onClick={() => navigate('/minhas-solicitacoes')}
+                onClick={() => navigate('/dashboard')}
                 className="bg-primary hover:bg-primary/90"
               >
-                Acompanhar Pedido
+                Ir para Meu Painel
                 <ArrowRight className="h-4 w-4 ml-2" />
               </Button>
             ) : (
