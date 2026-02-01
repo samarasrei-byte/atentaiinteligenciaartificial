@@ -15,6 +15,7 @@ import { CreditRepairMetrics } from './CreditRepairMetrics';
 import { PartnerUserManagement } from './PartnerUserManagement';
 import { PartnerWithdrawalPanel } from './PartnerWithdrawalPanel';
 import { PartnerFinancialDashboard } from './PartnerFinancialDashboard';
+import { ServiceDocuments } from './documents/ServiceDocuments';
 import {
   Search,
   Loader2,
@@ -216,10 +217,14 @@ export function CreditRepairManagement() {
 
   return (
     <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-3xl grid-cols-5">
+      <TabsList className="grid w-full max-w-4xl grid-cols-6">
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
+        </TabsTrigger>
+        <TabsTrigger value="documents" className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          Documentos
         </TabsTrigger>
         <TabsTrigger value="users" className="flex items-center gap-2">
           <Users className="h-4 w-4" />
@@ -238,6 +243,14 @@ export function CreditRepairManagement() {
           Métricas
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="documents">
+        <ServiceDocuments 
+          serviceType="limpa-nome" 
+          serviceName="Limpa Nome" 
+          serviceColor="emerald" 
+        />
+      </TabsContent>
 
       <TabsContent value="users">
         <PartnerUserManagement />

@@ -19,6 +19,7 @@ import { BIReports } from './BIReports';
 import { BIAutomations } from './BIAutomations';
 import { BIRequestsInbox } from './BIRequestsInbox';
 import { BIRealtimeNotifications } from './BIRealtimeNotifications';
+import { ServiceDocuments } from '../documents/ServiceDocuments';
 
 export const BIAccountingModule: React.FC = () => {
   const [activeTab, setActiveTab] = useState('inbox');
@@ -84,6 +85,10 @@ export const BIAccountingModule: React.FC = () => {
             <Zap className="h-4 w-4" />
             Automações
           </TabsTrigger>
+          <TabsTrigger value="documents" className="data-[state=active]:bg-white data-[state=active]:shadow-sm gap-2">
+            <FileText className="h-4 w-4" />
+            Documentos
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="inbox" className="space-y-4">
@@ -115,6 +120,14 @@ export const BIAccountingModule: React.FC = () => {
 
         <TabsContent value="automations" className="space-y-4">
           <BIAutomations />
+        </TabsContent>
+
+        <TabsContent value="documents" className="space-y-4">
+          <ServiceDocuments 
+            serviceType="bi" 
+            serviceName="BI Contabilidade" 
+            serviceColor="indigo" 
+          />
         </TabsContent>
       </Tabs>
     </div>

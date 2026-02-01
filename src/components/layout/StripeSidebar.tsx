@@ -117,14 +117,7 @@ const adminGroups: SidebarGroup[] = [
       { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
     ],
   },
-  {
-    id: 'documentos',
-    label: 'Documentos',
-    icon: FileText,
-    items: [
-      { icon: FileText, label: 'Central de Documentos', tabId: 'documents-central' },
-    ],
-  },
+  // REMOVIDO: Central de Documentos - documentos agora ficam dentro de cada serviço
   {
     id: 'servicos',
     label: 'Serviços',

@@ -18,6 +18,7 @@ import {
   TrendingUp, FileCheck
 } from "lucide-react";
 import { MaskedInput } from "@/components/ui/masked-input";
+import { ServiceDocuments } from "./documents/ServiceDocuments";
 
 type FiscalRequest = {
   id: string;
@@ -198,7 +199,21 @@ export function FiscalAnalysisManagement() {
   }
 
   return (
-    <div className="space-y-6">
+    <Tabs defaultValue="requests" className="space-y-6">
+      <TabsList className="mb-4">
+        <TabsTrigger value="requests">Solicitações</TabsTrigger>
+        <TabsTrigger value="documents">Documentos</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="documents">
+        <ServiceDocuments 
+          serviceType="fiscal" 
+          serviceName="Análise Fiscal" 
+          serviceColor="violet" 
+        />
+      </TabsContent>
+
+      <TabsContent value="requests" className="space-y-6">
       {/* Stats Cards */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         <Card>
@@ -520,6 +535,7 @@ export function FiscalAnalysisManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </TabsContent>
+    </Tabs>
   );
 }
