@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { useNotifications } from '@/hooks/useNotifications';
+import { useServiceRequestNotifications } from '@/hooks/useServiceRequestNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
 import AdminSidebar from '@/components/layout/AdminSidebar';
 import { StatsCard } from '@/components/dashboard/StatsCard';
@@ -118,6 +119,9 @@ const AdminPanel = () => {
   const { user, hasRole, loading: authLoading } = useAuth();
   const { toast } = useToast();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
+  
+  // Real-time notifications for new service requests
+  useServiceRequestNotifications({ enableSound: true, responsibleFilter: 'all' });
   
   const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState<UserWithRoles[]>([]);

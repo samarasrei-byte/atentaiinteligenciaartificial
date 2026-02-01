@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -35,6 +36,7 @@ interface ServiceItem {
 }
 
 export const AllServicesHub: React.FC = () => {
+  const navigate = useNavigate();
   const { subscription, hasRole } = useAuth();
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [selectedServiceKey, setSelectedServiceKey] = useState<string>('');
@@ -145,6 +147,15 @@ export const AllServicesHub: React.FC = () => {
   ];
 
   const handleContractService = (service: ServiceItem) => {
+    // Services that use Premium Onboarding flow
+    const onboardingServices = ['analise-fiscal', 'bi-contabilidade', 'abertura-empresa', 'ir'];
+    
+    if (onboardingServices.includes(service.serviceKey)) {
+      navigate(`/onboarding/${service.serviceKey}`);
+      return;
+    }
+    
+    // Limpa Nome goes to checkout
     setSelectedServiceKey(service.serviceKey);
     setCheckoutModalOpen(true);
   };
