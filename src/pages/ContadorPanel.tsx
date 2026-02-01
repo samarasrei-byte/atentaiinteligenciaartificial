@@ -41,7 +41,7 @@ import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineRe
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
-import { UserSettings } from '@/components/user-panel/UserSettings';
+import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 
 interface ContadorProfile {
@@ -659,7 +659,7 @@ const ContadorPanel = () => {
 
           {activeTab === 'timeline' && <EmbeddedTimelineReforma variant="contador" />}
 
-          {(activeTab === 'settings' || activeTab === 'configuracoes') && <UserSettings />}
+          {(activeTab === 'settings' || activeTab === 'configuracoes' || activeTab === 'subscription' || activeTab === 'assinatura') && <UnifiedSettingsPage />}
 
           {activeTab === 'servicos' && <AllServicesHub />}
 

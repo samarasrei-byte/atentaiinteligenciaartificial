@@ -15,7 +15,7 @@ import {
   CheckCircle,
   Star
 } from 'lucide-react';
-import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
+import { ServiceCheckoutModal } from '@/components/services/ServiceCheckoutModal';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice, SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
 
@@ -30,115 +30,123 @@ interface ServiceItem {
   isPopular?: boolean;
   isNew?: boolean;
   successFee?: boolean;
-  serviceKey?: string;
+  /** Key for the ServiceCheckoutModal */
+  serviceKey: string;
 }
 
-const services: ServiceItem[] = [
-  {
-    id: 'limpa-nome',
-    name: 'Limpa Nome',
-    description: 'Regularize seu CPF e limpe restrições nos bureaus de crédito',
-    icon: Shield,
-    gradient: 'from-emerald-500 to-green-600',
-    priceCents: 78000,
-    features: [
-      'Análise completa do histórico',
-      'Remoção de registros SERASA/SPC',
-      'Acompanhamento em tempo real',
-      'Bônus: Regularização de Score',
-    ],
-    isPopular: true,
-    serviceKey: 'limpa-nome',
-  },
-  {
-    id: 'analise-fiscal',
-    name: 'Análise Fiscal',
-    description: 'Recuperação de créditos tributários com taxa de sucesso',
-    icon: Scale,
-    gradient: 'from-blue-500 to-indigo-600',
-    priceCents: 0,
-    features: [
-      'Análise 100% gratuita',
-      'Identificação de oportunidades',
-      'Relatório completo auditável',
-      'Pague apenas no êxito (50%)',
-    ],
-    successFee: true,
-    serviceKey: 'analise-fiscal',
-  },
-  {
-    id: 'bi-contabilidade',
-    name: 'BI+ Contabilidade',
-    description: 'Inteligência financeira completa para sua empresa',
-    icon: Brain,
-    gradient: 'from-purple-500 to-pink-600',
-    priceCents: 99000,
-    features: [
-      'Dashboard em tempo real',
-      'IA + Análise humana',
-      'Insights automáticos',
-      'Suporte especializado',
-    ],
-    isNew: true,
-    serviceKey: 'bi-contabilidade',
-  },
-  {
-    id: 'abertura-empresa',
-    name: 'Abertura de Empresa',
-    description: 'Abertura completa de CNPJ com suporte contábil',
-    icon: Building2,
-    gradient: 'from-amber-500 to-orange-600',
-    priceCents: 78000,
-    features: [
-      'Análise do melhor regime',
-      'Registro na Junta Comercial',
-      'Alvará e licenças',
-      'CNPJ ativo em até 7 dias',
-    ],
-    serviceKey: 'abertura-empresa',
-  },
-  {
-    id: 'ir',
-    name: 'Imposto de Renda',
-    description: 'Declaração completa do IR por especialistas',
-    icon: FileText,
-    gradient: 'from-rose-500 to-red-600',
-    priceCents: 20000,
-    features: [
-      'Análise de documentos',
-      'Otimização de deduções',
-      'Envio para Receita Federal',
-      'Acompanhamento de restituição',
-    ],
-  },
-  {
-    id: 'certidoes',
-    name: 'Certidões',
-    description: 'Emissão de certidões negativas e positivas',
-    icon: ScrollText,
-    gradient: 'from-cyan-500 to-teal-600',
-    priceCents: 8000,
-    features: [
-      'Certidão Negativa de Débitos',
-      'CND Federal, Estadual e Municipal',
-      'FGTS e Trabalhista',
-      'Entrega em até 24h',
-    ],
-  },
-];
-
 export const AllServicesHub: React.FC = () => {
-  const { subscription } = useAuth();
-  const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState<string | null>(null);
+  const { subscription, hasRole } = useAuth();
+  const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
+  const [selectedServiceKey, setSelectedServiceKey] = useState<string>('');
   
   const isSubscriber = subscription?.subscribed || false;
 
+  // Detect if user is Autônomo (PF) or Empresa (PJ) to set Limpa Nome type
+  const isAutonomo = hasRole('autonomo');
+  const limpaNomeKey = isAutonomo ? 'limpa-nome-pf' : 'limpa-nome-pj';
+  const limpaNomePrice = isAutonomo 
+    ? SUBSCRIBER_DISCOUNTS.credit_repair_pf.basePrice 
+    : SUBSCRIBER_DISCOUNTS.credit_repair_pj.basePrice;
+
+  const services: ServiceItem[] = [
+    {
+      id: 'limpa-nome',
+      name: isAutonomo ? 'Limpa Nome (CPF)' : 'Limpa Nome (CNPJ)',
+      description: 'Regularize restrições nos bureaus de crédito',
+      icon: Shield,
+      gradient: 'from-emerald-500 to-green-600',
+      priceCents: limpaNomePrice,
+      features: [
+        'Análise completa do histórico',
+        'Remoção de registros SERASA/SPC',
+        'Acompanhamento em tempo real',
+        'Bônus: Regularização de Score',
+      ],
+      isPopular: true,
+      serviceKey: limpaNomeKey,
+    },
+    {
+      id: 'analise-fiscal',
+      name: 'Análise Fiscal',
+      description: 'Recuperação de créditos tributários com taxa de sucesso',
+      icon: Scale,
+      gradient: 'from-blue-500 to-indigo-600',
+      priceCents: 0,
+      features: [
+        'Análise 100% gratuita',
+        'Identificação de oportunidades',
+        'Relatório completo auditável',
+        'Pague apenas no êxito (50%)',
+      ],
+      successFee: true,
+      serviceKey: 'analise-fiscal',
+    },
+    {
+      id: 'bi-contabilidade',
+      name: 'BI+ Contabilidade',
+      description: 'Inteligência financeira completa para sua empresa',
+      icon: Brain,
+      gradient: 'from-purple-500 to-pink-600',
+      priceCents: 0,
+      features: [
+        'Dashboard em tempo real',
+        'IA + Análise humana',
+        'Insights automáticos',
+        'Suporte especializado',
+      ],
+      isNew: true,
+      serviceKey: 'bi-contabilidade',
+    },
+    {
+      id: 'abertura-empresa',
+      name: 'Abertura de Empresa',
+      description: 'Abertura completa de CNPJ com suporte contábil',
+      icon: Building2,
+      gradient: 'from-amber-500 to-orange-600',
+      priceCents: 78000,
+      features: [
+        'Análise do melhor regime',
+        'Registro na Junta Comercial',
+        'Alvará e licenças',
+        'CNPJ ativo em até 7 dias',
+      ],
+      serviceKey: 'abertura-empresa', // TODO: implement checkout
+    },
+    {
+      id: 'ir',
+      name: 'Imposto de Renda',
+      description: 'Declaração completa do IR por especialistas',
+      icon: FileText,
+      gradient: 'from-rose-500 to-red-600',
+      priceCents: 20000,
+      features: [
+        'Análise de documentos',
+        'Otimização de deduções',
+        'Envio para Receita Federal',
+        'Acompanhamento de restituição',
+      ],
+      serviceKey: 'ir', // TODO: implement checkout
+    },
+    {
+      id: 'certidoes',
+      name: 'Certidões',
+      description: 'Emissão de certidões negativas e positivas',
+      icon: ScrollText,
+      gradient: 'from-cyan-500 to-teal-600',
+      priceCents: 8000,
+      features: [
+        'Certidão Negativa de Débitos',
+        'CND Federal, Estadual e Municipal',
+        'FGTS e Trabalhista',
+        'Entrega em até 24h',
+      ],
+      serviceKey: 'certidoes', // TODO: implement checkout
+    },
+  ];
+
   const handleContractService = (service: ServiceItem) => {
-    if (service.serviceKey) {
-      setSelectedService(service.serviceKey);
-      setUpgradeModalOpen(true);
-    }
+    setSelectedServiceKey(service.serviceKey);
+    setCheckoutModalOpen(true);
   };
 
   const getDisplayPrice = (service: ServiceItem) => {
@@ -146,20 +154,29 @@ export const AllServicesHub: React.FC = () => {
       return 'Grátis + 50% êxito';
     }
     
+    if (service.priceCents === 0) {
+      return 'Sob Consulta';
+    }
+
     // Check for subscriber discount
-    const discountKey = service.id.replace('-', '_') as keyof typeof SUBSCRIBER_DISCOUNTS;
+    const discountKey = service.id === 'limpa-nome' 
+      ? (isAutonomo ? 'credit_repair_pf' : 'credit_repair_pj')
+      : service.id.replace('-', '_') as keyof typeof SUBSCRIBER_DISCOUNTS;
+    
     if (isSubscriber && SUBSCRIBER_DISCOUNTS[discountKey]) {
       const discountedPrice = SUBSCRIBER_DISCOUNTS[discountKey].discountedPrice;
-      return (
-        <div className="flex items-center gap-2">
-          <span className="line-through text-muted-foreground text-sm">
-            {formatPrice(service.priceCents)}
-          </span>
-          <span className="text-foreground font-bold">
-            {formatPrice(discountedPrice)}
-          </span>
-        </div>
-      );
+      if (discountedPrice < service.priceCents) {
+        return (
+          <div className="flex items-center gap-2">
+            <span className="line-through text-muted-foreground text-sm">
+              {formatPrice(service.priceCents)}
+            </span>
+            <span className="text-foreground font-bold">
+              {formatPrice(discountedPrice)}
+            </span>
+          </div>
+        );
+      }
     }
     
     return formatPrice(service.priceCents);
@@ -275,13 +292,12 @@ export const AllServicesHub: React.FC = () => {
         })}
       </div>
 
-      {/* Upgrade Modal */}
-      <InPanelUpgradeModal
-        isOpen={upgradeModalOpen}
-        onClose={() => setUpgradeModalOpen(false)}
-        upgradeType="service"
-        serviceKey={selectedService || undefined}
-        onSuccess={() => setUpgradeModalOpen(false)}
+      {/* Checkout Modal */}
+      <ServiceCheckoutModal
+        isOpen={checkoutModalOpen}
+        onClose={() => setCheckoutModalOpen(false)}
+        serviceKey={selectedServiceKey}
+        onSuccess={() => setCheckoutModalOpen(false)}
       />
     </div>
   );

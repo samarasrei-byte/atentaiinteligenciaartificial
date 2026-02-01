@@ -93,7 +93,7 @@ import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineRe
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
 import { SubscriptionManagement } from '@/components/subscription/SubscriptionManagement';
 import { AllServicesHub } from '@/components/services/AllServicesHub';
-import { UserSettings } from '@/components/user-panel/UserSettings';
+import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 
 const EmbeddedAIAgent = () => {
@@ -558,7 +558,8 @@ const EmpresaPanel = () => {
           </div>
         );
       case 'subscription':
-        return <SubscriptionManagement />;
+      case 'assinatura':
+        return <UnifiedSettingsPage />;
       case 'economia':
         return (
           <div className="space-y-6">
@@ -662,7 +663,7 @@ const EmpresaPanel = () => {
         return <EmbeddedTimelineReforma variant="empresa" />;
       case 'settings':
       case 'configuracoes':
-        return <UserSettings />;
+        return <UnifiedSettingsPage />;
       case 'servicos':
       case 'ver-todos-servicos':
         return <AllServicesHub />;
