@@ -154,31 +154,11 @@ const DashboardRouter = () => {
               return;
             }
 
-            // Check if user only has 'user' role (default)
-            const hasAnySpecificRole = roles.length > 0 && !roles.every(r => r === 'user');
-            
-            // If user only has 'user' role, check if they need onboarding
-            if (!hasAnySpecificRole) {
-              const { data: companyData } = await withTimeout(
-                (async () =>
-                  await supabase
-                    .from('companies')
-                    .select('id')
-                    .eq('user_id', user.id)
-                    .maybeSingle()
-                )(),
-                3000,
-                'companies.maybeSingle'
-              );
-
-              if (!companyData) {
-                if (!hasNavigatedRef.current) {
-                  hasNavigatedRef.current = true;
-                  navigate('/bem-vindo', { replace: true });
-                }
-                return;
-              }
-            }
+            // IMPORTANT: Never redirect existing users to /bem-vindo
+            // The /bem-vindo page is only for brand-new signups that come from the Auth page
+            // with a freshly created account (handled in Auth.tsx via selectedUserType).
+            // For existing users logging in, we always send them to their panel directly.
+            // This prevents the bug where clicking "Entrar" leads to the profile selection page.
 
             // Default user goes to empresa panel
             if (!hasNavigatedRef.current) {
