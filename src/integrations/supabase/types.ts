@@ -2732,17 +2732,6 @@ export type Database = {
       }
     }
     Functions: {
-      apply_affiliate_coupon: {
-        Args: {
-          p_coupon_id: string
-          p_discount_amount_cents: number
-          p_original_amount_cents: number
-          p_service_type: string
-          p_stripe_session_id?: string
-          p_user_email: string
-        }
-        Returns: boolean
-      }
       calculate_partner_share: {
         Args: {
           p_amount_cents: number
