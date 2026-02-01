@@ -106,8 +106,8 @@ export function QuickAccountSetup({
   };
 
   const linkRequestToUser = async (userId: string) => {
-    // Link credit repair request to user
-    await supabase
+    // Link credit repair request to user (replaces placeholder or guest user_id)
+    const { error } = await supabase
       .from('credit_repair_requests')
       .update({
         user_id: userId,
@@ -116,16 +116,18 @@ export function QuickAccountSetup({
       })
       .eq('id', requestId);
 
-    // Update profile if name exists
-    if (fullName) {
-      await supabase
-        .from('profiles')
-        .upsert({
-          user_id: userId,
-          full_name: fullName,
-          email: email,
-        }, { onConflict: 'user_id' });
+    if (error) {
+      console.error('Error linking request to user:', error);
     }
+
+    // Update/create profile
+    await supabase
+      .from('profiles')
+      .upsert({
+        user_id: userId,
+        full_name: fullName || '',
+        email: email,
+      }, { onConflict: 'user_id' });
   };
 
   return (

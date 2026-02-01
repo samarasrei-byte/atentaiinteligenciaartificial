@@ -1,6 +1,9 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -30,6 +33,31 @@ export default function LimpaNomeLanding() {
   const [selectedPlan, setSelectedPlan] = useState<'pf' | 'pj'>('pf');
   const [urgencyMinutes, setUrgencyMinutes] = useState(14);
   const [urgencySeconds, setUrgencySeconds] = useState(59);
+  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+
+  // Direct checkout - Marketplace flow
+  const handleDirectCheckout = async () => {
+    setIsCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-limpa-nome-checkout', {
+        body: { 
+          serviceType: selectedPlan,
+        },
+      });
+
+      if (error) throw error;
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('URL de checkout não retornada');
+      }
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      toast.error('Erro ao iniciar checkout. Tente novamente.');
+      setIsCheckoutLoading(false);
+    }
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -248,12 +276,22 @@ export default function LimpaNomeLanding() {
             <motion.div variants={itemVariants} className="flex justify-center mb-10 sm:mb-12 px-4">
               <Button 
                 size="lg" 
-                onClick={() => navigate('/limpa-nome/onboarding')}
-                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 transition-all duration-300 group"
+                onClick={handleDirectCheckout}
+                disabled={isCheckoutLoading}
+                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 transition-all duration-300 group disabled:opacity-70"
               >
-                <Users className="h-5 w-5 mr-2" />
-                Limpar meu nome agora
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                {isCheckoutLoading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Iniciando...
+                  </>
+                ) : (
+                  <>
+                    <Users className="h-5 w-5 mr-2" />
+                    Limpar meu nome agora
+                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
               </Button>
             </motion.div>
 
@@ -403,10 +441,15 @@ export default function LimpaNomeLanding() {
                   </div>
 
                   <Button 
-                    onClick={() => navigate('/limpa-nome/onboarding')}
+                    onClick={handleDirectCheckout}
+                    disabled={isCheckoutLoading}
                     className="w-full"
                   >
-                    <Handshake className="h-5 w-5 mr-2" />
+                    {isCheckoutLoading ? (
+                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    ) : (
+                      <Handshake className="h-5 w-5 mr-2" />
+                    )}
                     Conectar com Guilherme Barros
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
@@ -479,10 +522,15 @@ export default function LimpaNomeLanding() {
             </p>
             <Button 
               size="lg"
-              onClick={() => navigate('/limpa-nome/onboarding')}
-              className="h-16 px-12 text-lg bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600"
+              onClick={handleDirectCheckout}
+              disabled={isCheckoutLoading}
+              className="h-16 px-12 text-lg bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-70"
             >
-              <Users className="h-5 w-5 mr-2" />
+              {isCheckoutLoading ? (
+                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              ) : (
+                <Users className="h-5 w-5 mr-2" />
+              )}
               Limpar meu nome agora
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
