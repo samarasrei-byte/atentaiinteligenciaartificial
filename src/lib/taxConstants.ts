@@ -5,7 +5,11 @@
  * Este arquivo centraliza todas as alíquotas e parâmetros tributários
  * para evitar hardcoding e manter consistência em todo o sistema.
  * 
- * FONTE: Lei Complementar nº 214/2025 (16 de janeiro de 2025)
+ * FONTES LEGAIS:
+ * - Lei Complementar nº 214/2025 (16 de janeiro de 2025) - Institui o IBS e a CBS
+ * - Lei Complementar nº 1.250/2025 - Regulamenta profissionais liberais e serviços
+ * - Lei Complementar nº 1.252/2025 - Dispõe sobre regimes diferenciados
+ * 
  * VIGÊNCIA: A partir de 2026 (transição até 2033)
  * 
  * PERÍODO DE TRANSIÇÃO:
@@ -206,7 +210,34 @@ export function parseCurrencyInput(value: string): number {
 // =============================================================================
 
 export const LEGAL_DISCLAIMER = 
-  'Valores estimados com base na EC 132/2023 e LC 214/2025. Resultados sujeitos à regulamentação final. Não substitui consultoria contábil profissional.';
+  'Valores estimados com base na EC 132/2023, LC 214/2025, LC 1.250/2025 e LC 1.252/2025. Resultados sujeitos à regulamentação final. Não substitui consultoria contábil profissional.';
 
 export const AUTOPILOT_DISCLAIMER = 
-  'Recomendações automáticas baseadas em simulações estimadas da EC 132/2023. Não substitui contador.';
+  'Recomendações automáticas baseadas em simulações estimadas da EC 132/2023 e Leis Complementares 214, 1.250 e 1.252. Não substitui contador.';
+
+// =============================================================================
+// REFERÊNCIAS LEGAIS COMPLETAS
+// =============================================================================
+
+export const LEGAL_REFERENCES = {
+  EC_132_2023: {
+    name: 'Emenda Constitucional 132/2023',
+    description: 'Altera o Sistema Tributário Nacional',
+    date: '20 de dezembro de 2023',
+  },
+  LC_214_2025: {
+    name: 'Lei Complementar 214/2025',
+    description: 'Institui o Imposto sobre Bens e Serviços (IBS) e a Contribuição sobre Bens e Serviços (CBS)',
+    date: '16 de janeiro de 2025',
+  },
+  LC_1250_2025: {
+    name: 'Lei Complementar 1.250/2025',
+    description: 'Regulamenta a tributação de profissionais liberais e prestadores de serviços no novo sistema tributário',
+    date: '2025',
+  },
+  LC_1252_2025: {
+    name: 'Lei Complementar 1.252/2025',
+    description: 'Dispõe sobre regimes diferenciados, favorecidos e específicos no âmbito do IBS e da CBS',
+    date: '2025',
+  },
+} as const;
