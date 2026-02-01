@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { Header } from '@/components/layout/Header';
-import { Footer } from '@/components/layout/Footer';
+import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -106,9 +105,10 @@ const PARTNER_GUILHERME = {
 
 const MinhasSolicitacoesPage = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, hasRole } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('all');
+  const [dashboardTab, setDashboardTab] = useState('solicitacoes');
   
   // Request states
   const [creditRepairRequests, setCreditRepairRequests] = useState<CreditRepairRequest[]>([]);
@@ -456,16 +456,36 @@ const MinhasSolicitacoesPage = () => {
     </Card>
   );
 
+  // Determine layout variant based on user roles
+  const getLayoutVariant = () => {
+    if (hasRole('admin')) return 'admin';
+    if (hasRole('contador')) return 'contador';
+    if (hasRole('autonomo')) return 'autonomo';
+    return 'empresa';
+  };
+
+  const handleDashboardTabChange = (tab: string) => {
+    if (tab === 'solicitacoes') {
+      setDashboardTab(tab);
+    } else {
+      // Navigate back to appropriate panel
+      const variant = getLayoutVariant();
+      navigate(`/${variant === 'empresa' ? 'empresa' : variant}?tab=${tab}`);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <Header onNavigate={() => navigate('/')} />
-      
-      <main className="flex-1 container mx-auto px-4 py-8 pt-20">
-        <div className="flex items-center justify-between mb-6">
+    <DashboardLayout
+      variant={getLayoutVariant()}
+      activeTab={dashboardTab}
+      onTabChange={handleDashboardTabChange}
+    >
+      <div className="p-6 md:p-8 space-y-6">
+        <div className="flex items-center justify-between">
           <div>
-            <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-2">
+            <Button variant="ghost" onClick={() => navigate('/dashboard')} className="mb-2 -ml-2">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Voltar
+              Voltar ao Painel
             </Button>
             <h1 className="text-2xl font-bold flex items-center gap-2">
               <FileText className="h-6 w-6 text-primary" />
@@ -627,7 +647,7 @@ const MinhasSolicitacoesPage = () => {
         {creditRepairRequests.some(r => r.payment_status === 'paid') && (
           <LimpaNomeUpgradeCard className="mt-8 max-w-md" />
         )}
-      </main>
+      </div>
 
       {/* Chat Sheet with Partner Info */}
       <Sheet open={!!selectedChat} onOpenChange={() => setSelectedChat(null)}>
@@ -660,9 +680,7 @@ const MinhasSolicitacoesPage = () => {
           </div>
         </SheetContent>
       </Sheet>
-
-      <Footer onNavigate={() => navigate('/')} />
-    </div>
+    </DashboardLayout>
   );
 };
 
