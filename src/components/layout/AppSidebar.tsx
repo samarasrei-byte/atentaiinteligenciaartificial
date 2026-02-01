@@ -103,6 +103,7 @@ const reformaGroup: SidebarGroup = {
   id: 'reforma-tributaria',
   label: 'Reforma Tributária (LC 214)',
   items: [
+    { icon: Target, label: 'Radar Reforma', tabId: 'reforma-radar' },
     { icon: Calculator, label: 'Ferramentas LC 214', tabId: 'ferramentas-lc214' },
     { icon: FileBarChart, label: 'Simulador Transição', tabId: 'transicao' },
     { icon: Clock, label: 'Timeline Reforma', tabId: 'timeline' },
