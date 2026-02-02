@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Loader2 } from 'lucide-react';
 import { logAuditEvent } from '@/hooks/useAuditLog';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
   let timeoutId: number | undefined;
@@ -78,7 +79,8 @@ const DashboardRouter = () => {
               specialProfilesCount++;
               availableProfiles.push('admin');
             }
-            if (hasRole('contador')) {
+            // Only count contador if feature is enabled
+            if (isContadorEnabled() && hasRole('contador')) {
               specialProfilesCount++;
               availableProfiles.push('contador');
             }
@@ -130,7 +132,8 @@ const DashboardRouter = () => {
               return;
             }
             
-            if (hasRole('contador')) {
+            // Only route to contador if feature is enabled
+            if (isContadorEnabled() && hasRole('contador')) {
               if (!hasNavigatedRef.current) {
                 hasNavigatedRef.current = true;
                 navigate('/contador', { replace: true });

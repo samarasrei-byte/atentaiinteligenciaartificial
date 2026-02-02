@@ -18,8 +18,9 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
+import { isContadorEnabled } from "@/lib/featureFlags";
 
-const profiles = [
+const allProfiles = [
   {
     type: 'empresa',
     title: 'Para Empresas',
@@ -72,6 +73,11 @@ const profiles = [
     route: '/comecar',
   },
 ];
+
+// Filter profiles based on feature flags
+const profiles = allProfiles.filter(p => 
+  p.type !== 'contador' || isContadorEnabled()
+);
 
 export function ProfilesSection() {
   const navigate = useNavigate();

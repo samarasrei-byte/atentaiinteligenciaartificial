@@ -9,6 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import CleanBackground from '@/components/onboarding/CleanBackground';
 import confetti from 'canvas-confetti';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 type ProfileType = 'empresa' | 'autonomo' | 'contador';
 
@@ -23,7 +24,7 @@ interface ProfileOption {
   gradient: string;
 }
 
-const profileOptions: ProfileOption[] = [
+const allProfileOptions: ProfileOption[] = [
   {
     type: 'empresa',
     role: 'user',
@@ -55,6 +56,11 @@ const profileOptions: ProfileOption[] = [
     gradient: 'from-teal-500/20 to-emerald-500/10',
   },
 ];
+
+// Filter options based on feature flags
+const profileOptions = allProfileOptions.filter(opt => 
+  opt.type !== 'contador' || isContadorEnabled()
+);
 
 const WelcomePage = () => {
   const navigate = useNavigate();

@@ -63,7 +63,8 @@ const freeTools = [
   },
 ];
 
-const panelAccess = [
+// Panel access - filtered based on feature flags
+const allPanelAccess = [
   {
     role: 'autonomo',
     name: 'Autônomo',
@@ -86,6 +87,9 @@ const panelAccess = [
     href: '/dashboard',
   },
 ];
+
+// Import feature flag at top of file and filter here
+const panelAccess = allPanelAccess.filter(p => p.role !== 'contador');
 
 const socialProof = [
   { value: '2.847+', label: 'Clientes atendidos' },

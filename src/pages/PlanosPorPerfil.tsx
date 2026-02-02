@@ -26,6 +26,7 @@ import {
   Target
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 type ProfileType = 'empresa' | 'autonomo' | 'contador';
 
@@ -48,7 +49,7 @@ interface ProfileData {
   isContadorProfile?: boolean;
 }
 
-const profilesData: ProfileData[] = [
+const allProfilesData: ProfileData[] = [
   {
     type: 'empresa',
     label: 'Empresa',
@@ -81,8 +82,9 @@ const profilesData: ProfileData[] = [
           'Acesso a todas as ferramentas avançadas'
         ]
       },
-      {
-        planKey: 'contador',
+      // Only include contador plan if feature is enabled
+      ...(isContadorEnabled() ? [{
+        planKey: 'contador' as const,
         recommended: false,
         useCase: 'Para empresas que precisam de suporte especializado',
         benefits: [
@@ -92,7 +94,7 @@ const profilesData: ProfileData[] = [
           'Chat direto com contador',
           'Suporte prioritário 24h'
         ]
-      }
+      }] : [])
     ]
   },
   {
@@ -127,8 +129,9 @@ const profilesData: ProfileData[] = [
           'Acompanhamento automático de otimizações'
         ]
       },
-      {
-        planKey: 'contador',
+      // Only include contador plan if feature is enabled
+      ...(isContadorEnabled() ? [{
+        planKey: 'contador' as const,
         recommended: false,
         useCase: 'Para quem quer abrir empresa com segurança',
         benefits: [
@@ -138,21 +141,25 @@ const profilesData: ProfileData[] = [
           'Suporte para toda a documentação',
           'Acompanhamento da abertura'
         ]
-      }
+      }] : [])
     ]
   },
-  {
-    type: 'contador',
+  // Only include contador profile if feature is enabled
+  ...(isContadorEnabled() ? [{
+    type: 'contador' as const,
     label: 'Contador',
     icon: Calculator,
     color: 'text-teal-500',
     bgGradient: 'from-teal-500/20 to-emerald-500/20',
     description: 'Para contadores que desejam atender clientes na plataforma',
     headline: 'Atenda clientes e aumente sua renda na plataforma',
-    plans: [], // Contador não usa planos de assinatura, usa cadastro próprio
+    plans: [],
     isContadorProfile: true,
-  }
+  }] : [])
 ];
+
+// Export filtered profiles
+const profilesData = allProfilesData;
 
 const getPlanIcon = (planKey: string) => {
   switch (planKey) {
