@@ -112,22 +112,7 @@ export const AllServicesHub: React.FC = () => {
         'Alvará e licenças',
         'CNPJ ativo em até 7 dias',
       ],
-      serviceKey: 'abertura-empresa', // TODO: implement checkout
-    },
-    {
-      id: 'ir',
-      name: 'Imposto de Renda',
-      description: 'Declaração completa do IR por especialistas',
-      icon: FileText,
-      gradient: 'from-rose-500 to-red-600',
-      priceCents: 20000,
-      features: [
-        'Análise de documentos',
-        'Otimização de deduções',
-        'Envio para Receita Federal',
-        'Acompanhamento de restituição',
-      ],
-      serviceKey: 'ir', // TODO: implement checkout
+      serviceKey: 'abertura-empresa',
     },
     {
       id: 'certidoes',
@@ -142,22 +127,21 @@ export const AllServicesHub: React.FC = () => {
         'FGTS e Trabalhista',
         'Entrega em até 24h',
       ],
-      serviceKey: 'certidoes', // TODO: implement checkout
+      serviceKey: 'certidoes',
     },
   ];
 
   const handleContractService = (service: ServiceItem) => {
-    // Services that use Premium Onboarding flow
-    const onboardingServices = ['analise-fiscal', 'bi-contabilidade', 'abertura-empresa', 'ir'];
+    // Services that use Premium Onboarding flow (success fee / sob consulta)
+    const onboardingServices = ['analise-fiscal', 'bi-contabilidade'];
     
     if (onboardingServices.includes(service.serviceKey)) {
       navigate(`/onboarding/${service.serviceKey}`);
       return;
     }
     
-    // Limpa Nome goes to checkout
-    setSelectedServiceKey(service.serviceKey);
-    setCheckoutModalOpen(true);
+    // Todos os outros serviços vão direto pro checkout
+    navigate(`/checkout/${service.serviceKey}`);
   };
 
   const getDisplayPrice = (service: ServiceItem) => {
