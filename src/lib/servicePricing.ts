@@ -74,13 +74,12 @@ export const SERVICE_PRICES = {
     stripeKey: 'modulo_fiscal',
   },
 
-  // Consultation - FIXED R$ 280,00
-  CONSULTA_CONTADOR: {
-    cents: 28000,
-    formatted: 'R$ 280,00',
-    platformFee: 2800,
-    stripeKey: 'consultation',
-    subscriberDiscount: 0,
+  // BI+ Contabilidade - Valor sob consulta
+  BI_CONTABILIDADE: {
+    type: 'custom_pricing',
+    formatted: 'Sob consulta',
+    description: 'Valor definido após análise do especialista',
+    stripeKey: 'bi_contabilidade',
   },
 } as const;
 
