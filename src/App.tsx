@@ -80,6 +80,7 @@ import UserPanelBI from "./pages/UserPanelBI";
 import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
 import LimpaNomeLanding from "./pages/LimpaNomeLanding";
 import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
+import FiscalAnalysisOnboarding from "./pages/FiscalAnalysisOnboarding";
 import TestLogin from "./pages/TestLogin";
 import PartnerGuilhermePage from "./pages/PartnerGuilhermePage";
 import PartnerGuilhermePanel from "./pages/PartnerGuilhermePanel";
@@ -151,6 +152,7 @@ const App = () => (
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscalLanding />} />
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
+              <Route path="/modulo-fiscal/onboarding" element={<FiscalAnalysisOnboarding />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
               <Route path="/bi-contabilidade" element={<BIContabilidadeLanding />} />
               <Route path="/bi-contabilidade/onboarding" element={<BIContabilidadeOnboarding />} />

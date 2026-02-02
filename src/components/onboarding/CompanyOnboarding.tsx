@@ -195,8 +195,9 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   };
 
   const nextStep = () => {
-    // Check if we need to show fiscal benefit after step 3 (financial data)
-    if (step === 3 && formData.monthly_revenue_cents >= FISCAL_BENEFIT_THRESHOLD && !fiscalBenefitHandled) {
+    // SEMPRE mostrar sugestão de Análise Fiscal após step 3 (dados financeiros)
+    // para todos os leads, independente do faturamento
+    if (step === 3 && formData.monthly_revenue_cents > 0 && !fiscalBenefitHandled) {
       setShowFiscalBenefit(true);
       return;
     }
