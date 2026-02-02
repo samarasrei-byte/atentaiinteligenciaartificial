@@ -163,10 +163,11 @@ serve(async (req) => {
             },
             unit_amount: finalPriceCents,
           },
-          quantity: 1,
-        },
+        quantity: 1,
+      },
       ],
       mode: "payment",
+      payment_method_types: ["card", "pix"],
       success_url: `${origin}/dashboard?payment=success&contador=${contadorId}`,
       cancel_url: `${origin}/dashboard?tab=contadores&payment=canceled`,
       metadata: {
