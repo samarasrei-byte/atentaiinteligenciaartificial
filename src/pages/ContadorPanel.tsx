@@ -34,8 +34,7 @@ import {
   ScrollText, Shield, Scale,
 } from 'lucide-react';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { CreditRepairManagement } from '@/components/admin/CreditRepairManagement';
-import { FiscalAnalysisManagement } from '@/components/admin/FiscalAnalysisManagement';
+// CreditRepairManagement and FiscalAnalysisManagement removed - Contador now hires these services
 import TaxTransitionSimulator from '@/components/simulator/TaxTransitionSimulator';
 import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineReforma';
 import { EmbeddedFerramentasLC214 } from '@/components/reforma/EmbeddedFerramentasLC214';
@@ -467,31 +466,7 @@ const ContadorPanel = () => {
             </div>
           )}
 
-          {activeTab === 'limpa-nome' && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                  <Shield className="h-6 w-6 text-emerald-500" />
-                  Limpa Nome - Recuperação de Crédito
-                </h2>
-                <p className="text-muted-foreground">Gerencie solicitações de limpeza de nome dos clientes</p>
-              </div>
-              <CreditRepairManagement />
-            </div>
-          )}
-
-          {(activeTab === 'analise-fiscal' || activeTab === 'modulo-fiscal') && (
-            <div className="space-y-6">
-              <div>
-                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                  <Scale className="h-6 w-6 text-violet-500" />
-                  Análise Fiscal
-                </h2>
-                <p className="text-muted-foreground">Gerencie solicitações de análise fiscal dos clientes</p>
-              </div>
-              <FiscalAnalysisManagement />
-            </div>
-          )}
+          {/* Removed Limpa Nome and Análise Fiscal management - Contador now hires these services */}
 
           {activeTab === 'chat' && (
             <div className="space-y-6">

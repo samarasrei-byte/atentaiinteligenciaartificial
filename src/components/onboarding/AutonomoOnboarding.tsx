@@ -19,9 +19,10 @@ import {
   Sparkles,
   Zap
 } from 'lucide-react';
-import OnboardingLayoutEnhanced from './OnboardingLayoutEnhanced';
+import OnboardingLayoutPremium from './OnboardingLayoutPremium';
 import OnboardingStepHeader from './OnboardingStepHeader';
 import OnboardingCard3D from './OnboardingCard3D';
+import OnboardingInput from './OnboardingInput';
 
 interface AutonomoData {
   profession: string;
@@ -248,11 +249,11 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
   };
 
   return (
-    <OnboardingLayoutEnhanced
+    <OnboardingLayoutPremium
       title="Configure seu Perfil"
       subtitle="Personalize sua experiência como autônomo"
       icon={User}
-      iconColor="from-purple-500 to-pink-500"
+      iconColor="from-primary to-primary/80"
       steps={steps}
       currentStep={step}
       totalSteps={totalSteps}
@@ -260,6 +261,7 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
       onBack={prevStep}
       canProceed={!!canProceed()}
       isSubmitting={isSubmitting}
+      submitLabel="Começar"
     >
       {/* Step 1: Profissão */}
       {step === 1 && (
@@ -542,7 +544,7 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
           </motion.div>
         </div>
       )}
-    </OnboardingLayoutEnhanced>
+    </OnboardingLayoutPremium>
   );
 };
 

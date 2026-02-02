@@ -189,14 +189,21 @@ const contadorGroups: SidebarGroup[] = [
   },
   reformaGroup,
   {
-    id: 'servicos',
-    label: 'Serviços',
+    id: 'meus-servicos',
+    label: 'Meus Serviços',
     items: [
-      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
       { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening' },
       { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
       { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
+    ],
+  },
+  {
+    id: 'contratar-servicos',
+    label: 'Contratar Serviços',
+    items: [
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'servicos', isService: true, serviceKey: 'analise-fiscal' },
+      { icon: ShoppingBag, label: 'Ver Todos', tabId: 'servicos' },
     ],
   },
   {

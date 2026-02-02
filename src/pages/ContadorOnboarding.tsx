@@ -13,7 +13,7 @@ import {
   Calculator, FileText, DollarSign, User, CheckCircle, 
   Loader2, Award, Star, Clock, AlertCircle, Check, X,
 } from 'lucide-react';
-import OnboardingLayout from '@/components/onboarding/OnboardingLayout';
+import OnboardingLayoutPremium from '@/components/onboarding/OnboardingLayoutPremium';
 import OnboardingStepHeader from '@/components/onboarding/OnboardingStepHeader';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
@@ -442,11 +442,11 @@ const ContadorOnboarding = () => {
   }
 
   return (
-    <OnboardingLayout
+    <OnboardingLayoutPremium
       title="Bem-vindo ao AtentAI"
       subtitle="Configure seu perfil profissional para começar a atender"
       icon={Calculator}
-      iconColor="from-teal-500 to-emerald-500"
+      iconColor="from-primary to-emerald-500"
       steps={steps}
       currentStep={currentStep}
       totalSteps={steps.length}
@@ -758,7 +758,7 @@ const ContadorOnboarding = () => {
           </Alert>
         </div>
       )}
-    </OnboardingLayout>
+    </OnboardingLayoutPremium>
   );
 };
 
