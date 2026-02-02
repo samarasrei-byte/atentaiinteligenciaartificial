@@ -145,10 +145,11 @@ serve(async (req) => {
       productDescription += ` | Desconto de assinante: ${SUBSCRIBER_DISCOUNT_PERCENT}% aplicado!`;
     }
     
-    // Create a one-time payment session
+    // Create a one-time payment session with PIX + Card
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : user.email,
+      payment_method_types: ['card', 'pix'],
       line_items: [
         {
           price_data: {
