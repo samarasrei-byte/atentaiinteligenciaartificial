@@ -6,8 +6,8 @@
  * Prices are in cents (BRL) for Stripe compatibility.
  * 
  * OFFICIAL PRICE TABLE (Updated 2026-02-02):
- * - Limpa Nome PF: R$ 280,00
- * - Limpa Nome PJ: R$ 280,00
+ * - Limpa Nome PF: R$ 780,00
+ * - Limpa Nome PJ: R$ 970,00
  * - Consulta com Contador: R$ 280,00
  * - Certidões: R$ 80,00
  * - IR Simples (CLT): R$ 200,00
@@ -17,20 +17,20 @@
  */
 
 export const SERVICE_PRICES = {
-  // Limpa Nome Services - FIXED R$ 280,00
+  // Limpa Nome Services - FIXED
   LIMPA_NOME_PF: {
-    cents: 28000,
-    formatted: 'R$ 280,00',
+    cents: 78000,
+    formatted: 'R$ 780,00',
     installments: 4,
-    installmentValue: 'R$ 70,00',
+    installmentValue: 'R$ 195,00',
     stripeKey: 'credit_repair_pf',
     subscriberDiscount: 0,
   },
   LIMPA_NOME_CNPJ: {
-    cents: 28000,
-    formatted: 'R$ 280,00',
+    cents: 97000,
+    formatted: 'R$ 970,00',
     installments: 4,
-    installmentValue: 'R$ 70,00',
+    installmentValue: 'R$ 242,50',
     stripeKey: 'credit_repair_pj',
     subscriberDiscount: 0,
   },
