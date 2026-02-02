@@ -15,7 +15,7 @@ import {
   Users,
   Info
 } from 'lucide-react';
-import OnboardingLayout from './OnboardingLayout';
+import OnboardingLayoutPremium from './OnboardingLayoutPremium';
 import OnboardingStepHeader from './OnboardingStepHeader';
 import OnboardingOptionCard from './OnboardingOptionCard';
 import { Card, CardContent } from '@/components/ui/card';
@@ -240,11 +240,11 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   // If showing fiscal benefit, render only that card
   if (showFiscalBenefit) {
     return (
-      <OnboardingLayout
+      <OnboardingLayoutPremium
         title="Benefício Exclusivo"
         subtitle="Identificamos uma oportunidade especial para sua empresa"
         icon={Building2}
-        iconColor="from-emerald-500 to-teal-500"
+        iconColor="from-emerald-500 to-primary"
         steps={steps}
         currentStep={step}
         totalSteps={totalSteps}
@@ -258,16 +258,16 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
           onAccept={handleFiscalBenefitAccept}
           onSkip={handleFiscalBenefitSkip}
         />
-      </OnboardingLayout>
+      </OnboardingLayoutPremium>
     );
   }
 
   return (
-    <OnboardingLayout
+    <OnboardingLayoutPremium
       title="Configure sua Empresa"
       subtitle="Personalize sua experiência em poucos passos"
       icon={Building2}
-      iconColor="from-blue-500 to-cyan-500"
+      iconColor="from-primary to-blue-500"
       steps={steps}
       currentStep={step}
       totalSteps={totalSteps}
@@ -275,6 +275,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
       onBack={prevStep}
       canProceed={!!canProceed()}
       isSubmitting={isSubmitting}
+      submitLabel="Finalizar"
     >
       {/* Step 1: Identificação */}
       {step === 1 && (
@@ -465,7 +466,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
           </div>
         </div>
       )}
-    </OnboardingLayout>
+    </OnboardingLayoutPremium>
   );
 };
 
