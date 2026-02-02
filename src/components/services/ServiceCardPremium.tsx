@@ -111,9 +111,14 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
 
   const colors = colorClasses[service.color];
 
+  /**
+   * CRITICAL ROUTING LOGIC - IMMUTABLE ROUTES
+   * Each serviceType maps to EXACTLY ONE checkout route.
+   * This mapping is the source of truth for all navigation.
+   */
   const handleCTAClick = () => {
-    // CHECKOUT FIRST: All services with fixed prices go directly to checkout
-    const checkoutRoutes: Record<string, string> = {
+    // MANDATORY ROUTING TABLE - DO NOT MODIFY WITHOUT AUTHORIZATION
+    const CHECKOUT_ROUTES: Record<string, string> = {
       'credit_repair_pf': '/checkout/limpa-nome-pf',
       'credit_repair_pj': '/checkout/limpa-nome-pj',
       'ir_simples': '/checkout/ir-simples',
@@ -122,20 +127,37 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       'certificate': '/checkout/certidao',
     };
 
-    // If service has a checkout route, go directly to checkout
-    const checkoutRoute = checkoutRoutes[service.serviceType];
+    // ONBOARDING ROUTES for services requiring analysis first
+    const ONBOARDING_ROUTES: Record<string, string> = {
+      'fiscal_analysis': '/modulo-fiscal/onboarding',
+      'bi_contabilidade': '/bi-contabilidade/onboarding',
+    };
+
+    // RULE 1: Check if service has a fixed checkout route
+    const checkoutRoute = CHECKOUT_ROUTES[service.serviceType];
     if (checkoutRoute) {
+      console.log(`[ServiceCard ROUTING] ${service.serviceType} → ${checkoutRoute}`);
       navigate(checkoutRoute);
       return;
     }
 
-    // Services with custom pricing (BI, Fiscal) go to chat
-    if (service.isCustomPricing && service.checkoutRoute) {
+    // RULE 2: Check if service needs onboarding/chat
+    const onboardingRoute = ONBOARDING_ROUTES[service.serviceType];
+    if (onboardingRoute) {
+      console.log(`[ServiceCard ROUTING] ${service.serviceType} → ${onboardingRoute}`);
+      navigate(onboardingRoute);
+      return;
+    }
+
+    // RULE 3: Use service's own checkoutRoute if defined (for custom chat routes)
+    if (service.checkoutRoute) {
+      console.log(`[ServiceCard ROUTING] ${service.serviceType} → ${service.checkoutRoute} (custom)`);
       navigate(service.checkoutRoute);
       return;
     }
 
-    // Fallback: show inline checkout modal
+    // FALLBACK: Show inline checkout modal (should rarely happen)
+    console.warn(`[ServiceCard] No predefined route for ${service.serviceType}, showing modal`);
     setShowCheckout(true);
   };
 
