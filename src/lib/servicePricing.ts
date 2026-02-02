@@ -8,12 +8,13 @@
  * OFFICIAL PRICE TABLE (Updated 2026-02-02):
  * - Limpa Nome PF: R$ 780,00
  * - Limpa Nome PJ: R$ 970,00
- * - Consulta com Contador: R$ 280,00
  * - Certidões: R$ 80,00
  * - IR Simples (CLT): R$ 200,00
  * - IR Completo: R$ 420,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
+ * 
+ * REMOVED: Consultoria Empresarial, Consulta com Contador
  */
 
 export const SERVICE_PRICES = {

@@ -51,7 +51,6 @@ export default function CheckoutSuccessPage() {
       'ir_completo': 'Declaração IR Completo',
       'certificate': 'Emissão de Certidão',
       'company_opening': 'Abertura de Empresa',
-      'consultation': 'Consulta com Contador',
     };
     return serviceNames[serviceType] || 'Serviço';
   };

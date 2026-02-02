@@ -120,7 +120,6 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       'ir_completo': '/checkout/ir-completo',
       'company_opening': '/checkout/abertura-empresa',
       'certificate': '/checkout/certidao',
-      'consultation': '/checkout/consulta-contador',
     };
 
     // If service has a checkout route, go directly to checkout

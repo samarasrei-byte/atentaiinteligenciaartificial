@@ -45,26 +45,6 @@ interface ServiceConfig {
 }
 
 const serviceConfigs: Record<string, ServiceConfig> = {
-  'consulta-contador': {
-    key: 'consultation',
-    title: 'Consulta com Contador',
-    description: 'Fale direto com um contador especialista. Orientação personalizada para o seu caso, com segurança e clareza.',
-    price: 15000,
-    priceLabel: 'R$ 150,00',
-    discountedPrice: 'R$ 120,00',
-    subscriberDiscount: 20,
-    icon: MessageSquare,
-    color: 'primary',
-    features: [
-      'Atendimento em até 24h',
-      'Contador especializado',
-      'Chat em tempo real',
-      'Envio de documentos',
-      'Orientação personalizada'
-    ],
-    pitch: '👉 Mais barato que um erro fiscal.',
-    requiresAuth: true,
-  },
   'abertura-empresa': {
     key: 'company_opening',
     title: 'Abertura de Empresa',
@@ -165,26 +145,6 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     requiresAuth: false,
     successFee: true,
   },
-  'consultoria-empresarial': {
-    key: 'business_consulting',
-    title: 'Consultoria Empresarial',
-    description: 'Análise tributária completa com planejamento estratégico e relatório personalizado para reduzir custos.',
-    price: 45000,
-    priceLabel: 'R$ 450,00',
-    discountedPrice: 'R$ 360,00',
-    subscriberDiscount: 20,
-    icon: Briefcase,
-    color: 'purple',
-    features: [
-      'Diagnóstico tributário completo',
-      'Planejamento estratégico',
-      'Relatório personalizado',
-      'Orientação prática aplicada',
-      'Redução de custos'
-    ],
-    pitch: '👉 Uma boa decisão hoje pode economizar muito amanhã.',
-    requiresAuth: true,
-  },
 };
 
 export default function MarketplaceServicePage() {
@@ -252,13 +212,11 @@ export default function MarketplaceServicePage() {
     try {
       // Map service key to ServiceType
       const serviceTypeMap: Record<string, ServiceType> = {
-        'consultation': 'limpanome', // Default to limpanome for consultation
         'company_opening': 'abertura-empresa',
         'certificate': 'certidao',
         'ir_simples': 'ir',
         'ir_completo': 'ir',
         'fiscal_analysis': 'analise-fiscal',
-        'business_consulting': 'bi-contabilidade',
       };
       
       const serviceType = serviceTypeMap[serviceConfig.key] || 'limpanome';
@@ -286,28 +244,7 @@ export default function MarketplaceServicePage() {
         });
         navigate(result.chatUrl);
         
-      } else if (serviceConfig.key === 'business_consulting') {
-        const result = await createBIRequest({
-          serviceType: 'bi-contabilidade',
-          userId: user?.id,
-          fullName: formData.fullName,
-          email: formData.email,
-          phone: formData.phone,
-          cpf: formData.cpf,
-          cnpj: formData.cnpj,
-          additionalData: {
-            companyName: formData.companyName,
-            notes: formData.notes,
-            source: 'marketplace-consulting',
-          },
-        });
-        
-        toast({ 
-          title: '✅ Solicitação enviada!', 
-          description: 'Abrindo chat com César...' 
-        });
-        navigate(result.chatUrl);
-        
+      
       } else {
         // For other services, redirect to their specific pages first OR directly to chat
         const redirectMap: Record<string, string> = {
@@ -315,7 +252,6 @@ export default function MarketplaceServicePage() {
           'ir_completo': '/ir',
           'company_opening': '/abertura-empresa',
           'certificate': '/certidoes',
-          'consultation': '/chat/guilherme?servico=geral',
         };
         
         const redirectUrl = redirectMap[serviceConfig.key] || '/chat/guilherme?servico=geral';
@@ -491,7 +427,7 @@ export default function MarketplaceServicePage() {
                     </div>
 
                     {/* Company Data (for some services) */}
-                    {(serviceConfig.key === 'fiscal_analysis' || serviceConfig.key === 'business_consulting' || serviceConfig.key === 'company_opening') && (
+                    {(serviceConfig.key === 'fiscal_analysis' || serviceConfig.key === 'company_opening') && (
                       <div className="space-y-4 pt-4 border-t">
                         <h3 className="font-medium text-slate-900 flex items-center gap-2">
                           <Building2 className="h-4 w-4" />

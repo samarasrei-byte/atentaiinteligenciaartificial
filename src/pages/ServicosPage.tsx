@@ -37,7 +37,6 @@ const categories = [
   { id: 'all', label: 'Todos', icon: Briefcase },
   { id: 'declaracoes', label: 'Declarações', icon: FileText },
   { id: 'empresarial', label: 'Empresarial', icon: Building2 },
-  { id: 'consultoria', label: 'Consultoria', icon: MessageSquare },
 ];
 
 const freeTools = [
@@ -192,27 +191,6 @@ const serviceConfigs: ServiceCardConfig[] = [
     checkoutRoute: '/chat/guilherme?servico=fiscal', // Redireciona para chat
     category: 'empresarial',
   },
-  // Consulta com Contador
-  {
-    key: 'consultation',
-    name: 'Consulta com Contador',
-    description: 'Tire suas dúvidas tributárias com um contador especializado.',
-    targetAudience: 'Para quem precisa de orientação',
-    features: [
-      'Atendimento com contador especializado',
-      'Orientação clara e prática',
-      'Resposta em até 24h',
-    ],
-    guarantees: ['Profissionais verificados', 'Pagamento seguro'],
-    basePrice: 15000,
-    discountPercent: 20,
-    cta: 'Solicitar agora',
-    color: 'primary',
-    icon: MessageSquare,
-    serviceType: 'consultation',
-    checkoutRoute: '/contadores-publico',
-    category: 'consultoria',
-  },
   // Abertura de Empresa
   {
     key: 'company_opening',
@@ -295,27 +273,6 @@ const serviceConfigs: ServiceCardConfig[] = [
     serviceType: 'ir_completo',
     checkoutRoute: '/ir',
     category: 'declaracoes',
-  },
-  // Consultoria Empresarial
-  {
-    key: 'business_consulting',
-    name: 'Consultoria Empresarial',
-    description: 'Planejamento tributário estratégico para pagar menos impostos legalmente.',
-    targetAudience: 'Para empresas que querem economizar',
-    features: [
-      'Planejamento tributário completo',
-      'Estratégia personalizada',
-      'Acompanhamento mensal',
-    ],
-    guarantees: ['ROI garantido', 'Especialistas sênior'],
-    basePrice: 45000,
-    discountPercent: 20,
-    cta: 'Contratar consultoria',
-    color: 'purple',
-    icon: Briefcase,
-    serviceType: 'business_consulting',
-    checkoutRoute: '/contadores-publico',
-    category: 'consultoria',
   },
 ];
 

@@ -325,23 +325,6 @@ export const ServicesHubModern: React.FC = () => {
       onClick: () => navigate('/bi-contabilidade'),
       badge: 'Novo',
     },
-    {
-      title: 'Consultoria Empresarial',
-      description: 'Planejamento tributário e otimização fiscal estratégica',
-      icon: TrendingUp,
-      basePrice: 45000,
-      discountedPrice: 36000,
-      discountPercent: 20,
-      features: [
-        'Análise tributária completa',
-        'Planejamento estratégico',
-        'Relatório personalizado',
-      ],
-      gradient: 'from-cyan-500/40 to-sky-500/40',
-      iconGradient: 'from-cyan-500 to-sky-500',
-      onClick: () => navigate('/contadores-publico'),
-      badge: 'Premium',
-    },
   ];
 
   const containerVariants = {
