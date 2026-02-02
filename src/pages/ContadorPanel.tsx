@@ -480,7 +480,7 @@ const ContadorPanel = () => {
             </div>
           )}
 
-          {activeTab === 'analise-fiscal' && (
+          {(activeTab === 'analise-fiscal' || activeTab === 'modulo-fiscal') && (
             <div className="space-y-6">
               <div>
                 <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">

@@ -3,30 +3,22 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
 import {
-  Users,
-  Home,
   FileText,
   Shield,
   LogOut,
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
-  TrendingUp,
   Calendar,
   DollarSign,
   BarChart3,
   Headphones,
   UserCheck,
   Wallet,
-  Star,
   Bot,
-  MessagesSquare,
   User,
   Settings,
-  Sparkles,
   History,
-  Zap,
-  BookOpen,
   Scale,
   Building2,
   ScrollText,
@@ -38,12 +30,12 @@ import {
   Calculator,
   Clock,
   FileBarChart,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Tooltip,
   TooltipContent,
-  TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
@@ -110,16 +102,12 @@ const reformaGroup: SidebarGroup = {
   ],
 };
 
-// SERVIÇOS
+// SERVIÇOS - Consolidados sem duplicação
 const servicosGroup: SidebarGroup = {
   id: 'servicos',
   label: 'Serviços',
   items: [
     { icon: ShoppingBag, label: 'Contratar Serviços', tabId: 'servicos' },
-    { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
-    { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
-    { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
-    { icon: TrendingUp, label: 'Ver Todos', tabId: 'ver-todos-servicos' },
   ],
 };
 
@@ -154,7 +142,7 @@ const empresaGroups: SidebarGroup[] = [
   contaGroup,
 ];
 
-// AUTÔNOMO - Mesma estrutura base + itens específicos
+// AUTÔNOMO - Estrutura limpa sem duplicações
 const autonomoGroups: SidebarGroup[] = [
   visaoGeralGroup,
   {
@@ -164,7 +152,6 @@ const autonomoGroups: SidebarGroup[] = [
       { icon: Bot, label: 'Chat IA', tabId: 'ai-chat' },
       { icon: BarChart3, label: 'Financeiro', tabId: 'financeiro' },
       { icon: Target, label: 'Metas', tabId: 'metas' },
-      { icon: Sparkles, label: 'Ferramentas Gratuitas', tabId: 'ferramentas-gratuitas' },
     ],
   },
   simulacaoGroup,
@@ -174,10 +161,7 @@ const autonomoGroups: SidebarGroup[] = [
     label: 'Serviços',
     items: [
       { icon: ShoppingBag, label: 'Contratar Serviços', tabId: 'servicos' },
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
-      { icon: Building2, label: 'Abrir Empresa', tabId: 'servico-abertura', isService: true, serviceKey: 'abertura-empresa' },
+      { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa' },
     ],
   },
   {
@@ -187,22 +171,20 @@ const autonomoGroups: SidebarGroup[] = [
       { icon: History, label: 'Histórico', tabId: 'history' },
       { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
       { icon: User, label: 'Meu Perfil', tabId: 'profile' },
-      { icon: Settings, label: 'Configurações', tabId: 'settings' },
       { icon: Headphones, label: 'Suporte', tabId: 'support' },
     ],
   },
 ];
 
-// CONTADOR - Mesma estrutura + itens específicos
+// CONTADOR - Estrutura limpa e organizada
 const contadorGroups: SidebarGroup[] = [
   visaoGeralGroup,
   {
-    id: 'inteligencia-ia',
-    label: 'Inteligência & IA',
+    id: 'atendimento',
+    label: 'Atendimento',
     items: [
-      { icon: BarChart3, label: 'Métricas', tabId: 'stats' },
       { icon: MessageCircle, label: 'Chat Clientes', tabId: 'chat', isLive: true },
-      { icon: Sparkles, label: 'Ferramentas Gratuitas', tabId: 'ferramentas-gratuitas' },
+      { icon: BarChart3, label: 'Métricas', tabId: 'stats' },
     ],
   },
   reformaGroup,
@@ -210,9 +192,8 @@ const contadorGroups: SidebarGroup[] = [
     id: 'servicos',
     label: 'Serviços',
     items: [
-      { icon: Brain, label: 'BI Contabilidade', tabId: 'servico-bi', isService: true, serviceKey: 'bi-contabilidade' },
-      { icon: Shield, label: 'Limpa Nome', tabId: 'servico-limpa-nome', isService: true, serviceKey: 'limpa-nome' },
-      { icon: Scale, label: 'Análise Fiscal', tabId: 'servico-fiscal', isService: true, serviceKey: 'analise-fiscal' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
       { icon: Building2, label: 'Abertura Empresa', tabId: 'company-opening' },
       { icon: ScrollText, label: 'Certidões', tabId: 'certificates' },
       { icon: FileText, label: 'Imposto de Renda', tabId: 'ir' },
@@ -232,14 +213,12 @@ const contadorGroups: SidebarGroup[] = [
     items: [
       { icon: DollarSign, label: 'Ganhos', tabId: 'earnings' },
       { icon: Wallet, label: 'Saques', tabId: 'withdrawals' },
-      { icon: Star, label: 'Avaliações', tabId: 'reviews' },
     ],
   },
   {
     id: 'conta',
     label: 'Minha Conta',
     items: [
-      { icon: Wallet, label: 'Assinatura', tabId: 'subscription' },
       { icon: User, label: 'Meu Perfil', tabId: 'profile' },
     ],
   },
@@ -416,7 +395,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   };
 
   return (
-    <TooltipProvider>
+    <>
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
@@ -516,7 +495,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         planType={selectedPlanType || undefined}
         onSuccess={() => setUpgradeModalOpen(false)}
       />
-    </TooltipProvider>
+    </>
   );
 };
 
