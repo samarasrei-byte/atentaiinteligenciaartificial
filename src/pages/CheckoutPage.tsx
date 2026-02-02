@@ -15,7 +15,7 @@ import {
   Building2, FileText, FileCheck, MessageSquare, Scale, Briefcase
 } from 'lucide-react';
 
-// Service configurations - Single Source of Truth
+// Service configurations - Single Source of Truth with FIXED prices
 const serviceConfigs: Record<string, {
   name: string;
   description: string;
@@ -23,7 +23,6 @@ const serviceConfigs: Record<string, {
   color: string;
   features: string[];
   basePriceCents: number;
-  discountPercent: number;
   successUrl: string;
   serviceType: string;
   isCustomPricing?: boolean;
@@ -41,8 +40,7 @@ const serviceConfigs: Record<string, {
       'Acompanhamento humano dedicado',
       'Todas as plataformas: SPC, Serasa, SCPC, Boa Vista',
     ],
-    basePriceCents: 78000,
-    discountPercent: 10,
+    basePriceCents: 28000, // R$ 280,00 FIXED
     successUrl: '/limpa-nome/sucesso',
     serviceType: 'credit_repair_pf',
   },
@@ -57,8 +55,7 @@ const serviceConfigs: Record<string, {
       'Atendimento humano especializado',
       'Regularização em todas as plataformas',
     ],
-    basePriceCents: 97000,
-    discountPercent: 10,
+    basePriceCents: 28000, // R$ 280,00 FIXED
     successUrl: '/limpa-nome/sucesso',
     serviceType: 'credit_repair_pj',
   },
@@ -73,8 +70,7 @@ const serviceConfigs: Record<string, {
       'Envio à Receita Federal',
       'Recibo de entrega garantido',
     ],
-    basePriceCents: 20000,
-    discountPercent: 20,
+    basePriceCents: 20000, // R$ 200,00 FIXED
     successUrl: '/payment-success?type=ir',
     serviceType: 'ir_simples',
   },
@@ -89,8 +85,7 @@ const serviceConfigs: Record<string, {
       'Otimização fiscal legal',
       'Especialista dedicado',
     ],
-    basePriceCents: 42000,
-    discountPercent: 20,
+    basePriceCents: 42000, // R$ 420,00 FIXED
     successUrl: '/payment-success?type=ir',
     serviceType: 'ir_completo',
   },
@@ -105,8 +100,7 @@ const serviceConfigs: Record<string, {
       'Documentação inclusa',
       'Acompanhamento completo',
     ],
-    basePriceCents: 78000,
-    discountPercent: 15,
+    basePriceCents: 78000, // R$ 780,00
     successUrl: '/payment-success?type=company_opening',
     serviceType: 'company_opening',
   },
@@ -121,8 +115,7 @@ const serviceConfigs: Record<string, {
       'Revisão por contador',
       'Suporte incluso',
     ],
-    basePriceCents: 8000,
-    discountPercent: 10,
+    basePriceCents: 8000, // R$ 80,00 FIXED
     successUrl: '/payment-success?type=certificate',
     serviceType: 'certificate',
   },
@@ -137,8 +130,7 @@ const serviceConfigs: Record<string, {
       'Orientação personalizada',
       'Envio de documentos',
     ],
-    basePriceCents: 15000,
-    discountPercent: 20,
+    basePriceCents: 28000, // R$ 280,00 FIXED
     successUrl: '/payment-success?type=consultation',
     serviceType: 'consultation',
   },

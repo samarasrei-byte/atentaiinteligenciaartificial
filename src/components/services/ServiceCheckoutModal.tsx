@@ -66,7 +66,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     serviceType: 'pf',
     flowType: 'checkout',
     edgeFunction: 'create-limpa-nome-checkout',
-    priceCents: SUBSCRIBER_DISCOUNTS.credit_repair_pf.basePrice,
+    priceCents: 28000, // R$ 280,00 FIXED
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',
@@ -83,7 +83,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     serviceType: 'pj',
     flowType: 'checkout',
     edgeFunction: 'create-limpa-nome-checkout',
-    priceCents: SUBSCRIBER_DISCOUNTS.credit_repair_pj.basePrice,
+    priceCents: 28000, // R$ 280,00 FIXED
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',

@@ -74,10 +74,10 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     successFee: true,
   },
   'bi-contabilidade': {
-    type: 'business_consulting',
+    type: 'fiscal_analysis', // Maps to success-fee style service
     name: 'BI+ Contabilidade',
     description: 'Inteligência financeira completa para sua empresa',
-    priceCents: SUBSCRIBER_DISCOUNTS.business_consulting.basePrice,
+    priceCents: 0, // Custom pricing via onboarding
     features: [
       'Dashboard em tempo real',
       'IA + Análise humana',
