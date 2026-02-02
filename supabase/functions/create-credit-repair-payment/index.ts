@@ -226,6 +226,7 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
+      payment_method_types: ["card", "pix"],
       success_url: `${origin}/limpa-nome/sucesso?session_id={CHECKOUT_SESSION_ID}&request_id=${requestId}`,
       cancel_url: `${origin}/limpa-nome?payment=cancelled&request=${requestId}`,
       metadata: {
