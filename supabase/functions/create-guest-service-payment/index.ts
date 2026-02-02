@@ -26,8 +26,22 @@ const requestSchema = z.object({
   serviceType: z.enum(['ir', 'credit_repair', 'credit_repair_pf', 'credit_repair_pj', 'certificate', 'company_opening']),
   email: z.string().email("Email inválido").max(255, "Email muito longo"),
   fullName: z.string().min(2, "Nome muito curto").max(200, "Nome muito longo"),
-  cpf: z.string().regex(/^\d{11}$/, "CPF deve ter 11 dígitos").optional().nullable(),
-  phone: z.string().regex(/^\d{10,11}$/, "Telefone deve ter 10 ou 11 dígitos").optional().nullable(),
+  // CPF is optional - accept empty string, valid 11-digit number, or null/undefined
+  cpf: z.string().optional().nullable().transform(val => {
+    if (!val || val.trim() === '') return null;
+    // Remove formatting (dots, dashes)
+    const cleaned = val.replace(/\D/g, '');
+    if (cleaned.length !== 11) return null;
+    return cleaned;
+  }),
+  // Phone is optional - accept empty string, valid 10-11 digit number, or null/undefined
+  phone: z.string().optional().nullable().transform(val => {
+    if (!val || val.trim() === '') return null;
+    // Remove formatting
+    const cleaned = val.replace(/\D/g, '');
+    if (cleaned.length < 10 || cleaned.length > 11) return null;
+    return cleaned;
+  }),
   // IR-specific fields
   irType: z.enum(['simples', 'completo']).optional(),
   fiscalYear: z.number().min(2000).max(2100).optional(),
