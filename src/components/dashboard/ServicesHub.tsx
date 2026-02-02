@@ -122,19 +122,20 @@ export const ServicesHub: React.FC = () => {
 
   const services = [
     {
-      title: 'Consulta com Contador',
-      description: 'Tire suas dúvidas tributárias com um profissional especializado',
-      icon: MessageSquare,
-      basePrice: SUBSCRIBER_DISCOUNTS.consultation.basePrice,
-      discountedPrice: SUBSCRIBER_DISCOUNTS.consultation.discountedPrice,
-      discountPercent: Math.round(SUBSCRIBER_DISCOUNTS.consultation.discount * 100),
+      title: 'Abertura de Empresa',
+      description: 'Formalize seu negócio com suporte especializado',
+      icon: Building2,
+      basePrice: SUBSCRIBER_DISCOUNTS.company_opening.basePrice,
+      discountedPrice: SUBSCRIBER_DISCOUNTS.company_opening.discountedPrice,
+      discountPercent: Math.round(SUBSCRIBER_DISCOUNTS.company_opening.discount * 100),
       features: [
-        'Chat em tempo real',
-        'Envio de documentos',
-        'Resposta em até 24h',
+        'Análise do melhor regime',
+        'Documentação completa',
+        'Acompanhamento do processo',
       ],
-      gradient: 'from-primary to-teal-500',
-      onClick: () => navigate('/contadores'),
+      gradient: 'from-emerald-500 to-green-500',
+      onClick: () => navigate('/checkout/abertura-empresa'),
+      badge: 'Popular',
     },
     {
       title: 'Abertura de Empresa',

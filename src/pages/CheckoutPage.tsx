@@ -119,20 +119,21 @@ const serviceConfigs: Record<string, {
     successUrl: '/payment-success?type=certificate',
     serviceType: 'certificate',
   },
-  'consulta-contador': {
-    name: 'Consulta com Contador',
-    description: 'Orientação tributária personalizada com especialista',
-    icon: MessageSquare,
-    color: 'primary',
+  'bi-contabilidade': {
+    name: 'BI+ Contabilidade™',
+    description: 'Inteligência artificial com análise humana especializada',
+    icon: Briefcase,
+    color: 'purple',
     features: [
-      'Atendimento em até 24h',
-      'Contador especializado',
-      'Orientação personalizada',
-      'Envio de documentos',
+      'Diagnóstico fiscal completo',
+      'Análise por especialista dedicado',
+      'Relatórios personalizados',
+      'Acompanhamento contínuo',
     ],
-    basePriceCents: 28000, // R$ 280,00 FIXED
-    successUrl: '/payment-success?type=consultation',
-    serviceType: 'consultation',
+    basePriceCents: 0,
+    successUrl: '/bi-contabilidade/sucesso',
+    serviceType: 'bi_contabilidade',
+    isCustomPricing: true, // Valor sob consulta
   },
 };
 

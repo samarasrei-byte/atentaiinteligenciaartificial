@@ -17,8 +17,6 @@ import {
   Clock,
   CreditCard
 } from 'lucide-react';
-import { ServicePricePreview } from '@/components/pricing/ServicePricePreview';
-import { SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
 
 interface ContadorProfile {
   id: string;
@@ -120,13 +118,9 @@ const Contadores = () => {
       if (error) throw error;
 
       if (data?.url) {
-        const isSubscriber = subscription.subscribed;
-        const discount = isSubscriber ? SUBSCRIBER_DISCOUNTS.consultation.discount * 100 : 0;
         toast({
           title: 'Redirecionando para pagamento',
-          description: isSubscriber 
-            ? `Desconto de ${discount}% aplicado!`
-            : 'Assine para obter 20% de desconto!',
+          description: 'Você será direcionado ao checkout seguro.',
         });
         window.open(data.url, '_blank');
       } else {
@@ -306,10 +300,14 @@ const Contadores = () => {
             </DialogHeader>
             
             {selectedContador && (
-              <ServicePricePreview 
-                serviceType="consultation" 
-                customPrice={selectedContador.hourly_rate_cents}
-              />
+              <div className="p-4 rounded-lg bg-slate-700/50 border border-slate-600">
+                <div className="flex items-center justify-between">
+                  <span className="text-slate-300">Valor da consulta</span>
+                  <span className="text-xl font-bold text-white">
+                    {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(selectedContador.hourly_rate_cents / 100)}
+                  </span>
+                </div>
+              </div>
             )}
 
             <DialogFooter className="gap-2 sm:gap-0">

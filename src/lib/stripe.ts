@@ -2,14 +2,16 @@
  * STRIPE CONFIGURATION - Pricing & Plans
  * 
  * OFFICIAL PRICE TABLE (Updated 2026-02-02):
- * - Limpa Nome PF: R$ 280,00 (FIXED)
- * - Limpa Nome PJ: R$ 280,00 (FIXED)
- * - Consulta com Contador: R$ 280,00 (FIXED)
+ * - Limpa Nome PF: R$ 780,00 (FIXED)
+ * - Limpa Nome PJ: R$ 970,00 (FIXED)
  * - Certidões: R$ 80,00 (FIXED)
  * - IR Simples (CLT): R$ 200,00 (FIXED)
  * - IR Completo: R$ 420,00 (FIXED)
  * - Abertura de Empresa: R$ 780,00 (FIXED)
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
+ * - BI+ Contabilidade: SOB CONSULTA
+ * 
+ * REMOVED: Consultoria Empresarial, Consulta com Contador
  */
 
 // Stripe plan configuration
@@ -87,14 +89,6 @@ export type PlanType = keyof typeof STRIPE_PLANS;
  * All services use these exact prices for Stripe checkout
  */
 export const SUBSCRIBER_DISCOUNTS = {
-  consultation: {
-    name: 'Consulta com Contador',
-    description: 'Orientação tributária com especialista',
-    basePrice: 28000, // cents (R$280,00) FIXED
-    discount: 0,
-    discountedPrice: 28000,
-    icon: 'MessageSquare',
-  },
   company_opening: {
     name: 'Abertura de Empresa',
     description: 'Abertura completa de CNPJ com suporte contábil',
@@ -139,20 +133,29 @@ export const SUBSCRIBER_DISCOUNTS = {
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
     description: 'Regularize seu CPF e limpe restrições',
-    basePrice: 28000, // cents (R$280,00) FIXED
+    basePrice: 78000, // cents (R$780,00) FIXED
     discount: 0,
-    discountedPrice: 28000,
+    discountedPrice: 78000,
     icon: 'User',
     installments: 4,
   },
   credit_repair_pj: {
     name: 'Limpa Nome Empresa (CNPJ)',
     description: 'Regularize seu CNPJ e limpe restrições',
-    basePrice: 28000, // cents (R$280,00) FIXED
+    basePrice: 97000, // cents (R$970,00) FIXED
     discount: 0,
-    discountedPrice: 28000,
+    discountedPrice: 97000,
     icon: 'Building2',
     installments: 4,
+  },
+  bi_contabilidade: {
+    name: 'BI+ Contabilidade™',
+    description: 'Inteligência artificial com análise humana especializada',
+    basePrice: 0,
+    discount: 0,
+    discountedPrice: 0,
+    icon: 'Brain',
+    customPricing: true,
   },
 } as const;
 

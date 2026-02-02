@@ -57,7 +57,7 @@ export const AllServicesHub: React.FC = () => {
       description: 'Regularize restrições nos bureaus de crédito',
       icon: Shield,
       gradient: 'from-emerald-500 to-green-600',
-      priceCents: 28000, // R$ 280,00 FIXED
+      priceCents: isAutonomo ? 78000 : 97000, // R$ 780,00 PF / R$ 970,00 PJ
       features: [
         'Análise completa do histórico',
         'Remoção de registros SERASA/SPC',
@@ -66,21 +66,6 @@ export const AllServicesHub: React.FC = () => {
       ],
       isPopular: true,
       checkoutRoute: isAutonomo ? '/checkout/limpa-nome-pf' : '/checkout/limpa-nome-pj',
-    },
-    {
-      id: 'consulta-contador',
-      name: 'Consulta com Contador',
-      description: 'Orientação tributária com especialista',
-      icon: MessageSquare,
-      gradient: 'from-primary to-cyan-600',
-      priceCents: 28000, // R$ 280,00 FIXED
-      features: [
-        'Atendimento em até 24h',
-        'Contador especializado',
-        'Orientação personalizada',
-        'Envio de documentos',
-      ],
-      checkoutRoute: '/checkout/consulta-contador',
     },
     {
       id: 'certidoes',
@@ -157,15 +142,15 @@ export const AllServicesHub: React.FC = () => {
     },
     {
       id: 'bi-contabilidade',
-      name: 'BI+ Contabilidade',
-      description: 'Inteligência financeira completa',
+      name: 'BI+ Contabilidade™',
+      description: 'Inteligência artificial com análise humana especializada',
       icon: Brain,
       gradient: 'from-purple-500 to-pink-600',
       priceCents: 0,
       features: [
-        'Dashboard em tempo real',
-        'IA + Análise humana',
-        'Insights automáticos',
+        'Diagnóstico fiscal completo',
+        'IA + Análise humana dedicada',
+        'Relatórios personalizados',
       ],
       isNew: true,
       onboardingRoute: '/bi-contabilidade/onboarding',
