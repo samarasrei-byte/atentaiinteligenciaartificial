@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -29,6 +30,8 @@ interface ServiceConfig {
   gradient: string;
   edgeFunction: string;
   successFee?: boolean;
+  /** MANDATORY: Route for services requiring onboarding/analysis first */
+  onboardingRoute?: string;
 }
 
 interface PlanConfig {
@@ -41,6 +44,10 @@ interface PlanConfig {
   gradient: string;
 }
 
+/**
+ * SERVICE CONFIGURATIONS - MANDATORY ROUTING TABLE
+ * Each service has EXACTLY ONE route. No fallbacks allowed.
+ */
 const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
   'limpa-nome': {
     type: 'credit_repair_pf',
@@ -56,7 +63,11 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     icon: Shield,
     gradient: 'from-emerald-500 to-green-600',
     edgeFunction: 'create-credit-repair-payment',
+    onboardingRoute: '/checkout/limpa-nome-pf', // IMMUTABLE: Direct to checkout
   },
+  // ========================================
+  // ANÁLISE FISCAL - ALWAYS GOES TO ONBOARDING
+  // ========================================
   'analise-fiscal': {
     type: 'fiscal_analysis',
     name: 'Análise Fiscal',
@@ -72,12 +83,16 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     gradient: 'from-blue-500 to-indigo-600',
     edgeFunction: 'create-fiscal-payment',
     successFee: true,
+    onboardingRoute: '/modulo-fiscal/onboarding', // IMMUTABLE: NEVER BI!
   },
+  // ========================================
+  // BI CONTABILIDADE - ALWAYS GOES TO ITS OWN ONBOARDING
+  // ========================================
   'bi-contabilidade': {
-    type: 'fiscal_analysis', // Maps to success-fee style service
+    type: 'fiscal_analysis',
     name: 'BI+ Contabilidade',
     description: 'Inteligência financeira completa para sua empresa',
-    priceCents: 0, // Custom pricing via onboarding
+    priceCents: 0,
     features: [
       'Dashboard em tempo real',
       'IA + Análise humana',
@@ -87,6 +102,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     icon: Brain,
     gradient: 'from-purple-500 to-pink-600',
     edgeFunction: 'create-fiscal-payment',
+    onboardingRoute: '/bi-contabilidade/onboarding', // IMMUTABLE: NEVER FISCAL!
   },
   'abertura-empresa': {
     type: 'company_opening',
@@ -102,6 +118,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     icon: Building2,
     gradient: 'from-amber-500 to-orange-600',
     edgeFunction: 'create-company-opening-payment',
+    onboardingRoute: '/checkout/abertura-empresa', // IMMUTABLE
   },
 };
 
@@ -161,6 +178,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   planType,
   onSuccess,
 }) => {
+  const navigate = useNavigate();
   const { subscription } = useAuth();
   const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>('preview');
 
@@ -185,13 +203,28 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   const isSuccessFee = upgradeType === 'service' && serviceConfig?.successFee;
   const isSubscriptionMode = upgradeType === 'subscription';
 
+  /**
+   * CRITICAL ROUTING LOGIC - ALL SERVICES MUST USE onboardingRoute
+   * No exceptions. No fallbacks. No bugs.
+   */
   const handleStartPayment = () => {
+    // RULE 1: If service has onboardingRoute, ALWAYS navigate to it
+    if (upgradeType === 'service' && serviceConfig?.onboardingRoute) {
+      console.log(`[InPanelModal ROUTING] ${serviceKey} → ${serviceConfig.onboardingRoute}`);
+      onClose();
+      navigate(serviceConfig.onboardingRoute);
+      return;
+    }
+
+    // RULE 2: Success fee services without route (fallback - should not happen)
     if (isSuccessFee) {
-      // For success fee services, no payment needed upfront
+      console.warn(`[InPanelModal] Success fee service without onboardingRoute: ${serviceKey}`);
       onSuccess?.();
       onClose();
       return;
     }
+    
+    // RULE 3: Subscription mode - show embedded checkout
     setCheckoutMode('payment');
   };
 

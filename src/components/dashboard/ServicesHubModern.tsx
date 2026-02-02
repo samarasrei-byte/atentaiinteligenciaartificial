@@ -256,7 +256,10 @@ export const ServicesHubModern: React.FC = () => {
       ],
       gradient: 'from-amber-500/40 to-orange-500/40',
       iconGradient: 'from-amber-500 to-orange-500',
-      onClick: () => navigate('/modulo-fiscal'),
+      onClick: () => {
+        console.log('[ServicesHub ROUTING] Análise Fiscal → /modulo-fiscal/onboarding');
+        navigate('/modulo-fiscal/onboarding');
+      },
       badge: 'Sem Custo Inicial',
     },
     {
