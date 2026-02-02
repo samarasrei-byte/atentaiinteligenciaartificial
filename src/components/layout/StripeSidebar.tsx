@@ -582,7 +582,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   };
 
   return (
-    <TooltipProvider>
+    <>
       <aside
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
@@ -664,7 +664,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
           </Tooltip>
         </div>
       </aside>
-    </TooltipProvider>
+    </>
   );
 };
 
