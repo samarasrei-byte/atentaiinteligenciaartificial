@@ -1,15 +1,15 @@
 /**
  * STRIPE CONFIGURATION - Pricing & Plans
  * 
- * OFFICIAL PRICE TABLE (Updated 2025-01-25):
- * - Consulta com Contador: R$ 150,00 (20% off for subscribers)
- * - Abertura de Empresa: R$ 780,00 (15% off for subscribers)
+ * OFFICIAL PRICE TABLE (Updated 2026-02-02):
+ * - Limpa Nome PF: R$ 280,00 (FIXED)
+ * - Limpa Nome PJ: R$ 280,00 (FIXED)
+ * - Consulta com Contador: R$ 280,00 (FIXED)
+ * - Certidões: R$ 80,00 (FIXED)
+ * - IR Simples (CLT): R$ 200,00 (FIXED)
+ * - IR Completo: R$ 420,00 (FIXED)
+ * - Abertura de Empresa: R$ 780,00 (FIXED)
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
- * - Emissão de Certidões: R$ 80,00 (10% off for subscribers)
- * - IR Simples: R$ 200,00 (20% off for subscribers)
- * - IR Completo: R$ 420,00 (20% off for subscribers)
- * - Limpa Nome PF: R$ 780,00 (10% off for subscribers)
- * - Limpa Nome CNPJ: R$ 970,00 (10% off for subscribers)
  */
 
 // Stripe plan configuration
@@ -54,9 +54,6 @@ export const STRIPE_PLANS = {
       'Tudo do AtentAI Premium',
       'Piloto Automático Tributário completo',
       'Simulador de Transição 2026-2033',
-      '20% de desconto em consultas',
-      '15% de desconto em abertura de empresa',
-      '10% de desconto em certidões',
       'Análise tributária personalizada',
       'Relatórios PDF e Excel ilimitados',
       'Comparador de Regimes avançado',
@@ -85,82 +82,77 @@ export const STRIPE_PLANS = {
 
 export type PlanType = keyof typeof STRIPE_PLANS;
 
-// Subscriber discounts for marketplace services
+/**
+ * Service pricing - FIXED prices (no subscriber discounts)
+ * All services use these exact prices for Stripe checkout
+ */
 export const SUBSCRIBER_DISCOUNTS = {
   consultation: {
     name: 'Consulta com Contador',
-    description: 'Tire dúvidas tributárias com um contador especializado',
-    basePrice: 15000, // cents (R$150,00)
-    discount: 0.20, // 20% off for subscribers
-    discountedPrice: 12000, // cents (R$120,00)
+    description: 'Orientação tributária com especialista',
+    basePrice: 28000, // cents (R$280,00) FIXED
+    discount: 0,
+    discountedPrice: 28000,
     icon: 'MessageSquare',
   },
   company_opening: {
     name: 'Abertura de Empresa',
     description: 'Abertura completa de CNPJ com suporte contábil',
     basePrice: 78000, // cents (R$780,00)
-    discount: 0.15, // 15% off for subscribers
-    discountedPrice: 66300, // cents (R$663,00)
+    discount: 0,
+    discountedPrice: 78000,
     icon: 'Building2',
   },
   certificate: {
     name: 'Emissão de Certidão',
     description: 'Certidões negativas de débitos fiscais',
-    basePrice: 8000, // cents (R$80,00)
-    discount: 0.10, // 10% off for subscribers
-    discountedPrice: 7200, // cents (R$72,00)
+    basePrice: 8000, // cents (R$80,00) FIXED
+    discount: 0,
+    discountedPrice: 8000,
     icon: 'FileCheck',
   },
   ir_simples: {
     name: 'Declaração IR Simples',
-    description: 'Para CLT com poucos rendimentos e sem investimentos',
-    basePrice: 20000, // cents (R$200,00)
-    discount: 0.20, // 20% off for subscribers
-    discountedPrice: 16000, // cents (R$160,00)
+    description: 'Para CLT sem investimentos',
+    basePrice: 20000, // cents (R$200,00) FIXED
+    discount: 0,
+    discountedPrice: 20000,
     icon: 'FileText',
   },
   ir_completo: {
     name: 'Declaração IR Completo',
-    description: 'Para autônomos, investidores ou múltiplas fontes de renda',
-    basePrice: 42000, // cents (R$420,00)
-    discount: 0.20, // 20% off for subscribers
-    discountedPrice: 33600, // cents (R$336,00)
+    description: 'Para autônomos e investidores',
+    basePrice: 42000, // cents (R$420,00) FIXED
+    discount: 0,
+    discountedPrice: 42000,
     icon: 'FileSpreadsheet',
   },
   fiscal_analysis: {
     name: 'Análise Fiscal',
-    description: 'Análise 100% gratuita com pagamento apenas no êxito (50% do valor identificado)',
-    basePrice: 0, // Free analysis - success fee only
-    discount: 0.50, // 50% of identified value
-    discountedPrice: 0, // Free analysis
+    description: 'Análise 100% gratuita com pagamento apenas no êxito (50%)',
+    basePrice: 0,
+    discount: 0.50,
+    discountedPrice: 0,
     icon: 'BarChart',
-    successFee: true, // Special flag for success fee model
-  },
-  business_consulting: {
-    name: 'Consultoria Empresarial',
-    description: 'Consultoria estratégica para planejamento tributário e otimização fiscal da sua empresa',
-    basePrice: 45000, // cents (R$450,00)
-    discount: 0.20, // 20% off for subscribers
-    discountedPrice: 36000, // cents (R$360,00)
-    icon: 'Briefcase',
+    successFee: true,
   },
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
-    description: 'Regularize seu CPF e limpe restrições com consultoria especializada',
-    basePrice: 78000, // cents (R$780,00)
-    discount: 0.10, // 10% off for subscribers
-    discountedPrice: 70200, // cents (R$702,00)
+    description: 'Regularize seu CPF e limpe restrições',
+    basePrice: 28000, // cents (R$280,00) FIXED
+    discount: 0,
+    discountedPrice: 28000,
     icon: 'User',
-    installments: 4, // 4x de R$195 sem juros
+    installments: 4,
   },
   credit_repair_pj: {
     name: 'Limpa Nome Empresa (CNPJ)',
-    description: 'Regularize seu CNPJ e limpe restrições com consultoria especializada',
-    basePrice: 97000, // cents (R$970,00)
-    discount: 0.10, // 10% off for subscribers
-    discountedPrice: 87300, // cents (R$873,00)
+    description: 'Regularize seu CNPJ e limpe restrições',
+    basePrice: 28000, // cents (R$280,00) FIXED
+    discount: 0,
+    discountedPrice: 28000,
     icon: 'Building2',
-    installments: 4, // 4x de R$242,50 sem juros
+    installments: 4,
   },
 } as const;
 

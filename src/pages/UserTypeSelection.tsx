@@ -64,10 +64,16 @@ const UserTypeSelection = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [hoveredType, setHoveredType] = useState<UserType | null>(null);
 
-  // CRITICAL: Redirect to auth if not authenticated
+  /**
+   * COMEÇAR flow:
+   * - If user is logged in: show profile selection directly
+   * - If user is NOT logged in: redirect to auth with postAuthRedirect
+   * 
+   * After selecting profile, user is directed to the corresponding onboarding
+   */
   useEffect(() => {
     if (!authLoading && !user) {
-      // Store intended destination and redirect to login
+      // Store destination and redirect to auth
       sessionStorage.setItem('postAuthRedirect', '/comecar');
       navigate('/auth', { replace: true });
     }

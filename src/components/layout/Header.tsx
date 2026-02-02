@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard, Rocket } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface HeaderProps {
@@ -11,8 +11,9 @@ interface HeaderProps {
 export function Header({ onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, loading } = useAuth();
+  const navigate = useNavigate();
 
-  // Navigation menu items - Updated 2026-01-28
+  // Navigation menu items - Updated 2026-02-02
   const navItems = [
     { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
@@ -20,6 +21,35 @@ export function Header({ onNavigate }: HeaderProps) {
     { label: "Serviços", icon: Briefcase, href: "/servicos" },
     { label: "Seja Afiliado", icon: Users, href: "/afiliado/cadastro" },
   ];
+
+  /**
+   * COMEÇAR: Always goes to profile selection (for new users)
+   * - If logged in: goes to /comecar (profile selection)
+   * - If not logged in: stores redirect and goes to /auth, after auth goes to /comecar
+   */
+  const handleComecar = () => {
+    if (user) {
+      // User is logged in, go to profile selection
+      navigate('/comecar');
+    } else {
+      // User is not logged in, save redirect and go to auth
+      sessionStorage.setItem('postAuthRedirect', '/comecar');
+      navigate('/auth');
+    }
+  };
+
+  /**
+   * ENTRAR: Goes directly to auth or dashboard
+   * - If logged in: goes to dashboard
+   * - If not logged in: goes to auth page (login form)
+   */
+  const handleEntrar = () => {
+    if (user) {
+      navigate('/dashboard');
+    } else {
+      navigate('/auth');
+    }
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/30 shadow-sm safe-area-top">
@@ -66,29 +96,30 @@ export function Header({ onNavigate }: HeaderProps) {
             ))}
           </nav>
 
-          {/* CTA Buttons - Show different options based on auth state */}
+          {/* CTA Buttons - COMEÇAR vs ENTRAR */}
           <div className="hidden md:flex items-center gap-3">
-            <Button variant="outline" size="sm" asChild className="border-primary/50 text-primary hover:bg-primary/10">
-              <Link to="/planos-perfil" className="flex items-center gap-2">
-                Ver Planos
-              </Link>
+            {/* COMEÇAR - Always visible, goes to profile selection */}
+            <Button 
+              variant="accent" 
+              size="sm" 
+              onClick={handleComecar}
+              className="shadow-lg shadow-accent/25"
+            >
+              <Rocket className="w-4 h-4 mr-2" />
+              Começar
             </Button>
             
             {!loading && user ? (
               // User is logged in - show Dashboard button
-              <Button size="sm" asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
-                <Link to="/dashboard" className="flex items-center gap-2">
-                  <LayoutDashboard className="w-4 h-4" />
-                  Meu Painel
-                </Link>
+              <Button size="sm" variant="outline" onClick={handleEntrar} className="border-primary/50 text-primary hover:bg-primary/10">
+                <LayoutDashboard className="w-4 h-4 mr-2" />
+                Meu Painel
               </Button>
             ) : (
               // User is not logged in - show Login button
-              <Button size="sm" asChild className="bg-primary hover:bg-primary/90 shadow-lg shadow-primary/25">
-                <Link to="/auth" className="flex items-center gap-2">
-                  <LogIn className="w-4 h-4" />
-                  Entrar
-                </Link>
+              <Button size="sm" variant="outline" onClick={handleEntrar} className="border-primary/50 text-primary hover:bg-primary/10">
+                <LogIn className="w-4 h-4 mr-2" />
+                Entrar
               </Button>
             )}
           </div>
@@ -139,27 +170,44 @@ export function Header({ onNavigate }: HeaderProps) {
                 )
               ))}
               <div className="flex flex-col gap-2 mt-3 pt-3 border-t border-border/50">
+                {/* COMEÇAR button - mobile */}
+                <Button 
+                  variant="accent"
+                  className="justify-start gap-3 h-12"
+                  onClick={() => {
+                    setIsMenuOpen(false);
+                    handleComecar();
+                  }}
+                >
+                  <Rocket className="w-5 h-5" />
+                  Começar
+                </Button>
+                
                 {!loading && user ? (
                   // User is logged in - show Dashboard button
                   <Button 
+                    variant="outline"
                     className="justify-start gap-3 h-12"
-                    asChild
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleEntrar();
+                    }}
                   >
-                    <Link to="/dashboard" onClick={() => setIsMenuOpen(false)}>
-                      <LayoutDashboard className="w-5 h-5" />
-                      Meu Painel
-                    </Link>
+                    <LayoutDashboard className="w-5 h-5" />
+                    Meu Painel
                   </Button>
                 ) : (
                   // User is not logged in - show Login button
                   <Button 
+                    variant="outline"
                     className="justify-start gap-3 h-12"
-                    asChild
+                    onClick={() => {
+                      setIsMenuOpen(false);
+                      handleEntrar();
+                    }}
                   >
-                    <Link to="/auth" onClick={() => setIsMenuOpen(false)}>
-                      <LogIn className="w-5 h-5" />
-                      Entrar / Criar Conta
-                    </Link>
+                    <LogIn className="w-5 h-5" />
+                    Entrar
                   </Button>
                 )}
               </div>

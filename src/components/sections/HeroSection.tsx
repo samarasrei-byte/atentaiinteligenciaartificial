@@ -101,7 +101,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             <span className="text-white font-semibold">IA especializada</span> + <span className="text-accent font-semibold">Contadores humanos</span> para guiar você na reforma tributária.
           </motion.p>
 
-          {/* CTA Buttons - Primary focus */}
+          {/* CTA Buttons - COMEÇAR goes to profile selection */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -115,7 +115,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <Button 
                 variant="accent" 
                 size="lg" 
-                onClick={() => navigate('/auth')}
+                onClick={() => navigate('/comecar')}
                 className="w-full sm:w-auto group text-lg px-10 py-7 shadow-2xl shadow-accent/40 hover:shadow-accent/60 transition-all duration-300 font-bold"
               >
                 Começar Agora

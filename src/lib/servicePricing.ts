@@ -5,68 +5,64 @@
  * 
  * Prices are in cents (BRL) for Stripe compatibility.
  * 
- * OFFICIAL PRICE TABLE (Updated 2025-01-25):
- * - Consulta com Contador: R$ 150,00
+ * OFFICIAL PRICE TABLE (Updated 2026-02-02):
+ * - Limpa Nome PF: R$ 280,00
+ * - Limpa Nome PJ: R$ 280,00
+ * - Consulta com Contador: R$ 280,00
+ * - Certidões: R$ 80,00
+ * - IR Simples (CLT): R$ 200,00
+ * - IR Completo: R$ 420,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
- * - Emissão de Certidões: R$ 80,00
- * - IR Simples: R$ 200,00
- * - IR Completo: R$ 420,00
- * - Limpa Nome PF: R$ 780,00
- * - Limpa Nome CNPJ: R$ 970,00
  */
 
 export const SERVICE_PRICES = {
-  // Limpa Nome Services
+  // Limpa Nome Services - FIXED R$ 280,00
   LIMPA_NOME_PF: {
-    cents: 78000,
-    formatted: 'R$ 780,00',
+    cents: 28000,
+    formatted: 'R$ 280,00',
     installments: 4,
-    installmentValue: 'R$ 195,00',
+    installmentValue: 'R$ 70,00',
     stripeKey: 'credit_repair_pf',
-    subscriberDiscount: 10,
+    subscriberDiscount: 0,
   },
   LIMPA_NOME_CNPJ: {
-    cents: 97000,
-    formatted: 'R$ 970,00',
+    cents: 28000,
+    formatted: 'R$ 280,00',
     installments: 4,
-    installmentValue: 'R$ 242,50',
+    installmentValue: 'R$ 70,00',
     stripeKey: 'credit_repair_pj',
-    subscriberDiscount: 10,
+    subscriberDiscount: 0,
   },
 
   // IR (Imposto de Renda) Services
   IR_SIMPLES: {
     cents: 20000,
     formatted: 'R$ 200,00',
-    formattedWithDiscount: 'R$ 160,00',
     stripeKey: 'ir_simples',
-    subscriberDiscount: 20,
+    subscriberDiscount: 0,
   },
   IR_COMPLETO: {
     cents: 42000,
     formatted: 'R$ 420,00',
-    formattedWithDiscount: 'R$ 336,00',
     stripeKey: 'ir_completo',
-    subscriberDiscount: 20,
+    subscriberDiscount: 0,
   },
 
   // Company Opening
   ABERTURA_EMPRESA: {
     cents: 78000,
     formatted: 'R$ 780,00',
-    formattedWithDiscount: 'R$ 663,00',
     stripeKey: 'abertura_empresa',
-    subscriberDiscount: 15,
+    subscriberDiscount: 0,
   },
 
-  // Certificates
+  // Certificates - FIXED R$ 80,00
   CERTIDAO: {
     cents: 8000,
     formatted: 'R$ 80,00',
-    formattedWithDiscount: 'R$ 72,00',
     stripeKey: 'certificate',
-    subscriberDiscount: 10,
+    subscriberDiscount: 0,
   },
 
   // Módulo Fiscal (Success Fee - Payment on Success)
@@ -78,23 +74,13 @@ export const SERVICE_PRICES = {
     stripeKey: 'modulo_fiscal',
   },
 
-  // Consultation
+  // Consultation - FIXED R$ 280,00
   CONSULTA_CONTADOR: {
-    cents: 15000,
-    formatted: 'R$ 150,00',
-    formattedWithDiscount: 'R$ 120,00',
-    platformFee: 1500,
+    cents: 28000,
+    formatted: 'R$ 280,00',
+    platformFee: 2800,
     stripeKey: 'consultation',
-    subscriberDiscount: 20,
-  },
-
-  // Business Consulting
-  CONSULTORIA_EMPRESARIAL: {
-    cents: 45000,
-    formatted: 'R$ 450,00',
-    formattedWithDiscount: 'R$ 360,00',
-    stripeKey: 'business_consulting',
-    subscriberDiscount: 20,
+    subscriberDiscount: 0,
   },
 } as const;
 
