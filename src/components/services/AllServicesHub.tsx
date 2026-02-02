@@ -50,14 +50,20 @@ export const AllServicesHub: React.FC = () => {
    * All paid services go directly to Stripe Checkout
    * Removed: Consultoria Empresarial
    */
+  /**
+   * MANDATORY ROUTING TABLE - DO NOT MODIFY WITHOUT AUTHORIZATION
+   * Each service MUST have exactly ONE route - either checkoutRoute OR onboardingRoute
+   * NEVER mix them. Routes are ABSOLUTE and IMMUTABLE.
+   */
   const services: ServiceItem[] = [
-    {
-      id: 'limpa-nome',
-      name: isAutonomo ? 'Limpa Nome (CPF)' : 'Limpa Nome (CNPJ)',
+    // ===== LIMPA NOME PF (CPF) - ALWAYS goes to /checkout/limpa-nome-pf =====
+    ...(isAutonomo ? [{
+      id: 'limpa-nome-pf',
+      name: 'Limpa Nome (CPF)',
       description: 'Regularize restrições nos bureaus de crédito',
       icon: Shield,
       gradient: 'from-emerald-500 to-green-600',
-      priceCents: isAutonomo ? 78000 : 97000, // R$ 780,00 PF / R$ 970,00 PJ
+      priceCents: 78000, // R$ 780,00 - FIXED PRICE
       features: [
         'Análise completa do histórico',
         'Remoção de registros SERASA/SPC',
@@ -65,8 +71,28 @@ export const AllServicesHub: React.FC = () => {
         'Bônus: Regularização de Score',
       ],
       isPopular: true,
-      checkoutRoute: isAutonomo ? '/checkout/limpa-nome-pf' : '/checkout/limpa-nome-pj',
-    },
+      checkoutRoute: '/checkout/limpa-nome-pf', // IMMUTABLE ROUTE
+    }] : []),
+    
+    // ===== LIMPA NOME PJ (CNPJ) - ALWAYS goes to /checkout/limpa-nome-pj =====
+    ...(!isAutonomo ? [{
+      id: 'limpa-nome-pj',
+      name: 'Limpa Nome (CNPJ)',
+      description: 'Regularize restrições nos bureaus de crédito',
+      icon: Shield,
+      gradient: 'from-emerald-500 to-green-600',
+      priceCents: 97000, // R$ 970,00 - FIXED PRICE
+      features: [
+        'Análise completa do histórico',
+        'Remoção de registros SERASA/SPC',
+        'Acompanhamento em tempo real',
+        'Bônus: Regularização de Score',
+      ],
+      isPopular: true,
+      checkoutRoute: '/checkout/limpa-nome-pj', // IMMUTABLE ROUTE
+    }] : []),
+    
+    // ===== CERTIDÕES - ALWAYS goes to /checkout/certidao =====
     {
       id: 'certidoes',
       name: 'Certidões Negativas',
@@ -79,8 +105,10 @@ export const AllServicesHub: React.FC = () => {
         'Entrega digital rápida',
         'Suporte incluso',
       ],
-      checkoutRoute: '/checkout/certidao',
+      checkoutRoute: '/checkout/certidao', // IMMUTABLE ROUTE
     },
+    
+    // ===== IR SIMPLES - ALWAYS goes to /checkout/ir-simples =====
     {
       id: 'ir-simples',
       name: 'IR Simples (CLT)',
@@ -94,8 +122,10 @@ export const AllServicesHub: React.FC = () => {
         'Envio à Receita Federal',
         'Recibo garantido',
       ],
-      checkoutRoute: '/checkout/ir-simples',
+      checkoutRoute: '/checkout/ir-simples', // IMMUTABLE ROUTE
     },
+    
+    // ===== IR COMPLETO - ALWAYS goes to /checkout/ir-completo =====
     {
       id: 'ir-completo',
       name: 'IR Completo',
@@ -109,8 +139,10 @@ export const AllServicesHub: React.FC = () => {
         'Otimização fiscal',
         'Especialista dedicado',
       ],
-      checkoutRoute: '/checkout/ir-completo',
+      checkoutRoute: '/checkout/ir-completo', // IMMUTABLE ROUTE
     },
+    
+    // ===== ABERTURA EMPRESA - ALWAYS goes to /checkout/abertura-empresa =====
     {
       id: 'abertura-empresa',
       name: 'Abertura de Empresa',
@@ -123,8 +155,10 @@ export const AllServicesHub: React.FC = () => {
         'CNPJ em até 7 dias',
         'Documentação inclusa',
       ],
-      checkoutRoute: '/checkout/abertura-empresa',
+      checkoutRoute: '/checkout/abertura-empresa', // IMMUTABLE ROUTE
     },
+    
+    // ===== ANÁLISE FISCAL - ALWAYS goes to /modulo-fiscal/onboarding =====
     {
       id: 'analise-fiscal',
       name: 'Análise Fiscal',
@@ -138,8 +172,10 @@ export const AllServicesHub: React.FC = () => {
         'Pague apenas no êxito (50%)',
       ],
       successFee: true,
-      onboardingRoute: '/modulo-fiscal/onboarding',
+      onboardingRoute: '/modulo-fiscal/onboarding', // IMMUTABLE ROUTE - NOT BI!
     },
+    
+    // ===== BI CONTABILIDADE - ALWAYS goes to /bi-contabilidade/onboarding =====
     {
       id: 'bi-contabilidade',
       name: 'BI+ Contabilidade™',
@@ -153,22 +189,32 @@ export const AllServicesHub: React.FC = () => {
         'Relatórios personalizados',
       ],
       isNew: true,
-      onboardingRoute: '/bi-contabilidade/onboarding',
+      onboardingRoute: '/bi-contabilidade/onboarding', // IMMUTABLE ROUTE
     },
   ];
 
+  /**
+   * CRITICAL ROUTING FUNCTION - DO NOT MODIFY
+   * Each service has exactly ONE route. This function navigates to that route.
+   * There is NO fallback logic - if a route is missing, it's a configuration error.
+   */
   const handleContractService = (service: ServiceItem) => {
-    // Direct checkout for paid services
+    // RULE 1: Paid services with checkoutRoute go DIRECTLY to checkout
     if (service.checkoutRoute) {
+      console.log(`[ROUTING] ${service.id} → ${service.checkoutRoute}`);
       navigate(service.checkoutRoute);
       return;
     }
     
-    // Onboarding for analysis/custom pricing services
+    // RULE 2: Free/analysis services with onboardingRoute go to onboarding
     if (service.onboardingRoute) {
+      console.log(`[ROUTING] ${service.id} → ${service.onboardingRoute}`);
       navigate(service.onboardingRoute);
       return;
     }
+    
+    // ERROR: If we reach here, the service is misconfigured
+    console.error(`[ROUTING ERROR] Service ${service.id} has no valid route!`);
   };
 
   const formatPrice = (cents: number) => {
