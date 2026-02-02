@@ -343,7 +343,7 @@ const UserPanelBI = () => {
                   <Button 
                     variant="outline" 
                     className="w-full justify-between hover:bg-violet-50 hover:border-violet-300 group"
-                    onClick={() => navigate('/modulo-fiscal')}
+                    onClick={() => navigate('/modulo-fiscal/onboarding')}
                   >
                     <span className="flex items-center gap-3">
                       <div className="p-2 rounded-lg bg-violet-100 group-hover:bg-violet-200 transition-colors">

@@ -496,7 +496,7 @@ const MinhasSolicitacoesPage = () => {
             </p>
           </div>
           <div className="flex gap-2">
-            <Button variant="outline" onClick={() => navigate('/modulo-fiscal')}>
+            <Button variant="outline" onClick={() => navigate('/modulo-fiscal/onboarding')}>
               <Plus className="h-4 w-4 mr-2" />
               Análise Fiscal
             </Button>
@@ -516,7 +516,7 @@ const MinhasSolicitacoesPage = () => {
                 Você ainda não tem solicitações de serviços.
               </p>
               <div className="flex justify-center gap-4">
-                <Button variant="outline" onClick={() => navigate('/modulo-fiscal')}>
+                <Button variant="outline" onClick={() => navigate('/modulo-fiscal/onboarding')}>
                   Análise Fiscal
                 </Button>
                 <Button onClick={() => navigate('/limpa-nome')}>
@@ -583,7 +583,7 @@ const MinhasSolicitacoesPage = () => {
                   <CardContent className="p-8 text-center">
                     <Scale className="h-12 w-12 text-muted-foreground mx-auto mb-3 opacity-50" />
                     <p className="text-muted-foreground">Nenhuma análise fiscal</p>
-                    <Button className="mt-4" onClick={() => navigate('/modulo-fiscal')}>
+                    <Button className="mt-4" onClick={() => navigate('/modulo-fiscal/onboarding')}>
                       Solicitar Análise Fiscal
                     </Button>
                   </CardContent>

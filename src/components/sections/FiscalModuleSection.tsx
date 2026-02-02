@@ -272,7 +272,7 @@ export function FiscalModuleSection() {
 
               <Button 
                 size="lg" 
-                onClick={() => navigate('/modulo-fiscal')}
+                onClick={() => navigate('/modulo-fiscal/onboarding')}
                 className="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 group"
               >
                 <Zap className="h-4 sm:h-5 w-4 sm:w-5 mr-2" />
