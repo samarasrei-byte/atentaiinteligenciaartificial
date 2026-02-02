@@ -34,10 +34,12 @@ export function useAutoOpenChat() {
     const checkActiveRequests = async () => {
       try {
         // Check for active Limpa Nome request (Guilherme)
+        // IMPORTANT: Only redirect if payment is PAID - payment comes first for Limpa Nome
         const { data: creditRepair } = await supabase
           .from('credit_repair_requests')
           .select('id, status, payment_status')
           .eq('user_id', user.id)
+          .eq('payment_status', 'paid') // Only paid requests should auto-open chat
           .in('status', ['pending', 'in_progress', 'documents_pending', 'under_review', 'in_analysis', 'negotiation'])
           .order('created_at', { ascending: false })
           .limit(1)

@@ -26,10 +26,12 @@ export function useActiveServiceRequest() {
 
       try {
         // Check for active credit repair (Limpa Nome) request
+        // IMPORTANT: Only return PAID requests - payment comes first for Limpa Nome
         const { data: creditRepair } = await supabase
           .from('credit_repair_requests')
           .select('id, status, created_at, payment_status')
           .eq('user_id', user.id)
+          .eq('payment_status', 'paid') // Only paid requests are considered active
           .neq('status', 'completed')
           .neq('status', 'cancelled')
           .order('created_at', { ascending: false })
