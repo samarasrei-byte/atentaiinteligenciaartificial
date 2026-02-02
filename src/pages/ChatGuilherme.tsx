@@ -22,7 +22,7 @@ import {
   ChatInputArea 
 } from '@/components/chat/PremiumChatLayout';
 import { PremiumMessageBubble } from '@/components/chat/PremiumMessageBubble';
-import { PaymentBannerSticky } from '@/components/chat/PaymentBannerSticky';
+// PaymentBannerSticky removed - Limpa Nome requires payment first, users should not reach chat without paying
 import { ServiceStatusHeader, ServiceType as StatusServiceType } from '@/components/chat/ServiceStatusHeader';
 import { StatusUpdateMessage } from '@/components/chat/StatusUpdateMessage';
 import { useServiceStatus } from '@/hooks/useServiceStatus';
@@ -336,17 +336,8 @@ export default function ChatGuilherme() {
             Voltar ao Painel
           </Button>
           
-          {/* Payment Banner - Separated from chat, sticky */}
-          {context.type === 'limpanome' && servicePricing['limpanome'] > 0 && !isPaid && requestId && (
-            <div className="mb-4">
-              <PaymentBannerSticky
-                serviceType="limpanome"
-                servicePriceCents={servicePricing['limpanome']}
-                requestId={requestId}
-                isPaid={isPaid}
-              />
-            </div>
-          )}
+          {/* Payment Banner removed - Limpa Nome requires payment FIRST before chat access */}
+          {/* Users should not reach this page without paying */}
           
           {/* Chat Container with proper height */}
           <ChatContainer className="h-[calc(100vh-180px)] min-h-[500px]">
