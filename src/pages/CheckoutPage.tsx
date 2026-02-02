@@ -40,7 +40,7 @@ const serviceConfigs: Record<string, {
       'Acompanhamento humano dedicado',
       'Todas as plataformas: SPC, Serasa, SCPC, Boa Vista',
     ],
-    basePriceCents: 28000, // R$ 280,00 FIXED
+    basePriceCents: 78000, // R$ 780,00 FIXED
     successUrl: '/limpa-nome/sucesso',
     serviceType: 'credit_repair_pf',
   },
@@ -55,7 +55,7 @@ const serviceConfigs: Record<string, {
       'Atendimento humano especializado',
       'Regularização em todas as plataformas',
     ],
-    basePriceCents: 28000, // R$ 280,00 FIXED
+    basePriceCents: 97000, // R$ 970,00 FIXED
     successUrl: '/limpa-nome/sucesso',
     serviceType: 'credit_repair_pj',
   },
