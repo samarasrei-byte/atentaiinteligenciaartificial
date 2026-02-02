@@ -98,6 +98,7 @@ import { AllServicesHub } from '@/components/services/AllServicesHub';
 import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 import { FiscalAnalysisNotification } from '@/components/notifications/FiscalAnalysisNotification';
+import { NotificationsPage } from '@/components/notifications/NotificationsPage';
 
 const EmbeddedAIAgent = () => {
   return (
@@ -660,19 +661,13 @@ const EmpresaPanel = () => {
         );
       case 'notifications':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Notificações</h2>
-              <p className="text-muted-foreground">Acompanhe todas as atualizações importantes</p>
-            </div>
-            <NotificationCenter
-              notifications={notifications}
-              unreadCount={unreadCount}
-              onMarkAsRead={markAsRead}
-              onMarkAllAsRead={markAllAsRead}
-              onClear={clearNotifications}
-            />
-          </div>
+          <NotificationsPage
+            notifications={notifications}
+            unreadCount={unreadCount}
+            onMarkAsRead={markAsRead}
+            onMarkAllAsRead={markAllAsRead}
+            onClear={clearNotifications}
+          />
         );
       case 'ferramentas-gratuitas':
         return <EmbeddedFerramentasLC214 />;
