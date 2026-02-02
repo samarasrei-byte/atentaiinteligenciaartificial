@@ -1,3 +1,6 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
@@ -15,8 +18,32 @@ import { FiscalTestimonialsSection } from "@/components/sections/FiscalTestimoni
 import { FAQSection } from "@/components/sections/FAQSection";
 import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
 import { ServicesHubModern } from "@/components/dashboard/ServicesHubModern";
+import { Loader2 } from "lucide-react";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  // Usuários logados vão direto pro painel
+  useEffect(() => {
+    if (!loading && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, loading, navigate]);
+
+  // Mostra loader enquanto verifica autenticação
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  // Se logado, não renderiza nada (vai redirecionar)
+  if (user) {
+    return null;
+  }
   const scrollToSection = (section: string) => {
     if (section === "hero") {
       window.scrollTo({ top: 0, behavior: "smooth" });

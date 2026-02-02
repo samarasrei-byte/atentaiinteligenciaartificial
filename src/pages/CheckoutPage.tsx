@@ -126,6 +126,22 @@ const serviceConfigs: Record<string, {
     successUrl: '/payment-success?type=certificate',
     serviceType: 'certificate',
   },
+  'certidoes': {
+    name: 'Emissão de Certidões',
+    description: 'Certidões negativas de débitos fiscais (federal, estadual e municipal)',
+    icon: FileCheck,
+    color: 'emerald',
+    features: [
+      'CND Federal, Estadual e Municipal',
+      'Entrega em até 7 dias úteis',
+      'Documento oficial verificável',
+      'Revisão por contador',
+    ],
+    basePriceCents: 8000,
+    discountPercent: 10,
+    successUrl: '/payment-success?type=certificate',
+    serviceType: 'certificate',
+  },
   'consulta-contador': {
     name: 'Consulta com Contador',
     description: 'Orientação tributária personalizada com especialista',
