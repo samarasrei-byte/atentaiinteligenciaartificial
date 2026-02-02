@@ -59,14 +59,14 @@ interface ServiceConfig {
 const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
   'limpa-nome-pf': {
     id: 'limpa-nome-pf',
-    name: 'Limpa Nome Pessoa Física',
+    name: 'Limpa Nome',
     description: 'Regularize seu CPF e limpe restrições nos bureaus de crédito',
     icon: Shield,
     gradient: 'from-emerald-500 to-green-600',
     serviceType: 'pf',
     flowType: 'checkout',
     edgeFunction: 'create-limpa-nome-checkout',
-    priceCents: 28000, // R$ 280,00 FIXED
+    priceCents: 78000, // R$ 780,00 - OFFICIAL PRICE
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',
@@ -76,14 +76,14 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
   },
   'limpa-nome-pj': {
     id: 'limpa-nome-pj',
-    name: 'Limpa Nome Empresa (CNPJ)',
+    name: 'Limpa Nome CNPJ',
     description: 'Regularize seu CNPJ e limpe restrições nos bureaus de crédito',
     icon: Building2,
     gradient: 'from-emerald-500 to-green-600',
     serviceType: 'pj',
     flowType: 'checkout',
     edgeFunction: 'create-limpa-nome-checkout',
-    priceCents: 28000, // R$ 280,00 FIXED
+    priceCents: 97000, // R$ 970,00 - OFFICIAL PRICE
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',

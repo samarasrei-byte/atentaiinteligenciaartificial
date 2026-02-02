@@ -62,6 +62,7 @@ import { TaxGlossary } from '@/components/glossary/TaxGlossary';
 import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionHistoryCard';
 import { useNotifications } from '@/hooks/useNotifications';
 import { NotificationCenter } from '@/components/notifications/NotificationCenter';
+import { NotificationsPage } from '@/components/notifications/NotificationsPage';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { GuidedTour } from '@/components/tour/GuidedTour';
 import { useGuidedTour } from '@/hooks/useGuidedTour';
@@ -591,19 +592,13 @@ const AutonomoPanel: React.FC = () => {
         return renderProfile();
       case 'notifications':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Notificações</h2>
-              <p className="text-muted-foreground">Acompanhe todas as atualizações importantes</p>
-            </div>
-            <NotificationCenter
-              notifications={notificationsHook.notifications}
-              unreadCount={notificationsHook.unreadCount}
-              onMarkAsRead={notificationsHook.markAsRead}
-              onMarkAllAsRead={notificationsHook.markAllAsRead}
-              onClear={notificationsHook.clearNotifications}
-            />
-          </div>
+          <NotificationsPage
+            notifications={notificationsHook.notifications}
+            unreadCount={notificationsHook.unreadCount}
+            onMarkAsRead={notificationsHook.markAsRead}
+            onMarkAllAsRead={notificationsHook.markAllAsRead}
+            onClear={notificationsHook.clearNotifications}
+          />
         );
       case 'ferramentas-gratuitas':
         return <EmbeddedFerramentasLC214 />;
