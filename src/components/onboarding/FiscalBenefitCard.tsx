@@ -66,17 +66,17 @@ export const FiscalBenefitCard: React.FC<FiscalBenefitCardProps> = ({
                 <div className="flex items-center gap-2 mb-2">
                   <Badge className="bg-emerald-500/20 text-emerald-600 border-emerald-500/30 hover:bg-emerald-500/20">
                     <Sparkles className="h-3 w-3 mr-1" />
-                    100% Gratuito
+                    Pague apenas no êxito
                   </Badge>
                 </div>
                 
                 <h3 className="text-xl md:text-2xl font-bold text-foreground mb-2">
-                  Análise Fiscal Completa
+                  Análise Fiscal Personalizada
                 </h3>
                 
                 <p className="text-muted-foreground leading-relaxed">
-                  <strong className="text-foreground">Empresas com faturamento acima de R$ 600.000/mês podem estar pagando impostos a mais.</strong>
-                  {' '}Por isso, liberamos uma Análise Fiscal completa, sem custo, para identificar oportunidades de economia tributária.
+                  <strong className="text-foreground">Sua empresa pode estar pagando impostos a mais.</strong>
+                  {' '}Oferecemos uma Análise Fiscal completa para identificar oportunidades de economia tributária. Você só paga no êxito!
                 </p>
               </div>
 
@@ -124,7 +124,7 @@ export const FiscalBenefitCard: React.FC<FiscalBenefitCardProps> = ({
                   className="flex-1 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white shadow-lg shadow-emerald-500/30 h-12"
                 >
                   <Gift className="h-4 w-4 mr-2" />
-                  Quero minha Análise Gratuita
+                  Quero minha Análise Fiscal
                   <ArrowRight className="h-4 w-4 ml-2" />
                 </Button>
                 
