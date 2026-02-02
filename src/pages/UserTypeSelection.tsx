@@ -64,10 +64,12 @@ const UserTypeSelection = () => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [hoveredType, setHoveredType] = useState<UserType | null>(null);
 
-  // Se já está logado, redireciona para o dashboard
+  // CRITICAL: Redirect to auth if not authenticated
   useEffect(() => {
-    if (!authLoading && user) {
-      navigate('/dashboard', { replace: true });
+    if (!authLoading && !user) {
+      // Store intended destination and redirect to login
+      sessionStorage.setItem('postAuthRedirect', '/comecar');
+      navigate('/auth', { replace: true });
     }
   }, [user, authLoading, navigate]);
 
@@ -102,12 +104,10 @@ const UserTypeSelection = () => {
     const option = userTypeOptions.find(o => o.type === selectedType);
     if (option && !isAnimating) {
       setIsAnimating(true);
-      // Salva o tipo e vai para a página de autenticação (cadastro)
       sessionStorage.setItem('selectedUserType', option.type);
-      sessionStorage.setItem('isNewSignup', 'true');
       
       setTimeout(() => {
-        navigate('/auth');
+        navigate(option.route);
       }, 500);
     }
   };
@@ -124,13 +124,13 @@ const UserTypeSelection = () => {
     );
   }
 
-  // Se já está logado, mostra loader (vai redirecionar)
-  if (user) {
+  // Don't render if not authenticated (will redirect)
+  if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
-          <p className="text-muted-foreground">Redirecionando para seu painel...</p>
+          <p className="text-muted-foreground">Redirecionando para login...</p>
         </div>
       </div>
     );

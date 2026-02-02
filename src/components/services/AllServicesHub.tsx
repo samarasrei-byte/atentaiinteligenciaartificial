@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -36,7 +35,6 @@ interface ServiceItem {
 }
 
 export const AllServicesHub: React.FC = () => {
-  const navigate = useNavigate();
   const { subscription, hasRole } = useAuth();
   const [checkoutModalOpen, setCheckoutModalOpen] = useState(false);
   const [selectedServiceKey, setSelectedServiceKey] = useState<string>('');
@@ -112,7 +110,22 @@ export const AllServicesHub: React.FC = () => {
         'Alvará e licenças',
         'CNPJ ativo em até 7 dias',
       ],
-      serviceKey: 'abertura-empresa',
+      serviceKey: 'abertura-empresa', // TODO: implement checkout
+    },
+    {
+      id: 'ir',
+      name: 'Imposto de Renda',
+      description: 'Declaração completa do IR por especialistas',
+      icon: FileText,
+      gradient: 'from-rose-500 to-red-600',
+      priceCents: 20000,
+      features: [
+        'Análise de documentos',
+        'Otimização de deduções',
+        'Envio para Receita Federal',
+        'Acompanhamento de restituição',
+      ],
+      serviceKey: 'ir', // TODO: implement checkout
     },
     {
       id: 'certidoes',
@@ -127,21 +140,13 @@ export const AllServicesHub: React.FC = () => {
         'FGTS e Trabalhista',
         'Entrega em até 24h',
       ],
-      serviceKey: 'certidoes',
+      serviceKey: 'certidoes', // TODO: implement checkout
     },
   ];
 
   const handleContractService = (service: ServiceItem) => {
-    // Services that use Premium Onboarding flow (success fee / sob consulta)
-    const onboardingServices = ['analise-fiscal', 'bi-contabilidade'];
-    
-    if (onboardingServices.includes(service.serviceKey)) {
-      navigate(`/onboarding/${service.serviceKey}`);
-      return;
-    }
-    
-    // Todos os outros serviços vão direto pro checkout
-    navigate(`/checkout/${service.serviceKey}`);
+    setSelectedServiceKey(service.serviceKey);
+    setCheckoutModalOpen(true);
   };
 
   const getDisplayPrice = (service: ServiceItem) => {

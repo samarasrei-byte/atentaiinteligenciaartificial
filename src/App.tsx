@@ -94,7 +94,6 @@ import ChatCesar from "./pages/ChatCesar";
 import LimpaNomePaymentSuccess from "./pages/LimpaNomePaymentSuccess";
 import CheckoutPage from "./pages/CheckoutPage";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
-import ServiceOnboardingPage from "./pages/ServiceOnboardingPage";
 
 const queryClient = new QueryClient();
 
@@ -136,8 +135,8 @@ const App = () => (
               <Route path="/transicao-tributaria" element={<TransicaoTributaria />} />
               <Route path="/certidoes" element={<CertificatesPage />} />
               <Route path="/servicos" element={<ServicosPage />} />
-              <Route path="/checkout/sucesso" element={<CheckoutSuccessPage />} />
               <Route path="/checkout/:serviceSlug" element={<CheckoutPage />} />
+              <Route path="/checkout/sucesso" element={<CheckoutSuccessPage />} />
               <Route path="/marketplace/:serviceSlug" element={<MarketplaceServicePage />} />
               <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
               <Route path="/parceiroatentaigb" element={<PartnerGuilhermePanel />} />
@@ -155,8 +154,6 @@ const App = () => (
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
               <Route path="/bi-contabilidade" element={<BIContabilidadeLanding />} />
               <Route path="/bi-contabilidade/onboarding" element={<BIContabilidadeOnboarding />} />
-              {/* Premium Onboarding Flow for services */}
-              <Route path="/onboarding/:serviceType" element={<ServiceOnboardingPage />} />
               <Route path="/bi-contabilidade/cesar" element={<CesarBILanding />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />

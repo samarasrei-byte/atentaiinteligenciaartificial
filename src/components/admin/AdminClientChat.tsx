@@ -25,10 +25,8 @@ import {
   Search,
   Paperclip,
   Bot,
-  CreditCard,
-  Link2
+  CreditCard
 } from 'lucide-react';
-import { PaymentLinkGenerator } from './PaymentLinkGenerator';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -567,9 +565,9 @@ Guilherme`);
                 </div>
               </div>
 
-              {/* Painel de Pagamento - Usando PaymentLinkGenerator */}
+              {/* Painel de Pagamento - Fixo */}
               <AnimatePresence>
-                {showPaymentRequest && selectedClient && (
+                {showPaymentRequest && (
                   <motion.div
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
@@ -583,9 +581,9 @@ Guilherme`);
                             <CreditCard className="h-5 w-5 text-white" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento</h4>
+                            <h4 className="font-semibold text-sm text-slate-900">Enviar Link de Pagamento</h4>
                             <p className="text-xs text-slate-500">
-                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal'} • Stripe Checkout
+                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome • R$ 780,00' : 'Análise Fiscal • R$ 450,00'}
                             </p>
                           </div>
                         </div>
@@ -593,17 +591,13 @@ Guilherme`);
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
-                      <PaymentLinkGenerator
-                        requestId={selectedClient.id}
-                        clientName={selectedClient.full_name}
-                        clientEmail={selectedClient.email}
-                        serviceType={selectedClient.service_type === 'limpa-nome' ? 'limpanome' : 'analise-fiscal'}
-                        onLinkGenerated={(link) => {
-                          // Send link as chat message
-                          setNewMessage(`💳 **Link de Pagamento**\n\nOlá ${selectedClient.full_name.split(' ')[0]}!\n\nPara dar continuidade ao seu atendimento, realize o pagamento no link abaixo:\n\n🔗 ${link}\n\nApós a confirmação do pagamento, daremos andamento imediato ao seu processo.\n\nQualquer dúvida, estou à disposição!\n\nAbraço,\nGuilherme`);
-                          setShowPaymentRequest(false);
-                        }}
-                      />
+                      <Button
+                        onClick={handlePaymentRequest}
+                        className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      >
+                        <CreditCard className="h-4 w-4 mr-2" />
+                        Gerar mensagem com link de pagamento
+                      </Button>
                     </div>
                   </motion.div>
                 )}
