@@ -16,6 +16,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import { logAuditEvent } from '@/hooks/useAuditLog';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 interface ProfileOption {
   id: string;
@@ -78,7 +79,8 @@ const ProfileSelector = () => {
           });
         }
 
-        if (hasRole('contador')) {
+        // Only add contador if feature is enabled
+        if (isContadorEnabled() && hasRole('contador')) {
           profiles.push({
             id: 'contador',
             label: 'Contador',

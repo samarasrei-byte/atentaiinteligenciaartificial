@@ -24,6 +24,7 @@ import {
   Crown,
   Loader2
 } from 'lucide-react';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 interface Feature {
   name: string;
@@ -152,7 +153,15 @@ const PlanComparison = () => {
     }
   };
 
-  const categories = ['core', 'ai', 'tools', 'support', 'contador'];
+  // Filter categories based on feature flag - hide 'contador' category if feature disabled
+  const categories = isContadorEnabled() 
+    ? ['core', 'ai', 'tools', 'support', 'contador']
+    : ['core', 'ai', 'tools', 'support'];
+  
+  // Plans to display - filter out contador if feature disabled
+  const displayPlans = isContadorEnabled() 
+    ? ['simulator', 'premium', 'contador'] 
+    : ['simulator', 'premium'];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900">
@@ -198,13 +207,13 @@ const PlanComparison = () => {
 
         {/* Plan Headers (Sticky) */}
         <div className="sticky top-[73px] z-40 bg-slate-900/95 backdrop-blur-xl rounded-t-2xl border border-slate-700 border-b-0 py-6 px-4 md:px-8">
-          <div className="grid grid-cols-4 gap-4">
+          <div className={`grid gap-4 ${displayPlans.length === 3 ? 'grid-cols-4' : 'grid-cols-3'}`}>
             <div className="flex items-center">
               <span className="text-sm font-medium text-muted-foreground">Recursos</span>
             </div>
             
-            {(['simulator', 'premium', 'contador'] as const).map((planKey) => {
-              const plan = STRIPE_PLANS[planKey];
+            {displayPlans.map((planKey) => {
+              const plan = STRIPE_PLANS[planKey as keyof typeof STRIPE_PLANS];
               const isCurrentPlan = subscription.subscribed && subscription.plan === planKey;
               
               return (
@@ -253,7 +262,7 @@ const PlanComparison = () => {
                 {categoryFeatures.map((feature, idx) => (
                   <div
                     key={feature.name}
-                    className={`grid grid-cols-4 gap-4 px-4 md:px-8 py-4 ${
+                    className={`grid gap-4 px-4 md:px-8 py-4 ${displayPlans.length === 3 ? 'grid-cols-4' : 'grid-cols-3'} ${
                       idx < categoryFeatures.length - 1 ? 'border-b border-slate-700/50' : ''
                     } hover:bg-slate-700/20 transition-colors`}
                   >
@@ -264,17 +273,11 @@ const PlanComparison = () => {
                       </p>
                     </div>
                     
-                    <div className="flex items-center justify-center">
-                      {renderFeatureValue(feature.simulator, 'simulator')}
-                    </div>
-                    
-                    <div className="flex items-center justify-center">
-                      {renderFeatureValue(feature.premium, 'premium')}
-                    </div>
-                    
-                    <div className="flex items-center justify-center">
-                      {renderFeatureValue(feature.contador, 'contador')}
-                    </div>
+                    {displayPlans.map((planKey) => (
+                      <div key={planKey} className="flex items-center justify-center">
+                        {renderFeatureValue(feature[planKey as keyof Feature] as boolean | string, planKey)}
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
@@ -283,9 +286,9 @@ const PlanComparison = () => {
         </div>
 
         {/* CTA Buttons */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          {(['simulator', 'premium', 'contador'] as const).map((planKey) => {
-            const plan = STRIPE_PLANS[planKey];
+        <div className={`grid grid-cols-1 gap-6 mt-8 ${displayPlans.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+          {displayPlans.map((planKey) => {
+            const plan = STRIPE_PLANS[planKey as keyof typeof STRIPE_PLANS];
             const isCurrentPlan = subscription.subscribed && subscription.plan === planKey;
             const isLoading = loadingPlan === planKey;
             

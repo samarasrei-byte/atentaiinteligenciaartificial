@@ -28,6 +28,7 @@ import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { logAuditEvent } from '@/hooks/useAuditLog';
 import { motion, AnimatePresence } from 'framer-motion';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 // Validation schemas
 const emailSchema = z.string().email('Email inválido');
@@ -45,7 +46,7 @@ interface UserTypeOption {
   description: string;
 }
 
-const userTypes: UserTypeOption[] = [
+const allUserTypes: UserTypeOption[] = [
   { 
     type: 'empresa', 
     label: 'Empresa', 
@@ -68,6 +69,11 @@ const userTypes: UserTypeOption[] = [
     description: 'Contadores parceiros' 
   },
 ];
+
+// Filter user types based on feature flags
+const userTypes = allUserTypes.filter(ut => 
+  ut.type !== 'contador' || isContadorEnabled()
+);
 
 // Features for left panel carousel
 const features = [

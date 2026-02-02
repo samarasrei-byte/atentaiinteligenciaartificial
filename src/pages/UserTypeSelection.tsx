@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Building2, Calculator, Briefcase, ArrowLeft, ArrowRight, Sparkles, Rocket, Star, Shield, Zap, Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import CleanBackground from '@/components/onboarding/CleanBackground';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 type UserType = 'empresa' | 'autonomo' | 'contador';
 
@@ -21,7 +22,7 @@ interface UserTypeOption {
   accentColor: string;
 }
 
-const userTypeOptions: UserTypeOption[] = [
+const allUserTypeOptions: UserTypeOption[] = [
   {
     type: 'empresa',
     title: 'Empresa',
@@ -56,6 +57,11 @@ const userTypeOptions: UserTypeOption[] = [
     accentColor: 'teal',
   },
 ];
+
+// Filter options based on feature flags
+const userTypeOptions = allUserTypeOptions.filter(opt => 
+  opt.type !== 'contador' || isContadorEnabled()
+);
 
 const UserTypeSelection = () => {
   const navigate = useNavigate();
