@@ -60,7 +60,6 @@ const SERVICE_OPTIONS = [
   { value: 'credit_repair_pj', label: 'Limpa Nome PJ' },
   { value: 'certificate', label: 'Certidões' },
   { value: 'company_opening', label: 'Abertura de Empresa' },
-  { value: 'consultation', label: 'Consultoria' },
   { value: 'fiscal_analysis', label: 'Análise Fiscal' },
 ];
 

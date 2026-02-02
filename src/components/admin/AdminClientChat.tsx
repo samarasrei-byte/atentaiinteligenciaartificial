@@ -332,7 +332,7 @@ Guilherme`);
     
     const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
     const serviceLabel = selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal';
-    const price = selectedClient.service_type === 'limpa-nome' ? 'R$ 780,00' : 'R$ 450,00';
+    const price = selectedClient.service_type === 'limpa-nome' ? 'R$ 780,00' : 'Grátis + 50% êxito';
     
     setNewMessage(`Olá, ${firstName}! 👋
 
@@ -583,7 +583,7 @@ Guilherme`);
                           <div>
                             <h4 className="font-semibold text-sm text-slate-900">Enviar Link de Pagamento</h4>
                             <p className="text-xs text-slate-500">
-                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome • R$ 780,00' : 'Análise Fiscal • R$ 450,00'}
+                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome • R$ 780,00' : 'Análise Fiscal • Grátis + 50% êxito'}
                             </p>
                           </div>
                         </div>
