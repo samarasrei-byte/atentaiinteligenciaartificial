@@ -90,6 +90,7 @@ import { SubscriptionManagement } from '@/components/subscription/SubscriptionMa
 import { AllServicesHub } from '@/components/services/AllServicesHub';
 import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage';
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
+import { EmbeddedFiscalChat } from '@/components/fiscal/EmbeddedFiscalChat';
 
 interface AutonomoProfile {
   id: string;
@@ -549,19 +550,18 @@ const AutonomoPanel: React.FC = () => {
         );
       case 'abertura-empresa':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                <Building2 className="h-6 w-6 text-primary" />
-                Abrir Empresa
-              </h2>
-              <p className="text-muted-foreground">
-                Formalize seu negócio com orientação sobre a Reforma Tributária
-              </p>
-            </div>
-            <AutonomoMEFlow onBack={() => handleTabChange('dashboard')} />
-          </div>
+          <ComingSoonSection 
+            title="Abertura de Empresa"
+            description="Formalize seu negócio com orientação sobre a Reforma Tributária"
+            features={[
+              'Escolha do melhor regime tributário',
+              'Análise de impacto da reforma',
+              'Suporte completo de especialistas',
+            ]}
+          />
         );
+      case 'chat-fiscal':
+        return <EmbeddedFiscalChat variant="autonomo" />;
       case 'glossary':
         return (
           <div className="space-y-6">
