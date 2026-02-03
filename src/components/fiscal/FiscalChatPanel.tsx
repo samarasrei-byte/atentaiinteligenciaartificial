@@ -260,7 +260,7 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
             </div>
             {request.identified_value_cents && (
               <div className="mt-1 text-primary font-semibold">
-                Valor Identificado: R$ {(request.identified_value_cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}
+                Valor Identificado: {new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(request.identified_value_cents / 100)}
               </div>
             )}
           </div>
