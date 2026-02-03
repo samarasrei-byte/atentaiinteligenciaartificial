@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { MessageCircle, FileText, Shield, Scale, Bell } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { AdminClientChat } from './AdminClientChat';
+import { supabase } from '@/integrations/supabase/client';
 
 // WhatsApp Business Icon SVG component
 const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { className?: string; connected?: boolean }) => (
@@ -19,20 +20,47 @@ const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { cla
   </svg>
 );
 
+interface Stats {
+  activeChats: number;
+  pendingDocs: number;
+  newAlerts: number;
+}
+
 /**
  * GuilhermeChatHub - Central de Atendimento ao Cliente
  * 
  * RESPONSÁVEL: Guilherme
  * SERVIÇOS: Limpa Nome, Análise Fiscal
- * 
- * REGRA DE NEGÓCIO:
- * - Todo atendimento ao cliente passa por aqui
- * - Documentos enviados no chat vão para Central de Documentos
- * - WhatsApp Business integrado (instância Guilherme)
- * - Serviços são CONTEXTO, não páginas separadas
  */
 export const GuilhermeChatHub: React.FC = () => {
   const [isWhatsAppConnected] = React.useState(true);
+  const [stats, setStats] = useState<Stats>({ activeChats: 0, pendingDocs: 0, newAlerts: 0 });
+  
+  useEffect(() => {
+    const loadStats = async () => {
+      const [limpaNomeRes, fiscalRes, docsRes] = await Promise.all([
+        supabase.from('credit_repair_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('fiscal_analysis_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('company_opening_documents').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
+      ]);
+      
+      const activeChats = (limpaNomeRes.count || 0) + (fiscalRes.count || 0);
+      const pendingDocs = docsRes.count || 0;
+      
+      // Count new alerts (pending requests from last 24h)
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      const { count: newAlerts } = await supabase
+        .from('credit_repair_requests')
+        .select('id', { count: 'exact', head: true })
+        .gte('created_at', yesterday.toISOString())
+        .eq('status', 'pending');
+      
+      setStats({ activeChats, pendingDocs, newAlerts: newAlerts || 0 });
+    };
+    
+    loadStats();
+  }, []);
   
   return (
     <div className="h-full flex flex-col">
@@ -74,19 +102,19 @@ export const GuilhermeChatHub: React.FC = () => {
           </div>
         </div>
         
-        {/* Quick Stats */}
+        {/* Quick Stats - Real Data */}
         <div className="flex items-center gap-6 mt-4 text-emerald-100 text-sm">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
-            <span>12 conversas ativas</span>
+            <span>{stats.activeChats} conversas ativas</span>
           </div>
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
-            <span>8 docs pendentes</span>
+            <span>{stats.pendingDocs} docs pendentes</span>
           </div>
           <div className="flex items-center gap-2">
             <Bell className="h-4 w-4" />
-            <span>3 alertas</span>
+            <span>{stats.newAlerts} novos</span>
           </div>
         </div>
       </div>

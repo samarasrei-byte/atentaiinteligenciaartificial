@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BarChart3, FileText, Activity, MessageCircle } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { CesarClientChat } from './CesarClientChat';
+import { supabase } from '@/integrations/supabase/client';
 
 // WhatsApp Business Icon SVG component
 const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { className?: string; connected?: boolean }) => (
@@ -19,20 +20,49 @@ const WhatsAppBusinessIcon = ({ className = "h-5 w-5", connected = true }: { cla
   </svg>
 );
 
+interface Stats {
+  biClients: number;
+  pendingDocs: number;
+  activeReports: number;
+}
+
 /**
  * CesarChatHub - Central de BI & Contabilidade
  * 
  * RESPONSÁVEL: César
  * SERVIÇOS: BI Completo, Contabilidade, Comunicação com Clientes BI
- * 
- * REGRA DE NEGÓCIO:
- * - Chat de comunicação com clientes de BI/Contabilidade
- * - Documentos enviados no chat vão para Central de Documentos
- * - WhatsApp Business integrado (instância César)
- * - Mesma experiência visual do chat do Guilherme
  */
 export const CesarChatHub: React.FC = () => {
   const [isWhatsAppConnected] = React.useState(true);
+  const [stats, setStats] = useState<Stats>({ biClients: 0, pendingDocs: 0, activeReports: 0 });
+  
+  useEffect(() => {
+    const loadStats = async () => {
+      // Count BI requests (notes starting with [BI])
+      const { data: biRequests } = await supabase
+        .from('fiscal_analysis_requests')
+        .select('id, notes')
+        .neq('status', 'completed');
+      
+      const biClients = (biRequests || []).filter(r => 
+        typeof r.notes === 'string' && r.notes.toUpperCase().startsWith('[BI]')
+      ).length;
+      
+      // Count active subscriptions
+      const { count: activeReports } = await supabase
+        .from('subscriptions')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'active');
+      
+      setStats({ 
+        biClients, 
+        pendingDocs: 0, 
+        activeReports: activeReports || 0 
+      });
+    };
+    
+    loadStats();
+  }, []);
   
   return (
     <div className="h-full flex flex-col">
@@ -74,11 +104,11 @@ export const CesarChatHub: React.FC = () => {
           </div>
         </div>
         
-        {/* Quick Stats */}
+        {/* Quick Stats - Real Data */}
         <div className="flex items-center gap-6 mt-4 text-violet-100 text-sm">
           <div className="flex items-center gap-2">
             <MessageCircle className="h-4 w-4" />
-            <span>Atendimento BI</span>
+            <span>{stats.biClients} clientes BI</span>
           </div>
           <div className="flex items-center gap-2">
             <FileText className="h-4 w-4" />
@@ -86,7 +116,7 @@ export const CesarChatHub: React.FC = () => {
           </div>
           <div className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
-            <span>Relatórios</span>
+            <span>{stats.activeReports} assinantes</span>
           </div>
         </div>
       </div>
