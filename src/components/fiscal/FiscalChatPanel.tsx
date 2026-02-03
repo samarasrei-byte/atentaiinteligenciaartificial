@@ -52,20 +52,33 @@ interface FiscalRequest {
 interface FiscalChatPanelProps {
   requestId?: string;
   className?: string;
+  serviceType?: 'fiscal' | 'bi'; // Determina qual especialista mostrar
 }
 
-const SPECIALIST = {
-  id: 'specialist',
-  name: 'Guilherme Barros',
-  role: 'Especialista Fiscal',
-  avatar: '/guilherme-avatar.png',
-  initials: 'GB',
+// Especialistas por tipo de serviço
+const SPECIALISTS = {
+  fiscal: {
+    id: 'guilherme',
+    name: 'Guilherme Barros',
+    role: 'Especialista Fiscal',
+    avatar: '/guilherme-avatar.png',
+    initials: 'GB',
+  },
+  bi: {
+    id: 'cesar',
+    name: 'César',
+    role: 'Especialista BI+ Inteligência',
+    avatar: '/cesar-avatar.png',
+    initials: 'CB',
+  },
 };
 
 export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
   requestId,
   className = '',
+  serviceType = 'fiscal',
 }) => {
+  const SPECIALIST = SPECIALISTS[serviceType];
   const { user } = useAuth();
   const [messages, setMessages] = useState<FiscalChatMessage[]>([]);
   const [request, setRequest] = useState<FiscalRequest | null>(null);
