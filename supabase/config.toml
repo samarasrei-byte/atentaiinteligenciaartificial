@@ -65,3 +65,6 @@ verify_jwt = false
 
 [functions.guest-payment-webhook]
 verify_jwt = false
+
+[functions.create-manual-payment-link]
+verify_jwt = false

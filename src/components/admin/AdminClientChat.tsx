@@ -229,9 +229,35 @@ export function AdminClientChat() {
     };
   }, [selectedClient, user]);
 
+  // Validate links before sending - alert if not Stripe
+  const validateMessageLinks = (message: string): boolean => {
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const urls = message.match(urlRegex) || [];
+    
+    for (const url of urls) {
+      // Check if it's a payment-related URL that's not from Stripe
+      if (url.includes('pay') || url.includes('checkout') || url.includes('pagamento')) {
+        if (!url.includes('stripe.com') && !url.includes('checkout.stripe.com')) {
+          toast({
+            title: '⚠️ Link suspeito detectado!',
+            description: 'Apenas links do Stripe são permitidos para pagamentos. Use o botão "Pagar" para gerar links seguros.',
+            variant: 'destructive',
+          });
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim() || !user || !selectedClient || isSending) return;
+
+    // Validate links in message
+    if (!validateMessageLinks(newMessage)) {
+      return;
+    }
 
     setIsSending(true);
 
@@ -349,14 +375,52 @@ Guilherme`);
     setShowDocumentRequest(false);
   };
 
-  const handlePaymentRequest = () => {
-    if (!selectedClient) return;
+  const [isGeneratingPaymentLink, setIsGeneratingPaymentLink] = useState(false);
+  const [customPaymentAmount, setCustomPaymentAmount] = useState('');
+
+  const handlePaymentRequest = async () => {
+    if (!selectedClient || !user) return;
     
-    const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
-    const serviceLabel = selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal';
-    const price = selectedClient.service_type === 'limpa-nome' ? 'R$ 780,00' : 'Grátis + 50% êxito';
+    setIsGeneratingPaymentLink(true);
     
-    setNewMessage(`Olá, ${firstName}! 👋
+    try {
+      const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
+      const serviceLabel = selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal';
+      
+      // Determine amount: use custom or default
+      let amountCents: number;
+      if (customPaymentAmount) {
+        amountCents = Math.round(parseFloat(customPaymentAmount.replace(',', '.')) * 100);
+      } else {
+        amountCents = selectedClient.service_type === 'limpa-nome' ? 78000 : 29700; // R$ 780 or R$ 297
+      }
+      
+      if (amountCents < 100) {
+        toast({ title: 'Valor mínimo é R$ 1,00', variant: 'destructive' });
+        setIsGeneratingPaymentLink(false);
+        return;
+      }
+
+      const session = await supabase.auth.getSession();
+      const response = await supabase.functions.invoke('create-manual-payment-link', {
+        headers: { Authorization: `Bearer ${session.data.session?.access_token}` },
+        body: {
+          clientEmail: selectedClient.email,
+          clientName: selectedClient.full_name,
+          clientUserId: selectedClient.user_id,
+          amountCents,
+          serviceName: serviceLabel,
+          serviceType: selectedClient.service_type,
+          requestId: selectedClient.id,
+        },
+      });
+
+      if (response.error) throw new Error(response.error.message);
+
+      const paymentUrl = response.data.url;
+      const price = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+      
+      setNewMessage(`Olá, ${firstName}! 👋
 
 Seguem os detalhes do seu serviço de **${serviceLabel}**:
 
@@ -364,15 +428,23 @@ Seguem os detalhes do seu serviço de **${serviceLabel}**:
 ✅ Pagamento 100% seguro via Stripe
 📋 Parcelamento disponível
 
-Clique no botão abaixo para concluir o pagamento e dar início ao seu processo:
+Clique no link abaixo para concluir o pagamento:
 
-🔗 [LINK DE PAGAMENTO SERÁ INSERIDO AUTOMATICAMENTE]
+🔗 ${paymentUrl}
 
 Qualquer dúvida sobre pagamento, me chame aqui!
 
 Abraço,
 Guilherme`);
-    setShowPaymentRequest(false);
+      setShowPaymentRequest(false);
+      setCustomPaymentAmount('');
+      toast({ title: 'Link de pagamento gerado!', description: 'Mensagem pronta para enviar.' });
+    } catch (error) {
+      console.error('Error generating payment link:', error);
+      toast({ title: 'Erro ao gerar link', description: 'Tente novamente.', variant: 'destructive' });
+    } finally {
+      setIsGeneratingPaymentLink(false);
+    }
   };
 
   const filteredClients = clients.filter(client => {
@@ -604,9 +676,9 @@ Guilherme`);
                             <CreditCard className="h-5 w-5 text-white" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-sm text-slate-900">Enviar Link de Pagamento</h4>
+                            <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento Stripe</h4>
                             <p className="text-xs text-slate-500">
-                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome • R$ 780,00' : 'Análise Fiscal • Grátis + 50% êxito'}
+                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal'} • Valor customizável
                             </p>
                           </div>
                         </div>
@@ -614,13 +686,36 @@ Guilherme`);
                           <X className="h-4 w-4" />
                         </Button>
                       </div>
+                      <div className="flex gap-2 mb-3">
+                        <Input
+                          type="text"
+                          placeholder={selectedClient.service_type === 'limpa-nome' ? '780,00' : '297,00'}
+                          value={customPaymentAmount}
+                          onChange={(e) => setCustomPaymentAmount(e.target.value)}
+                          className="flex-1"
+                        />
+                        <span className="flex items-center text-sm text-slate-500 px-2">R$</span>
+                      </div>
                       <Button
                         onClick={handlePaymentRequest}
+                        disabled={isGeneratingPaymentLink}
                         className="w-full bg-emerald-600 hover:bg-emerald-700 text-white"
                       >
-                        <CreditCard className="h-4 w-4 mr-2" />
-                        Gerar mensagem com link de pagamento
+                        {isGeneratingPaymentLink ? (
+                          <>
+                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                            Gerando link...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="h-4 w-4 mr-2" />
+                            Gerar link de pagamento real
+                          </>
+                        )}
                       </Button>
+                      <p className="text-xs text-slate-400 mt-2 text-center">
+                        Link gerado via Stripe • Pagamento seguro
+                      </p>
                     </div>
                   </motion.div>
                 )}
