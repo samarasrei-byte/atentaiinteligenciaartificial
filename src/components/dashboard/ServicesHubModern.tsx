@@ -258,11 +258,14 @@ export const ServicesHubModern: React.FC = () => {
         console.log('[ServicesHub ROUTING] Análise Fiscal → chat-fiscal tab');
         // Navigate to the chat tab by updating URL params
         const currentPath = window.location.pathname;
-        if (currentPath.includes('/autonomo') || currentPath.includes('/empresa')) {
-          navigate('?tab=chat-fiscal');
-        } else {
-          navigate('/bi-contabilidade'); // Fallback for non-panel contexts
+        const isPanelContext = currentPath.includes('/autonomo') || currentPath.includes('/empresa');
+
+        if (isPanelContext) {
+          navigate({ search: '?tab=chat-fiscal' });
+          return;
         }
+
+        navigate('/bi-contabilidade'); // fora do painel
       },
       badge: 'Sem Custo Inicial',
     },
@@ -283,11 +286,14 @@ export const ServicesHubModern: React.FC = () => {
       onClick: () => {
         // Redireciona para o chat-bi (César) dentro do painel
         const currentPath = window.location.pathname;
-        if (currentPath.includes('/autonomo') || currentPath.includes('/empresa')) {
-          navigate('?tab=chat-bi'); // Tab separada para BI → César
-        } else {
-          navigate('/bi-contabilidade');
+        const isPanelContext = currentPath.includes('/autonomo') || currentPath.includes('/empresa');
+
+        if (isPanelContext) {
+          navigate({ search: '?tab=chat-bi' }); // Tab separada para BI → César
+          return;
         }
+
+        navigate('/bi-contabilidade');
       },
       badge: 'Novo',
       isCustomPricing: true, // Shows "Sob consulta"

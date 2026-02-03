@@ -286,6 +286,7 @@ const EmbeddedProfile = ({ profile, user, onUpdate }: { profile: any; user: any;
 
 const EmpresaPanel = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user, profile, roles, signOut, loading, hasRole } = useAuth();
   const { toast } = useToast();
   const { notifications, unreadCount, markAsRead, markAllAsRead, clearNotifications } = useNotifications();
@@ -308,7 +309,7 @@ const EmpresaPanel = () => {
   const [isLoadingData, setIsLoadingData] = useState(true);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [stats, setStats] = useState({
     simulations: 0,
     aiChats: 0,
@@ -320,6 +321,14 @@ const EmpresaPanel = () => {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  // Mantém o estado do painel sincronizado com a URL (?tab=...)
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) setActiveTab(tab);
+    if (!tab && activeTab !== 'overview') setActiveTab('overview');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
 
   useEffect(() => {
     if (user) {
@@ -409,6 +418,8 @@ const EmpresaPanel = () => {
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setMobileMenuOpen(false);
+    setSearchParams({ tab });
+    window.scrollTo({ top: 0, behavior: 'instant' });
   };
 
   if (loading || isLoadingData) {

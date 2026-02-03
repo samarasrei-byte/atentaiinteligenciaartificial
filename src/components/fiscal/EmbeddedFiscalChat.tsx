@@ -110,20 +110,13 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
         ? `🔔 **Nova Solicitação de BI+ Inteligência Fiscal**\n\nOlá César! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de BI+ Inteligência Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`
         : `🔔 **Nova Solicitação de Análise Fiscal**\n\nOlá Guilherme! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de Análise Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`;
 
-      // Get the appropriate admin user ID
-      const { data: adminUsers } = await supabase
-        .from('profiles')
-        .select('user_id')
-        .limit(1);
-
-      const receiverId = adminUsers?.[0]?.user_id || specialistId;
-
       await supabase
         .from('fiscal_chat_messages')
         .insert({
           request_id: newRequest.id,
           sender_id: user.id,
-          receiver_id: receiverId,
+          // Sempre notificar o especialista correto (Guilherme/César)
+          receiver_id: specialistId,
           content: welcomeMessage,
         });
 
