@@ -561,7 +561,9 @@ const AutonomoPanel: React.FC = () => {
           />
         );
       case 'chat-fiscal':
-        return <EmbeddedFiscalChat variant="autonomo" />;
+        return <EmbeddedFiscalChat variant="autonomo" serviceType="fiscal" />;
+      case 'chat-bi':
+        return <EmbeddedFiscalChat variant="autonomo" serviceType="bi" />;
       case 'glossary':
         return (
           <div className="space-y-6">
@@ -753,8 +755,7 @@ const AutonomoPanel: React.FC = () => {
         onClose={() => tour.endTour(true)}
       />
       
-      {/* Floating AI Agent */}
-      <FloatingAIAgent context="autonomo" />
+      {/* FloatingAIAgent removido - bloqueava o chat */}
     </div>
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { FiscalChatPanel } from './FiscalChatPanel';
@@ -10,27 +10,39 @@ import { useToast } from '@/hooks/use-toast';
 
 interface EmbeddedFiscalChatProps {
   variant?: 'empresa' | 'autonomo';
+  serviceType?: 'fiscal' | 'bi'; // fiscal → Guilherme | bi → César
 }
 
-// ID do Guilherme - responsável pelo atendimento fiscal
-const GUILHERME_ADMIN_ID = '00000000-0000-0000-0000-000000000001';
+// IDs dos especialistas responsáveis
+const GUILHERME_ADMIN_ID = '00000000-0000-0000-0000-000000000001'; // Análise Fiscal
+const CESAR_ADMIN_ID = '00000000-0000-0000-0000-000000000002'; // BI Inteligência Fiscal
 
-export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant = 'empresa' }) => {
+export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ 
+  variant = 'empresa',
+  serviceType = 'fiscal' 
+}) => {
   const { user, profile } = useAuth();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isCreating, setIsCreating] = useState(false);
 
+  // Determina o especialista responsável
+  const specialistId = serviceType === 'bi' ? CESAR_ADMIN_ID : GUILHERME_ADMIN_ID;
+  const specialistName = serviceType === 'bi' ? 'César' : 'Guilherme';
+  const serviceName = serviceType === 'bi' ? 'BI+ Inteligência Fiscal' : 'Análise Fiscal';
+
   // Fetch active fiscal request for the user
   const { data: activeRequest, isLoading, refetch } = useQuery({
-    queryKey: ['active-fiscal-request', user?.id],
+    queryKey: ['active-fiscal-request', user?.id, serviceType],
     queryFn: async () => {
       if (!user?.id) return null;
 
+      // Filter by notes to find correct service type
       const { data, error } = await supabase
         .from('fiscal_analysis_requests')
-        .select('id, company_name, cnpj, status, created_at')
+        .select('id, company_name, cnpj, status, created_at, notes')
         .eq('user_id', user.id)
+        .ilike('notes', `%${serviceType === 'bi' ? 'BI' : 'Fiscal'}%`)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -76,13 +88,13 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
         full_name: profile?.full_name || 'Usuário',
         email: user.email || '',
         phone: profile?.phone || null,
-        company_name: companyData?.company_name || autonomoData?.profession || `Solicitação ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}`,
+        company_name: companyData?.company_name || autonomoData?.profession || `Solicitação ${serviceName}`,
         cnpj: companyData?.cnpj || '',
         tax_regime: companyData?.tax_regime || autonomoData?.current_regime || 'nao_definido',
         annual_revenue_cents: companyData?.annual_revenue_cents || (autonomoData?.monthly_revenue_average_cents ? autonomoData.monthly_revenue_average_cents * 12 : 0),
         status: 'pending',
         payment_status: 'pending',
-        notes: `Solicitação criada automaticamente via painel ${variant}. Cliente iniciou chat de Análise Fiscal.`,
+        notes: `[${serviceType.toUpperCase()}] Solicitação de ${serviceName} criada automaticamente via painel ${variant}. Responsável: ${specialistName}.`,
       };
 
       const { data: newRequest, error: createError } = await supabase
@@ -93,17 +105,18 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
 
       if (createError) throw createError;
 
-      // Send initial notification message to Guilherme
-      const welcomeMessage = `🔔 **Nova Solicitação de Análise Fiscal**\n\nOlá! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de Análise Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`;
+      // Send initial notification message to the correct specialist
+      const welcomeMessage = serviceType === 'bi' 
+        ? `🔔 **Nova Solicitação de BI+ Inteligência Fiscal**\n\nOlá César! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de BI+ Inteligência Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`
+        : `🔔 **Nova Solicitação de Análise Fiscal**\n\nOlá Guilherme! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de Análise Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`;
 
-      // First, get the admin user ID from profiles with admin role or use contador profiles
-      const { data: adminUser } = await supabase
+      // Get the appropriate admin user ID
+      const { data: adminUsers } = await supabase
         .from('profiles')
         .select('user_id')
-        .limit(1)
-        .single();
+        .limit(1);
 
-      const receiverId = adminUser?.user_id || GUILHERME_ADMIN_ID;
+      const receiverId = adminUsers?.[0]?.user_id || specialistId;
 
       await supabase
         .from('fiscal_chat_messages')
@@ -116,7 +129,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
 
       toast({
         title: '🎉 Solicitação Criada!',
-        description: 'Sua análise fiscal foi iniciada. Um especialista entrará em contato em breve.',
+        description: `Sua ${serviceName} foi iniciada. ${specialistName} entrará em contato em breve.`,
       });
 
       // Refresh the query to show the chat
@@ -151,12 +164,12 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
       <div className="space-y-6">
         <div>
           <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-            {variant === 'empresa' ? (
-              <Scale className="h-6 w-6 text-primary" />
-            ) : (
+            {serviceType === 'bi' ? (
               <Brain className="h-6 w-6 text-primary" />
+            ) : (
+              <Scale className="h-6 w-6 text-primary" />
             )}
-            {variant === 'empresa' ? 'Chat Análise Fiscal' : 'BI+ Inteligência Fiscal'}
+            Chat {serviceName}
           </h2>
           <p className="text-muted-foreground">
             {isCreating ? 'Iniciando sua análise...' : 'Carregando sua solicitação...'}
@@ -167,7 +180,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
           {isCreating && (
             <div className="text-center">
               <p className="text-foreground font-medium">Preparando seu atendimento</p>
-              <p className="text-sm text-muted-foreground">Um especialista será notificado automaticamente</p>
+              <p className="text-sm text-muted-foreground">{specialistName} será notificado automaticamente</p>
             </div>
           )}
         </Card>
@@ -181,11 +194,11 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
       <div>
         <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <MessageSquare className="h-6 w-6 text-primary" />
-          {variant === 'empresa' ? 'Chat Análise Fiscal' : 'Chat BI+ Inteligência Fiscal'}
+          Chat {serviceName}
           <Sparkles className="h-4 w-4 text-amber-500" />
         </h2>
         <p className="text-muted-foreground">
-          Converse com nosso especialista sobre sua análise fiscal
+          Converse com {specialistName} sobre sua {serviceName.toLowerCase()}
         </p>
       </div>
       
@@ -195,13 +208,17 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
         <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
             <div className="p-4 rounded-full bg-primary/10 mb-6">
-              <Scale className="h-12 w-12 text-primary" />
+              {serviceType === 'bi' ? (
+                <Brain className="h-12 w-12 text-primary" />
+              ) : (
+                <Scale className="h-12 w-12 text-primary" />
+              )}
             </div>
             <h3 className="text-xl font-semibold text-foreground mb-2">
               Iniciando atendimento...
             </h3>
             <p className="text-muted-foreground max-w-md mb-6">
-              Estamos preparando sua análise fiscal. Por favor, aguarde um momento.
+              Estamos preparando sua {serviceName.toLowerCase()}. Por favor, aguarde um momento.
             </p>
             <Button 
               size="lg" 
@@ -214,7 +231,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ variant 
               ) : (
                 <MessageSquare className="h-5 w-5" />
               )}
-              Iniciar Atendimento
+              Iniciar Atendimento com {specialistName}
             </Button>
           </CardContent>
         </Card>

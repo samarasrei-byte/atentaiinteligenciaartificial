@@ -514,7 +514,9 @@ const EmpresaPanel = () => {
       case 'chat-contador':
         return <EmbeddedChatContador />;
       case 'chat-fiscal':
-        return <EmbeddedFiscalChat variant="empresa" />;
+        return <EmbeddedFiscalChat variant="empresa" serviceType="fiscal" />;
+      case 'chat-bi':
+        return <EmbeddedFiscalChat variant="empresa" serviceType="bi" />;
       case 'profile':
         return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
       case 'glossary':
@@ -905,8 +907,7 @@ const EmpresaPanel = () => {
         onClose={() => tour.endTour(false)}
       />
       
-      {/* Floating AI Agent */}
-      <FloatingAIAgent context="empresa" />
+      {/* FloatingAIAgent removido - bloqueava o chat */}
     </div>
   );
 };

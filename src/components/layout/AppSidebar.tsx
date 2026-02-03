@@ -103,13 +103,14 @@ const reformaGroup: SidebarGroup = {
 };
 
 // SERVIÇOS - Consolidados sem duplicação (Sem "Contratar Serviços" - duplicado)
+// Análise Fiscal → Guilherme | BI Inteligência Fiscal → César (tabs separados)
 const servicosGroup: SidebarGroup = {
   id: 'servicos',
   label: 'Serviços',
   items: [
     { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
     { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
-    { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-fiscal', badge: 'IA+' },
+    { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-bi', badge: 'IA+' },
     { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'Em breve' },
   ],
 };
@@ -165,7 +166,7 @@ const autonomoGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
-      { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-fiscal', badge: 'IA+' },
+      { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-bi', badge: 'IA+' },
       { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'Em breve' },
     ],
   },
@@ -208,7 +209,7 @@ const contadorGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
-      { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-fiscal', badge: 'IA+' },
+      { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-bi', badge: 'IA+' },
     ],
   },
   {

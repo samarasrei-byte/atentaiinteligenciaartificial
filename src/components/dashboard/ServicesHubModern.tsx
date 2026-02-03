@@ -281,10 +281,10 @@ export const ServicesHubModern: React.FC = () => {
       gradient: 'from-indigo-500/40 to-violet-500/40',
       iconGradient: 'from-indigo-500 to-violet-500',
       onClick: () => {
-        // Redireciona para o chat dentro do painel (mesma lógica da Análise Fiscal)
+        // Redireciona para o chat-bi (César) dentro do painel
         const currentPath = window.location.pathname;
         if (currentPath.includes('/autonomo') || currentPath.includes('/empresa')) {
-          navigate('?tab=chat-fiscal');
+          navigate('?tab=chat-bi'); // Tab separada para BI → César
         } else {
           navigate('/bi-contabilidade');
         }
