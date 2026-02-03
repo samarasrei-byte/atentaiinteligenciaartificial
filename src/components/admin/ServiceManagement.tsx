@@ -28,7 +28,12 @@ import {
   Shield,
   Scale,
   Brain,
-  CreditCard
+  CreditCard,
+  Building2,
+  FileSpreadsheet,
+  FileCheck,
+  BarChart3,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -42,6 +47,11 @@ const iconMap: Record<string, React.ElementType> = {
   Package,
   ShoppingBag,
   Tag,
+  Building2,
+  FileSpreadsheet,
+  FileCheck,
+  BarChart3,
+  User,
 };
 
 type ServiceResponsible = 'guilherme' | 'cesar' | 'contador';
@@ -235,7 +245,7 @@ export const ServiceManagement: React.FC = () => {
   );
 
   const formatPrice = (cents: number | null) => {
-    if (!cents) return 'Sob consulta';
+    if (cents === null || cents === 0) return 'Sob consulta';
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
   };
 
