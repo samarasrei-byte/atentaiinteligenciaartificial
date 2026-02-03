@@ -196,21 +196,7 @@ export const QuickActionsAdmin: React.FC = () => {
   );
 };
 
-// Mock data for demonstration
-export const mockSystemHealth: SystemHealthProps = {
-  status: 'healthy',
-  uptime: '99.9%',
-  responseTime: 145,
-  activeUsers: 42,
-  queuedJobs: 3,
-};
-
-export const mockActivities: RecentActivityItem[] = [
-  { id: '1', type: 'user', title: 'Novo usuário', description: 'maria@empresa.com se cadastrou', timestamp: '2min', status: 'success' },
-  { id: '2', type: 'payment', title: 'Pagamento recebido', description: 'Assinatura Premium - R$ 97,00', timestamp: '15min', status: 'success' },
-  { id: '3', type: 'consultation', title: 'Consulta agendada', description: 'João Santos × Dr. Silva', timestamp: '1h', status: 'success' },
-  { id: '4', type: 'system', title: 'Backup automático', description: 'Backup diário concluído', timestamp: '3h', status: 'success' },
-  { id: '5', type: 'user', title: 'Login falho', description: 'Tentativas excedidas - user@test.com', timestamp: '4h', status: 'warning' },
-];
+// Note: mockSystemHealth and mockActivities have been removed
+// Use useAdminRealStats hook instead for real data
 
 export default { SystemHealthCard, QuickStatCard, AdminActivityFeed, QuickActionsAdmin };

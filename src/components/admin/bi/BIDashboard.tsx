@@ -1,11 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { supabase } from '@/integrations/supabase/client';
 import {
-  AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
+  AreaChart, Area, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 import { 
@@ -22,97 +20,12 @@ import {
   RefreshCw,
   User
 } from 'lucide-react';
+import { useBIRealData } from '@/hooks/useBIRealData';
 
 const COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6'];
 
 export const BIDashboard: React.FC = () => {
-  const [loading, setLoading] = useState(true);
-  const [stats, setStats] = useState({
-    totalRevenue: 0,
-    monthlyRevenue: 0,
-    totalSubscriptions: 0,
-    activeSubscriptions: 0,
-    averageTicket: 0,
-    revenueGrowth: 12.5,
-  });
-  const [revenueData, setRevenueData] = useState<any[]>([]);
-  const [serviceDistribution, setServiceDistribution] = useState<any[]>([]);
-
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
-
-  const fetchDashboardData = async () => {
-    try {
-      setLoading(true);
-      
-      // Fetch payments
-      const { data: payments } = await supabase
-        .from('payments')
-        .select('amount_cents, created_at')
-        .eq('status', 'completed');
-
-      // Fetch subscriptions
-      const { data: subscriptions, count: totalSubs } = await supabase
-        .from('subscriptions')
-        .select('*', { count: 'exact' });
-
-      const activeSubs = subscriptions?.filter(s => s.status === 'active').length || 0;
-      const totalRevenue = payments?.reduce((sum, p) => sum + p.amount_cents, 0) || 0;
-
-      // Monthly revenue (last 6 months)
-      const monthNames = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-      const chartData = [];
-      
-      for (let i = 5; i >= 0; i--) {
-        const date = new Date();
-        date.setMonth(date.getMonth() - i);
-        const monthStart = new Date(date.getFullYear(), date.getMonth(), 1);
-        const monthEnd = new Date(date.getFullYear(), date.getMonth() + 1, 1);
-        
-        const monthPayments = payments?.filter(p => {
-          const pDate = new Date(p.created_at);
-          return pDate >= monthStart && pDate < monthEnd;
-        }) || [];
-        
-        chartData.push({
-          month: monthNames[date.getMonth()],
-          receita: monthPayments.reduce((sum, p) => sum + p.amount_cents, 0) / 100,
-          despesas: Math.random() * 5000 + 2000, // Mock expenses
-        });
-      }
-
-      // Service distribution (mock data based on real counts)
-      const [creditRepair, fiscal, ir, certificates] = await Promise.all([
-        supabase.from('credit_repair_requests').select('id', { count: 'exact', head: true }),
-        supabase.from('fiscal_analysis_requests').select('id', { count: 'exact', head: true }),
-        supabase.from('ir_requests').select('id', { count: 'exact', head: true }),
-        supabase.from('certificate_requests').select('id', { count: 'exact', head: true }),
-      ]);
-
-      setServiceDistribution([
-        { name: 'Limpa Nome', value: creditRepair.count || 0 },
-        { name: 'Análise Fiscal', value: fiscal.count || 0 },
-        { name: 'Declaração IR', value: ir.count || 0 },
-        { name: 'Certidões', value: certificates.count || 0 },
-      ]);
-
-      setStats({
-        totalRevenue,
-        monthlyRevenue: chartData[chartData.length - 1]?.receita * 100 || 0,
-        totalSubscriptions: totalSubs || 0,
-        activeSubscriptions: activeSubs,
-        averageTicket: payments?.length ? totalRevenue / payments.length : 0,
-        revenueGrowth: 12.5,
-      });
-
-      setRevenueData(chartData);
-    } catch (error) {
-      console.error('Error fetching dashboard data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { stats, revenueData, serviceDistribution, loading, refresh } = useBIRealData();
 
   const formatCurrency = (value: number) => 
     new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value / 100);
@@ -126,14 +39,14 @@ export const BIDashboard: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-slate-900">Dashboards Contábeis</h2>
-          <p className="text-sm text-slate-500">Análises geradas por IA • Validação por Guilherme</p>
+          <p className="text-sm text-slate-500">Dados em tempo real • Atualização automática</p>
         </div>
         <div className="flex items-center gap-3">
           <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1.5">
             <User className="h-3.5 w-3.5" />
-            Validado por humano
+            Dados Reais
           </Badge>
-          <Button variant="outline" size="sm" onClick={fetchDashboardData}>
+          <Button variant="outline" size="sm" onClick={refresh}>
             <RefreshCw className={`h-4 w-4 mr-2 ${loading ? 'animate-spin' : ''}`} />
             Atualizar
           </Button>
@@ -154,8 +67,17 @@ export const BIDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-1 mt-3 text-sm">
-              <ArrowUpRight className="h-4 w-4 text-emerald-600" />
-              <span className="text-emerald-600 font-medium">+{stats.revenueGrowth}%</span>
+              {stats.revenueGrowth >= 0 ? (
+                <>
+                  <ArrowUpRight className="h-4 w-4 text-emerald-600" />
+                  <span className="text-emerald-600 font-medium">+{stats.revenueGrowth}%</span>
+                </>
+              ) : (
+                <>
+                  <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  <span className="text-red-600 font-medium">{stats.revenueGrowth}%</span>
+                </>
+              )}
               <span className="text-slate-500">vs mês anterior</span>
             </div>
           </CardContent>
@@ -173,8 +95,14 @@ export const BIDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-1 mt-3 text-sm">
-              <TrendingUp className="h-4 w-4 text-emerald-600" />
-              <span className="text-emerald-600 font-medium">+8.2%</span>
+              {stats.revenueGrowth >= 0 ? (
+                <TrendingUp className="h-4 w-4 text-emerald-600" />
+              ) : (
+                <TrendingDown className="h-4 w-4 text-red-600" />
+              )}
+              <span className={stats.revenueGrowth >= 0 ? "text-emerald-600 font-medium" : "text-red-600 font-medium"}>
+                {stats.revenueGrowth >= 0 ? '+' : ''}{stats.revenueGrowth}%
+              </span>
               <span className="text-slate-500">crescimento</span>
             </div>
           </CardContent>
@@ -209,9 +137,7 @@ export const BIDashboard: React.FC = () => {
               </div>
             </div>
             <div className="flex items-center gap-1 mt-3 text-sm">
-              <ArrowUpRight className="h-4 w-4 text-emerald-600" />
-              <span className="text-emerald-600 font-medium">+5.3%</span>
-              <span className="text-slate-500">tendência</span>
+              <span className="text-slate-500">por transação</span>
             </div>
           </CardContent>
         </Card>
