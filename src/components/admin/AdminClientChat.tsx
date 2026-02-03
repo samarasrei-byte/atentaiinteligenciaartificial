@@ -676,7 +676,7 @@ Guilherme`);
                       </div>
                       <h4 className="text-sm font-medium text-slate-700 mb-1">Inicie a conversa</h4>
                       <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                        Clique em "Gerar como Guilherme" para criar uma mensagem.
+                        Use o botão de IA ou escreva diretamente para enviar uma mensagem.
                       </p>
                     </div>
                   ) : (
