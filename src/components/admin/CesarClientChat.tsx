@@ -51,9 +51,10 @@ interface ClientRequest {
   status: string;
   created_at: string;
   user_id: string;
-  service_type: 'bi-subscription' | 'contabilidade';
-  plan_type?: string;
-  price_cents?: number;
+  service_type: 'bi';
+  cnpj?: string;
+  notes?: string | null;
+  identified_value_cents?: number;
 }
 
 // Documentos específicos para BI/Contabilidade
@@ -105,52 +106,82 @@ export function CesarClientChat() {
   const loadClients = async () => {
     setIsLoading(true);
     try {
-      // Load BI subscriptions as clients for César
-      const { data: subscriptions } = await supabase
-        .from('subscriptions')
-        .select(`
-          id,
-          user_id,
-          status,
-          plan_type,
-          price_cents,
-          created_at
-        `)
-        .eq('status', 'active')
+      // Load BI requests from fiscal_analysis_requests (notes starts with [BI])
+      const { data: biRequests } = await supabase
+        .from('fiscal_analysis_requests')
+        .select('id, full_name, email, phone, status, created_at, user_id, cnpj, notes, identified_value_cents')
         .order('created_at', { ascending: false });
 
-      // Get user profiles for names
-      const userIds = subscriptions?.map(s => s.user_id) || [];
-      const { data: profiles } = await supabase
-        .from('profiles')
-        .select('id, full_name, email, phone')
-        .in('id', userIds);
+      // Filter only BI requests (notes starts with [BI])
+      const biOnly = (biRequests || []).filter(r => 
+        typeof r.notes === 'string' && r.notes.toUpperCase().startsWith('[BI]')
+      );
 
-      const profileMap = new Map(profiles?.map(p => [p.id, p]) || []);
-
-      const clientList: ClientRequest[] = (subscriptions || []).map(sub => {
-        const profile = profileMap.get(sub.user_id);
-        return {
-          id: sub.id,
-          user_id: sub.user_id,
-          full_name: profile?.full_name || 'Cliente BI',
-          email: profile?.email || '',
-          phone: profile?.phone,
-          status: sub.status,
-          created_at: sub.created_at,
-          service_type: 'bi-subscription' as const,
-          plan_type: sub.plan_type,
-          price_cents: sub.price_cents,
-        };
-      });
+      const clientList: ClientRequest[] = biOnly.map(r => ({
+        id: r.id,
+        user_id: r.user_id || '',
+        full_name: r.full_name,
+        email: r.email,
+        phone: r.phone,
+        status: r.status,
+        created_at: r.created_at,
+        service_type: 'bi' as const,
+        cnpj: r.cnpj,
+        notes: r.notes,
+        identified_value_cents: r.identified_value_cents,
+      }));
 
       setClients(clientList);
     } catch (error) {
-      console.error('Error loading clients:', error);
+      console.error('Error loading BI clients:', error);
     } finally {
       setIsLoading(false);
     }
   };
+
+  // Load messages when client is selected
+  useEffect(() => {
+    if (!selectedClient || !user) return;
+
+    const loadMessages = async () => {
+      const { data, error } = await supabase
+        .from('fiscal_chat_messages')
+        .select('*')
+        .eq('request_id', selectedClient.id)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error loading BI chat messages:', error);
+        setMessages([]);
+        return;
+      }
+
+      setMessages((data || []) as ChatMessage[]);
+    };
+
+    loadMessages();
+
+    // Real-time subscription
+    const channel = supabase
+      .channel(`cesar-chat-${selectedClient.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'fiscal_chat_messages',
+          filter: `request_id=eq.${selectedClient.id}`
+        },
+        (payload) => {
+          setMessages(prev => [...prev, payload.new as ChatMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [selectedClient, user]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -158,25 +189,27 @@ export function CesarClientChat() {
 
     setIsSending(true);
 
-    // For BI clients, we simulate sending (would integrate with actual messaging system)
-    toast({ 
-      title: 'Mensagem enviada', 
-      description: `Notificação enviada para ${selectedClient.full_name}.` 
-    });
-    
-    // Add message to local state for demo
-    const newMsg: ChatMessage = {
-      id: Date.now().toString(),
-      request_id: selectedClient.id,
-      sender_id: user.id,
-      receiver_id: selectedClient.user_id,
-      content: newMessage.trim(),
-      read_at: null,
-      created_at: new Date().toISOString(),
-    };
-    
-    setMessages(prev => [...prev, newMsg]);
-    setNewMessage('');
+    // Send real message to fiscal_chat_messages
+    const { error } = await supabase
+      .from('fiscal_chat_messages')
+      .insert({
+        request_id: selectedClient.id,
+        sender_id: user.id,
+        receiver_id: selectedClient.user_id,
+        content: newMessage.trim(),
+      });
+
+    if (error) {
+      console.error('Error sending message:', error);
+      toast({ title: 'Erro ao enviar mensagem', variant: 'destructive' });
+    } else {
+      setNewMessage('');
+      toast({ 
+        title: 'Mensagem enviada', 
+        description: `Notificação enviada para ${selectedClient.full_name}.` 
+      });
+    }
+
     setIsSending(false);
   };
 
@@ -186,7 +219,7 @@ export function CesarClientChat() {
     setIsGeneratingAI(true);
 
     try {
-      const context = `Serviço: BI Contabilidade. Plano: ${selectedClient.plan_type || 'Premium'}. Cliente desde: ${new Date(selectedClient.created_at).toLocaleDateString('pt-BR')}.`;
+      const context = `Serviço: BI+ Inteligência Fiscal. CNPJ: ${selectedClient.cnpj || 'N/I'}. Cliente desde: ${new Date(selectedClient.created_at).toLocaleDateString('pt-BR')}.`;
 
       const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-admin-response`, {
         method: 'POST',
@@ -369,13 +402,11 @@ César`);
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-violet-50 text-violet-700 border-violet-200">
-                              {client.plan_type || 'Premium'}
+                              BI+
                             </Badge>
-                            {client.price_cents && (
-                              <span className="text-[10px] text-slate-500">
-                                R$ {(client.price_cents / 100).toFixed(0)}/mês
-                              </span>
-                            )}
+                            <span className="text-[10px] text-slate-500">
+                              {client.status === 'completed' ? 'Concluído' : client.status === 'pending' ? 'Pendente' : 'Em análise'}
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -407,7 +438,7 @@ César`);
                       <span>•</span>
                       <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-violet-100 text-violet-700 border-violet-200">
                         <BarChart3 className="h-3 w-3 mr-1" />
-                        BI {selectedClient.plan_type}
+                        BI+ Inteligência Fiscal
                       </Badge>
                     </div>
                   </div>
