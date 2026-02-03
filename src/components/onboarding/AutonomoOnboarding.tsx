@@ -67,7 +67,6 @@ const steps = [
   { id: 1, title: 'Profissão', icon: Briefcase },
   { id: 2, title: 'Regime', icon: DollarSign },
   { id: 3, title: 'Financeiro', icon: TrendingUp },
-  { id: 4, title: 'Contato', icon: MapPin },
 ];
 
 interface AutonomoOnboardingProps {
@@ -91,7 +90,7 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
     bio: '',
   });
 
-  const totalSteps = 4;
+  const totalSteps = 3;
 
   // Keyboard navigation
   useEffect(() => {
@@ -152,8 +151,6 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
         return formData.current_regime;
       case 3:
         return formData.monthly_revenue_average_cents > 0;
-      case 4:
-        return formData.state;
       default:
         return true;
     }
@@ -305,7 +302,7 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
                 <Briefcase className="h-4 w-4 text-primary" />
                 Categoria Profissional *
               </Label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                 {PROFESSION_CATEGORIES.map((cat, idx) => (
                   <OnboardingCard3D
                     key={cat.value}
@@ -372,25 +369,35 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
                 <Input
                   id="revenue"
                   type="text"
-                  inputMode="numeric"
-                  value={formData.monthly_revenue_average_cents > 0 ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(formData.monthly_revenue_average_cents / 100) : ''}
+                  inputMode="decimal"
+                  value={formData.monthly_revenue_average_cents > 0 
+                    ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(formData.monthly_revenue_average_cents / 100) 
+                    : ''}
                   onChange={(e) => {
-                    const value = e.target.value.replace(/\D/g, '');
-                    updateFormData('monthly_revenue_average_cents', parseInt(value) * 100 || 0);
+                    // Parse Brazilian number format (1.234,56) correctly
+                    let rawValue = e.target.value;
+                    // Remove everything except digits, comma and dot
+                    rawValue = rawValue.replace(/[^\d.,]/g, '');
+                    // Remove thousand separators (dots) and convert comma to dot for parsing
+                    const cleanValue = rawValue.replace(/\./g, '').replace(',', '.');
+                    const numericValue = parseFloat(cleanValue) || 0;
+                    // Convert to cents
+                    updateFormData('monthly_revenue_average_cents', Math.round(numericValue * 100));
                   }}
-                  placeholder="0"
-                  className="pl-14 h-14 text-2xl font-bold"
+                  placeholder="0,00"
+                  className="pl-14 h-14 text-xl sm:text-2xl font-bold"
                   autoFocus
                 />
               </div>
               <motion.p 
-                className="text-sm text-muted-foreground flex items-center gap-2"
+                className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2 flex-wrap"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.2 }}
               >
-                <TrendingUp className="h-4 w-4" />
-                Faturamento anual estimado: <span className="font-semibold text-foreground">{formatCurrency(formData.monthly_revenue_average_cents * 12)}</span>
+                <TrendingUp className="h-4 w-4 flex-shrink-0" />
+                <span>Faturamento anual estimado:</span>
+                <span className="font-semibold text-foreground">{formatCurrency(formData.monthly_revenue_average_cents * 12)}</span>
               </motion.p>
             </motion.div>
 
@@ -435,117 +442,6 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
         </div>
       )}
 
-      {/* Step 4: Localização e Contato */}
-      {step === 4 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={MapPin}
-            title="Localização e Contato"
-            description="Informe seus dados de contato"
-          />
-
-          <motion.div 
-            className="space-y-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-          >
-            <div className="grid grid-cols-2 gap-4">
-              <motion.div 
-                className="space-y-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-              >
-                <Label className="flex items-center gap-2">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  Estado *
-                </Label>
-                <Select
-                  value={formData.state}
-                  onValueChange={(value) => updateFormData('state', value)}
-                >
-                  <SelectTrigger className="h-12">
-                    <SelectValue placeholder="UF" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATES.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </motion.div>
-
-              <motion.div 
-                className="space-y-2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.15 }}
-              >
-                <Label htmlFor="city">Cidade</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => updateFormData('city', e.target.value)}
-                  placeholder="Sua cidade"
-                  className="h-12"
-                />
-              </motion.div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <motion.div 
-                className="space-y-2"
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-              >
-                <Label htmlFor="cpf">CPF</Label>
-                <Input
-                  id="cpf"
-                  value={formData.cpf}
-                  onChange={handleCPFChange}
-                  placeholder="000.000.000-00"
-                  className="h-12"
-                />
-              </motion.div>
-
-              <motion.div 
-                className="space-y-2"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.25 }}
-              >
-                <Label htmlFor="phone">Telefone</Label>
-                <Input
-                  id="phone"
-                  value={formData.phone}
-                  onChange={handlePhoneChange}
-                  placeholder="(00) 00000-0000"
-                  className="h-12"
-                />
-              </motion.div>
-            </div>
-
-            <motion.div 
-              className="space-y-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-            >
-              <Label htmlFor="bio">Sobre você (opcional)</Label>
-              <Textarea
-                id="bio"
-                value={formData.bio}
-                onChange={(e) => updateFormData('bio', e.target.value)}
-                placeholder="Conte um pouco sobre sua atuação profissional..."
-                className="min-h-[100px] resize-none"
-              />
-            </motion.div>
-          </motion.div>
-        </div>
-      )}
     </OnboardingLayoutPremium>
   );
 };
