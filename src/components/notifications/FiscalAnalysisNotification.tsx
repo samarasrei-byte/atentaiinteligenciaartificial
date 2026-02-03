@@ -48,6 +48,16 @@ export const FiscalAnalysisNotification: React.FC<FiscalAnalysisNotificationProp
 
   const handleAccept = () => {
     sessionStorage.removeItem('pendingFiscalAnalysis');
+
+    // Dentro do painel, é proibido ir para onboarding: abre a aba de chat
+    const path = window.location.pathname;
+    const isPanel = path.includes('/empresa') || path.includes('/autonomo');
+
+    if (isPanel) {
+      navigate({ search: '?tab=chat-fiscal' });
+      return;
+    }
+
     navigate('/modulo-fiscal/onboarding');
   };
 
