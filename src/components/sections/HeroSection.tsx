@@ -98,7 +98,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            <span className="text-white font-semibold">IA especializada</span> + <span className="text-accent font-semibold">Contadores humanos</span> para guiar você na reforma tributária.
+            <span className="text-white font-semibold">IA especializada</span> + <span className="text-accent font-semibold">Especialistas humanos</span> para guiar você na reforma tributária.
           </motion.p>
 
           {/* CTA Buttons - COMEÇAR goes to profile selection */}

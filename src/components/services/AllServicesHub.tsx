@@ -178,7 +178,7 @@ export const AllServicesHub: React.FC = () => {
     // ===== BI CONTABILIDADE - ALWAYS goes to /bi-contabilidade/onboarding =====
     {
       id: 'bi-contabilidade',
-      name: 'BI+ Contabilidade™',
+      name: 'BI+ Inteligência Fiscal™',
       description: 'Inteligência artificial com análise humana especializada',
       icon: Brain,
       gradient: 'from-purple-500 to-pink-600',
