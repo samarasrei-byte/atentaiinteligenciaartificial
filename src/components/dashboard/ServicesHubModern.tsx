@@ -280,7 +280,15 @@ export const ServicesHubModern: React.FC = () => {
       ],
       gradient: 'from-indigo-500/40 to-violet-500/40',
       iconGradient: 'from-indigo-500 to-violet-500',
-      onClick: () => navigate('/bi-contabilidade'),
+      onClick: () => {
+        // Redireciona para o chat dentro do painel (mesma lógica da Análise Fiscal)
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/autonomo') || currentPath.includes('/empresa')) {
+          navigate('?tab=chat-fiscal');
+        } else {
+          navigate('/bi-contabilidade');
+        }
+      },
       badge: 'Novo',
       isCustomPricing: true, // Shows "Sob consulta"
     },
