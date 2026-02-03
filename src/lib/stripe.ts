@@ -75,7 +75,7 @@ export const STRIPE_PLANS = {
       'Comparador MEI/ME/LP',
       'Calculadora de INSS/IR',
       'Histórico de simulações',
-      'Conexão com contadores',
+      'Conexão com especialistas',
       'Relatórios PDF profissionais',
       'Suporte dedicado',
     ],
@@ -91,7 +91,7 @@ export type PlanType = keyof typeof STRIPE_PLANS;
 export const SUBSCRIBER_DISCOUNTS = {
   company_opening: {
     name: 'Abertura de Empresa',
-    description: 'Abertura completa de CNPJ com suporte contábil',
+    description: 'Abertura completa de CNPJ com suporte especializado',
     basePrice: 78000, // cents (R$780,00)
     discount: 0,
     discountedPrice: 78000,
@@ -149,7 +149,7 @@ export const SUBSCRIBER_DISCOUNTS = {
     installments: 4,
   },
   bi_contabilidade: {
-    name: 'BI+ Contabilidade™',
+    name: 'BI+ Inteligência Fiscal™',
     description: 'Inteligência artificial com análise humana especializada',
     basePrice: 0,
     discount: 0,

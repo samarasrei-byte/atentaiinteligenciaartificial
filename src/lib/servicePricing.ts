@@ -75,8 +75,8 @@ export const SERVICE_PRICES = {
     stripeKey: 'modulo_fiscal',
   },
 
-  // BI+ Contabilidade - Valor sob consulta
-  BI_CONTABILIDADE: {
+  // BI+ Inteligência Fiscal - Valor sob consulta
+  BI_INTELIGENCIA_FISCAL: {
     type: 'custom_pricing',
     formatted: 'Sob consulta',
     description: 'Valor definido após análise do especialista',

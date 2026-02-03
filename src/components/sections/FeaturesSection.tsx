@@ -19,7 +19,7 @@ const features = [
   },
   {
     icon: Users,
-    title: "Contadores Experts",
+    title: "Especialistas Experts",
     description: "Conecte-se com profissionais certificados para consultoria personalizada.",
     color: "from-accent to-accent/80",
   },

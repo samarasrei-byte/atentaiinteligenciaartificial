@@ -227,7 +227,7 @@ export const ServicesHubModern: React.FC = () => {
   const services = [
     {
       title: 'Abertura de Empresa',
-      description: 'Formalize seu negócio com suporte contábil completo',
+      description: 'Formalize seu negócio com suporte especializado completo',
       icon: Building2,
       basePrice: SUBSCRIBER_DISCOUNTS.company_opening.basePrice,
       discountedPrice: SUBSCRIBER_DISCOUNTS.company_opening.discountedPrice,
@@ -264,7 +264,7 @@ export const ServicesHubModern: React.FC = () => {
     },
     {
       title: 'Emissão de Certidões',
-      description: 'Certidões fiscais emitidas por contadores verificados',
+      description: 'Certidões fiscais emitidas por especialistas verificados',
       icon: FileText,
       basePrice: SUBSCRIBER_DISCOUNTS.certificate.basePrice,
       discountedPrice: SUBSCRIBER_DISCOUNTS.certificate.discountedPrice,
@@ -286,7 +286,7 @@ export const ServicesHubModern: React.FC = () => {
       discountedPrice: SUBSCRIBER_DISCOUNTS.ir_simples.discountedPrice,
       discountPercent: Math.round(SUBSCRIBER_DISCOUNTS.ir_simples.discount * 100),
       features: [
-        'Contadores especializados',
+        'Especialistas certificados',
         'Envio ao sistema da Receita',
         'Comprovante de entrega',
       ],
@@ -312,7 +312,7 @@ export const ServicesHubModern: React.FC = () => {
       badge: 'Completo',
     },
     {
-      title: 'BI+ Contabilidade™',
+      title: 'BI+ Inteligência Fiscal™',
       description: 'Inteligência artificial com análise humana especializada',
       icon: Brain,
       basePrice: 0,
@@ -370,7 +370,7 @@ export const ServicesHubModern: React.FC = () => {
                   Nossos Serviços
                 </h2>
                 <p className="text-muted-foreground text-base md:text-lg">
-                  Contadores <span className="text-primary font-semibold">especializados</span> na Reforma Tributária
+                  Especialistas <span className="text-primary font-semibold">certificados</span> na Reforma Tributária
                 </p>
               </div>
             </div>
@@ -422,7 +422,7 @@ export const ServicesHubModern: React.FC = () => {
       <div className="flex flex-wrap items-center justify-center gap-3">
         {[
           { icon: Shield, text: 'Pagamento Seguro', color: 'from-emerald-500 to-teal-500' },
-          { icon: BadgeCheck, text: 'Contadores Verificados', color: 'from-violet-500 to-purple-500' },
+          { icon: BadgeCheck, text: 'Especialistas Verificados', color: 'from-violet-500 to-purple-500' },
           { icon: Clock, text: 'Suporte 24h', color: 'from-cyan-500 to-blue-500' },
           { icon: Star, text: '4.9/5 Avaliação', color: 'from-amber-500 to-orange-500', fill: true },
           { icon: Users, text: '+10.000 Clientes', color: 'from-pink-500 to-rose-500' },
