@@ -61,20 +61,26 @@ interface FiscalChatPanelProps {
 // Especialistas por tipo de serviço
 const SPECIALISTS = {
   fiscal: {
-    id: 'guilherme',
+    // UUID real do especialista (receiver_id)
+    id: '596de7f7-4352-4058-8855-18f9489a0311',
     name: 'Guilherme Barros',
     role: 'Especialista Fiscal',
     avatar: '/guilherme-avatar.png',
     initials: 'GB',
   },
   bi: {
-    id: 'cesar',
+    // UUID real do especialista (receiver_id)
+    id: '6307fc12-d37c-43f5-ab78-c62cf29dffd9',
     name: 'César',
     role: 'Especialista BI+ Inteligência',
     avatar: '/cesar-avatar.png',
     initials: 'CB',
   },
 };
+
+const isUuid = (value: unknown): value is string =>
+  typeof value === 'string' &&
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
 
 export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
   requestId,
@@ -282,12 +288,21 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
     }
 
     // Receiver: se o usuário é o dono da solicitação, manda pro especialista; senão manda pro dono.
-    const receiverId = user.id === request.user_id
-      ? (specialistId || null)
-      : request.user_id;
+    // Hotfix: nunca permitir IDs inválidos (ex.: "specialist") — sempre UUID.
+    const resolvedSpecialistId = specialistId ?? SPECIALIST.id;
+    const receiverId = user.id === request.user_id ? resolvedSpecialistId : request.user_id;
 
-    if (!receiverId) {
-      toast.error('Não foi possível identificar o destinatário do chat');
+    if (!isUuid(receiverId)) {
+      console.error('Invalid receiver_id for fiscal chat message', {
+        requestId,
+        serviceType,
+        userId: user.id,
+        requestUserId: request.user_id,
+        specialistId,
+        resolvedSpecialistId,
+        receiverId,
+      });
+      toast.error('Erro interno: destinatário inválido. Atualize a página e tente novamente.');
       setNewMessage(content);
       setSending(false);
       return;
