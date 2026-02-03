@@ -160,14 +160,21 @@ const adminGroups: SidebarGroup[] = [
     ],
   },
   {
+    id: 'integracoes',
+    label: 'Integrações',
+    icon: Zap,
+    items: [
+      { icon: Zap, label: 'Central', tabId: 'integrations' },
+      { icon: MessageSquare, label: 'WhatsApp API', tabId: 'whatsapp-config' },
+      { icon: CreditCard, label: 'Asaas API', tabId: 'asaas-config' },
+      { icon: Settings, label: 'API Keys', tabId: 'api-keys' },
+    ],
+  },
+  {
     id: 'configuracoes',
     label: 'Configurações',
     icon: Settings,
     items: [
-      { icon: Zap, label: 'Integrações', tabId: 'integrations' },
-      { icon: MessageSquare, label: 'WhatsApp API', tabId: 'whatsapp-config' },
-      { icon: CreditCard, label: 'Asaas API', tabId: 'asaas-config' },
-      { icon: Settings, label: 'API Keys', tabId: 'api-keys' },
       { icon: User, label: 'Perfil', tabId: 'profile' },
       { icon: Shield, label: 'Segurança', tabId: 'security' },
       { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
