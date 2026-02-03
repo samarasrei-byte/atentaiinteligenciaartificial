@@ -257,7 +257,6 @@ const contadorGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
-      { icon: FileText, label: 'Abertura Empresa', tabId: 'abertura' },
       { icon: FileText, label: 'IR', tabId: 'ir' },
       { icon: FileText, label: 'Certidões', tabId: 'certidoes' },
     ],

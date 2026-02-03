@@ -46,7 +46,6 @@ const mainNavItems: NavItem[] = [
 const servicesNavItems: NavItem[] = [
   { title: 'Módulo Fiscal', icon: Shield, href: '/modulo-fiscal', badge: 'Premium', badgeColor: 'bg-primary' },
   { title: 'Limpa Nome', icon: Sparkles, href: '/limpa-nome' },
-  { title: 'Abertura de Empresa', icon: Building2, href: '/abertura-empresa' },
   { title: 'Contadores', icon: Users, href: '/contadores-publico' },
 ];
 
