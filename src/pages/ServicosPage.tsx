@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { ServiceCardPremium, ServiceCardConfig } from '@/components/services/ServiceCardPremium';
 import { motion } from 'framer-motion';
+import { isFeatureEnabled } from '@/lib/featureFlags';
 import { 
   MessageSquare, 
   Building2, 
@@ -291,8 +292,17 @@ const ServicosPage = () => {
     window.location.href = '/';
   };
 
+  // IDs of legacy services to hide when LEGACY_SERVICES flag is false
+  const legacyServiceKeys = ['company_opening', 'certificate', 'ir_simples', 'ir_completo'];
+  const showLegacyServices = isFeatureEnabled('LEGACY_SERVICES');
+
   const filteredServices = useMemo(() => {
     return serviceConfigs.filter((service) => {
+      // Hide legacy services if flag is disabled
+      if (!showLegacyServices && legacyServiceKeys.includes(service.key)) {
+        return false;
+      }
+
       const matchesSearch = 
         service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -303,7 +313,7 @@ const ServicosPage = () => {
       
       return matchesSearch && matchesCategory;
     });
-  }, [searchTerm, selectedCategory]);
+  }, [searchTerm, selectedCategory, showLegacyServices]);
 
   const containerVariants = {
     hidden: { opacity: 0 },

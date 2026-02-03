@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import { isFeatureEnabled } from '@/lib/featureFlags';
 
 interface ServiceItem {
   id: string;
@@ -41,6 +42,7 @@ export const AllServicesHub: React.FC = () => {
   const navigate = useNavigate();
   
   const isSubscriber = subscription?.subscribed || false;
+  const showLegacyServices = isFeatureEnabled('LEGACY_SERVICES');
 
   // Detect if user is Autônomo (PF) or Empresa (PJ) to set Limpa Nome type
   const isAutonomo = hasRole('autonomo');
@@ -49,6 +51,7 @@ export const AllServicesHub: React.FC = () => {
    * OFFICIAL SERVICE CATALOG (Updated 2026-02-02)
    * All paid services go directly to Stripe Checkout
    * Removed: Consultoria Empresarial
+   * Hidden by flag: Abertura de Empresa, Certidões, IR Simples, IR Completo
    */
   /**
    * MANDATORY ROUTING TABLE - DO NOT MODIFY WITHOUT AUTHORIZATION
@@ -92,8 +95,8 @@ export const AllServicesHub: React.FC = () => {
       checkoutRoute: '/checkout/limpa-nome-pj', // IMMUTABLE ROUTE
     }] : []),
     
-    // ===== CERTIDÕES - ALWAYS goes to /checkout/certidao =====
-    {
+    // ===== CERTIDÕES - Hidden by LEGACY_SERVICES flag =====
+    ...(showLegacyServices ? [{
       id: 'certidoes',
       name: 'Certidões Negativas',
       description: 'Emissão de certidões negativas de débitos',
@@ -106,10 +109,10 @@ export const AllServicesHub: React.FC = () => {
         'Suporte incluso',
       ],
       checkoutRoute: '/checkout/certidao', // IMMUTABLE ROUTE
-    },
+    }] : []),
     
-    // ===== IR SIMPLES - ALWAYS goes to /checkout/ir-simples =====
-    {
+    // ===== IR SIMPLES - Hidden by LEGACY_SERVICES flag =====
+    ...(showLegacyServices ? [{
       id: 'ir-simples',
       name: 'IR Simples (CLT)',
       description: 'Declaração para CLT sem investimentos',
@@ -123,10 +126,10 @@ export const AllServicesHub: React.FC = () => {
         'Recibo garantido',
       ],
       checkoutRoute: '/checkout/ir-simples', // IMMUTABLE ROUTE
-    },
+    }] : []),
     
-    // ===== IR COMPLETO - ALWAYS goes to /checkout/ir-completo =====
-    {
+    // ===== IR COMPLETO - Hidden by LEGACY_SERVICES flag =====
+    ...(showLegacyServices ? [{
       id: 'ir-completo',
       name: 'IR Completo',
       description: 'Para autônomos e investidores',
@@ -140,10 +143,10 @@ export const AllServicesHub: React.FC = () => {
         'Especialista dedicado',
       ],
       checkoutRoute: '/checkout/ir-completo', // IMMUTABLE ROUTE
-    },
+    }] : []),
     
-    // ===== ABERTURA EMPRESA - ALWAYS goes to /checkout/abertura-empresa =====
-    {
+    // ===== ABERTURA EMPRESA - Hidden by LEGACY_SERVICES flag =====
+    ...(showLegacyServices ? [{
       id: 'abertura-empresa',
       name: 'Abertura de Empresa',
       description: 'Abertura completa de CNPJ com suporte',
@@ -156,7 +159,7 @@ export const AllServicesHub: React.FC = () => {
         'Documentação inclusa',
       ],
       checkoutRoute: '/checkout/abertura-empresa', // IMMUTABLE ROUTE
-    },
+    }] : []),
     
     // ===== ANÁLISE FISCAL - ALWAYS goes to /modulo-fiscal/onboarding =====
     {

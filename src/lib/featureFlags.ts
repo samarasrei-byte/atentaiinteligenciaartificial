@@ -29,10 +29,20 @@ export const FEATURE_FLAGS = {
   CONTADOR_EXPERIENCE: false,
 
   /**
-   * Future feature flags can be added here following the same pattern.
-   * Example:
-   * NEW_FEATURE_X: false,
+   * LEGACY_SERVICES
+   * 
+   * Controls visibility of legacy accounting services:
+   * - Abertura de Empresa
+   * - Emissão de Certidões
+   * - Declaração IR Simples
+   * - Declaração IR Completo
+   * 
+   * When FALSE: These services are hidden from ALL panels (admin, empresa, autonomo, afiliado)
+   * When TRUE: Services are visible as before
+   * 
+   * This is reversible - set to TRUE to restore these services.
    */
+  LEGACY_SERVICES: false,
 } as const;
 
 export type FeatureFlagKey = keyof typeof FEATURE_FLAGS;
