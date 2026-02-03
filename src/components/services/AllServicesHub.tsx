@@ -197,26 +197,38 @@ export const AllServicesHub: React.FC = () => {
   ];
 
   /**
-   * CRITICAL ROUTING FUNCTION - DO NOT MODIFY
-   * Each service has exactly ONE route. This function navigates to that route.
-   * There is NO fallback logic - if a route is missing, it's a configuration error.
+   * CRITICAL ROUTING FUNCTION
+   * RULE: If inside panel context (Autônomo/Empresa), Fiscal/BI go to chat tab. Limpa Nome goes to checkout.
+   * Outside panels, uses external onboarding routes.
    */
   const handleContractService = (service: ServiceItem) => {
-    // RULE 1: Paid services with checkoutRoute go DIRECTLY to checkout
+    const isPanelContext = window.location.pathname.includes('/autonomo') || 
+                           window.location.pathname.includes('/empresa') ||
+                           window.location.pathname.includes('/dashboard');
+
+    // RULE 1: Paid services (Limpa Nome) → ALWAYS go to checkout
     if (service.checkoutRoute) {
       console.log(`[ROUTING] ${service.id} → ${service.checkoutRoute}`);
       navigate(service.checkoutRoute);
       return;
     }
+
+    // RULE 2: Fiscal/BI inside panel context → Navigate to embedded chat tab
+    if (isPanelContext && (service.id === 'analise-fiscal' || service.id === 'bi-contabilidade')) {
+      const tabId = service.id === 'bi-contabilidade' ? 'chat-bi' : 'chat-fiscal';
+      console.log(`[ROUTING PANEL] ${service.id} → ?tab=${tabId}`);
+      navigate({ search: `?tab=${tabId}` });
+      return;
+    }
     
-    // RULE 2: Free/analysis services with onboardingRoute go to onboarding
+    // RULE 3: Free/analysis services outside panels → External onboarding
     if (service.onboardingRoute) {
       console.log(`[ROUTING] ${service.id} → ${service.onboardingRoute}`);
       navigate(service.onboardingRoute);
       return;
     }
     
-    // ERROR: If we reach here, the service is misconfigured
+    // ERROR: Misconfigured service
     console.error(`[ROUTING ERROR] Service ${service.id} has no valid route!`);
   };
 
