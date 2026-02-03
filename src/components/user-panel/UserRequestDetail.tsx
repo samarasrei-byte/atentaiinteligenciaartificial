@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { FiscalChatPanel } from '@/components/fiscal/FiscalChatPanel';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -67,6 +68,10 @@ const typeLabels: Record<string, string> = {
   company_opening: 'Abertura de Empresa'
 };
 
+// IDs dos especialistas responsáveis (IDs reais do banco)
+const GUILHERME_ADMIN_ID = '596de7f7-4352-4058-8855-18f9489a0311';
+const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9';
+
 export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId, requestType, onBack }) => {
   const { user } = useAuth();
   const { toast } = useToast();
@@ -83,10 +88,15 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
 
   useEffect(() => {
     fetchRequestDetails();
-    fetchMessages();
+    // Para Fiscal/BI, usamos o FiscalChatPanel (um único chat consistente em todos os painéis)
+    if (requestType === 'credit_repair') {
+      fetchMessages();
+    }
     fetchDocuments();
 
     // Set up realtime subscription
+    if (requestType !== 'credit_repair') return;
+
     const channel = supabase
       .channel(`request-${requestId}`)
       .on('postgres_changes', {
@@ -141,7 +151,7 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
   };
 
   const fetchMessages = async () => {
-    if (requestType !== 'credit_repair' && requestType !== 'fiscal') return;
+    if (requestType !== 'credit_repair') return;
 
     const { data } = await supabase
       .from('credit_repair_chat_messages')
@@ -367,82 +377,90 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
 
         {/* Chat Tab */}
         <TabsContent value="chat">
-          <Card className="bg-white border-slate-200">
-            <CardContent className="p-0">
-              {/* Messages Area */}
-              <ScrollArea className="h-[400px] p-4">
-                {messages.length === 0 ? (
-                  <div className="flex flex-col items-center justify-center h-full text-center">
-                    <MessageSquare className="h-12 w-12 text-slate-300 mb-4" />
-                    <p className="text-slate-500">Nenhuma mensagem ainda</p>
-                    <p className="text-sm text-slate-400 mt-1">Envie uma mensagem para iniciar a conversa</p>
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {messages.map(message => (
-                      <div
-                        key={message.id}
-                        className={`flex ${message.is_admin ? 'justify-start' : 'justify-end'}`}
-                      >
-                        <div className={`max-w-[70%] ${message.is_admin ? 'order-2' : 'order-1'}`}>
-                          {message.is_admin && (
-                            <div className="flex items-center gap-2 mb-1">
-                              <Avatar className="h-6 w-6">
-                                <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs">G</AvatarFallback>
-                              </Avatar>
-                              <span className="text-xs text-slate-500">Guilherme Barros</span>
-                            </div>
-                          )}
-                          <div className={`p-3 rounded-2xl ${
-                            message.is_admin 
-                              ? 'bg-slate-100 text-slate-900 rounded-tl-sm' 
-                              : 'bg-indigo-600 text-white rounded-tr-sm'
-                          }`}>
-                            <p className="text-sm">{message.content}</p>
-                            {message.attachment_url && (
-                              <a 
-                                href={message.attachment_url} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="flex items-center gap-2 mt-2 text-xs underline"
-                              >
-                                <Paperclip className="h-3 w-3" />
-                                {message.attachment_name || 'Anexo'}
-                              </a>
+          {requestType === 'fiscal' ? (
+            <FiscalChatPanel
+              requestId={requestId}
+              serviceType={(request?.notes || '').startsWith('[BI]') ? 'bi' : 'fiscal'}
+              specialistId={(request?.notes || '').startsWith('[BI]') ? CESAR_ADMIN_ID : GUILHERME_ADMIN_ID}
+            />
+          ) : (
+            <Card className="bg-white border-slate-200">
+              <CardContent className="p-0">
+                {/* Messages Area */}
+                <ScrollArea className="h-[400px] p-4">
+                  {messages.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center h-full text-center">
+                      <MessageSquare className="h-12 w-12 text-slate-300 mb-4" />
+                      <p className="text-slate-500">Nenhuma mensagem ainda</p>
+                      <p className="text-sm text-slate-400 mt-1">Envie uma mensagem para iniciar a conversa</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {messages.map(message => (
+                        <div
+                          key={message.id}
+                          className={`flex ${message.is_admin ? 'justify-start' : 'justify-end'}`}
+                        >
+                          <div className={`max-w-[70%] ${message.is_admin ? 'order-2' : 'order-1'}`}>
+                            {message.is_admin && (
+                              <div className="flex items-center gap-2 mb-1">
+                                <Avatar className="h-6 w-6">
+                                  <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs">G</AvatarFallback>
+                                </Avatar>
+                                <span className="text-xs text-slate-500">Guilherme Barros</span>
+                              </div>
                             )}
+                            <div className={`p-3 rounded-2xl ${
+                              message.is_admin 
+                                ? 'bg-slate-100 text-slate-900 rounded-tl-sm' 
+                                : 'bg-indigo-600 text-white rounded-tr-sm'
+                            }`}>
+                              <p className="text-sm">{message.content}</p>
+                              {message.attachment_url && (
+                                <a 
+                                  href={message.attachment_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="flex items-center gap-2 mt-2 text-xs underline"
+                                >
+                                  <Paperclip className="h-3 w-3" />
+                                  {message.attachment_name || 'Anexo'}
+                                </a>
+                              )}
+                            </div>
+                            <p className={`text-xs text-slate-400 mt-1 ${message.is_admin ? '' : 'text-right'}`}>
+                              {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
+                            </p>
                           </div>
-                          <p className={`text-xs text-slate-400 mt-1 ${message.is_admin ? '' : 'text-right'}`}>
-                            {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}
-                          </p>
                         </div>
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-                )}
-              </ScrollArea>
+                      ))}
+                      <div ref={messagesEndRef} />
+                    </div>
+                  )}
+                </ScrollArea>
 
-              {/* Message Input */}
-              <div className="p-4 border-t border-slate-200">
-                <div className="flex items-center gap-2">
-                  <Input
-                    value={newMessage}
-                    onChange={(e) => setNewMessage(e.target.value)}
-                    placeholder="Digite sua mensagem..."
-                    className="flex-1"
-                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
-                  />
-                  <Button
-                    onClick={handleSendMessage}
-                    disabled={!newMessage.trim() || sending}
-                    className="bg-indigo-600 hover:bg-indigo-700"
-                  >
-                    {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-                  </Button>
+                {/* Message Input */}
+                <div className="p-4 border-t border-slate-200">
+                  <div className="flex items-center gap-2">
+                    <Input
+                      value={newMessage}
+                      onChange={(e) => setNewMessage(e.target.value)}
+                      placeholder="Digite sua mensagem..."
+                      className="flex-1"
+                      onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleSendMessage()}
+                    />
+                    <Button
+                      onClick={handleSendMessage}
+                      disabled={!newMessage.trim() || sending}
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                    </Button>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          )}
         </TabsContent>
 
         {/* Documents Tab */}

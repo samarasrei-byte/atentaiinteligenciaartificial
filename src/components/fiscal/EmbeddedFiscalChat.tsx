@@ -109,9 +109,11 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       if (createError) throw createError;
 
       // Send initial notification message to the correct specialist
-      const welcomeMessage = serviceType === 'bi' 
-        ? `🔔 **Nova Solicitação de BI+ Inteligência Fiscal**\n\nOlá César! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de BI+ Inteligência Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`
-        : `🔔 **Nova Solicitação de Análise Fiscal**\n\nOlá Guilherme! Sou ${profile?.full_name || 'um cliente'} e acabei de iniciar uma solicitação de Análise Fiscal através do painel ${variant === 'empresa' ? 'Empresa' : 'Autônomo'}.\n\nAguardo orientações sobre os próximos passos. Obrigado!`;
+      const firstName = (profile?.full_name || 'Cliente').split(' ')[0];
+      const origin = variant === 'empresa' ? 'Painel Empresa' : 'Painel Autônomo';
+      const welcomeMessage = serviceType === 'bi'
+        ? `Oi César! Tudo bem? Sou ${firstName} e acabei de iniciar uma solicitação de BI+ Inteligência Fiscal pelo ${origin}.\n\nQuando você puder, me diga quais documentos/informações você precisa para começarmos. Obrigado!`
+        : `Oi Guilherme! Tudo bem? Sou ${firstName} e acabei de iniciar uma solicitação de Análise Fiscal pelo ${origin}.\n\nQuando você puder, me diga quais documentos/informações você precisa para começarmos. Obrigado!`;
 
       await supabase
         .from('fiscal_chat_messages')
@@ -199,7 +201,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       </div>
       
       {activeRequest ? (
-        <FiscalChatPanel requestId={activeRequest.id} serviceType={serviceType} />
+        <FiscalChatPanel requestId={activeRequest.id} serviceType={serviceType} specialistId={specialistId} />
       ) : (
         <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">

@@ -20,6 +20,8 @@ import {
   Sparkles,
   RefreshCw,
   Scale,
+  X,
+  Loader2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -53,6 +55,7 @@ interface FiscalChatPanelProps {
   requestId?: string;
   className?: string;
   serviceType?: 'fiscal' | 'bi'; // Determina qual especialista mostrar
+  specialistId?: string; // UUID real do especialista (receiver_id)
 }
 
 // Especialistas por tipo de serviço
@@ -77,6 +80,7 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
   requestId,
   className = '',
   serviceType = 'fiscal',
+  specialistId,
 }) => {
   const SPECIALIST = SPECIALISTS[serviceType];
   const { user } = useAuth();
@@ -85,13 +89,18 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
   const [newMessage, setNewMessage] = useState('');
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (requestId && user) {
       fetchRequest();
       fetchMessages();
-      subscribeToMessages();
+      const cleanup = subscribeToMessages();
+      return cleanup;
     }
   }, [requestId, user]);
 
@@ -188,31 +197,120 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
     };
   };
 
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      toast.error('Arquivo muito grande (máx. 10MB)');
+      return;
+    }
+
+    setSelectedFile(file);
+
+    if (file.type.startsWith('image/')) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
+    } else {
+      setPreviewUrl(null);
+    }
+  };
+
+  const clearSelectedFile = () => {
+    setSelectedFile(null);
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+      setPreviewUrl(null);
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const uploadFile = async (file: File): Promise<{ url: string; type: string; name: string } | null> => {
+    if (!user || !requestId) return null;
+
+    const fileExt = file.name.split('.').pop();
+    const safeExt = fileExt ? `.${fileExt}` : '';
+    const fileName = `fiscal/${serviceType}/${requestId}/${user.id}/${Date.now()}${safeExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('chat-attachments')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      return null;
+    }
+
+    const { data, error: signedUrlError } = await supabase.storage
+      .from('chat-attachments')
+      .createSignedUrl(fileName, 3600);
+
+    if (signedUrlError || !data?.signedUrl) {
+      console.error('Signed URL error:', signedUrlError);
+      return null;
+    }
+
+    return {
+      url: data.signedUrl,
+      type: file.type.startsWith('image/') ? 'image' : 'file',
+      name: file.name,
+    };
+  };
+
   const handleSendMessage = async () => {
-    if (!newMessage.trim() || !user || !requestId || !request) return;
+    if ((!newMessage.trim() && !selectedFile) || !user || !requestId || !request) return;
 
     setSending(true);
+
     const content = newMessage.trim();
     setNewMessage('');
 
-    // Determine receiver (opposite of sender)
-    const receiverId = user.id === request.user_id 
-      ? 'specialist' // Placeholder - in real app, get admin/contador ID
+    let attachment: { url: string; type: string; name: string } | null = null;
+    if (selectedFile) {
+      setUploading(true);
+      attachment = await uploadFile(selectedFile);
+      setUploading(false);
+
+      if (!attachment) {
+        toast.error('Erro ao enviar arquivo');
+        setNewMessage(content);
+        setSending(false);
+        return;
+      }
+    }
+
+    // Receiver: se o usuário é o dono da solicitação, manda pro especialista; senão manda pro dono.
+    const receiverId = user.id === request.user_id
+      ? (specialistId || null)
       : request.user_id;
+
+    if (!receiverId) {
+      toast.error('Não foi possível identificar o destinatário do chat');
+      setNewMessage(content);
+      setSending(false);
+      return;
+    }
 
     const { error } = await supabase
       .from('fiscal_chat_messages')
       .insert({
         request_id: requestId,
         sender_id: user.id,
-        receiver_id: receiverId || user.id,
-        content,
+        receiver_id: receiverId,
+        content: content || (attachment ? `📎 ${attachment.name}` : ''),
+        attachment_url: attachment?.url,
+        attachment_type: attachment?.type,
+        attachment_name: attachment?.name,
       });
 
     if (error) {
       console.error('Error sending message:', error);
       toast.error('Erro ao enviar mensagem');
       setNewMessage(content);
+    } else {
+      clearSelectedFile();
     }
 
     setSending(false);
@@ -376,14 +474,27 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
           }}
           className="flex items-center gap-2"
         >
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            className="hidden"
+            accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"
+          />
+
           <Button
             type="button"
             variant="ghost"
             size="icon"
             className="shrink-0"
-            disabled
+            onClick={() => fileInputRef.current?.click()}
+            disabled={sending || uploading}
           >
-            <Paperclip className="h-5 w-5" />
+            {uploading ? (
+              <Loader2 className="h-5 w-5 animate-spin" />
+            ) : (
+              <Paperclip className="h-5 w-5" />
+            )}
           </Button>
           
           <Input
@@ -397,7 +508,7 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
           <Button
             type="submit"
             size="icon"
-            disabled={!newMessage.trim() || sending}
+            disabled={(!newMessage.trim() && !selectedFile) || sending}
             className="shrink-0"
           >
             {sending ? (
@@ -407,6 +518,38 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
             )}
           </Button>
         </form>
+
+        {selectedFile && (
+          <div className="mt-2 flex items-center gap-2 rounded-lg border bg-background/60 p-2">
+            {previewUrl ? (
+              <img
+                src={previewUrl}
+                alt="Pré-visualização do anexo"
+                className="h-10 w-10 rounded object-cover"
+              />
+            ) : (
+              <div className="h-10 w-10 rounded bg-muted flex items-center justify-center">
+                <FileText className="h-5 w-5 text-muted-foreground" />
+              </div>
+            )}
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium truncate">{selectedFile.name}</p>
+              <p className="text-[11px] text-muted-foreground">
+                {(selectedFile.size / 1024).toFixed(1)} KB
+              </p>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              onClick={clearSelectedFile}
+              className="shrink-0"
+              disabled={sending || uploading}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        )}
       </div>
     </Card>
   );
