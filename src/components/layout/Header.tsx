@@ -20,13 +20,11 @@ export function Header({ onNavigate }: HeaderProps) {
   const { user, loading, signOut, profile } = useAuth();
   const navigate = useNavigate();
 
-  // Navigation menu items - Updated 2026-02-03
+  // Navigation menu items - Simplified header (2026-02-03)
   const navItems = [
-    { label: "Simulador", icon: Calculator, section: "simulator" },
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
-    { label: "BI Contabilidade", icon: Brain, href: "/bi-contabilidade" },
+    { label: "BI+ Inteligência", icon: Brain, href: "/bi-contabilidade" },
     { label: "Serviços", icon: Briefcase, href: "/servicos" },
-    { label: "Seja Afiliado", icon: Users, href: "/afiliado/cadastro" },
   ];
 
   /**

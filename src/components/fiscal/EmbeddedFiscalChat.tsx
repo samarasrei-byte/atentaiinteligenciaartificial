@@ -108,12 +108,14 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
 
       if (createError) throw createError;
 
-      // Send initial notification message to the correct specialist
+      // Send initial notification message to the correct specialist - Natural tone
       const firstName = (profile?.full_name || 'Cliente').split(' ')[0];
-      const origin = variant === 'empresa' ? 'Painel Empresa' : 'Painel Autônomo';
+      const greetings = ['Oi', 'Olá', 'E aí'];
+      const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+      
       const welcomeMessage = serviceType === 'bi'
-        ? `Oi César! Tudo bem? Sou ${firstName} e acabei de iniciar uma solicitação de BI+ Inteligência Fiscal pelo ${origin}.\n\nQuando você puder, me diga quais documentos/informações você precisa para começarmos. Obrigado!`
-        : `Oi Guilherme! Tudo bem? Sou ${firstName} e acabei de iniciar uma solicitação de Análise Fiscal pelo ${origin}.\n\nQuando você puder, me diga quais documentos/informações você precisa para começarmos. Obrigado!`;
+        ? `${greeting} César! Sou o ${firstName}. Acabei de entrar aqui no BI+ e queria entender melhor como funciona a análise da minha empresa. Me conta o que você precisa pra gente começar?`
+        : `${greeting} Guilherme! Sou o ${firstName}. Quero fazer uma análise fiscal aqui e vi que vocês identificam valores que posso recuperar. O que você precisa de mim pra começar?`;
 
       await supabase
         .from('fiscal_chat_messages')
