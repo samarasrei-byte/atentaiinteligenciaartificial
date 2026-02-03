@@ -170,7 +170,7 @@ export function CreditRepairManagement() {
   };
 
   const formatCurrency = (cents: number) => 
-    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(cents / 100);
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { class: string; icon: any; label: string }> = {
