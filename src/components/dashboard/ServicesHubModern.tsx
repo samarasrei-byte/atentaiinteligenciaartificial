@@ -45,6 +45,7 @@ interface ServiceCardProps {
   popular?: boolean;
   index: number;
   isSuccessFee?: boolean;
+  isCustomPricing?: boolean; // For "Sob consulta" pricing
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -62,6 +63,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   badge,
   popular,
   index,
+  isCustomPricing,
 }) => {
   return (
     <motion.div
@@ -136,11 +138,23 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
             {/* Pricing Card - Futuristic */}
             <div className={`
               relative mb-5 p-4 rounded-2xl overflow-hidden
-              ${basePrice === 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200' : 
+              ${isCustomPricing ? 'bg-gradient-to-br from-indigo-50 to-violet-50 border border-indigo-200' :
+                basePrice === 0 ? 'bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-200' : 
                 isSubscribed ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200' : 
                 'bg-muted/50 border border-border'}
             `}>
-              {basePrice === 0 ? (
+              {isCustomPricing ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
+                      Sob consulta
+                    </span>
+                  </div>
+                  <p className="text-xs text-indigo-700 font-medium">
+                    Valor personalizado após análise
+                  </p>
+                </div>
+              ) : basePrice === 0 ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl font-black bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent">
@@ -261,6 +275,7 @@ export const ServicesHubModern: React.FC = () => {
       iconGradient: 'from-indigo-500 to-violet-500',
       onClick: () => navigate('/bi-contabilidade'),
       badge: 'Novo',
+      isCustomPricing: true, // Shows "Sob consulta"
     },
   ];
 

@@ -18,9 +18,8 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef } from "react";
-import { isContadorEnabled } from "@/lib/featureFlags";
 
-const allProfiles = [
+const profiles = [
   {
     type: 'empresa',
     title: 'Para Empresas',
@@ -37,6 +36,7 @@ const allProfiles = [
     ],
     cta: 'Simular Impostos',
     route: '/comecar',
+    isComingSoon: false,
   },
   {
     type: 'autonomo',
@@ -54,30 +54,27 @@ const allProfiles = [
     ],
     cta: 'Fazer Análise',
     route: '/comecar',
+    isComingSoon: false,
   },
   {
-    type: 'contador',
-    title: 'Para Contadores',
-    subtitle: 'Profissionais da contabilidade',
-    description: 'Mantenha-se atualizado sobre a reforma tributária e ofereça consultoria especializada aos seus clientes.',
+    type: 'contadores-ia',
+    title: 'Em breve',
+    subtitle: 'Contadores + IA',
+    description: 'Uma nova experiência que combina a expertise de contadores com inteligência artificial para análises ainda mais precisas.',
     icon: Calculator,
     gradient: 'from-teal-500 to-emerald-500',
     bgGradient: 'from-teal-500/10 to-emerald-500/10',
     benefits: [
-      { icon: FileText, text: 'Atualizações legais em tempo real' },
-      { icon: Users, text: 'Plataforma para atender clientes' },
-      { icon: Brain, text: 'IA assistente para consultas rápidas' },
-      { icon: TrendingUp, text: 'Ganhe por consulta realizada' },
+      { icon: Brain, text: 'IA avançada com supervisão humana' },
+      { icon: Users, text: 'Acesso a rede de contadores especializados' },
+      { icon: FileText, text: 'Análises fiscais automatizadas' },
+      { icon: TrendingUp, text: 'Recomendações personalizadas' },
     ],
-    cta: 'Conhecer Plataforma',
-    route: '/comecar',
+    cta: 'Em breve',
+    route: '#',
+    isComingSoon: true,
   },
 ];
-
-// Filter profiles based on feature flags
-const profiles = allProfiles.filter(p => 
-  p.type !== 'contador' || isContadorEnabled()
-);
 
 export function ProfilesSection() {
   const navigate = useNavigate();
@@ -195,11 +192,14 @@ export function ProfilesSection() {
                     </ul>
 
                     <Button
-                      onClick={() => navigate(profile.route)}
-                      className={`w-full bg-gradient-to-r ${profile.gradient} hover:opacity-90 text-white group/btn`}
+                      onClick={() => !profile.isComingSoon && navigate(profile.route)}
+                      disabled={profile.isComingSoon}
+                      className={`w-full bg-gradient-to-r ${profile.gradient} hover:opacity-90 text-white group/btn ${profile.isComingSoon ? 'opacity-60 cursor-not-allowed' : ''}`}
                     >
                       {profile.cta}
-                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                      {!profile.isComingSoon && (
+                        <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                      )}
                     </Button>
                   </CardContent>
                 </Card>
