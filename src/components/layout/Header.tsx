@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { 
   DropdownMenu, 
   DropdownMenuContent, 
@@ -7,7 +8,7 @@ import {
   DropdownMenuSeparator, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
-import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard, Rocket, LogOut, ChevronDown, User } from "lucide-react";
+import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard, Rocket, LogOut, ChevronDown, User, Building2 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -26,6 +27,7 @@ export function Header({ onNavigate }: HeaderProps) {
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
     { label: "BI Contabilidade", icon: Brain, href: "/bi-contabilidade" },
     { label: "Serviços", icon: Briefcase, href: "/servicos" },
+    { label: "Abrir Empresa", icon: Building2, href: "/abrir-empresa", badge: "Em breve" },
     { label: "Seja Afiliado", icon: Users, href: "/afiliado/cadastro" },
   ];
 
@@ -87,11 +89,19 @@ export function Header({ onNavigate }: HeaderProps) {
                   key={item.label}
                   variant="ghost"
                   asChild
-                  className="flex items-center gap-2"
+                  className="flex items-center gap-2 relative"
+                  disabled={'badge' in item && item.badge === 'Em breve'}
                 >
-                  <Link to={item.href}>
+                  <Link to={'badge' in item && item.badge === 'Em breve' ? '#' : item.href} onClick={(e) => {
+                    if ('badge' in item && item.badge === 'Em breve') e.preventDefault();
+                  }}>
                     <item.icon className="w-4 h-4" />
                     {item.label}
+                    {'badge' in item && item.badge && (
+                      <Badge variant="secondary" className="ml-1 text-[10px] px-1.5 py-0 h-4 bg-amber-500/20 text-amber-600">
+                        {item.badge}
+                      </Badge>
+                    )}
                   </Link>
                 </Button>
               ) : (
@@ -180,10 +190,25 @@ export function Header({ onNavigate }: HeaderProps) {
                     variant="ghost"
                     asChild
                     className="justify-start gap-3 h-12"
+                    disabled={'badge' in item && item.badge === 'Em breve'}
                   >
-                    <Link to={item.href} onClick={() => setIsMenuOpen(false)}>
+                    <Link 
+                      to={'badge' in item && item.badge === 'Em breve' ? '#' : item.href} 
+                      onClick={(e) => {
+                        if ('badge' in item && item.badge === 'Em breve') {
+                          e.preventDefault();
+                        } else {
+                          setIsMenuOpen(false);
+                        }
+                      }}
+                    >
                       <item.icon className="w-5 h-5" />
                       {item.label}
+                      {'badge' in item && item.badge && (
+                        <Badge variant="secondary" className="ml-auto text-[10px] px-1.5 py-0 h-4 bg-amber-500/20 text-amber-600">
+                          {item.badge}
+                        </Badge>
+                      )}
                     </Link>
                   </Button>
                 ) : (
