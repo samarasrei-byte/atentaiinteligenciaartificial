@@ -80,6 +80,9 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
     '🎁 Bônus: Regularização de Score!',
   ];
 
+  // ROUTING: Limpa Nome → Direct checkout based on selected plan
+  const getCheckoutRoute = () => `/checkout/limpa-nome-${selectedPlan}`;
+
   if (variant === 'banner') {
     return (
       <Card className="bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-purple-500/10 border-rose-500/30 overflow-hidden relative">
@@ -109,7 +112,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
                 <span className="text-xl font-bold text-foreground ml-2">{formatPrice(plans.pf.basePrice)}</span>
               </div>
               <Button 
-                onClick={() => navigate('/limpa-nome')}
+                onClick={() => navigate('/checkout/limpa-nome-pf')}
                 className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
               >
                 Limpar Nome
@@ -124,7 +127,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
 
   if (variant === 'compact') {
     return (
-      <Card className="bg-card border-border hover:border-rose-500/30 transition-all group cursor-pointer" onClick={() => navigate('/limpa-nome')}>
+      <Card className="bg-card border-border hover:border-rose-500/30 transition-all group cursor-pointer" onClick={() => navigate('/checkout/limpa-nome-pf')}>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg">
@@ -280,7 +283,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
         </div>
 
         <Button 
-          onClick={() => navigate('/limpa-nome')}
+          onClick={() => navigate(getCheckoutRoute())}
           className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
         >
           <ShieldCheck className="h-4 w-4 mr-2" />

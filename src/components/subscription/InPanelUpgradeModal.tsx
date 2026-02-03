@@ -46,7 +46,7 @@ interface PlanConfig {
 
 /**
  * SERVICE CONFIGURATIONS - MANDATORY ROUTING TABLE
- * Each service has EXACTLY ONE route. No fallbacks allowed.
+ * RULE: Fiscal/BI inside panels → chat tab | Limpa Nome → checkout
  */
 const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
   'limpa-nome': {
@@ -65,9 +65,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     edgeFunction: 'create-credit-repair-payment',
     onboardingRoute: '/checkout/limpa-nome-pf', // IMMUTABLE: Direct to checkout
   },
-  // ========================================
-  // ANÁLISE FISCAL - ALWAYS GOES TO ONBOARDING
-  // ========================================
+  // Fiscal and BI use tabId for panel routing, onboardingRoute for external
   'analise-fiscal': {
     type: 'fiscal_analysis',
     name: 'Análise Fiscal',
@@ -83,11 +81,8 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     gradient: 'from-blue-500 to-indigo-600',
     edgeFunction: 'create-fiscal-payment',
     successFee: true,
-    onboardingRoute: '/modulo-fiscal/onboarding', // IMMUTABLE: NEVER BI!
+    onboardingRoute: '/modulo-fiscal/onboarding',
   },
-  // ========================================
-  // BI CONTABILIDADE - ALWAYS GOES TO ITS OWN ONBOARDING
-  // ========================================
   'bi-contabilidade': {
     type: 'fiscal_analysis',
     name: 'BI+ Contabilidade',
@@ -102,7 +97,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     icon: Brain,
     gradient: 'from-purple-500 to-pink-600',
     edgeFunction: 'create-fiscal-payment',
-    onboardingRoute: '/bi-contabilidade/onboarding', // IMMUTABLE: NEVER FISCAL!
+    onboardingRoute: '/bi-contabilidade/onboarding',
   },
   'abertura-empresa': {
     type: 'company_opening',
@@ -118,7 +113,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     icon: Building2,
     gradient: 'from-amber-500 to-orange-600',
     edgeFunction: 'create-company-opening-payment',
-    onboardingRoute: '/checkout/abertura-empresa', // IMMUTABLE
+    onboardingRoute: '/checkout/abertura-empresa',
   },
 };
 
@@ -204,11 +199,24 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   const isSubscriptionMode = upgradeType === 'subscription';
 
   /**
-   * CRITICAL ROUTING LOGIC - ALL SERVICES MUST USE onboardingRoute
-   * No exceptions. No fallbacks. No bugs.
+   * CRITICAL ROUTING LOGIC
+   * RULE: Inside panels, Fiscal/BI → chat tab | Limpa Nome → checkout
    */
   const handleStartPayment = () => {
-    // RULE 1: If service has onboardingRoute, ALWAYS navigate to it
+    const isPanelContext = window.location.pathname.includes('/autonomo') || 
+                           window.location.pathname.includes('/empresa') ||
+                           window.location.pathname.includes('/dashboard');
+
+    // RULE 1: Fiscal/BI inside panel → Navigate to chat tab
+    if (upgradeType === 'service' && isPanelContext && (serviceKey === 'analise-fiscal' || serviceKey === 'bi-contabilidade')) {
+      const tabId = serviceKey === 'bi-contabilidade' ? 'chat-bi' : 'chat-fiscal';
+      console.log(`[InPanelModal ROUTING] ${serviceKey} → ?tab=${tabId}`);
+      onClose();
+      navigate({ search: `?tab=${tabId}` });
+      return;
+    }
+
+    // RULE 2: Limpa Nome or external services → Use onboardingRoute (checkout)
     if (upgradeType === 'service' && serviceConfig?.onboardingRoute) {
       console.log(`[InPanelModal ROUTING] ${serviceKey} → ${serviceConfig.onboardingRoute}`);
       onClose();
@@ -216,7 +224,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
       return;
     }
 
-    // RULE 2: Success fee services without route (fallback - should not happen)
+    // RULE 3: Success fee services without route (fallback)
     if (isSuccessFee) {
       console.warn(`[InPanelModal] Success fee service without onboardingRoute: ${serviceKey}`);
       onSuccess?.();
@@ -224,7 +232,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
       return;
     }
     
-    // RULE 3: Subscription mode - show embedded checkout
+    // RULE 4: Subscription mode - show embedded checkout
     setCheckoutMode('payment');
   };
 
