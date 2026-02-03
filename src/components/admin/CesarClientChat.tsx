@@ -454,23 +454,11 @@ César`);
                     <MessageCircle className={cn("h-8 w-8", theme.accent)} />
                   </div>
                   <h3 className="font-semibold text-slate-800 mb-1">
-                    Iniciar conversa com {selectedClient.full_name.split(' ')[0]}
+                    Inicie a conversa
                   </h3>
-                  <p className="text-sm text-slate-500 mb-4 max-w-sm">
-                    Use a IA para gerar uma mensagem personalizada ou escreva diretamente.
+                  <p className="text-sm text-slate-500 max-w-sm">
+                    Use o botão de IA ou escreva diretamente para {selectedClient.full_name.split(' ')[0]}.
                   </p>
-                  <Button 
-                    onClick={generateAIResponse} 
-                    disabled={isGeneratingAI}
-                    className={cn("gap-2", theme.primary, theme.primaryHover)}
-                  >
-                    {isGeneratingAI ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Sparkles className="h-4 w-4" />
-                    )}
-                    Gerar com IA
-                  </Button>
                 </div>
               ) : (
                 <>
