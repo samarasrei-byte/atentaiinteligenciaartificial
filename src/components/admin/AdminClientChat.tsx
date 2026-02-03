@@ -52,11 +52,12 @@ interface ClientRequest {
   status: string;
   created_at: string;
   user_id: string;
-  service_type: 'limpa-nome' | 'fiscal';
+  service_type: 'limpa-nome' | 'fiscal' | 'bi';
   debt_amount_cents?: number;
   identified_value_cents?: number;
   cpf?: string;
   cnpj?: string;
+  notes?: string | null;
 }
 
 // Documentos específicos por serviço
@@ -95,6 +96,14 @@ const serviceThemes = {
     accent: 'text-violet-600',
     dot: 'bg-violet-500',
     border: 'border-violet-200',
+  },
+  'bi': {
+    primary: 'bg-violet-600',
+    primaryHover: 'hover:bg-violet-700',
+    light: 'bg-violet-50',
+    accent: 'text-violet-600',
+    dot: 'bg-violet-500',
+    border: 'border-violet-200',
   }
 };
 
@@ -111,7 +120,7 @@ export function AdminClientChat() {
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
   const [showPaymentRequest, setShowPaymentRequest] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal'>('all');
+  const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal' | 'bi'>('all');
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const theme = selectedClient ? serviceThemes[selectedClient.service_type] : null;
@@ -139,7 +148,7 @@ export function AdminClientChat() {
           .order('created_at', { ascending: false }),
         supabase
           .from('fiscal_analysis_requests')
-          .select('id, full_name, email, phone, status, created_at, user_id, identified_value_cents, cnpj, cpf')
+          .select('id, full_name, email, phone, status, created_at, user_id, identified_value_cents, cnpj, cpf, notes')
           .order('created_at', { ascending: false })
       ]);
 
@@ -148,10 +157,15 @@ export function AdminClientChat() {
         service_type: 'limpa-nome' as const,
       }));
 
-      const fiscal: ClientRequest[] = (fiscalRes.data || []).map(r => ({
-        ...r,
-        service_type: 'fiscal' as const,
-      }));
+      const fiscal: ClientRequest[] = (fiscalRes.data || []).map((r: any) => {
+        const notes: string = r?.notes || '';
+        const isBI = typeof notes === 'string' && notes.toUpperCase().startsWith('[BI]');
+        const service_type: ClientRequest['service_type'] = isBI ? 'bi' : 'fiscal';
+        return {
+          ...r,
+          service_type,
+        };
+      });
 
       const combined = [...limpaNome, ...fiscal].sort((a, b) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
@@ -169,42 +183,50 @@ export function AdminClientChat() {
     if (!selectedClient || !user) return;
 
     const loadMessages = async () => {
-      if (selectedClient.service_type === 'limpa-nome') {
-        const { data } = await supabase
-          .from('credit_repair_chat_messages')
-          .select('*')
-          .eq('request_id', selectedClient.id)
-          .order('created_at', { ascending: true });
+      const table = selectedClient.service_type === 'limpa-nome'
+        ? 'credit_repair_chat_messages'
+        : 'fiscal_chat_messages';
 
-        setMessages(data || []);
-      } else {
+      const { data, error } = await supabase
+        .from(table)
+        .select('*')
+        .eq('request_id', selectedClient.id)
+        .order('created_at', { ascending: true });
+
+      if (error) {
+        console.error('Error loading admin chat messages:', error);
         setMessages([]);
+        return;
       }
+
+      setMessages((data || []) as ChatMessage[]);
     };
 
     loadMessages();
 
-    if (selectedClient.service_type === 'limpa-nome') {
-      const channel = supabase
-        .channel(`admin-chat-${selectedClient.id}`)
-        .on(
-          'postgres_changes',
-          {
-            event: 'INSERT',
-            schema: 'public',
-            table: 'credit_repair_chat_messages',
-            filter: `request_id=eq.${selectedClient.id}`
-          },
-          (payload) => {
-            setMessages(prev => [...prev, payload.new as ChatMessage]);
-          }
-        )
-        .subscribe();
+    const table = selectedClient.service_type === 'limpa-nome'
+      ? 'credit_repair_chat_messages'
+      : 'fiscal_chat_messages';
 
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }
+    const channel = supabase
+      .channel(`admin-chat-${table}-${selectedClient.id}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table,
+          filter: `request_id=eq.${selectedClient.id}`
+        },
+        (payload) => {
+          setMessages(prev => [...prev, payload.new as ChatMessage]);
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [selectedClient, user]);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -213,23 +235,23 @@ export function AdminClientChat() {
 
     setIsSending(true);
 
-    if (selectedClient.service_type === 'limpa-nome') {
-      const { error } = await supabase
-        .from('credit_repair_chat_messages')
-        .insert({
-          request_id: selectedClient.id,
-          sender_id: user.id,
-          receiver_id: selectedClient.user_id,
-          content: newMessage.trim(),
-        });
+    const table = selectedClient.service_type === 'limpa-nome'
+      ? 'credit_repair_chat_messages'
+      : 'fiscal_chat_messages';
 
-      if (error) {
-        toast({ title: 'Erro ao enviar mensagem', variant: 'destructive' });
-      } else {
-        setNewMessage('');
-      }
+    const { error } = await supabase
+      .from(table)
+      .insert({
+        request_id: selectedClient.id,
+        sender_id: user.id,
+        receiver_id: selectedClient.user_id,
+        content: newMessage.trim(),
+      });
+
+    if (error) {
+      console.error('Error sending admin message:', error);
+      toast({ title: 'Erro ao enviar mensagem', variant: 'destructive' });
     } else {
-      toast({ title: 'Mensagem enviada', description: 'Notificação enviada ao cliente.' });
       setNewMessage('');
     }
 
@@ -375,6 +397,7 @@ Guilherme`);
 
   const limpaNomeCount = clients.filter(c => c.service_type === 'limpa-nome').length;
   const fiscalCount = clients.filter(c => c.service_type === 'fiscal').length;
+  const biCount = clients.filter(c => c.service_type === 'bi').length;
 
   if (isLoading) {
     return (
