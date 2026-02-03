@@ -742,9 +742,9 @@ Guilherme`);
                       {isGeneratingAI ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        <Bot className={cn("h-4 w-4", theme.accent)} />
+                        <Sparkles className={cn("h-4 w-4", theme.accent)} />
                       )}
-                      <span className="hidden sm:inline">Gerar como Guilherme</span>
+                      <span className="hidden sm:inline">Gerar com IA</span>
                     </Button>
                     
                     <Input
