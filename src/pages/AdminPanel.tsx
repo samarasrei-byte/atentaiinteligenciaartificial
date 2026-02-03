@@ -48,6 +48,7 @@ import GuilhermeChatHub from '@/components/admin/GuilhermeChatHub';
 import CesarChatHub from '@/components/admin/CesarChatHub';
 import DocumentsCentral from '@/components/admin/DocumentsCentral';
 import AdminIntegrationsHub from '@/components/admin/AdminIntegrationsHub';
+import { AdminSubscriptionsPanel } from '@/components/admin/AdminSubscriptionsPanel';
 import AdminAlertsHub from '@/components/admin/AdminAlertsHub';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
@@ -457,25 +458,15 @@ const AdminPanel = () => {
           )}
 
           {activeTab === 'subscriptions' && (
-            <Card className="bg-card border-border shadow-soft">
-              <CardHeader><CardTitle>Assinaturas</CardTitle></CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {subscriptions.map((sub) => (
-                    <div key={sub.id} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg border">
-                      <div>
-                        <p className="font-medium">Plano {sub.plan_type}</p>
-                        <p className="text-sm text-muted-foreground">{new Date(sub.created_at).toLocaleDateString('pt-BR')}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="font-bold">{formatCurrency(sub.price_cents)}</p>
-                        {getStatusBadge(sub.status)}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+            <AdminSubscriptionsPanel 
+              subscriptions={subscriptions}
+              stats={{
+                totalSubscriptions: stats.totalSubscriptions,
+                activeSubscriptions: stats.totalSubscriptions,
+                mrr: stats.monthlyRevenue,
+                churnRate: 2.5,
+              }}
+            />
           )}
 
           {activeTab === 'consultations' && (
