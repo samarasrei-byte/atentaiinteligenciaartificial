@@ -77,9 +77,9 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
         relative h-full rounded-3xl overflow-hidden group cursor-pointer
         ${popular ? 'p-[2px] bg-gradient-to-br from-primary via-success to-info' : 'p-[1px] bg-gradient-to-br from-border to-border/50'}
       `}>
-        {/* Animated glow effect on hover */}
+        {/* Animated glow effect on hover (decorative only) */}
         <motion.div 
-          className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl bg-gradient-to-br ${gradient}`}
+          className={`pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl bg-gradient-to-br ${gradient}`}
           animate={{ scale: [1, 1.1, 1] }}
           transition={{ duration: 3, repeat: Infinity }}
         />
