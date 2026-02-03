@@ -254,8 +254,15 @@ export const ServicesHubModern: React.FC = () => {
       gradient: 'from-amber-500/40 to-orange-500/40',
       iconGradient: 'from-amber-500 to-orange-500',
       onClick: () => {
-        console.log('[ServicesHub ROUTING] Análise Fiscal → /modulo-fiscal/onboarding');
-        navigate('/modulo-fiscal/onboarding');
+        // Redireciona para o chat dentro do painel ao invés do onboarding
+        console.log('[ServicesHub ROUTING] Análise Fiscal → chat-fiscal tab');
+        // Navigate to the chat tab by updating URL params
+        const currentPath = window.location.pathname;
+        if (currentPath.includes('/autonomo') || currentPath.includes('/empresa')) {
+          navigate('?tab=chat-fiscal');
+        } else {
+          navigate('/bi-contabilidade'); // Fallback for non-panel contexts
+        }
       },
       badge: 'Sem Custo Inicial',
     },

@@ -99,6 +99,7 @@ import { UnifiedSettingsPage } from '@/components/user-panel/UnifiedSettingsPage
 import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeComparator';
 import { FiscalAnalysisNotification } from '@/components/notifications/FiscalAnalysisNotification';
 import { NotificationsPage } from '@/components/notifications/NotificationsPage';
+import { EmbeddedFiscalChat } from '@/components/fiscal/EmbeddedFiscalChat';
 
 const EmbeddedAIAgent = () => {
   return (
@@ -513,30 +514,7 @@ const EmpresaPanel = () => {
       case 'chat-contador':
         return <EmbeddedChatContador />;
       case 'chat-fiscal':
-        // Redirect to fiscal chat - show embedded chat or redirect to minhas-solicitacoes
-        return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-foreground">Chat Análise Fiscal</h2>
-            </div>
-            <p className="text-muted-foreground">
-              Sua solicitação de Análise Fiscal foi enviada. Em breve um especialista entrará em contato.
-            </p>
-            <Card className="p-6 bg-emerald-500/10 border-emerald-500/30">
-              <div className="flex items-center gap-4">
-                <div className="p-3 rounded-xl bg-emerald-500/20">
-                  <Scale className="h-6 w-6 text-emerald-600" />
-                </div>
-                <div>
-                  <h3 className="font-semibold text-foreground">Análise em Andamento</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Nossa equipe está analisando sua documentação. Você receberá uma notificação quando houver atualizações.
-                  </p>
-                </div>
-              </div>
-            </Card>
-          </div>
-        );
+        return <EmbeddedFiscalChat variant="empresa" />;
       case 'profile':
         return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
       case 'glossary':

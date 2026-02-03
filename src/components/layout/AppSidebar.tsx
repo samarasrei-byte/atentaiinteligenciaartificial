@@ -108,6 +108,9 @@ const servicosGroup: SidebarGroup = {
   label: 'Serviços',
   items: [
     { icon: ShoppingBag, label: 'Contratar Serviços', tabId: 'servicos' },
+    { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
+    { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
+    { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'Em breve' },
   ],
 };
 
@@ -161,7 +164,9 @@ const autonomoGroups: SidebarGroup[] = [
     label: 'Serviços',
     items: [
       { icon: ShoppingBag, label: 'Contratar Serviços', tabId: 'servicos' },
-      { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa' },
+      { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
+      { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
+      { icon: Building2, label: 'Abrir Empresa', tabId: 'abertura-empresa', badge: 'Em breve' },
     ],
   },
   {

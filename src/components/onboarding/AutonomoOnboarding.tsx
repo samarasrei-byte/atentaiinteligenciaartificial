@@ -139,6 +139,8 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(cents / 100);
   };
 
@@ -371,7 +373,7 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
                   id="revenue"
                   type="text"
                   inputMode="numeric"
-                  value={formData.monthly_revenue_average_cents > 0 ? new Intl.NumberFormat('pt-BR').format(formData.monthly_revenue_average_cents / 100) : ''}
+                  value={formData.monthly_revenue_average_cents > 0 ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(formData.monthly_revenue_average_cents / 100) : ''}
                   onChange={(e) => {
                     const value = e.target.value.replace(/\D/g, '');
                     updateFormData('monthly_revenue_average_cents', parseInt(value) * 100 || 0);

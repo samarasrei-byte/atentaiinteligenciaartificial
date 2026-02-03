@@ -29,13 +29,16 @@ const formatCurrency = (cents: number) => {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
     currency: 'BRL',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   }).format(cents / 100);
 };
 
 const formatNumber = (cents: number) => {
-  return new Intl.NumberFormat('pt-BR').format(cents / 100);
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(cents / 100);
 };
 
 // Revenue tier definitions based on annual revenue
