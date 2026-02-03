@@ -703,6 +703,43 @@ Guilherme`);
                               <p className="text-[10px] font-medium text-white/80 mb-1">Guilherme</p>
                             )}
                             <p className="text-sm whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                            
+                            {/* Renderizar anexos do cliente */}
+                            {message.attachment_url && (
+                              <div className={cn(
+                                "mt-2 p-2 rounded-lg flex items-center gap-2",
+                                isMine ? "bg-white/10" : "bg-slate-50 border border-slate-100"
+                              )}>
+                                {message.attachment_type?.startsWith('image/') ? (
+                                  <a 
+                                    href={message.attachment_url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="block"
+                                  >
+                                    <img 
+                                      src={message.attachment_url} 
+                                      alt={message.attachment_name || 'Anexo'}
+                                      className="max-w-[200px] max-h-[150px] rounded-lg object-cover"
+                                    />
+                                  </a>
+                                ) : (
+                                  <a 
+                                    href={message.attachment_url} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className={cn(
+                                      "flex items-center gap-2 text-xs underline",
+                                      isMine ? "text-white/90" : "text-slate-700"
+                                    )}
+                                  >
+                                    <Paperclip className="h-3.5 w-3.5" />
+                                    <span className="truncate max-w-[150px]">{message.attachment_name || 'Documento'}</span>
+                                  </a>
+                                )}
+                              </div>
+                            )}
+                            
                             <div className={cn("flex items-center gap-1 mt-1.5", isMine && "justify-end")}>
                               <span className={cn("text-[10px]", isMine ? "text-white/70" : "text-slate-400")}>
                                 {formatDistanceToNow(new Date(message.created_at), { addSuffix: true, locale: ptBR })}

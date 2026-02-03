@@ -493,6 +493,43 @@ César`);
                             : "bg-white text-slate-900 border border-slate-200 rounded-bl-md"
                         )}>
                           <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                          
+                          {/* Renderizar anexos */}
+                          {msg.attachment_url && (
+                            <div className={cn(
+                              "mt-2 p-2 rounded-lg flex items-center gap-2",
+                              isAdmin ? "bg-white/10" : "bg-slate-50 border border-slate-100"
+                            )}>
+                              {msg.attachment_type?.startsWith('image/') ? (
+                                <a 
+                                  href={msg.attachment_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="block"
+                                >
+                                  <img 
+                                    src={msg.attachment_url} 
+                                    alt={msg.attachment_name || 'Anexo'}
+                                    className="max-w-[200px] max-h-[150px] rounded-lg object-cover"
+                                  />
+                                </a>
+                              ) : (
+                                <a 
+                                  href={msg.attachment_url} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className={cn(
+                                    "flex items-center gap-2 text-xs underline",
+                                    isAdmin ? "text-white/90" : "text-slate-700"
+                                  )}
+                                >
+                                  <Paperclip className="h-3.5 w-3.5" />
+                                  <span className="truncate max-w-[150px]">{msg.attachment_name || 'Documento'}</span>
+                                </a>
+                              )}
+                            </div>
+                          )}
+                          
                           <div className={cn(
                             "flex items-center gap-1.5 mt-1.5",
                             isAdmin ? "justify-end" : "justify-start"
