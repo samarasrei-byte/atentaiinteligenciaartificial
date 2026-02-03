@@ -131,6 +131,15 @@ const AutonomoPanel: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+
+  // Mantém o estado do painel sincronizado com a URL (?tab=...)
+  // (Necessário para que botões como "Solicitar Serviço" consigam abrir chat via navigate({ search }))
+  useEffect(() => {
+    const tab = searchParams.get('tab');
+    if (tab && tab !== activeTab) setActiveTab(tab);
+    if (!tab && activeTab !== 'dashboard') setActiveTab('dashboard');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
   
   // Guided tour
   const tour = useGuidedTour({
