@@ -166,7 +166,15 @@ const AdminPanel = () => {
       const startOfWeek = new Date(); startOfWeek.setDate(startOfWeek.getDate() - 7); startOfWeek.setHours(0, 0, 0, 0);
       const startOfDay = new Date(); startOfDay.setHours(0, 0, 0, 0);
 
-      const [profilesRes, contadorRes, subscriptionsRes, consultationsRes, paymentsRes, simulationsRes, messagesRes, pendingRes, monthlyRes, newUsersRes, allSubs, allConsult] = await Promise.all([
+      const [
+        profilesRes, contadorRes, subscriptionsRes, consultationsRes, paymentsRes, 
+        simulationsRes, messagesRes, pendingRes, monthlyRes, newUsersRes, allSubs, allConsult,
+        // Time-based queries for real metrics
+        aiTodayRes, aiWeekRes, aiMonthRes,
+        simTodayRes, simWeekRes, simMonthRes,
+        simulatorSubsRes, premiumSubsRes, contadorSubsRes,
+        scheduledConsultRes, completedConsultRes,
+      ] = await Promise.all([
         supabase.from('profiles').select('id', { count: 'exact' }),
         supabase.from('contador_profiles').select('id', { count: 'exact' }),
         supabase.from('subscriptions').select('id', { count: 'exact' }).eq('status', 'active'),
@@ -179,6 +187,21 @@ const AdminPanel = () => {
         supabase.from('profiles').select('id', { count: 'exact' }).gte('created_at', startOfMonth.toISOString()),
         supabase.from('subscriptions').select('*').order('created_at', { ascending: false }).limit(50),
         supabase.from('consultations').select('*').order('created_at', { ascending: false }).limit(50),
+        // AI messages by time
+        supabase.from('ai_chat_messages').select('id', { count: 'exact', head: true }).gte('created_at', startOfDay.toISOString()),
+        supabase.from('ai_chat_messages').select('id', { count: 'exact', head: true }).gte('created_at', startOfWeek.toISOString()),
+        supabase.from('ai_chat_messages').select('id', { count: 'exact', head: true }).gte('created_at', startOfMonth.toISOString()),
+        // Simulations by time
+        supabase.from('tax_simulations').select('id', { count: 'exact', head: true }).gte('created_at', startOfDay.toISOString()),
+        supabase.from('tax_simulations').select('id', { count: 'exact', head: true }).gte('created_at', startOfWeek.toISOString()),
+        supabase.from('tax_simulations').select('id', { count: 'exact', head: true }).gte('created_at', startOfMonth.toISOString()),
+        // Subscriptions by plan
+        supabase.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active').eq('plan_type', 'simulator'),
+        supabase.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active').eq('plan_type', 'premium'),
+        supabase.from('subscriptions').select('id', { count: 'exact', head: true }).eq('status', 'active').eq('plan_type', 'contador'),
+        // Consultations this week
+        supabase.from('consultations').select('id', { count: 'exact', head: true }).eq('status', 'scheduled').gte('scheduled_at', startOfWeek.toISOString()),
+        supabase.from('consultations').select('id', { count: 'exact', head: true }).eq('status', 'completed').gte('completed_at', startOfWeek.toISOString()),
       ]);
 
       const totalRevenue = (paymentsRes.data || []).reduce((sum, p) => sum + p.amount_cents, 0);
@@ -189,10 +212,19 @@ const AdminPanel = () => {
         totalSubscriptions: subscriptionsRes.count || 0, totalConsultations: consultationsRes.count || 0,
         totalRevenue, totalSimulations: simulationsRes.count || 0, totalMessages: messagesRes.count || 0,
         pendingConsultations: pendingRes.count || 0, monthlyRevenue, newUsersThisMonth: newUsersRes.count || 0,
-        aiQuestionsToday: 0, aiQuestionsThisWeek: 0, aiQuestionsThisMonth: 0, simulationsToday: 0,
-        simulationsThisWeek: 0, simulationsThisMonth: 0, activeUsersToday: 0, activeUsersThisWeek: 0,
-        consultationsScheduledThisWeek: 0, consultationsCompletedThisWeek: 0,
-        simulatorPlanCount: 0, premiumPlanCount: 0, contadorPlanCount: 0,
+        aiQuestionsToday: aiTodayRes.count || 0, 
+        aiQuestionsThisWeek: aiWeekRes.count || 0, 
+        aiQuestionsThisMonth: aiMonthRes.count || 0, 
+        simulationsToday: simTodayRes.count || 0,
+        simulationsThisWeek: simWeekRes.count || 0, 
+        simulationsThisMonth: simMonthRes.count || 0, 
+        activeUsersToday: (aiTodayRes.count || 0) + (simTodayRes.count || 0), 
+        activeUsersThisWeek: (aiWeekRes.count || 0) + (simWeekRes.count || 0),
+        consultationsScheduledThisWeek: scheduledConsultRes.count || 0, 
+        consultationsCompletedThisWeek: completedConsultRes.count || 0,
+        simulatorPlanCount: simulatorSubsRes.count || 0, 
+        premiumPlanCount: premiumSubsRes.count || 0, 
+        contadorPlanCount: contadorSubsRes.count || 0,
       });
       setSubscriptions(allSubs.data || []);
       setConsultations(allConsult.data || []);
