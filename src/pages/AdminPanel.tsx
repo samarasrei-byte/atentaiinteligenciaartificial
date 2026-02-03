@@ -50,6 +50,8 @@ import DocumentsCentral from '@/components/admin/DocumentsCentral';
 import AdminIntegrationsHub from '@/components/admin/AdminIntegrationsHub';
 import { AdminSubscriptionsPanel } from '@/components/admin/AdminSubscriptionsPanel';
 import AdminAlertsHub from '@/components/admin/AdminAlertsHub';
+import ServiceManagement from '@/components/admin/ServiceManagement';
+import PanelManagement from '@/components/admin/PanelManagement';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -698,46 +700,24 @@ const AdminPanel = () => {
           )}
 
           {/* =====================================================
-              MARKETPLACE
+              GESTÃO DE SERVIÇOS
+           ===================================================== */}
+          {activeTab === 'service-management' && (
+            <ServiceManagement />
+          )}
+
+          {/* =====================================================
+              GESTÃO DE PAINÉIS
+           ===================================================== */}
+          {activeTab === 'panel-management' && (
+            <PanelManagement />
+          )}
+
+          {/* =====================================================
+              MARKETPLACE - Ativar Serviços (LEGADO - Usar service-management)
            ===================================================== */}
           {activeTab === 'marketplace-activate' && (
-            <Card className="bg-card border-border shadow-soft">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Shield className="h-5 w-5 text-primary" />
-                  Ativar Serviços
-                </CardTitle>
-                <CardDescription>Ative serviços para clientes via Marketplace</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="border-emerald-200 bg-emerald-50/50 hover:bg-emerald-50 transition-colors cursor-pointer">
-                    <CardContent className="p-6 text-center">
-                      <Shield className="h-12 w-12 mx-auto mb-4 text-emerald-600" />
-                      <h3 className="font-semibold text-emerald-900">Limpa Nome</h3>
-                      <p className="text-sm text-emerald-700 mt-2">Recuperação de crédito</p>
-                      <Button className="mt-4 bg-emerald-600 hover:bg-emerald-700">Ativar</Button>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-violet-200 bg-violet-50/50 hover:bg-violet-50 transition-colors cursor-pointer">
-                    <CardContent className="p-6 text-center">
-                      <Scale className="h-12 w-12 mx-auto mb-4 text-violet-600" />
-                      <h3 className="font-semibold text-violet-900">Análise Fiscal</h3>
-                      <p className="text-sm text-violet-700 mt-2">Recuperação tributária</p>
-                      <Button className="mt-4 bg-violet-600 hover:bg-violet-700">Ativar</Button>
-                    </CardContent>
-                  </Card>
-                  <Card className="border-blue-200 bg-blue-50/50 hover:bg-blue-50 transition-colors cursor-pointer">
-                    <CardContent className="p-6 text-center">
-                      <BarChart3 className="h-12 w-12 mx-auto mb-4 text-blue-600" />
-                      <h3 className="font-semibold text-blue-900">BI Contabilidade</h3>
-                      <p className="text-sm text-blue-700 mt-2">Inteligência de negócios</p>
-                      <Button className="mt-4 bg-blue-600 hover:bg-blue-700">Ativar</Button>
-                    </CardContent>
-                  </Card>
-                </div>
-              </CardContent>
-            </Card>
+            <ServiceManagement />
           )}
 
           {/* Chat Central de Atendimento LEGADO - Redirecionado para Guilherme */}

@@ -33,6 +33,7 @@ import {
   ShoppingBag,
   Target,
   Calendar,
+  Zap,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
@@ -146,10 +147,12 @@ const sidebarGroups: SidebarGroup[] = [
     label: 'Configurações',
     icon: Settings,
     items: [
+      { icon: Settings, label: 'Gestão de Serviços', tabId: 'service-management' },
+      { icon: LayoutDashboard, label: 'Gestão de Painéis', tabId: 'panel-management' },
+      { icon: Zap, label: 'Integrações', tabId: 'integrations' },
       { icon: Shield, label: 'Gestão de Roles', tabId: 'roles' },
       { icon: FileText, label: 'Auditoria', tabId: 'audit-page' },
       { icon: FileText, label: 'Logs', tabId: 'audit-logs' },
-      { icon: Settings, label: 'Config', tabId: 'settings' },
     ],
   },
 ];
