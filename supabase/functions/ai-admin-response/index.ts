@@ -173,23 +173,27 @@ serve(async (req) => {
       });
     }
 
-    // Verify admin role
-    const { data: profile } = await serviceClient
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single();
+    // Verify admin role using user_roles table (correct architecture)
+    const { data: isAdmin } = await serviceClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'admin'
+    });
 
-    if (!profile || !['admin', 'contador', 'partner'].includes(profile.role)) {
-      return new Response(JSON.stringify({ error: 'Acesso negado' }), {
+    const { data: isContador } = await serviceClient.rpc('has_role', {
+      _user_id: user.id,
+      _role: 'contador'
+    });
+
+    if (!isAdmin && !isContador) {
+      return new Response(JSON.stringify({ error: 'Acesso negado - role insuficiente' }), {
         status: 403,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     }
 
-    logStep('Admin authenticated', { userId: user.id, role: profile.role });
+    logStep('Admin authenticated', { userId: user.id, isAdmin, isContador });
 
-    const { 
+    const {
       clientName, 
       serviceType, 
       status, 
