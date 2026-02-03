@@ -17,6 +17,22 @@ type Feature =
   | 'company-edit'
   | 'subscriber-discounts';
 
+// ============================================================
+// SERVIÇOS GRATUITOS - Acessíveis a TODOS os usuários autenticados
+// Estes serviços são do marketplace e não requerem assinatura
+// ============================================================
+type FreeService = 
+  | 'limpa-nome'        // Pago por transação (R$780) - Chat com Guilherme
+  | 'analise-fiscal'    // Grátis (Success Fee 50%) - Chat com Guilherme  
+  | 'bi-contabilidade'; // Sob consulta - Chat com César
+
+// Serviços gratuitos disponíveis para todos os usuários autenticados
+const FREE_SERVICES: FreeService[] = [
+  'limpa-nome',
+  'analise-fiscal', 
+  'bi-contabilidade',
+];
+
 // Feature access matrix by plan - aligned with STRIPE_PLANS features
 const featuresByPlan: Record<PlanType, Feature[]> = {
   simulator: [
@@ -75,11 +91,23 @@ const planHierarchy: Record<PlanType, number> = {
 export function useFeatureAccess() {
   const { subscription, user } = useAuth();
 
+  /**
+   * Check if user has access to a PAID feature (requires subscription)
+   */
   const hasFeature = (feature: Feature): boolean => {
     if (!user || !subscription.subscribed || !subscription.plan) {
       return false;
     }
     return featuresByPlan[subscription.plan]?.includes(feature) ?? false;
+  };
+
+  /**
+   * Check if user has access to a FREE service (marketplace services)
+   * These are available to ALL authenticated users regardless of subscription
+   */
+  const hasFreeService = (service: FreeService): boolean => {
+    if (!user) return false;
+    return FREE_SERVICES.includes(service);
   };
 
   const hasPlan = (minPlan: PlanType): boolean => {
@@ -102,10 +130,13 @@ export function useFeatureAccess() {
 
   return {
     hasFeature,
+    hasFreeService,
     hasPlan,
     getRequiredPlan,
     isSubscribed,
     currentPlan: subscription.plan,
     subscriptionEnd: subscription.subscriptionEnd,
+    // Export for external use
+    freeServices: FREE_SERVICES,
   };
 }
