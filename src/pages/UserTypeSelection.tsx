@@ -20,6 +20,7 @@ interface UserTypeOption {
   gradient: string;
   iconBg: string;
   accentColor: string;
+  comingSoon?: boolean; // Flag para "Em breve"
 }
 
 const allUserTypeOptions: UserTypeOption[] = [
@@ -49,19 +50,18 @@ const allUserTypeOptions: UserTypeOption[] = [
     type: 'contador',
     title: 'Contador',
     description: 'Ofereça serviços na plataforma',
-    features: ['Captação de clientes', 'Agenda integrada', 'Sistema de saques'],
+    features: ['IA para contabilidade', 'Captação de clientes', 'Agenda integrada'],
     icon: Calculator,
     route: '/contador-onboarding',
     gradient: 'from-teal-500 to-emerald-500',
     iconBg: 'bg-gradient-to-br from-teal-500 to-emerald-500',
     accentColor: 'teal',
+    comingSoon: true, // Flag para mostrar "Em breve"
   },
 ];
 
-// Filter options based on feature flags
-const userTypeOptions = allUserTypeOptions.filter(opt => 
-  opt.type !== 'contador' || isContadorEnabled()
-);
+// Always show all options (Contador shows as "Em breve")
+const userTypeOptions = allUserTypeOptions;
 
 const UserTypeSelection = () => {
   const navigate = useNavigate();
@@ -109,6 +109,8 @@ const UserTypeSelection = () => {
 
   const handleSelectType = (option: UserTypeOption) => {
     if (isAnimating) return;
+    // Não permite selecionar "Em breve"
+    if (option.comingSoon) return;
     setSelectedType(option.type);
   };
 
@@ -238,10 +240,10 @@ const UserTypeSelection = () => {
                   onClick={() => handleSelectType(option)}
                   onMouseEnter={() => setHoveredType(option.type)}
                   onMouseLeave={() => setHoveredType(null)}
-                  disabled={isAnimating}
+                  disabled={isAnimating || option.comingSoon}
                   initial={{ opacity: 0, y: 40, scale: 0.9 }}
                   animate={{ 
-                    opacity: 1, 
+                    opacity: option.comingSoon ? 0.7 : 1, 
                     y: 0, 
                     scale: isSelected ? 1.02 : 1,
                     rotateY: isHovered ? 5 : 0,
@@ -252,19 +254,21 @@ const UserTypeSelection = () => {
                     type: "spring",
                     stiffness: 200,
                   }}
-                  whileHover={{ 
+                  whileHover={option.comingSoon ? {} : { 
                     scale: 1.03,
                     y: -8,
                   }}
-                  whileTap={{ scale: 0.98 }}
+                  whileTap={option.comingSoon ? {} : { scale: 0.98 }}
                   className={cn(
                     "relative text-left p-8 rounded-3xl border-2 transition-all duration-500",
                     "backdrop-blur-xl overflow-hidden group",
                     "disabled:pointer-events-none",
                     "transform-gpu perspective-1000",
-                    isSelected
-                      ? "border-primary bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 shadow-2xl shadow-primary/30"
-                      : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card/80"
+                    option.comingSoon
+                      ? "border-muted/50 bg-muted/30 cursor-not-allowed opacity-70"
+                      : isSelected
+                        ? "border-primary bg-gradient-to-br from-primary/15 via-primary/10 to-primary/5 shadow-2xl shadow-primary/30"
+                        : "border-border/50 bg-card/50 hover:border-primary/50 hover:bg-card/80"
                   )}
                   style={{ transformStyle: "preserve-3d" }}
                 >
@@ -358,7 +362,12 @@ const UserTypeSelection = () => {
                   {/* Content */}
                   <h3 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
                     {option.title}
-                    {isSelected && (
+                    {option.comingSoon && (
+                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
+                        Em breve
+                      </span>
+                    )}
+                    {isSelected && !option.comingSoon && (
                       <motion.span
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}

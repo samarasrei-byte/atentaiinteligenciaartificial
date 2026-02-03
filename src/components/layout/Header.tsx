@@ -1,6 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard, Rocket } from "lucide-react";
+import { 
+  DropdownMenu, 
+  DropdownMenuContent, 
+  DropdownMenuItem, 
+  DropdownMenuSeparator, 
+  DropdownMenuTrigger 
+} from "@/components/ui/dropdown-menu";
+import { Menu, X, Calculator, Brain, LogIn, Shield, Briefcase, Users, LayoutDashboard, Rocket, LogOut, ChevronDown, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -10,7 +17,7 @@ interface HeaderProps {
 
 export function Header({ onNavigate }: HeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const { user, loading } = useAuth();
+  const { user, loading, signOut, profile } = useAuth();
   const navigate = useNavigate();
 
   // Navigation menu items - Updated 2026-02-02
@@ -49,6 +56,11 @@ export function Header({ onNavigate }: HeaderProps) {
     } else {
       navigate('/auth');
     }
+  };
+
+  const handleLogout = async () => {
+    await signOut();
+    navigate('/');
   };
 
   return (
@@ -110,11 +122,31 @@ export function Header({ onNavigate }: HeaderProps) {
             </Button>
             
             {!loading && user ? (
-              // User is logged in - show Dashboard button
-              <Button size="sm" variant="outline" onClick={handleEntrar} className="border-primary/50 text-primary hover:bg-primary/10">
-                <LayoutDashboard className="w-4 h-4 mr-2" />
-                Meu Painel
-              </Button>
+              // User is logged in - show Dropdown menu
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button size="sm" variant="outline" className="border-primary/50 text-primary hover:bg-primary/10 gap-2">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Meu Painel
+                    <ChevronDown className="w-3 h-3 opacity-60" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-48">
+                  <DropdownMenuItem onClick={() => navigate('/dashboard')} className="gap-2 cursor-pointer">
+                    <LayoutDashboard className="w-4 h-4" />
+                    Acessar Painel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => navigate('/selecionar-perfil')} className="gap-2 cursor-pointer">
+                    <User className="w-4 h-4" />
+                    Trocar Perfil
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout} className="gap-2 cursor-pointer text-destructive focus:text-destructive">
+                    <LogOut className="w-4 h-4" />
+                    Sair
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             ) : (
               // User is not logged in - show Login button
               <Button size="sm" variant="outline" onClick={handleEntrar} className="border-primary/50 text-primary hover:bg-primary/10">
@@ -184,18 +216,31 @@ export function Header({ onNavigate }: HeaderProps) {
                 </Button>
                 
                 {!loading && user ? (
-                  // User is logged in - show Dashboard button
-                  <Button 
-                    variant="outline"
-                    className="justify-start gap-3 h-12"
-                    onClick={() => {
-                      setIsMenuOpen(false);
-                      handleEntrar();
-                    }}
-                  >
-                    <LayoutDashboard className="w-5 h-5" />
-                    Meu Painel
-                  </Button>
+                  // User is logged in - show Dashboard + Logout buttons
+                  <>
+                    <Button 
+                      variant="outline"
+                      className="justify-start gap-3 h-12"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        navigate('/dashboard');
+                      }}
+                    >
+                      <LayoutDashboard className="w-5 h-5" />
+                      Acessar Painel
+                    </Button>
+                    <Button 
+                      variant="ghost"
+                      className="justify-start gap-3 h-12 text-destructive hover:text-destructive"
+                      onClick={() => {
+                        setIsMenuOpen(false);
+                        handleLogout();
+                      }}
+                    >
+                      <LogOut className="w-5 h-5" />
+                      Sair
+                    </Button>
+                  </>
                 ) : (
                   // User is not logged in - show Login button
                   <Button 
