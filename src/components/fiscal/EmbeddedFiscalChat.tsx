@@ -13,9 +13,9 @@ interface EmbeddedFiscalChatProps {
   serviceType?: 'fiscal' | 'bi'; // fiscal → Guilherme | bi → César
 }
 
-// IDs dos especialistas responsáveis
-const GUILHERME_ADMIN_ID = '00000000-0000-0000-0000-000000000001'; // Análise Fiscal
-const CESAR_ADMIN_ID = '00000000-0000-0000-0000-000000000002'; // BI Inteligência Fiscal
+// IDs dos especialistas responsáveis (IDs reais do banco de dados)
+const GUILHERME_ADMIN_ID = '596de7f7-4352-4058-8855-18f9489a0311'; // Análise Fiscal - Guilherme Barros
+const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9'; // BI Inteligência Fiscal - César
 
 export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ 
   variant = 'empresa',
@@ -38,11 +38,14 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       if (!user?.id) return null;
 
       // Filter by notes to find correct service type
+      // Use [BI] or [FISCAL] prefix markers for accurate filtering
+      const searchPrefix = serviceType === 'bi' ? '[BI]' : '[FISCAL]';
+      
       const { data, error } = await supabase
         .from('fiscal_analysis_requests')
         .select('id, company_name, cnpj, status, created_at, notes')
         .eq('user_id', user.id)
-        .ilike('notes', `%${serviceType === 'bi' ? 'BI' : 'Fiscal'}%`)
+        .ilike('notes', `${searchPrefix}%`)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -196,7 +199,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       </div>
       
       {activeRequest ? (
-        <FiscalChatPanel requestId={activeRequest.id} />
+        <FiscalChatPanel requestId={activeRequest.id} serviceType={serviceType} />
       ) : (
         <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">
