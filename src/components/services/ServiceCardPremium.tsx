@@ -26,7 +26,7 @@ export interface ServiceCardConfig {
   basePrice: number;
   discountPercent: number;
   installments?: number;
-  badge?: 'popular' | 'free' | 'new';
+  badge?: 'popular' | 'free' | 'new' | 'premium';
   cta: string;
   color: 'primary' | 'accent' | 'emerald' | 'blue' | 'purple';
   icon: React.ElementType;
@@ -235,6 +235,12 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                 <Badge className="bg-blue-500 text-white border-0 text-[11px] font-semibold px-3 py-1 shadow-lg">
                   <Star className="w-3 h-3 mr-1" />
                   NOVO
+                </Badge>
+              )}
+              {service.badge === 'premium' && (
+                <Badge className="bg-gradient-to-r from-accent to-orange-500 text-white border-0 text-[11px] font-semibold px-3 py-1 shadow-lg">
+                  <Star className="w-3 h-3 mr-1" />
+                  PREMIUM
                 </Badge>
               )}
             </div>
