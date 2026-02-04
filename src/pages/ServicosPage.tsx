@@ -101,31 +101,93 @@ const socialProof = [
 
 // Service configurations with all information needed
 const serviceConfigs: ServiceCardConfig[] = [
-  // BI+ Contabilidade - SEM PREÇO FIXO (Sob consulta via chat)
+  // ===== PLANOS ATENTAI BI =====
+  // Atentai Clarity - Entrada
   {
-    key: 'bi_contabilidade',
-    name: 'BI+ Contabilidade',
-    description: 'Inteligência financeira com IA + análise humana especializada.',
-    targetAudience: 'Para empresas que querem controle total',
+    key: 'bi_clarity',
+    name: 'Atentai Clarity',
+    description: 'Clareza financeira e entendimento dos números.',
+    targetAudience: 'Para empresas que querem clareza',
     features: [
-      'Dashboard em tempo real',
-      'IA + Análise humana dedicada',
-      'Insights automáticos e alertas',
-      'Suporte especializado do César',
+      'BI padrão com DRE gerencial',
+      'Resultado, margem e despesas',
+      'IA explicativa e educativa',
+      'Linguagem clara e acessível',
+      'Supervisão humana obrigatória',
+      'Relatórios mensais em PDF',
     ],
-    guarantees: ['Atendimento humano', 'IA + Especialista'],
-    basePrice: 0, // Sem preço fixo - sob consulta
+    guarantees: ['Validação humana', 'Suporte César'],
+    basePrice: 149700, // R$ 1.497,00
     discountPercent: 0,
-    badge: 'popular',
-    cta: 'Falar com César',
-    color: 'purple',
+    badge: undefined,
+    cta: 'Assinar Agora',
+    color: 'blue',
     icon: Brain,
     serviceType: 'bi_contabilidade',
-    checkoutRoute: '/chat/cesar?servico=bi-contabilidade', // Redireciona para chat
+    checkoutRoute: '/bi-contabilidade',
     category: 'consultoria',
     isFree: false,
     successFee: false,
-    isCustomPricing: true, // Flag para indicar preço sob consulta
+    isCustomPricing: false,
+  },
+  // Atentai Control - Principal (Mais Popular)
+  {
+    key: 'bi_control',
+    name: 'Atentai Control',
+    description: 'Controle, previsão e suporte à decisão.',
+    targetAudience: 'Para empresas que querem controle',
+    features: [
+      'Tudo do Clarity +',
+      'Real x Orçado e forecast',
+      'Indicadores personalizados',
+      'Alertas inteligentes',
+      'Simulações de cenários',
+      'IA analítica e orientada à ação',
+      'Apoio a decisões táticas',
+    ],
+    guarantees: ['Validação humana', 'Suporte César'],
+    basePrice: 349700, // R$ 3.497,00
+    discountPercent: 0,
+    badge: 'popular',
+    cta: 'Assinar Agora',
+    color: 'primary',
+    icon: Brain,
+    serviceType: 'bi_contabilidade',
+    checkoutRoute: '/bi-contabilidade',
+    category: 'consultoria',
+    isFree: false,
+    successFee: false,
+    isCustomPricing: false,
+  },
+  // Atentai Performance - Premium
+  {
+    key: 'bi_performance',
+    name: 'Atentai Performance',
+    description: 'Performance, crescimento e estratégia empresarial.',
+    targetAudience: 'Para empresas que querem escalar',
+    features: [
+      'Tudo do Control +',
+      'P&L por área, produto ou unidade',
+      'IA como apoio estratégico sênior',
+      'Recomendações financeiras e comerciais',
+      'Integração ERP e CRM',
+      'Planejamento financeiro completo',
+      'Linguagem executiva e estratégica',
+      'Validação humana em todas as recomendações',
+    ],
+    guarantees: ['Atendimento VIP', 'IA + Estrategista'],
+    basePrice: 800000, // A partir de R$ 8.000,00
+    discountPercent: 0,
+    badge: 'premium',
+    cta: 'Solicitar Contato',
+    color: 'accent',
+    icon: Brain,
+    serviceType: 'bi_contabilidade',
+    checkoutRoute: '/chat/cesar?servico=bi-performance&plano=performance',
+    category: 'consultoria',
+    isFree: false,
+    successFee: false,
+    isCustomPricing: true,
   },
   // Limpa Nome PF
   {
