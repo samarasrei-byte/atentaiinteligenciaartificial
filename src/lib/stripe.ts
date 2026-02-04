@@ -29,9 +29,9 @@
 export const STRIPE_PLANS = {
   simulator: {
     name: 'Simulador Tributário',
-    priceId: 'price_simulator_monthly',
-    productId: 'prod_simulator',
-    price: 2990, // cents (R$ 29,90)
+    priceId: 'price_1SheKg3MU3lG84GwQwYaxFfN',
+    productId: 'prod_TeyH8gtLUj9Llu',
+    price: 3900, // cents (R$ 39,00) - Valor auditado do Stripe
     description: 'Acesso completo ao simulador tributário',
     tagline: 'Essencial',
     features: [

@@ -26,7 +26,7 @@ export interface ServiceCardConfig {
   basePrice: number;
   discountPercent: number;
   installments?: number;
-  badge?: 'popular' | 'free' | 'new' | 'premium';
+  badge?: 'popular' | 'free' | 'new' | 'premium' | 'coming_soon';
   cta: string;
   color: 'primary' | 'accent' | 'emerald' | 'blue' | 'purple';
   icon: React.ElementType;
@@ -36,6 +36,8 @@ export interface ServiceCardConfig {
   successFee?: boolean;
   category?: string;
   isCustomPricing?: boolean; // For services with no fixed price (sold via chat)
+  isSubscription?: boolean; // For subscription-based services
+  isDisabled?: boolean; // For services not yet available
 }
 
 interface ServiceCardPremiumProps {
@@ -243,6 +245,12 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                   PREMIUM
                 </Badge>
               )}
+              {service.badge === 'coming_soon' && (
+                <Badge className="bg-slate-500 text-white border-0 text-[11px] font-semibold px-3 py-1 shadow-lg">
+                  <Clock className="w-3 h-3 mr-1" />
+                  EM BREVE
+                </Badge>
+              )}
             </div>
           )}
 
@@ -332,11 +340,18 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
 
             {/* CTA Button */}
             <Button 
-              onClick={handleCTAClick}
-              className={`w-full rounded-xl h-12 font-semibold text-white transition-all shadow-lg hover:shadow-xl mt-auto ${colors.button}`}
+              onClick={service.isDisabled ? undefined : handleCTAClick}
+              disabled={service.isDisabled}
+              className={`w-full rounded-xl h-12 font-semibold text-white transition-all shadow-lg hover:shadow-xl mt-auto ${
+                service.isDisabled 
+                  ? 'bg-slate-400 cursor-not-allowed' 
+                  : colors.button
+              }`}
             >
               {service.cta}
-              <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              {!service.isDisabled && (
+                <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+              )}
             </Button>
           </CardContent>
         </Card>

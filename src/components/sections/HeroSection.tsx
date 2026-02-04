@@ -91,14 +91,24 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             </motion.span>
           </motion.h1>
 
-          {/* Subtitle - Simplified */}
+          {/* Subtitle - Tax Reform Focus */}
           <motion.p 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed"
+            className="text-lg sm:text-xl text-white/80 mb-6 max-w-2xl mx-auto leading-relaxed"
           >
-            Prepare sua empresa para o <span className="text-white font-semibold">IBS e CBS</span>. Simulador tributário, <span className="text-accent font-semibold">IA assistiva</span> e consultoria especializada para a transição.
+            <span className="text-white font-bold">Você está preparado para a Reforma Tributária?</span>
+          </motion.p>
+          
+          {/* AI Value Proposition */}
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.35 }}
+            className="text-base sm:text-lg text-white/70 mb-10 max-w-2xl mx-auto leading-relaxed"
+          >
+            Vamos te ajudar com <span className="text-accent font-semibold">inteligência artificial</span> a se preparar de forma fácil e acessível. <span className="text-white font-medium">IBS + CBS</span> sem complicação.
           </motion.p>
 
           {/* CTA Buttons */}
