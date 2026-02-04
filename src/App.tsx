@@ -107,7 +107,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <OfflineIndicator />
-          <div className="pb-20 md:pb-0">
+          <div className="pb-20 md:pb-0 min-h-screen">
             <AnimatedRoutes>
               <Routes>
               <Route path="/" element={<Index />} />
