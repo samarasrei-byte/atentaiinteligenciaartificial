@@ -52,8 +52,8 @@ const OnboardingLayoutEnhanced: React.FC<OnboardingLayoutEnhancedProps> = ({
       <CleanBackground />
 
       {/* Main content */}
-      <div className="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-8">
-        <div className="w-full max-w-2xl">
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4 md:p-6 lg:p-8 safe-area-bottom">
+        <div className="w-full max-w-2xl mx-auto">
           {/* Header */}
           <motion.div
             className="text-center mb-6"

@@ -24,7 +24,16 @@ export function BottomNavigation() {
   const { user } = useAuth();
 
   // Paths where bottom nav should be hidden
-  const hiddenPaths = ["/auth", "/onboarding", "/user-type"];
+  const hiddenPaths = [
+    "/auth", 
+    "/onboarding", 
+    "/user-type", 
+    "/autonomo-onboarding", 
+    "/contador-onboarding",
+    "/comecar",
+    "/admin",
+    "/checkout"
+  ];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
 
   if (shouldHide) return null;

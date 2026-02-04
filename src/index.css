@@ -203,9 +203,10 @@
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0;
+    -webkit-overflow-scrolling: touch;
   }
 
-  /* Ensure content has proper padding at bottom */
+  /* Ensure content has proper padding at bottom for mobile nav */
   .dashboard-content > *:last-child {
     margin-bottom: 0;
   }
@@ -217,6 +218,13 @@
     flex-shrink: 0;
   }
 
+  /* Mobile: Add padding for bottom navigation */
+  @media (max-width: 767px) {
+    .dashboard-content::after {
+      height: 5rem;
+    }
+  }
+
   /* Ensure no footer whitespace - content fills viewport */
   .dashboard-fill {
     display: flex;
@@ -224,6 +232,16 @@
     min-height: 100dvh;
     max-height: 100dvh;
     overflow: hidden;
+  }
+
+  /* Onboarding layouts - consistent responsiveness */
+  .onboarding-container {
+    @apply min-h-screen flex items-center justify-center p-4 md:p-6 lg:p-8;
+    padding-bottom: env(safe-area-inset-bottom, 1rem);
+  }
+
+  .onboarding-card {
+    @apply w-full max-w-xl mx-auto;
   }
 }
 
