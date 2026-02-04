@@ -58,6 +58,11 @@ const BIContabilidadeLanding = () => {
   const { user } = useAuth();
   const [activeMetric, setActiveMetric] = useState(0);
 
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const handleCTA = () => {
     navigate('/bi-contabilidade/onboarding');
   };
@@ -447,8 +452,11 @@ const BIContabilidadeLanding = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
+      {/* BI Pricing Plans Section - Right after hero for high conversion */}
+      <BIPricingSection />
+
       {/* Capabilities Bar */}
-      <section className="py-8 bg-muted/30 border-y border-border/50 relative -mt-16 z-20">
+      <section className="py-8 bg-muted/30 border-y border-border/50 relative z-20">
         <div className="container mx-auto px-4">
           <div className="flex items-center justify-center gap-8 flex-wrap">
             {capabilities.map((cap, index) => (
@@ -761,8 +769,7 @@ const BIContabilidadeLanding = () => {
         </div>
       </section>
 
-      {/* BI Pricing Plans Section */}
-      <BIPricingSection />
+      {/* Removed duplicate BIPricingSection - now appears after hero */}
 
       {/* Final CTA */}
       <section className="py-32 relative overflow-hidden">

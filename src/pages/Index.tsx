@@ -16,7 +16,14 @@ import { FAQSection } from "@/components/sections/FAQSection";
 import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
 import { ServicesHubModern } from "@/components/dashboard/ServicesHubModern";
 
+import { useEffect } from "react";
+
 const Index = () => {
+  // Scroll to top on page load
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   const scrollToSection = (section: string) => {
     if (section === "hero") {
       window.scrollTo({ top: 0, behavior: "smooth" });
