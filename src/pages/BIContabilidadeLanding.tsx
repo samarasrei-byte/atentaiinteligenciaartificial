@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
+import { BIPricingSection } from '@/components/bi/BIPricingSection';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -759,6 +760,9 @@ const BIContabilidadeLanding = () => {
           </div>
         </div>
       </section>
+
+      {/* BI Pricing Plans Section */}
+      <BIPricingSection />
 
       {/* Final CTA */}
       <section className="py-32 relative overflow-hidden">
