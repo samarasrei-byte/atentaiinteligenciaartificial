@@ -93,6 +93,7 @@ import CesarBILanding from "./pages/CesarBILanding";
 import ChatGuilherme from "./pages/ChatGuilherme";
 import ChatCesar from "./pages/ChatCesar";
 import LimpaNomePaymentSuccess from "./pages/LimpaNomePaymentSuccess";
+import LimpaNomeDataCollection from "./pages/LimpaNomeDataCollection";
 import CheckoutPage from "./pages/CheckoutPage";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
 
@@ -149,6 +150,7 @@ const App = () => (
               <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
               <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
               <Route path="/limpa-nome/sucesso" element={<LimpaNomePaymentSuccess />} />
+              <Route path="/limpa-nome/dados" element={<LimpaNomeDataCollection />} />
               <Route path="/abertura-empresa" element={<AberturaEmpresa />} />
               <Route path="/modulo-fiscal" element={<ModuloFiscalLanding />} />
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
