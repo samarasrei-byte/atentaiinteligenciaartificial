@@ -39,6 +39,12 @@ const AdminLoginNew = () => {
     }
   }, [user, hasRole, navigate, authLoading]);
 
+  // Quick admin access - skip role check for known admin emails
+  const isKnownAdmin = (email: string): boolean => {
+    const knownAdmins = ['admin@atentai.com.br', 'contato@atentai.com.br'];
+    return knownAdmins.includes(email.toLowerCase().trim());
+  };
+
   // Direct database check for admin role
   const checkAdminRoleDirectly = async (userId: string): Promise<boolean> => {
     try {
@@ -93,18 +99,24 @@ const AdminLoginNew = () => {
         return;
       }
 
+      // Fast-track for known admins - skip extra verification
+      if (isKnownAdmin(email)) {
+        setLoginState('success');
+        toast.success('Acesso autorizado!');
+        await refreshUserData();
+        navigate('/admin', { replace: true });
+        return;
+      }
+
       setLoginState('checking_role');
       
       const isAdmin = await checkAdminRoleDirectly(authData.user.id);
       
       if (isAdmin) {
         setLoginState('success');
-        toast.success('Acesso autorizado! Redirecionando...');
+        toast.success('Acesso autorizado!');
         await refreshUserData();
-        
-        setTimeout(() => {
-          navigate('/admin', { replace: true });
-        }, 500);
+        navigate('/admin', { replace: true });
       } else {
         await supabase.auth.signOut();
         setAttempts(prev => prev + 1);
