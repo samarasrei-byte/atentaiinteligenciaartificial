@@ -11,29 +11,55 @@ interface PlanData {
 }
 
 interface PlanDistributionChartProps {
-  clarityCount: number;
-  controlCount: number;
-  performanceCount: number;
+  simulatorCount?: number;
+  autonomoCount?: number;
+  premiumCount?: number;
+  contadorCount?: number;
+  // Legacy props for backwards compatibility
+  clarityCount?: number;
+  controlCount?: number;
+  performanceCount?: number;
 }
 
-export function PlanDistributionChart({ clarityCount, controlCount, performanceCount }: PlanDistributionChartProps) {
+export function PlanDistributionChart({ 
+  simulatorCount = 0, 
+  autonomoCount = 0, 
+  premiumCount = 0, 
+  contadorCount = 0,
+  // Map legacy props if provided
+  clarityCount = 0,
+  controlCount = 0,
+  performanceCount = 0,
+}: PlanDistributionChartProps) {
+  // Use legacy props if provided and new props are 0
+  const actualSimulator = simulatorCount || clarityCount;
+  const actualAutonomo = autonomoCount;
+  const actualPremium = premiumCount || controlCount;
+  const actualContador = contadorCount || performanceCount;
+
   const data: PlanData[] = [
     { 
-      name: 'Atentai Clarity', 
-      value: clarityCount, 
-      revenue: clarityCount * STRIPE_PLANS.clarity.price,
+      name: STRIPE_PLANS.simulator.name, 
+      value: actualSimulator, 
+      revenue: actualSimulator * STRIPE_PLANS.simulator.price,
       color: 'hsl(var(--info))' 
     },
     { 
-      name: 'Atentai Control', 
-      value: controlCount, 
-      revenue: controlCount * STRIPE_PLANS.control.price,
+      name: STRIPE_PLANS.autonomo.name, 
+      value: actualAutonomo, 
+      revenue: actualAutonomo * STRIPE_PLANS.autonomo.price,
+      color: 'hsl(142 76% 36%)' 
+    },
+    { 
+      name: STRIPE_PLANS.premium.name, 
+      value: actualPremium, 
+      revenue: actualPremium * STRIPE_PLANS.premium.price,
       color: 'hsl(var(--primary))' 
     },
     { 
-      name: 'Atentai Performance', 
-      value: performanceCount, 
-      revenue: performanceCount * STRIPE_PLANS.performance.price,
+      name: STRIPE_PLANS.contador.name, 
+      value: actualContador, 
+      revenue: actualContador * STRIPE_PLANS.contador.price,
       color: 'hsl(var(--accent))' 
     },
   ].filter(d => d.value > 0);
@@ -113,7 +139,7 @@ export function PlanDistributionChart({ clarityCount, controlCount, performanceC
         </div>
         
         {/* Detalhes dos Planos */}
-        <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-border">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-4 pt-4 border-t border-border">
           {data.map((plan) => (
             <div key={plan.name} className="text-center">
               <div 
@@ -121,7 +147,7 @@ export function PlanDistributionChart({ clarityCount, controlCount, performanceC
                 style={{ backgroundColor: plan.color }}
               />
               <p className="text-lg font-bold text-foreground">{plan.value}</p>
-              <p className="text-xs text-muted-foreground">{plan.name}</p>
+              <p className="text-xs text-muted-foreground truncate">{plan.name}</p>
             </div>
           ))}
         </div>

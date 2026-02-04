@@ -119,30 +119,39 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
 };
 
 const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
-  clarity: {
-    type: 'clarity',
-    name: STRIPE_PLANS.clarity.name,
-    description: STRIPE_PLANS.clarity.description,
-    priceCents: STRIPE_PLANS.clarity.price,
-    features: [...STRIPE_PLANS.clarity.features],
+  simulator: {
+    type: 'simulator',
+    name: STRIPE_PLANS.simulator.name,
+    description: STRIPE_PLANS.simulator.description,
+    priceCents: STRIPE_PLANS.simulator.price,
+    features: [...STRIPE_PLANS.simulator.features],
     icon: Zap,
     gradient: 'from-blue-500 to-cyan-500',
   },
-  control: {
-    type: 'control',
-    name: STRIPE_PLANS.control.name,
-    description: STRIPE_PLANS.control.description,
-    priceCents: STRIPE_PLANS.control.price,
-    features: [...STRIPE_PLANS.control.features],
+  autonomo: {
+    type: 'autonomo',
+    name: STRIPE_PLANS.autonomo.name,
+    description: STRIPE_PLANS.autonomo.description,
+    priceCents: STRIPE_PLANS.autonomo.price,
+    features: [...STRIPE_PLANS.autonomo.features],
+    icon: Brain,
+    gradient: 'from-green-500 to-emerald-500',
+  },
+  premium: {
+    type: 'premium',
+    name: STRIPE_PLANS.premium.name,
+    description: STRIPE_PLANS.premium.description,
+    priceCents: STRIPE_PLANS.premium.price,
+    features: [...STRIPE_PLANS.premium.features],
     icon: Star,
     gradient: 'from-primary to-primary/70',
   },
-  performance: {
-    type: 'performance',
-    name: STRIPE_PLANS.performance.name,
-    description: STRIPE_PLANS.performance.description,
-    priceCents: STRIPE_PLANS.performance.price,
-    features: [...STRIPE_PLANS.performance.features],
+  contador: {
+    type: 'contador',
+    name: STRIPE_PLANS.contador.name,
+    description: STRIPE_PLANS.contador.description,
+    priceCents: STRIPE_PLANS.contador.price,
+    features: [...STRIPE_PLANS.contador.features],
     icon: Crown,
     gradient: 'from-accent to-orange-500',
   },

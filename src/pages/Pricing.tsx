@@ -145,23 +145,26 @@ const Pricing = () => {
     );
   }
 
-  // Filter plans based on feature flags
-  const orderedPlans: PlanType[] = (['clarity', 'control', 'performance'] as PlanType[]);
+  const orderedPlans: PlanType[] = isContadorEnabled() 
+    ? ['simulator', 'autonomo', 'premium', 'contador']
+    : ['simulator', 'autonomo', 'premium'];
 
   const getIcon = (key: PlanType) => {
     switch (key) {
-      case 'clarity': return Calculator;
-      case 'control': return Brain;
-      case 'performance': return Star;
+      case 'simulator': return Calculator;
+      case 'autonomo': return Users;
+      case 'premium': return Brain;
+      case 'contador': return Star;
       default: return Brain;
     }
   };
 
   const getGradient = (key: PlanType) => {
     switch (key) {
-      case 'clarity': return 'from-blue-500 to-cyan-500';
-      case 'control': return 'from-primary to-primary/70';
-      case 'performance': return 'from-accent to-orange-500';
+      case 'simulator': return 'from-blue-500 to-cyan-500';
+      case 'autonomo': return 'from-green-500 to-emerald-500';
+      case 'premium': return 'from-primary to-primary/70';
+      case 'contador': return 'from-accent to-orange-500';
       default: return 'from-primary to-primary/70';
     }
   };
@@ -331,7 +334,7 @@ const Pricing = () => {
                         ? 'bg-green-600 cursor-not-allowed' 
                         : isHighlight
                           ? 'bg-gradient-to-r from-accent to-orange-500 hover:from-accent/90 hover:to-orange-600'
-                          : key === 'clarity' 
+                          : key === 'simulator' 
                             ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600' 
                             : 'bg-primary hover:bg-primary/90'
                     }`}

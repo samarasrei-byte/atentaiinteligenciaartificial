@@ -113,17 +113,22 @@ export const AdminSubscriptionsPanel: React.FC<AdminSubscriptionsPanelProps> = (
 }) => {
   const currentPlans = [
     {
-      ...STRIPE_PLANS.clarity,
+      ...STRIPE_PLANS.simulator,
       icon: Zap,
       gradient: 'from-blue-500 to-cyan-500',
     },
     {
-      ...STRIPE_PLANS.control,
+      ...STRIPE_PLANS.autonomo,
+      icon: Briefcase,
+      gradient: 'from-green-500 to-emerald-500',
+    },
+    {
+      ...STRIPE_PLANS.premium,
       icon: Crown,
       gradient: 'from-primary to-primary/70',
     },
     {
-      ...STRIPE_PLANS.performance,
+      ...STRIPE_PLANS.contador,
       icon: Building2,
       gradient: 'from-accent to-orange-500',
     },

@@ -217,8 +217,8 @@ export function AISection() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const isPremium = subscription.subscribed && (subscription.plan === 'control' || subscription.plan === 'performance');
-  const plan = STRIPE_PLANS.control;
+  const isPremium = subscription.subscribed && (subscription.plan === 'premium' || subscription.plan === 'contador');
+  const plan = STRIPE_PLANS.premium;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

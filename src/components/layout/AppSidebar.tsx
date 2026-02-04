@@ -303,7 +303,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   const openSubscriptionModal = () => {
     // Default to control plan
-    setSelectedPlanType('control');
+    setSelectedPlanType('premium');
     setSelectedServiceKey(null);
     setUpgradeType('subscription');
     setUpgradeModalOpen(true);

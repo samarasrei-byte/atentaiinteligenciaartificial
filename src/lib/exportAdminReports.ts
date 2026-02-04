@@ -118,13 +118,13 @@ export function exportAdminReportToExcel(data: AdminReportData): void {
     [''],
     ['DISTRIBUIÇÃO DE PLANOS'],
     ['Plano', 'Quantidade', 'Receita Mensal'],
-    ['Atentai Clarity', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * STRIPE_PLANS.clarity.price)],
-    ['Atentai Control', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * STRIPE_PLANS.control.price)],
-    ['Atentai Performance', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * STRIPE_PLANS.performance.price)],
+    ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price)],
+    ['Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * STRIPE_PLANS.premium.price)],
+    ['Contador', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)],
     ['Total Assinaturas', data.stats.totalSubscriptions, formatCurrency(
-      (data.stats.simulatorPlanCount * STRIPE_PLANS.clarity.price) + 
-      (data.stats.premiumPlanCount * STRIPE_PLANS.control.price) + 
-      (data.stats.contadorPlanCount * STRIPE_PLANS.performance.price)
+      (data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price) + 
+      (data.stats.premiumPlanCount * STRIPE_PLANS.premium.price) + 
+      (data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)
     )],
     [''],
     ['ASSINATURAS'],

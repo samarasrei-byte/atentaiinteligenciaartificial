@@ -1,7 +1,13 @@
 /**
- * STRIPE CONFIGURATION - Atentai Commercial Model
+ * STRIPE CONFIGURATION - Dual Plan System
  * 
- * OFFICIAL SUBSCRIPTION PLANS (Updated 2026-02-04):
+ * PLATFORM SUBSCRIPTION PLANS (Legacy - Used across the platform):
+ * - Simulador: R$ 29,90/mês - Acesso ao simulador tributário
+ * - Autônomo: R$ 49,90/mês - Para profissionais autônomos
+ * - Premium: R$ 97,00/mês - Recursos completos
+ * - Contador: R$ 197,00/mês - Para contadores
+ * 
+ * BI PLANS (Atentai - Used only in /bi-contabilidade):
  * - Atentai Clarity: R$ 1.497/mês - BI de entrada com clareza financeira
  * - Atentai Control: R$ 3.497/mês - BI com controle, previsão e alertas
  * - Atentai Performance: R$ 8.000+/mês - BI estratégico com integração ERP/CRM
@@ -17,8 +23,87 @@
  * - BI+ Contabilidade: SOB CONSULTA
  */
 
-// Stripe plan configuration - Atentai Commercial Model
+// ============================================================
+// PLATFORM PLANS - Used across the entire platform
+// ============================================================
 export const STRIPE_PLANS = {
+  simulator: {
+    name: 'Simulador Tributário',
+    priceId: 'price_simulator_monthly',
+    productId: 'prod_simulator',
+    price: 2990, // cents (R$ 29,90)
+    description: 'Acesso completo ao simulador tributário',
+    tagline: 'Essencial',
+    features: [
+      'Simulador tributário completo',
+      'Comparação de regimes',
+      'Exportação em PDF',
+      '5 perguntas à IA por dia',
+    ],
+    tier: 1,
+    color: 'from-blue-500 to-cyan-500',
+  },
+  autonomo: {
+    name: 'Plano Autônomo',
+    priceId: 'price_autonomo_monthly',
+    productId: 'prod_autonomo',
+    price: 4990, // cents (R$ 49,90)
+    description: 'Para profissionais autônomos',
+    tagline: 'Popular',
+    features: [
+      'Tudo do Simulador +',
+      'Dashboard financeiro',
+      'Metas financeiras',
+      '10 perguntas à IA por dia',
+      'Comparador PF vs PJ',
+    ],
+    tier: 2,
+    color: 'from-green-500 to-emerald-500',
+    popular: true,
+  },
+  premium: {
+    name: 'AtentAI Premium',
+    priceId: 'price_premium_monthly',
+    productId: 'prod_premium',
+    price: 9700, // cents (R$ 97,00)
+    description: 'Recursos completos para empresas',
+    tagline: 'Completo',
+    features: [
+      'Tudo do Autônomo +',
+      'IA ilimitada',
+      'Simulador de locação',
+      'Exportação Excel',
+      'Suporte prioritário',
+    ],
+    tier: 3,
+    color: 'from-primary to-primary/70',
+  },
+  contador: {
+    name: 'Contador Premium Plus',
+    priceId: 'price_contador_monthly',
+    productId: 'prod_contador',
+    price: 19700, // cents (R$ 197,00)
+    description: 'Para contadores e escritórios',
+    tagline: 'Profissional',
+    features: [
+      'Tudo do Premium +',
+      'Painel de clientes',
+      'Consultorias mensais',
+      'API de integração',
+      'White label',
+    ],
+    tier: 4,
+    color: 'from-accent to-orange-500',
+    highlight: true,
+  },
+} as const;
+
+export type PlanType = keyof typeof STRIPE_PLANS;
+
+// ============================================================
+// BI PLANS - Used ONLY in /bi-contabilidade module
+// ============================================================
+export const BI_PLANS = {
   clarity: {
     name: 'Atentai Clarity',
     priceId: 'price_1Sx9Le3MU3lG84GwAqYap5Vo',
@@ -81,18 +166,50 @@ export const STRIPE_PLANS = {
   },
 } as const;
 
-// Legacy plan mapping (for backwards compatibility during migration)
-export const LEGACY_PLAN_MAPPING: Record<string, keyof typeof STRIPE_PLANS> = {
-  'simulator': 'clarity',
-  'autonomo': 'clarity',
-  'premium': 'control',
-  'contador': 'performance',
-};
+export type BIPlanType = keyof typeof BI_PLANS;
 
-export type PlanType = keyof typeof STRIPE_PLANS;
+// ============================================================
+// AI LIMITS - Based on platform plans
+// ============================================================
+export const AI_LIMITS = {
+  simulator: {
+    dailyQuestions: 5,
+    mode: 'basic',
+  },
+  autonomo: {
+    dailyQuestions: 10,
+    mode: 'educational',
+  },
+  premium: {
+    dailyQuestions: 50,
+    mode: 'analytical',
+  },
+  contador: {
+    dailyQuestions: Infinity,
+    mode: 'strategic',
+  },
+} as const;
 
-// Legacy types for backwards compatibility
-export type LegacyPlanType = 'simulator' | 'autonomo' | 'premium' | 'contador';
+// BI-specific AI limits
+export const BI_AI_LIMITS = {
+  clarity: {
+    dailyQuestions: 10,
+    mode: 'educational', // Explicativa e educativa
+  },
+  control: {
+    dailyQuestions: 50,
+    mode: 'analytical', // Analítica e orientada à ação
+  },
+  performance: {
+    dailyQuestions: Infinity,
+    mode: 'strategic', // Executiva e estratégica
+  },
+} as const;
+
+// Legacy constants for backwards compatibility
+export const DAILY_QUESTION_LIMIT = 5;
+export const PREMIUM_DAILY_LIMIT = 50;
+export const CONTADOR_DAILY_LIMIT = Infinity;
 
 /**
  * Service pricing - FIXED prices (no subscriber discounts)
@@ -174,22 +291,6 @@ export const PLATFORM_COMMISSION = 0.15; // 15%
 
 export type ServiceType = keyof typeof SUBSCRIBER_DISCOUNTS;
 
-// AI access by tier
-export const AI_LIMITS = {
-  clarity: {
-    dailyQuestions: 10,
-    mode: 'educational', // Explicativa e educativa
-  },
-  control: {
-    dailyQuestions: 50,
-    mode: 'analytical', // Analítica e orientada à ação
-  },
-  performance: {
-    dailyQuestions: Infinity,
-    mode: 'strategic', // Executiva e estratégica
-  },
-} as const;
-
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat('pt-BR', {
     style: 'currency',
@@ -233,8 +334,32 @@ export function getPlanByProductId(productId: string): PlanType | null {
   return null;
 }
 
+export function getBIPlanByPriceId(priceId: string): BIPlanType | null {
+  for (const [key, plan] of Object.entries(BI_PLANS)) {
+    if (plan.priceId === priceId) {
+      return key as BIPlanType;
+    }
+  }
+  return null;
+}
+
+export function getBIPlanByProductId(productId: string): BIPlanType | null {
+  for (const [key, plan] of Object.entries(BI_PLANS)) {
+    if (plan.productId === productId) {
+      return key as BIPlanType;
+    }
+  }
+  return null;
+}
+
 // Check if user's plan tier is sufficient for a feature
 export function hasPlanTier(currentPlan: PlanType | null, requiredPlan: PlanType): boolean {
   if (!currentPlan) return false;
   return STRIPE_PLANS[currentPlan].tier >= STRIPE_PLANS[requiredPlan].tier;
+}
+
+// Check if user's BI plan tier is sufficient
+export function hasBIPlanTier(currentPlan: BIPlanType | null, requiredPlan: BIPlanType): boolean {
+  if (!currentPlan) return false;
+  return BI_PLANS[currentPlan].tier >= BI_PLANS[requiredPlan].tier;
 }

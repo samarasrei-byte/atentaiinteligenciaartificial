@@ -123,10 +123,10 @@ const TrialOnboarding = () => {
     
     try {
       const priceId = selectedType === 'contador' 
-        ? STRIPE_PLANS.performance.priceId 
+        ? STRIPE_PLANS.contador.priceId 
         : selectedType === 'autonomo'
-          ? STRIPE_PLANS.clarity.priceId
-          : STRIPE_PLANS.control.priceId;
+          ? STRIPE_PLANS.autonomo.priceId
+          : STRIPE_PLANS.premium.priceId;
 
       const { data, error } = await supabase.functions.invoke('create-trial-checkout', {
         body: {

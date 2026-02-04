@@ -459,27 +459,27 @@ const AdminReports = () => {
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.simulatorPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.simulatorPlanCount * STRIPE_PLANS.clarity.price)}/mês
+                      {formatCurrency(reportData.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price)}/mês
                     </p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-primary/10 to-primary/5 border-primary/20">
                   <CardContent className="pt-6 text-center">
-                    <Badge className="bg-primary mb-4">Control</Badge>
+                    <Badge className="bg-primary mb-4">Premium</Badge>
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.premiumPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.premiumPlanCount * STRIPE_PLANS.control.price)}/mês
+                      {formatCurrency(reportData.stats.premiumPlanCount * STRIPE_PLANS.premium.price)}/mês
                     </p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-accent/10 to-orange-500/10 border-accent/20">
                   <CardContent className="pt-6 text-center">
-                    <Badge className="bg-accent mb-4">Performance</Badge>
+                    <Badge className="bg-accent mb-4">Contador</Badge>
                     <p className="text-4xl font-bold text-foreground">{reportData.stats.contadorPlanCount}</p>
                     <p className="text-sm text-muted-foreground mt-2">Assinaturas ativas</p>
                     <p className="text-success font-medium mt-1">
-                      {formatCurrency(reportData.stats.contadorPlanCount * STRIPE_PLANS.performance.price)}/mês
+                      {formatCurrency(reportData.stats.contadorPlanCount * STRIPE_PLANS.contador.price)}/mês
                     </p>
                   </CardContent>
                 </Card>

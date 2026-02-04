@@ -432,7 +432,7 @@ export function SimulatorSection() {
                             </div>
                             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                               <Sparkles className="w-4 h-4 text-accent" />
-                              <span>A partir de {formatPrice(STRIPE_PLANS.clarity.price)}/mês</span>
+                              <span>A partir de {formatPrice(STRIPE_PLANS.simulator.price)}/mês</span>
                             </div>
                             <Button 
                               variant="accent" 
