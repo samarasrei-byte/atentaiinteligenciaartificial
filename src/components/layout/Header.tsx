@@ -24,7 +24,7 @@ export function Header({ onNavigate }: HeaderProps) {
   const navItems = [
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
     { label: "BI+ Inteligência", icon: Brain, href: "/bi-contabilidade" },
-    { label: "Serviços", icon: Briefcase, href: "/servicos" },
+    { label: "Marketplace", icon: Briefcase, href: "/servicos" },
   ];
 
   /**
