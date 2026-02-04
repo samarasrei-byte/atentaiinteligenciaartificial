@@ -1,20 +1,23 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { DAILY_QUESTION_LIMIT, PREMIUM_DAILY_LIMIT, CONTADOR_DAILY_LIMIT } from '@/lib/stripe';
+import { AI_LIMITS } from '@/lib/stripe';
 
 export function useDailyQuestionLimit() {
   const { user, subscription } = useAuth();
   const [questionsUsed, setQuestionsUsed] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  // Determine limit based on plan
-  const isContador = subscription.subscribed && subscription.plan === 'contador';
-  const isPremium = subscription.subscribed && (subscription.plan === 'premium' || subscription.plan === 'autonomo');
+  // Determine limit based on new plan tiers
+  const isPerformance = subscription.subscribed && subscription.plan === 'performance';
+  const isControl = subscription.subscribed && subscription.plan === 'control';
+  const isClarity = subscription.subscribed && subscription.plan === 'clarity';
   
-  const dailyLimit = isContador ? CONTADOR_DAILY_LIMIT : isPremium ? PREMIUM_DAILY_LIMIT : DAILY_QUESTION_LIMIT;
+  const dailyLimit = isPerformance ? AI_LIMITS.performance.dailyQuestions : 
+                     isControl ? AI_LIMITS.control.dailyQuestions : 
+                     isClarity ? AI_LIMITS.clarity.dailyQuestions : 3;
   const questionsRemaining = Math.max(0, dailyLimit - questionsUsed);
-  const canAsk = questionsRemaining > 0 || isContador;
+  const canAsk = questionsRemaining > 0 || isPerformance;
 
   const fetchUsage = useCallback(async () => {
     if (!user) {
@@ -43,7 +46,7 @@ export function useDailyQuestionLimit() {
   }, [user]);
 
   const incrementUsage = useCallback(async () => {
-    if (!user || isContador) return true;
+    if (!user || isPerformance) return true;
 
     try {
       const { data, error } = await supabase.rpc('increment_daily_questions', {
@@ -61,7 +64,7 @@ export function useDailyQuestionLimit() {
       console.error('Error incrementing usage:', error);
       return false;
     }
-  }, [user, isContador, questionsUsed]);
+  }, [user, isPerformance, questionsUsed]);
 
   useEffect(() => {
     fetchUsage();
@@ -71,8 +74,8 @@ export function useDailyQuestionLimit() {
     questionsUsed,
     questionsRemaining,
     canAsk,
-    isPremium,
-    isContador,
+    isPremium: isControl || isPerformance,
+    isContador: isPerformance,
     loading,
     incrementUsage,
     refreshUsage: fetchUsage,

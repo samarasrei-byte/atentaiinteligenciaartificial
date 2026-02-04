@@ -43,7 +43,7 @@ export const UnifiedSettingsPage: React.FC = () => {
   // Subscription state
   const [isLoading, setIsLoading] = useState(false);
   const [upgradeModalOpen, setUpgradeModalOpen] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<PlanType>('premium');
+  const [selectedPlan, setSelectedPlan] = useState<PlanType>('control');
 
   // Team state
   const [teamDialogOpen, setTeamDialogOpen] = useState(false);
@@ -339,12 +339,12 @@ export const UnifiedSettingsPage: React.FC = () => {
                   {isLoading ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <CreditCard className="h-4 w-4 mr-2" />}
                   Gerenciar Pagamento
                 </Button>
-                <Button onClick={() => handleUpgrade('premium')} variant="default">
+                <Button onClick={() => handleUpgrade('control')} variant="default">
                   <Sparkles className="h-4 w-4 mr-2" />Fazer Upgrade
                 </Button>
               </>
             ) : (
-              <Button onClick={() => handleUpgrade('premium')} className="bg-primary">
+              <Button onClick={() => handleUpgrade('control')} className="bg-primary">
                 <Crown className="h-4 w-4 mr-2" />Assinar Agora
               </Button>
             )}
@@ -358,7 +358,7 @@ export const UnifiedSettingsPage: React.FC = () => {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                {(['simulator', 'autonomo', 'premium'] as PlanType[]).map((plan) => {
+                {(['clarity', 'control', 'performance'] as PlanType[]).map((plan) => {
                   const planInfo = STRIPE_PLANS[plan];
                   const isCurrentPlan = currentPlan === plan;
                   return (

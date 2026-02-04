@@ -222,31 +222,31 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Simulator plan features */}
+              {/* Clarity plan features */}
               <Route path="/simulator" element={
-                <ProtectedRoute requiredPlan="simulator">
+                <ProtectedRoute requiredPlan="clarity">
                   <Simulator />
                 </ProtectedRoute>
               } />
               
-              {/* Premium plan features */}
+              {/* Control plan features */}
               <Route path="/ai-chat" element={
-                <ProtectedRoute requiredPlan="premium">
+                <ProtectedRoute requiredPlan="control">
                   <AIChat />
                 </ProtectedRoute>
               } />
               <Route path="/locacao" element={
-                <ProtectedRoute requiredPlan="premium">
+                <ProtectedRoute requiredPlan="control">
                   <LocacaoSimulator />
                 </ProtectedRoute>
               } />
               <Route path="/regime-comparator" element={
-                <ProtectedRoute requiredPlan="premium">
+                <ProtectedRoute requiredPlan="control">
                   <RegimeComparator />
                 </ProtectedRoute>
               } />
               <Route path="/contadores" element={
-                <ProtectedRoute requiredPlan="premium">
+                <ProtectedRoute requiredPlan="control">
                   <Contadores />
                 </ProtectedRoute>
               } />
