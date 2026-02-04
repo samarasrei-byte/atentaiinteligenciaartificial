@@ -29,17 +29,15 @@ import {
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 
 const planIcons: Record<PlanType, React.ElementType> = {
-  simulator: Calculator,
-  autonomo: User,
-  premium: Brain,
-  contador: Users,
+  clarity: Calculator,
+  control: Brain,
+  performance: Users,
 };
 
 const planColors: Record<PlanType, string> = {
-  simulator: 'from-blue-500 to-cyan-500',
-  autonomo: 'from-emerald-500 to-teal-500',
-  premium: 'from-primary to-primary/70',
-  contador: 'from-accent to-orange-500',
+  clarity: 'from-blue-500 to-cyan-500',
+  control: 'from-primary to-primary/70',
+  performance: 'from-accent to-orange-500',
 };
 
 const serviceIcons: Record<string, React.ElementType> = {
@@ -61,25 +59,21 @@ const serviceColors: Record<string, string> = {
 };
 
 const nextSteps: Record<PlanType, { icon: React.ElementType; title: string; description: string }[]> = {
-  simulator: [
+  clarity: [
     { icon: Calculator, title: 'Acesse o Simulador', description: 'Simule o impacto tributário da sua empresa' },
     { icon: Calendar, title: 'Veja a Timeline', description: 'Acompanhe a transição 2026-2033' },
+    { icon: Brain, title: 'Converse com a IA', description: 'IA educativa para clareza financeira' },
   ],
-  autonomo: [
-    { icon: Calculator, title: 'Simulador PF vs PJ', description: 'Compare regimes tributários' },
-    { icon: Brain, title: 'Converse com a IA', description: 'Tire dúvidas sobre sua situação fiscal' },
-    { icon: User, title: 'Complete seu Perfil', description: 'Configure suas informações profissionais' },
-  ],
-  premium: [
-    { icon: Brain, title: 'Converse com a IA', description: 'Tire suas dúvidas sobre tributação' },
+  control: [
+    { icon: Brain, title: 'Converse com a IA', description: 'IA analítica orientada à ação' },
     { icon: Calculator, title: 'Use o Simulador', description: 'Compare cenários tributários' },
-    { icon: Sparkles, title: 'Ative o Piloto Automático', description: 'Otimize sua estrutura fiscal automaticamente' },
+    { icon: Sparkles, title: 'Alertas Inteligentes', description: 'Receba notificações de oportunidades' },
   ],
-  contador: [
-    { icon: Users, title: 'Agende uma Consulta', description: 'Fale com um contador especializado' },
-    { icon: Brain, title: 'Use a IA Ilimitada', description: 'Tire todas as suas dúvidas' },
-    { icon: Sparkles, title: 'Configure Alertas', description: 'Receba notificações de oportunidades fiscais' },
-    { icon: Mail, title: 'Suporte Prioritário', description: 'Atendimento em até 24h' },
+  performance: [
+    { icon: Users, title: 'Suporte Estratégico', description: 'IA como apoio estratégico sênior' },
+    { icon: Brain, title: 'IA Ilimitada', description: 'Tire todas as suas dúvidas' },
+    { icon: Sparkles, title: 'Integração ERP/CRM', description: 'Conecte seus sistemas' },
+    { icon: Mail, title: 'Suporte Prioritário', description: 'Atendimento dedicado' },
   ],
 };
 

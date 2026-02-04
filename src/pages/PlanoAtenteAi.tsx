@@ -18,7 +18,7 @@ import {
   Infinity
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { STRIPE_PLANS, formatPrice, DAILY_QUESTION_LIMIT } from '@/lib/stripe';
+import { STRIPE_PLANS, formatPrice, AI_LIMITS } from '@/lib/stripe';
 
 const PlanoAtenteAi = () => {
   const navigate = useNavigate();
@@ -26,8 +26,8 @@ const PlanoAtenteAi = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const plan = STRIPE_PLANS.premium;
-  const isCurrentPlan = subscription.plan === 'premium';
+  const plan = STRIPE_PLANS.control;
+  const isCurrentPlan = subscription.plan === 'control';
 
   const handleSubscribe = async () => {
     if (!user) {
@@ -97,7 +97,7 @@ const PlanoAtenteAi = () => {
   ];
 
   const comparisons = [
-    { feature: 'Perguntas por dia', free: `${DAILY_QUESTION_LIMIT} perguntas`, premium: 'Ilimitadas' },
+    { feature: 'Perguntas por dia', free: `${AI_LIMITS.clarity.dailyQuestions} perguntas`, premium: `${AI_LIMITS.control.dailyQuestions}+` },
     { feature: 'Histórico de conversas', free: 'Limitado', premium: 'Completo' },
     { feature: 'Respostas detalhadas', free: 'Básicas', premium: 'Avançadas' },
     { feature: 'Suporte', free: 'Comunidade', premium: 'Prioritário' },
