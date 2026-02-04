@@ -143,6 +143,7 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
   const { user, session, subscription, profile } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [lastClickTime, setLastClickTime] = useState(0);
 
   const config = SERVICE_CONFIGS[serviceKey];
   if (!config) return null;
@@ -162,8 +163,31 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
   }
 
   const handleAction = async () => {
+    // DEBOUNCE: Prevent double-click (2 second cooldown)
+    const now = Date.now();
+    if (now - lastClickTime < 2000) {
+      console.log('[ServiceCheckout] Debounced duplicate click');
+      return;
+    }
+    setLastClickTime(now);
+
+    // Prevent duplicate submissions
+    if (isLoading) {
+      console.log('[ServiceCheckout] Already loading, ignoring');
+      return;
+    }
+
+    // AUTH VALIDATION: User must be logged in before checkout
     if (!user || !session) {
       toast.error('Você precisa estar logado para continuar.');
+      navigate('/auth?redirect=' + encodeURIComponent(window.location.pathname));
+      onClose();
+      return;
+    }
+
+    // EMAIL VALIDATION: Ensure user has email
+    if (!user.email) {
+      toast.error('Email não encontrado. Por favor, complete seu cadastro.');
       return;
     }
 
@@ -253,7 +277,7 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] md:max-h-[85vh] overflow-y-auto w-[95vw] sm:w-full mx-auto">
         {/* Header with gradient */}
         <div className={`bg-gradient-to-br ${config.gradient} p-6 text-white relative`}>
           <button

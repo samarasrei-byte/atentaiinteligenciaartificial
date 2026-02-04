@@ -16,6 +16,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { STRIPE_PLANS, SUBSCRIBER_DISCOUNTS, formatPrice, PlanType, ServiceType } from '@/lib/stripe';
 import { EmbeddedCheckoutForm } from './EmbeddedCheckoutForm';
+import { toast } from 'sonner';
 
 type UpgradeType = 'subscription' | 'service';
 type CheckoutMode = 'preview' | 'payment';
@@ -174,8 +175,10 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   onSuccess,
 }) => {
   const navigate = useNavigate();
-  const { subscription } = useAuth();
+  const { subscription, user, session } = useAuth();
   const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>('preview');
+  const [lastClickTime, setLastClickTime] = useState(0);
+  const [isNavigating, setIsNavigating] = useState(false);
 
   const serviceConfig = serviceKey ? SERVICE_CONFIGS[serviceKey] : null;
   const planConfig = planType ? PLAN_CONFIGS[planType] : null;
@@ -203,6 +206,28 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
    * RULE: Inside panels, Fiscal/BI → chat tab | Limpa Nome → checkout
    */
   const handleStartPayment = () => {
+    // DEBOUNCE: Prevent double-click (2 second cooldown)
+    const now = Date.now();
+    if (now - lastClickTime < 2000) {
+      console.log('[InPanelUpgrade] Debounced duplicate click');
+      return;
+    }
+    setLastClickTime(now);
+
+    // Prevent navigation if already navigating
+    if (isNavigating) {
+      console.log('[InPanelUpgrade] Already navigating, ignoring');
+      return;
+    }
+
+    // AUTH VALIDATION: User must be logged in
+    if (!user || !session) {
+      toast.error('Você precisa estar logado para continuar.');
+      navigate('/auth?redirect=' + encodeURIComponent(window.location.pathname));
+      onClose();
+      return;
+    }
+
     const isPanelContext = window.location.pathname.includes('/autonomo') || 
                            window.location.pathname.includes('/empresa') ||
                            window.location.pathname.includes('/dashboard');
@@ -211,6 +236,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
     if (upgradeType === 'service' && isPanelContext && (serviceKey === 'analise-fiscal' || serviceKey === 'bi-contabilidade')) {
       const tabId = serviceKey === 'bi-contabilidade' ? 'chat-bi' : 'chat-fiscal';
       console.log(`[InPanelModal ROUTING] ${serviceKey} → ?tab=${tabId}`);
+      setIsNavigating(true);
       onClose();
       navigate({ search: `?tab=${tabId}` });
       return;
@@ -219,6 +245,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
     // RULE 2: Limpa Nome or external services → Use onboardingRoute (checkout)
     if (upgradeType === 'service' && serviceConfig?.onboardingRoute) {
       console.log(`[InPanelModal ROUTING] ${serviceKey} → ${serviceConfig.onboardingRoute}`);
+      setIsNavigating(true);
       onClose();
       navigate(serviceConfig.onboardingRoute);
       return;
@@ -249,7 +276,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] md:max-h-[85vh] overflow-y-auto w-[95vw] sm:w-full mx-auto">
         {/* Header with gradient */}
         <div className={`bg-gradient-to-br ${config.gradient} p-6 text-white relative`}>
           <button

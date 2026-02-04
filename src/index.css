@@ -243,6 +243,32 @@
   .onboarding-card {
     @apply w-full max-w-xl mx-auto;
   }
+
+  /* Checkout Modal - Mobile Optimizations */
+  .checkout-modal-content {
+    @apply w-[95vw] sm:w-full max-h-[90vh] md:max-h-[85vh] overflow-y-auto;
+  }
+
+  /* Stripe Elements responsive adjustments */
+  .stripe-payment-element {
+    @apply rounded-lg border bg-muted/50 p-3 sm:p-4;
+  }
+
+  /* Payment button states */
+  .payment-button {
+    @apply h-12 sm:h-14 text-base sm:text-lg transition-all;
+  }
+
+  .payment-button:disabled {
+    @apply opacity-70 cursor-not-allowed;
+  }
+
+  /* Safe area support for modals on mobile */
+  @supports (padding: env(safe-area-inset-bottom)) {
+    .checkout-modal-content {
+      padding-bottom: env(safe-area-inset-bottom, 1rem);
+    }
+  }
 }
 
 @layer utilities {
