@@ -35,8 +35,8 @@ export function useMonthlyConsultations() {
       try {
         // Get the monthly limit based on plan (performance tier has consultations)
         const plan = subscription.plan;
-        const monthlyLimit = plan === 'performance' 
-          ? (STRIPE_PLANS.performance as any).monthlyConsultations || 3
+        const monthlyLimit = plan === 'contador' 
+          ? (STRIPE_PLANS.contador as any).monthlyConsultations || 3
           : 0;
 
         if (monthlyLimit === 0) {

@@ -26,8 +26,8 @@ const PlanoAtenteAi = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const plan = STRIPE_PLANS.control;
-  const isCurrentPlan = subscription.plan === 'control';
+  const plan = STRIPE_PLANS.premium;
+  const isCurrentPlan = subscription.plan === 'premium';
 
   const handleSubscribe = async () => {
     if (!user) {
@@ -97,7 +97,7 @@ const PlanoAtenteAi = () => {
   ];
 
   const comparisons = [
-    { feature: 'Perguntas por dia', free: `${AI_LIMITS.clarity.dailyQuestions} perguntas`, premium: `${AI_LIMITS.control.dailyQuestions}+` },
+    { feature: 'Perguntas por dia', free: `${AI_LIMITS.autonomo.dailyQuestions} perguntas`, premium: `${AI_LIMITS.premium.dailyQuestions}+` },
     { feature: 'Histórico de conversas', free: 'Limitado', premium: 'Completo' },
     { feature: 'Respostas detalhadas', free: 'Básicas', premium: 'Avançadas' },
     { feature: 'Suporte', free: 'Comunidade', premium: 'Prioritário' },

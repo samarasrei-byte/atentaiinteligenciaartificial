@@ -158,7 +158,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-8 text-white/70 text-sm"
           >
-            A partir de <span className="text-accent font-semibold">{formatPrice(STRIPE_PLANS.clarity.price)}/mês</span>
+            A partir de <span className="text-accent font-semibold">{formatPrice(STRIPE_PLANS.simulator.price)}/mês</span>
           </motion.p>
         </div>
       </motion.div>

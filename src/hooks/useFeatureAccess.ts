@@ -37,17 +37,24 @@ const FREE_SERVICES: FreeService[] = [
   'bi-contabilidade',
 ];
 
-// Feature access matrix by plan - Atentai Commercial Model
+// Feature access matrix by plan - Platform plans
 const featuresByPlan: Record<PlanType, Feature[]> = {
-  clarity: [
+  simulator: [
+    'simulator',
+    'pdf-export',
+    'timeline-2026-2033',
+    'glossary',
+  ],
+  autonomo: [
     'simulator',
     'ai-chat',
     'pdf-export',
     'timeline-2026-2033',
-    'bi-dashboard',
+    'pf-pj-calculator',
     'glossary',
+    'bi-dashboard',
   ],
-  control: [
+  premium: [
     'simulator',
     'ai-chat',
     'ai-chat-unlimited',
@@ -63,7 +70,7 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
     'forecast',
     'alerts',
   ],
-  performance: [
+  contador: [
     'simulator',
     'ai-chat',
     'ai-chat-unlimited',
@@ -87,9 +94,10 @@ const featuresByPlan: Record<PlanType, Feature[]> = {
 
 // Plan hierarchy for comparison
 const planHierarchy: Record<PlanType, number> = {
-  clarity: 1,
-  control: 2,
-  performance: 3,
+  simulator: 1,
+  autonomo: 2,
+  premium: 3,
+  contador: 4,
 };
 
 export function useFeatureAccess() {
@@ -124,7 +132,7 @@ export function useFeatureAccess() {
   };
 
   const getRequiredPlan = (feature: Feature): PlanType | null => {
-    for (const plan of ['clarity', 'control', 'performance'] as PlanType[]) {
+    for (const plan of ['simulator', 'autonomo', 'premium', 'contador'] as PlanType[]) {
       if (featuresByPlan[plan].includes(feature)) {
         return plan;
       }
@@ -136,9 +144,9 @@ export function useFeatureAccess() {
   
   // Get AI limits based on plan
   const getAILimits = () => {
-    if (!subscription.plan) return { dailyQuestions: 0, mode: 'educational' as const };
+    if (!subscription.plan) return { dailyQuestions: 0, mode: 'basic' as const };
     const plan = subscription.plan as PlanType;
-    return AI_LIMITS[plan] || AI_LIMITS.clarity;
+    return AI_LIMITS[plan] || AI_LIMITS.simulator;
   };
 
   return {

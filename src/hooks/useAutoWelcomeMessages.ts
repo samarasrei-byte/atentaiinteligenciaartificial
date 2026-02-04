@@ -36,7 +36,7 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
   const [isLoading, setIsLoading] = useState(false);
 
   // Determine if user has BI access (control/performance plan or specific services)
-  const hasBIAccess = subscription?.plan === 'control' || subscription?.plan === 'performance' || subscription?.subscribed;
+  const hasBIAccess = subscription?.plan === 'premium' || subscription?.plan === 'contador' || subscription?.subscribed;
 
   // Welcome messages content
   const getGuilhermeMessage = (userName: string) => 

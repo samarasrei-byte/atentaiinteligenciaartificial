@@ -179,7 +179,7 @@ export function LegalUpdates({}: Props) {
     setIsLoadingSubscription(true);
     try {
       const { data, error } = await supabase.functions.invoke("create-checkout", {
-        body: { priceId: STRIPE_PLANS.performance.priceId },
+        body: { priceId: STRIPE_PLANS.contador.priceId },
       });
 
       if (error) throw error;
@@ -202,7 +202,7 @@ export function LegalUpdates({}: Props) {
   };
 
   // Check if user already has contador subscription
-  const hasContadorPlan = subscription.subscribed && subscription.plan === "performance";
+  const hasContadorPlan = subscription.subscribed && subscription.plan === "contador";
 
   const filteredUpdates = updates.filter((update) => {
     const matchesSearch =

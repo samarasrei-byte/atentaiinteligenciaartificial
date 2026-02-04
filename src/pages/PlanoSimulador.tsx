@@ -25,8 +25,8 @@ const PlanoSimulador = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const plan = STRIPE_PLANS.clarity;
-  const isCurrentPlan = subscription.plan === 'clarity';
+  const plan = STRIPE_PLANS.simulator;
+  const isCurrentPlan = subscription.plan === 'simulator';
 
   const handleSubscribe = async () => {
     if (!user) {

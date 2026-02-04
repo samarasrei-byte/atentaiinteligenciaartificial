@@ -10,41 +10,52 @@ import {
   ArrowRight, 
   Check, 
   Lock,
-  Target,
-  TrendingUp,
-  Zap,
-  Phone
+  Calculator,
+  Users,
+  Brain,
+  Zap
 } from 'lucide-react';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
-const planOrder: PlanType[] = ['clarity', 'control', 'performance'];
+const planOrder: PlanType[] = isContadorEnabled() 
+  ? ['simulator', 'autonomo', 'premium', 'contador']
+  : ['simulator', 'autonomo', 'premium'];
 
 const planIcons: Record<PlanType, React.ElementType> = {
-  clarity: Target,
-  control: TrendingUp,
-  performance: Crown,
+  simulator: Calculator,
+  autonomo: Users,
+  premium: Crown,
+  contador: Brain,
 };
 
 const planColors: Record<PlanType, string> = {
-  clarity: 'from-blue-500 to-cyan-500',
-  control: 'from-primary to-primary/70',
-  performance: 'from-accent to-orange-500',
+  simulator: 'from-blue-500 to-cyan-500',
+  autonomo: 'from-green-500 to-emerald-500',
+  premium: 'from-primary to-primary/70',
+  contador: 'from-accent to-orange-500',
 };
 
 const upgradeReasons: Record<PlanType, string[]> = {
-  clarity: [],
-  control: [
-    'Real x Orçado e forecast',
-    'Alertas inteligentes e simulações',
-    'IA analítica orientada à ação',
-    'Apoio a decisões táticas',
+  simulator: [],
+  autonomo: [
+    'Dashboard financeiro personalizado',
+    'Metas financeiras',
+    '10 perguntas à IA por dia',
+    'Comparador PF vs PJ',
   ],
-  performance: [
-    'P&L por área, produto ou unidade',
-    'IA como apoio estratégico sênior',
-    'Integração com ERP e CRM',
-    'Planejamento financeiro completo',
+  premium: [
+    'IA ilimitada',
+    'Simulador de locação',
+    'Exportação Excel',
+    'Suporte prioritário',
+  ],
+  contador: [
+    'Painel de clientes',
+    'Consultorias mensais',
+    'API de integração',
+    'White label',
   ],
 };
 
@@ -62,17 +73,12 @@ export function PlanUpgradeCard() {
     : null;
 
   const handleUpgradeClick = (plan: PlanType) => {
-    // Performance is custom pricing
-    if (plan === 'performance') {
-      window.open('https://wa.me/5511999999999?text=Olá! Tenho interesse no plano Atentai Performance.', '_blank');
-      return;
-    }
     setSelectedPlan(plan);
     setUpgradeModalOpen(true);
   };
 
   // If user has the highest plan, show appreciation message
-  if (!nextPlan || subscription.plan === 'performance') {
+  if (!nextPlan || subscription.plan === 'contador') {
     return (
       <Card className="bg-gradient-to-br from-accent/10 to-orange-500/10 border-accent/30">
         <CardContent className="pt-6">
@@ -81,9 +87,9 @@ export function PlanUpgradeCard() {
               <Crown className="h-6 w-6 text-accent" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">Plano Performance Ativo</h3>
+              <h3 className="font-semibold text-foreground">Plano Máximo Ativo</h3>
               <p className="text-sm text-muted-foreground">
-                Você tem acesso a todas as funcionalidades do Atentai!
+                Você tem acesso a todas as funcionalidades!
               </p>
             </div>
           </div>
@@ -95,7 +101,6 @@ export function PlanUpgradeCard() {
   const nextPlanData = STRIPE_PLANS[nextPlan];
   const NextPlanIcon = planIcons[nextPlan];
   const reasons = upgradeReasons[nextPlan];
-  const isCustomPricing = 'customPricing' in nextPlanData && nextPlanData.customPricing;
 
   return (
     <>
@@ -123,14 +128,8 @@ export function PlanUpgradeCard() {
               <p className="text-sm text-muted-foreground">{nextPlanData.description}</p>
             </div>
             <div className="text-right">
-              {isCustomPricing ? (
-                <p className="font-bold text-foreground text-sm">Sob Consulta</p>
-              ) : (
-                <>
-                  <p className="font-bold text-foreground">{formatPrice(nextPlanData.price)}</p>
-                  <p className="text-xs text-muted-foreground">/mês</p>
-                </>
-              )}
+              <p className="font-bold text-foreground">{formatPrice(nextPlanData.price)}</p>
+              <p className="text-xs text-muted-foreground">/mês</p>
             </div>
           </div>
 
@@ -188,17 +187,8 @@ export function PlanUpgradeCard() {
             onClick={() => handleUpgradeClick(nextPlan)} 
             className={`w-full bg-gradient-to-r ${planColors[nextPlan]} hover:opacity-90`}
           >
-            {isCustomPricing ? (
-              <>
-                <Phone className="h-4 w-4 mr-2" />
-                Falar com Especialista
-              </>
-            ) : (
-              <>
-                Fazer upgrade para {nextPlanData.name}
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </>
-            )}
+            Fazer upgrade para {nextPlanData.name}
+            <ArrowRight className="h-4 w-4 ml-2" />
           </Button>
         </CardContent>
       </Card>

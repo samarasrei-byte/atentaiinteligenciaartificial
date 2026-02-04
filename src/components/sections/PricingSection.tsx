@@ -11,13 +11,13 @@ import {
   Crown,
   Loader2,
   Sparkles,
-  Target,
-  TrendingUp,
-  Star,
-  Phone
+  Calculator,
+  Users,
+  Star
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { isContadorEnabled } from '@/lib/featureFlags';
 
 export function PricingSection() {
   const navigate = useNavigate();
@@ -26,12 +26,6 @@ export function PricingSection() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (planKey: PlanType) => {
-    // Performance is custom pricing - redirect to contact
-    if (planKey === 'performance') {
-      window.open('https://wa.me/5511999999999?text=Olá! Tenho interesse no plano Atentai Performance.', '_blank');
-      return;
-    }
-
     if (!user) {
       toast({
         title: 'Faça login primeiro',
@@ -65,13 +59,17 @@ export function PricingSection() {
     }
   };
 
-  const orderedPlans: PlanType[] = ['clarity', 'control', 'performance'];
+  // Filter out contador if not enabled
+  const orderedPlans: PlanType[] = isContadorEnabled() 
+    ? ['simulator', 'autonomo', 'premium', 'contador']
+    : ['simulator', 'autonomo', 'premium'];
 
   const getIcon = (key: PlanType) => {
     switch (key) {
-      case 'clarity': return Target;
-      case 'control': return TrendingUp;
-      case 'performance': return Crown;
+      case 'simulator': return Calculator;
+      case 'autonomo': return Users;
+      case 'premium': return Crown;
+      case 'contador': return Brain;
       default: return Brain;
     }
   };
@@ -89,27 +87,26 @@ export function PricingSection() {
             Planos
           </Badge>
           <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4 px-2">
-            BI Financeiro para Decisão Empresarial
+            Escolha o plano ideal para você
           </h2>
           <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto px-4">
-            IA assistiva + supervisão humana obrigatória para clareza, controle e performance
+            Simulador tributário, IA assistiva e ferramentas para gestão fiscal
           </p>
           
           {subscription.subscribed && subscription.plan && (
             <div className="mt-4 md:mt-6 inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm">
               <Crown className="h-4 w-4 md:h-5 md:w-5" />
-              <span>Plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
+              <span>Plano <strong>{STRIPE_PLANS[subscription.plan as PlanType]?.name}</strong></span>
             </div>
           )}
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
           {orderedPlans.map((key) => {
             const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
             const isHighlight = 'highlight' in plan && plan.highlight;
-            const isCustomPricing = 'customPricing' in plan && plan.customPricing;
             const Icon = getIcon(key);
             
             return (
@@ -123,7 +120,7 @@ export function PricingSection() {
                 {isHighlight && !isCurrentPlan && (
                   <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] md:text-xs">
                     <Star className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
-                    Premium
+                    Profissional
                   </Badge>
                 )}
                 {isPlanPopular && !isCurrentPlan && !isHighlight && (
@@ -156,17 +153,8 @@ export function PricingSection() {
                 </CardHeader>
                 <CardContent className="space-y-4 md:space-y-6 px-4 pb-6">
                   <div className="text-center">
-                    {isCustomPricing ? (
-                      <>
-                        <span className="text-2xl md:text-4xl font-bold text-foreground">Sob Consulta</span>
-                        <p className="text-xs text-muted-foreground mt-1">A partir de R$ 8.000/mês</p>
-                      </>
-                    ) : (
-                      <>
-                        <span className="text-2xl md:text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
-                        <span className="text-muted-foreground text-sm">/mês</span>
-                      </>
-                    )}
+                    <span className="text-2xl md:text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
+                    <span className="text-muted-foreground text-sm">/mês</span>
                   </div>
 
                   <ul className="space-y-2 md:space-y-3">
@@ -194,11 +182,6 @@ export function PricingSection() {
                       </>
                     ) : isCurrentPlan ? (
                       'Plano Atual'
-                    ) : isCustomPricing ? (
-                      <>
-                        <Phone className="h-4 w-4 mr-2" />
-                        Falar com Especialista
-                      </>
                     ) : subscription.subscribed ? (
                       'Trocar Plano'
                     ) : (
@@ -213,7 +196,6 @@ export function PricingSection() {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
-          <p className="mt-2 text-xs">IA é sempre assistiva. Supervisão humana obrigatória em decisões críticas.</p>
         </div>
       </div>
     </section>

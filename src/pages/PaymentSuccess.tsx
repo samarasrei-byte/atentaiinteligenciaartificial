@@ -29,15 +29,17 @@ import {
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 
 const planIcons: Record<PlanType, React.ElementType> = {
-  clarity: Calculator,
-  control: Brain,
-  performance: Users,
+  simulator: Calculator,
+  autonomo: Users,
+  premium: Brain,
+  contador: Crown,
 };
 
 const planColors: Record<PlanType, string> = {
-  clarity: 'from-blue-500 to-cyan-500',
-  control: 'from-primary to-primary/70',
-  performance: 'from-accent to-orange-500',
+  simulator: 'from-blue-500 to-cyan-500',
+  autonomo: 'from-green-500 to-emerald-500',
+  premium: 'from-primary to-primary/70',
+  contador: 'from-accent to-orange-500',
 };
 
 const serviceIcons: Record<string, React.ElementType> = {
@@ -59,20 +61,22 @@ const serviceColors: Record<string, string> = {
 };
 
 const nextSteps: Record<PlanType, { icon: React.ElementType; title: string; description: string }[]> = {
-  clarity: [
+  simulator: [
     { icon: Calculator, title: 'Acesse o Simulador', description: 'Simule o impacto tributário da sua empresa' },
     { icon: Calendar, title: 'Veja a Timeline', description: 'Acompanhe a transição 2026-2033' },
-    { icon: Brain, title: 'Converse com a IA', description: 'IA educativa para clareza financeira' },
   ],
-  control: [
+  autonomo: [
+    { icon: Calculator, title: 'Acesse o Simulador', description: 'Simule o impacto tributário' },
+    { icon: Brain, title: 'Converse com a IA', description: 'Tire suas dúvidas fiscais' },
+  ],
+  premium: [
     { icon: Brain, title: 'Converse com a IA', description: 'IA analítica orientada à ação' },
     { icon: Calculator, title: 'Use o Simulador', description: 'Compare cenários tributários' },
-    { icon: Sparkles, title: 'Alertas Inteligentes', description: 'Receba notificações de oportunidades' },
+    { icon: Sparkles, title: 'Recursos Premium', description: 'Acesse todos os recursos' },
   ],
-  performance: [
-    { icon: Users, title: 'Suporte Estratégico', description: 'IA como apoio estratégico sênior' },
+  contador: [
+    { icon: Users, title: 'Painel de Clientes', description: 'Gerencie seus clientes' },
     { icon: Brain, title: 'IA Ilimitada', description: 'Tire todas as suas dúvidas' },
-    { icon: Sparkles, title: 'Integração ERP/CRM', description: 'Conecte seus sistemas' },
     { icon: Mail, title: 'Suporte Prioritário', description: 'Atendimento dedicado' },
   ],
 };
