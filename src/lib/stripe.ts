@@ -1,7 +1,12 @@
 /**
- * STRIPE CONFIGURATION - Pricing & Plans
+ * STRIPE CONFIGURATION - Atentai Commercial Model
  * 
- * OFFICIAL PRICE TABLE (Updated 2026-02-02):
+ * OFFICIAL SUBSCRIPTION PLANS (Updated 2026-02-04):
+ * - Atentai Clarity: R$ 1.497/mês - BI de entrada com clareza financeira
+ * - Atentai Control: R$ 3.497/mês - BI com controle, previsão e alertas
+ * - Atentai Performance: R$ 8.000+/mês - BI estratégico com integração ERP/CRM
+ * 
+ * MARKETPLACE SERVICES (One-Time Payments):
  * - Limpa Nome PF: R$ 780,00 (FIXED)
  * - Limpa Nome PJ: R$ 970,00 (FIXED)
  * - Certidões: R$ 80,00 (FIXED)
@@ -10,79 +15,84 @@
  * - Abertura de Empresa: R$ 780,00 (FIXED)
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
  * - BI+ Contabilidade: SOB CONSULTA
- * 
- * REMOVED: Consultoria Empresarial, Consulta com Contador
  */
 
-// Stripe plan configuration
+// Stripe plan configuration - Atentai Commercial Model
 export const STRIPE_PLANS = {
-  simulator: {
-    name: 'Simulador Tributário',
-    priceId: 'price_1SheKg3MU3lG84GwQwYaxFfN',
-    productId: 'prod_TeyH8gtLUj9Llu',
-    price: 3900, // cents (R$39,00)
-    description: 'Simule o impacto da reforma tributária na sua empresa',
+  clarity: {
+    name: 'Atentai Clarity',
+    priceId: 'price_1Sx9Le3MU3lG84GwAqYap5Vo',
+    productId: 'prod_TuzKrFXULbKyM1',
+    price: 149700, // cents (R$ 1.497,00)
+    description: 'Clareza financeira e entendimento dos números',
+    tagline: 'Entrada',
     features: [
-      'Simulador de impacto tributário',
-      'Comparativo antes/depois',
-      'Relatório detalhado em PDF',
-      'Timeline da transição 2026-2033',
+      'BI padrão com DRE gerencial',
+      'Resultado, margem e despesas',
+      'IA explicativa e educativa',
+      'Linguagem clara e acessível',
+      'Supervisão humana obrigatória',
+      'Relatórios mensais em PDF',
     ],
+    tier: 1,
+    color: 'from-blue-500 to-cyan-500',
   },
-  premium: {
-    name: 'AtentAI Premium',
-    priceId: 'price_1ShK943MU3lG84Gwd4u3Z0Za',
-    productId: 'prod_TedPv32txqdcXM',
-    price: 9800, // cents (R$98,00)
-    description: 'Todas as respostas que você precisa sobre a Reforma Tributária',
+  control: {
+    name: 'Atentai Control',
+    priceId: 'price_1Sx9MB3MU3lG84GwUugVLZuM',
+    productId: 'prod_TuzKy78iDO1HUZ',
+    price: 349700, // cents (R$ 3.497,00)
+    description: 'Controle, previsão e suporte à decisão',
+    tagline: 'Principal',
     features: [
-      'Agente de IA ilimitado',
-      'Simulador tributário completo',
-      'Comparador de regimes fiscais',
-      'Calculadora PF vs PJ',
-      'Glossário tributário completo',
-      'Relatórios PDF e Excel',
-      'Piloto Automático Tributário',
+      'Tudo do Clarity +',
+      'Real x Orçado e forecast',
+      'Indicadores personalizados',
+      'Alertas inteligentes',
+      'Simulações de cenários',
+      'IA analítica e orientada à ação',
+      'Apoio a decisões táticas',
     ],
+    tier: 2,
+    color: 'from-primary to-primary/70',
     popular: true,
   },
-  contador: {
-    name: 'Business Pro',
-    priceId: 'price_1ShOGL3MU3lG84Gw1iPrqUkt',
-    productId: 'prod_Tehfc8IkhNyBJ7',
-    price: 19899, // cents (R$198,99)
-    description: 'Plano completo para empresários que querem maximizar economia tributária',
+  performance: {
+    name: 'Atentai Performance',
+    priceId: 'price_1Sx9N93MU3lG84Gw5CBdQAK5',
+    productId: 'prod_TuzL0T7u9Oqeuj',
+    price: 800000, // cents (R$ 8.000,00) - base price, actual is "sob consulta"
+    description: 'Performance, crescimento e estratégia empresarial',
+    tagline: 'Premium',
+    customPricing: true, // Indicates "sob consulta"
     features: [
-      'Tudo do AtentAI Premium',
-      'Piloto Automático Tributário completo',
-      'Simulador de Transição 2026-2033',
-      'Análise tributária personalizada',
-      'Relatórios PDF e Excel ilimitados',
-      'Comparador de Regimes avançado',
-      'Edição de dados da empresa',
+      'Tudo do Control +',
+      'P&L por área, produto ou unidade',
+      'IA como apoio estratégico sênior',
+      'Recomendações financeiras e comerciais',
+      'Integração ERP e CRM',
+      'Planejamento financeiro completo',
+      'Linguagem executiva e estratégica',
+      'Validação humana em todas as recomendações',
     ],
+    tier: 3,
+    color: 'from-accent to-orange-500',
     highlight: true,
-  },
-  autonomo: {
-    name: 'Autônomo Master',
-    priceId: 'price_1Shc3X3MU3lG84Gw1OR6C7yf',
-    productId: 'prod_Tevvj1l2m0hSOP',
-    price: 6500, // cents (R$65,00)
-    description: 'Painel completo para profissionais autônomos',
-    features: [
-      'Simulador PF vs PJ completo',
-      'Agente de IA especializado',
-      'Comparador MEI/ME/LP',
-      'Calculadora de INSS/IR',
-      'Histórico de simulações',
-      'Conexão com especialistas',
-      'Relatórios PDF profissionais',
-      'Suporte dedicado',
-    ],
   },
 } as const;
 
+// Legacy plan mapping (for backwards compatibility during migration)
+export const LEGACY_PLAN_MAPPING: Record<string, keyof typeof STRIPE_PLANS> = {
+  'simulator': 'clarity',
+  'autonomo': 'clarity',
+  'premium': 'control',
+  'contador': 'performance',
+};
+
 export type PlanType = keyof typeof STRIPE_PLANS;
+
+// Legacy types for backwards compatibility
+export type LegacyPlanType = 'simulator' | 'autonomo' | 'premium' | 'contador';
 
 /**
  * Service pricing - FIXED prices (no subscriber discounts)
@@ -164,10 +174,21 @@ export const PLATFORM_COMMISSION = 0.15; // 15%
 
 export type ServiceType = keyof typeof SUBSCRIBER_DISCOUNTS;
 
-// Daily question limits by tier - NO FREE ACCESS
-export const DAILY_QUESTION_LIMIT = 0; // Users without subscription cannot use AI
-export const PREMIUM_DAILY_LIMIT = 50; // Premium users
-export const CONTADOR_DAILY_LIMIT = Infinity; // Contador users (unlimited)
+// AI access by tier
+export const AI_LIMITS = {
+  clarity: {
+    dailyQuestions: 10,
+    mode: 'educational', // Explicativa e educativa
+  },
+  control: {
+    dailyQuestions: 50,
+    mode: 'analytical', // Analítica e orientada à ação
+  },
+  performance: {
+    dailyQuestions: Infinity,
+    mode: 'strategic', // Executiva e estratégica
+  },
+} as const;
 
 export function formatPrice(cents: number): string {
   return new Intl.NumberFormat('pt-BR', {
@@ -210,4 +231,10 @@ export function getPlanByProductId(productId: string): PlanType | null {
     }
   }
   return null;
+}
+
+// Check if user's plan tier is sufficient for a feature
+export function hasPlanTier(currentPlan: PlanType | null, requiredPlan: PlanType): boolean {
+  if (!currentPlan) return false;
+  return STRIPE_PLANS[currentPlan].tier >= STRIPE_PLANS[requiredPlan].tier;
 }

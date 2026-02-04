@@ -10,49 +10,41 @@ import {
   ArrowRight, 
   Check, 
   Lock,
-  Brain,
-  Calculator,
-  Users,
-  User,
-  Zap
+  Target,
+  TrendingUp,
+  Zap,
+  Phone
 } from 'lucide-react';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
 
-const planOrder: PlanType[] = ['simulator', 'autonomo', 'premium', 'contador'];
+const planOrder: PlanType[] = ['clarity', 'control', 'performance'];
 
 const planIcons: Record<PlanType, React.ElementType> = {
-  simulator: Calculator,
-  autonomo: User,
-  premium: Brain,
-  contador: Users,
+  clarity: Target,
+  control: TrendingUp,
+  performance: Crown,
 };
 
 const planColors: Record<PlanType, string> = {
-  simulator: 'from-blue-500 to-cyan-500',
-  autonomo: 'from-emerald-500 to-teal-500',
-  premium: 'from-primary to-primary/70',
-  contador: 'from-accent to-orange-500',
+  clarity: 'from-blue-500 to-cyan-500',
+  control: 'from-primary to-primary/70',
+  performance: 'from-accent to-orange-500',
 };
 
 const upgradeReasons: Record<PlanType, string[]> = {
-  simulator: [],
-  autonomo: [
-    'Simulador PF vs PJ completo',
-    'Agente de IA especializado',
-    'Calculadora de INSS/IR',
+  clarity: [],
+  control: [
+    'Real x Orçado e forecast',
+    'Alertas inteligentes e simulações',
+    'IA analítica orientada à ação',
+    'Apoio a decisões táticas',
   ],
-  premium: [
-    'Agente de IA ilimitado para tirar dúvidas',
-    'Piloto Automático Tributário',
-    'Exportação em Excel',
-    'Comparador de regimes fiscais',
-  ],
-  contador: [
-    'Chat direto com contador especializado',
-    '5 consultas/mês inclusas',
-    'Análise tributária personalizada',
-    'Suporte prioritário 24h',
+  performance: [
+    'P&L por área, produto ou unidade',
+    'IA como apoio estratégico sênior',
+    'Integração com ERP e CRM',
+    'Planejamento financeiro completo',
   ],
 };
 
@@ -62,20 +54,25 @@ export function PlanUpgradeCard() {
   const [selectedPlan, setSelectedPlan] = useState<PlanType | null>(null);
   
   const currentPlanIndex = subscription.plan 
-    ? planOrder.indexOf(subscription.plan) 
+    ? planOrder.indexOf(subscription.plan as PlanType) 
     : -1;
   
-  const nextPlan = currentPlanIndex < planOrder.length - 1 
+  const nextPlan = currentPlanIndex >= 0 && currentPlanIndex < planOrder.length - 1 
     ? planOrder[currentPlanIndex + 1] 
     : null;
 
   const handleUpgradeClick = (plan: PlanType) => {
+    // Performance is custom pricing
+    if (plan === 'performance') {
+      window.open('https://wa.me/5511999999999?text=Olá! Tenho interesse no plano Atentai Performance.', '_blank');
+      return;
+    }
     setSelectedPlan(plan);
     setUpgradeModalOpen(true);
   };
 
   // If user has the highest plan, show appreciation message
-  if (!nextPlan || subscription.plan === 'contador') {
+  if (!nextPlan || subscription.plan === 'performance') {
     return (
       <Card className="bg-gradient-to-br from-accent/10 to-orange-500/10 border-accent/30">
         <CardContent className="pt-6">
@@ -84,9 +81,9 @@ export function PlanUpgradeCard() {
               <Crown className="h-6 w-6 text-accent" />
             </div>
             <div>
-              <h3 className="font-semibold text-foreground">Plano Completo Ativo</h3>
+              <h3 className="font-semibold text-foreground">Plano Performance Ativo</h3>
               <p className="text-sm text-muted-foreground">
-                Você tem acesso a todas as funcionalidades do AtentAI!
+                Você tem acesso a todas as funcionalidades do Atentai!
               </p>
             </div>
           </div>
@@ -98,6 +95,7 @@ export function PlanUpgradeCard() {
   const nextPlanData = STRIPE_PLANS[nextPlan];
   const NextPlanIcon = planIcons[nextPlan];
   const reasons = upgradeReasons[nextPlan];
+  const isCustomPricing = 'customPricing' in nextPlanData && nextPlanData.customPricing;
 
   return (
     <>
@@ -125,8 +123,14 @@ export function PlanUpgradeCard() {
               <p className="text-sm text-muted-foreground">{nextPlanData.description}</p>
             </div>
             <div className="text-right">
-              <p className="font-bold text-foreground">{formatPrice(nextPlanData.price)}</p>
-              <p className="text-xs text-muted-foreground">/mês</p>
+              {isCustomPricing ? (
+                <p className="font-bold text-foreground text-sm">Sob Consulta</p>
+              ) : (
+                <>
+                  <p className="font-bold text-foreground">{formatPrice(nextPlanData.price)}</p>
+                  <p className="text-xs text-muted-foreground">/mês</p>
+                </>
+              )}
             </div>
           </div>
 
@@ -184,8 +188,17 @@ export function PlanUpgradeCard() {
             onClick={() => handleUpgradeClick(nextPlan)} 
             className={`w-full bg-gradient-to-r ${planColors[nextPlan]} hover:opacity-90`}
           >
-            Fazer upgrade para {nextPlanData.name}
-            <ArrowRight className="h-4 w-4 ml-2" />
+            {isCustomPricing ? (
+              <>
+                <Phone className="h-4 w-4 mr-2" />
+                Falar com Especialista
+              </>
+            ) : (
+              <>
+                Fazer upgrade para {nextPlanData.name}
+                <ArrowRight className="h-4 w-4 ml-2" />
+              </>
+            )}
           </Button>
         </CardContent>
       </Card>

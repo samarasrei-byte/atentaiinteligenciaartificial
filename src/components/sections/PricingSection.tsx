@@ -11,10 +11,10 @@ import {
   Crown,
   Loader2,
   Sparkles,
-  Calculator,
-  Users,
+  Target,
+  TrendingUp,
   Star,
-  User
+  Phone
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
@@ -26,6 +26,12 @@ export function PricingSection() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (planKey: PlanType) => {
+    // Performance is custom pricing - redirect to contact
+    if (planKey === 'performance') {
+      window.open('https://wa.me/5511999999999?text=Olá! Tenho interesse no plano Atentai Performance.', '_blank');
+      return;
+    }
+
     if (!user) {
       toast({
         title: 'Faça login primeiro',
@@ -59,27 +65,20 @@ export function PricingSection() {
     }
   };
 
-  const planEntries = Object.entries(STRIPE_PLANS) as [PlanType, typeof STRIPE_PLANS[PlanType]][];
-  const orderedPlans: PlanType[] = ['simulator', 'autonomo', 'premium', 'contador'];
+  const orderedPlans: PlanType[] = ['clarity', 'control', 'performance'];
 
   const getIcon = (key: PlanType) => {
     switch (key) {
-      case 'simulator': return Calculator;
-      case 'autonomo': return User;
-      case 'premium': return Brain;
-      case 'contador': return Users;
+      case 'clarity': return Target;
+      case 'control': return TrendingUp;
+      case 'performance': return Crown;
       default: return Brain;
     }
   };
 
   const getGradient = (key: PlanType) => {
-    switch (key) {
-      case 'simulator': return 'from-blue-500 to-cyan-500';
-      case 'autonomo': return 'from-emerald-500 to-teal-500';
-      case 'premium': return 'from-primary to-primary/70';
-      case 'contador': return 'from-accent to-orange-500';
-      default: return 'from-primary to-primary/70';
-    }
+    const plan = STRIPE_PLANS[key];
+    return plan.color || 'from-primary to-primary/70';
   };
 
   return (
@@ -90,10 +89,10 @@ export function PricingSection() {
             Planos
           </Badge>
           <h2 className="text-2xl sm:text-3xl md:text-5xl font-bold text-foreground mb-3 md:mb-4 px-2">
-            Desbloqueie o AtentAI
+            BI Financeiro para Decisão Empresarial
           </h2>
           <p className="text-sm md:text-lg text-muted-foreground max-w-xl mx-auto px-4">
-            Todas as ferramentas para dominar a Reforma Tributária
+            IA assistiva + supervisão humana obrigatória para clareza, controle e performance
           </p>
           
           {subscription.subscribed && subscription.plan && (
@@ -104,12 +103,13 @@ export function PricingSection() {
           )}
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-5xl mx-auto">
           {orderedPlans.map((key) => {
             const plan = STRIPE_PLANS[key];
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
             const isHighlight = 'highlight' in plan && plan.highlight;
+            const isCustomPricing = 'customPricing' in plan && plan.customPricing;
             const Icon = getIcon(key);
             
             return (
@@ -123,13 +123,13 @@ export function PricingSection() {
                 {isHighlight && !isCurrentPlan && (
                   <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-accent text-accent-foreground text-[10px] md:text-xs">
                     <Star className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
-                    Mais Completo
+                    Premium
                   </Badge>
                 )}
                 {isPlanPopular && !isCurrentPlan && !isHighlight && (
                   <Badge className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-[10px] md:text-xs">
                     <Sparkles className="h-2.5 w-2.5 md:h-3 md:w-3 mr-0.5 md:mr-1" />
-                    Popular
+                    Mais Popular
                   </Badge>
                 )}
                 {isCurrentPlan && (
@@ -143,6 +143,11 @@ export function PricingSection() {
                     <Icon className="h-6 w-6 md:h-8 md:w-8 text-white" />
                   </div>
                   <CardTitle className="text-lg md:text-2xl text-foreground">{plan.name}</CardTitle>
+                  {'tagline' in plan && (
+                    <Badge variant="outline" className="mt-2 text-xs">
+                      {plan.tagline}
+                    </Badge>
+                  )}
                   {'description' in plan && (
                     <CardDescription className="text-muted-foreground mt-1 md:mt-2 text-xs md:text-sm">
                       {plan.description}
@@ -151,8 +156,17 @@ export function PricingSection() {
                 </CardHeader>
                 <CardContent className="space-y-4 md:space-y-6 px-4 pb-6">
                   <div className="text-center">
-                    <span className="text-2xl md:text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
-                    <span className="text-muted-foreground text-sm">/mês</span>
+                    {isCustomPricing ? (
+                      <>
+                        <span className="text-2xl md:text-4xl font-bold text-foreground">Sob Consulta</span>
+                        <p className="text-xs text-muted-foreground mt-1">A partir de R$ 8.000/mês</p>
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-2xl md:text-4xl font-bold text-foreground">{formatPrice(plan.price)}</span>
+                        <span className="text-muted-foreground text-sm">/mês</span>
+                      </>
+                    )}
                   </div>
 
                   <ul className="space-y-2 md:space-y-3">
@@ -170,13 +184,7 @@ export function PricingSection() {
                     className={`w-full ${
                       isCurrentPlan 
                         ? 'bg-green-600 cursor-not-allowed' 
-                        : isHighlight
-                          ? 'bg-gradient-to-r from-accent to-orange-500 hover:from-accent/90 hover:to-orange-600'
-                          : key === 'simulator' 
-                            ? 'bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600'
-                            : key === 'autonomo'
-                              ? 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600'
-                              : 'bg-primary hover:bg-primary/90'
+                        : `bg-gradient-to-r ${getGradient(key)} hover:opacity-90`
                     }`}
                   >
                     {isLoading === key ? (
@@ -186,6 +194,11 @@ export function PricingSection() {
                       </>
                     ) : isCurrentPlan ? (
                       'Plano Atual'
+                    ) : isCustomPricing ? (
+                      <>
+                        <Phone className="h-4 w-4 mr-2" />
+                        Falar com Especialista
+                      </>
                     ) : subscription.subscribed ? (
                       'Trocar Plano'
                     ) : (
@@ -200,6 +213,7 @@ export function PricingSection() {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
+          <p className="mt-2 text-xs">IA é sempre assistiva. Supervisão humana obrigatória em decisões críticas.</p>
         </div>
       </div>
     </section>
