@@ -16,6 +16,7 @@ import { PartnerUserManagement } from './PartnerUserManagement';
 import { PartnerWithdrawalPanel } from './PartnerWithdrawalPanel';
 import { PartnerFinancialDashboard } from './PartnerFinancialDashboard';
 import { ServiceDocuments } from './documents/ServiceDocuments';
+import { LimpaNomeSpreadsheet } from './LimpaNomeSpreadsheet';
 import {
   Search,
   Loader2,
@@ -216,8 +217,12 @@ export function CreditRepairManagement() {
   }
 
   return (
-    <Tabs defaultValue="requests" className="space-y-6">
-      <TabsList className="grid w-full max-w-4xl grid-cols-6">
+    <Tabs defaultValue="spreadsheet" className="space-y-6">
+      <TabsList className="grid w-full max-w-5xl grid-cols-7">
+        <TabsTrigger value="spreadsheet" className="flex items-center gap-2">
+          <FileText className="h-4 w-4" />
+          Planilha
+        </TabsTrigger>
         <TabsTrigger value="requests" className="flex items-center gap-2">
           <FileText className="h-4 w-4" />
           Solicitações
@@ -243,6 +248,10 @@ export function CreditRepairManagement() {
           Métricas
         </TabsTrigger>
       </TabsList>
+
+      <TabsContent value="spreadsheet">
+        <LimpaNomeSpreadsheet />
+      </TabsContent>
 
       <TabsContent value="documents">
         <ServiceDocuments 

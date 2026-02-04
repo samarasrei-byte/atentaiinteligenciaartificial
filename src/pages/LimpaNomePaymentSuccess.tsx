@@ -58,18 +58,19 @@ export default function LimpaNomePaymentSuccess() {
 
         // Check if user is already logged in
         if (user) {
-          // User has account - link request and go to chat
+          // User has account - link request and redirect to data collection
           await supabase
             .from('credit_repair_requests')
             .update({ 
               user_id: user.id,
               payment_status: 'paid',
+              payment_confirmed_at: new Date().toISOString(),
               status: 'pending',
             })
             .eq('id', requestIdParam);
 
-          await createWelcomeMessage(user.id, requestIdParam);
-          navigate(`/chat/guilherme?servico=limpanome&request=${requestIdParam}`);
+          // Redirect to data collection page instead of chat
+          navigate(`/limpa-nome/dados?request_id=${requestIdParam}`);
           return;
         }
 
@@ -118,11 +119,8 @@ Assim que recebermos os documentos, nossa equipe dará andamento imediato no seu
   const handleAccountCreated = async (userId: string) => {
     if (!requestData) return;
 
-    // Create welcome message
-    await createWelcomeMessage(userId, requestData.id);
-
-    // Navigate to chat
-    navigate(`/chat/guilherme?servico=limpanome&request=${requestData.id}`);
+    // Navigate to data collection page instead of chat
+    navigate(`/limpa-nome/dados?request_id=${requestData.id}`);
   };
 
   // Error state

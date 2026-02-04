@@ -1268,6 +1268,44 @@ export type Database = {
           },
         ]
       }
+      credit_repair_history: {
+        Row: {
+          action_description: string
+          action_type: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          performed_by: string | null
+          request_id: string
+        }
+        Insert: {
+          action_description: string
+          action_type: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          request_id: string
+        }
+        Update: {
+          action_description?: string
+          action_type?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          performed_by?: string | null
+          request_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_repair_history_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_repair_partner_users: {
         Row: {
           created_at: string
@@ -1371,6 +1409,7 @@ export type Database = {
       }
       credit_repair_requests: {
         Row: {
+          birth_date: string | null
           bureaus_selected: string[] | null
           completed_at: string | null
           contador_id: string | null
@@ -1378,9 +1417,11 @@ export type Database = {
           cpf: string | null
           created_at: string
           creditors: string[] | null
+          data_submitted_at: string | null
           debt_amount_cents: number
           debt_description: string | null
           discount_applied: boolean | null
+          document_extracted_text: string | null
           document_url: string | null
           email: string | null
           final_price_cents: number
@@ -1388,6 +1429,7 @@ export type Database = {
           id: string
           notes: string | null
           partner_id: string | null
+          payment_confirmed_at: string | null
           payment_status: string
           phone: string | null
           service_price_cents: number
@@ -1397,6 +1439,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          birth_date?: string | null
           bureaus_selected?: string[] | null
           completed_at?: string | null
           contador_id?: string | null
@@ -1404,9 +1447,11 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           creditors?: string[] | null
+          data_submitted_at?: string | null
           debt_amount_cents?: number
           debt_description?: string | null
           discount_applied?: boolean | null
+          document_extracted_text?: string | null
           document_url?: string | null
           email?: string | null
           final_price_cents?: number
@@ -1414,6 +1459,7 @@ export type Database = {
           id?: string
           notes?: string | null
           partner_id?: string | null
+          payment_confirmed_at?: string | null
           payment_status?: string
           phone?: string | null
           service_price_cents?: number
@@ -1423,6 +1469,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          birth_date?: string | null
           bureaus_selected?: string[] | null
           completed_at?: string | null
           contador_id?: string | null
@@ -1430,9 +1477,11 @@ export type Database = {
           cpf?: string | null
           created_at?: string
           creditors?: string[] | null
+          data_submitted_at?: string | null
           debt_amount_cents?: number
           debt_description?: string | null
           discount_applied?: boolean | null
+          document_extracted_text?: string | null
           document_url?: string | null
           email?: string | null
           final_price_cents?: number
@@ -1440,6 +1489,7 @@ export type Database = {
           id?: string
           notes?: string | null
           partner_id?: string | null
+          payment_confirmed_at?: string | null
           payment_status?: string
           phone?: string | null
           service_price_cents?: number
