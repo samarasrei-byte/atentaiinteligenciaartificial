@@ -2803,6 +2803,7 @@ export type Database = {
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_daily_question_count: { Args: { p_user_id: string }; Returns: number }
+      has_guilherme_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -2814,6 +2815,7 @@ export type Database = {
         Args: { p_user_id: string }
         Returns: number
       }
+      is_equipe_guilherme: { Args: { _user_id: string }; Returns: boolean }
       is_valid_contador_assignment: {
         Args: { p_contador_id: string; p_request_user_id: string }
         Returns: boolean
