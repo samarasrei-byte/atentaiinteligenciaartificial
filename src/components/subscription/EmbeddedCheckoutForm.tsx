@@ -25,11 +25,26 @@ const CheckoutFormContent: React.FC<CheckoutFormProps> = ({ onSuccess, onCancel 
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState<'idle' | 'processing' | 'succeeded' | 'failed'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [lastSubmitTime, setLastSubmitTime] = useState(0);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
 
+    // DEBOUNCE: Prevent double-click (2 second cooldown)
+    const now = Date.now();
+    if (now - lastSubmitTime < 2000) {
+      console.log('[EmbeddedCheckout] Debounced duplicate submit');
+      return;
+    }
+    setLastSubmitTime(now);
+
     if (!stripe || !elements) {
+      return;
+    }
+
+    // Prevent duplicate submissions
+    if (isProcessing) {
+      console.log('[EmbeddedCheckout] Already processing, ignoring');
       return;
     }
 
