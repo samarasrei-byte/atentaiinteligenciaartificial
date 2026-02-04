@@ -26,7 +26,9 @@ import {
   Bot,
   TrendingUp,
   CreditCard,
-  AlertTriangle
+  AlertTriangle,
+  Download,
+  Image
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -91,10 +93,14 @@ export function CesarClientChat() {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
   const [showPaymentRequest, setShowPaymentRequest] = useState(false);
+  const [showReceivedDocs, setShowReceivedDocs] = useState(false);
   const [isGeneratingPaymentLink, setIsGeneratingPaymentLink] = useState(false);
   const [customPaymentAmount, setCustomPaymentAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Get attachments from messages for quick access
+  const receivedAttachments = messages.filter(m => m.attachment_url && m.sender_id !== user?.id);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -312,19 +318,30 @@ export function CesarClientChat() {
   const handleDocumentRequest = (docLabel: string) => {
     const firstName = selectedClient?.full_name?.split(' ')[0] || 'Cliente';
     
-    setNewMessage(`Olá, ${firstName}! 👋
+    // Variações de saudação humanizadas
+    const greetings = ['Oi', 'Olá', 'E aí'];
+    const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+    
+    // Variações de fechamento (sem "Abraço" repetitivo)
+    const closings = [
+      'Fico no aguardo.',
+      'Me avisa quando enviar!',
+      'Qualquer dúvida sobre formato, só perguntar.',
+    ];
+    const closing = closings[Math.floor(Math.random() * closings.length)];
+    
+    setNewMessage(`${greeting}, ${firstName}!
 
-Sou o César, seu especialista em BI e Contabilidade aqui da AtentAI.
+Aqui é o César, da equipe de BI e Contabilidade.
 
-Para dar continuidade à sua análise contábil, preciso que você me envie:
+Pra continuar a análise, vou precisar de:
 
 📄 **${docLabel}**
 
-Pode enviar como arquivo Excel, PDF ou imagem aqui no chat. Com esse documento, consigo gerar insights precisos para seu negócio.
+Pode mandar Excel, PDF ou imagem aqui mesmo.
 
-Qualquer dúvida sobre formatação ou dados necessários, estou por aqui!
+${closing}
 
-Abraço,
 César`);
     setShowDocumentRequest(false);
   };
@@ -371,21 +388,22 @@ César`);
       const paymentUrl = response.data.url;
       const price = (amountCents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
       
-      setNewMessage(`Olá, ${firstName}! 👋
+      // Variações humanizadas
+      const greetings = ['Oi', 'Olá'];
+      const greeting = greetings[Math.floor(Math.random() * greetings.length)];
+      
+      setNewMessage(`${greeting}, ${firstName}!
 
-Seguem os detalhes do seu serviço de **${serviceLabel}**:
+Segue o link pro pagamento do **${serviceLabel}**:
 
-💰 **Valor: ${price}**
-✅ Pagamento 100% seguro via Stripe
-📋 Parcelamento disponível
-
-Clique no link abaixo para concluir o pagamento:
+💰 Valor: **${price}**
+✅ Pagamento seguro (Stripe)
+📋 Parcela no cartão
 
 🔗 ${paymentUrl}
 
-Qualquer dúvida sobre pagamento, me chame aqui!
+Qualquer coisa, só chamar!
 
-Abraço,
 César`);
       setShowPaymentRequest(false);
       setCustomPaymentAmount('');
@@ -549,12 +567,23 @@ César`);
                   <Button 
                     variant="ghost" 
                     size="sm"
-                    onClick={() => { setShowDocumentRequest(!showDocumentRequest); setShowPaymentRequest(false); }}
+                    onClick={() => { setShowDocumentRequest(!showDocumentRequest); setShowPaymentRequest(false); setShowReceivedDocs(false); }}
                     className="gap-2 text-white hover:bg-white/10"
                   >
                     <FileCheck className="h-4 w-4" />
-                    <span className="hidden sm:inline">Docs</span>
+                    <span className="hidden sm:inline">Solicitar</span>
                   </Button>
+                  {receivedAttachments.length > 0 && (
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => { setShowReceivedDocs(!showReceivedDocs); setShowPaymentRequest(false); setShowDocumentRequest(false); }}
+                      className="gap-2 text-white hover:bg-white/10"
+                    >
+                      <Download className="h-4 w-4" />
+                      <span className="hidden sm:inline">Recebidos ({receivedAttachments.length})</span>
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
@@ -613,6 +642,51 @@ César`);
                     <p className="text-xs text-slate-400 mt-2 text-center">
                       Link gerado via Stripe • Pagamento seguro
                     </p>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Painel de Documentos Recebidos - Download Rápido */}
+            <AnimatePresence>
+              {showReceivedDocs && receivedAttachments.length > 0 && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="shrink-0 overflow-hidden border-b border-slate-200 bg-gradient-to-r from-violet-50 to-slate-50"
+                >
+                  <div className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Download className="h-4 w-4 text-violet-600" />
+                        <h4 className="font-medium text-sm text-slate-900">Documentos do Cliente ({receivedAttachments.length})</h4>
+                      </div>
+                      <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowReceivedDocs(false)}>
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-2 max-h-32 overflow-y-auto">
+                      {receivedAttachments.map((msg) => (
+                        <a
+                          key={msg.id}
+                          href={msg.attachment_url || '#'}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-2 p-2 rounded-lg border border-slate-200 bg-white hover:bg-violet-50 hover:border-violet-200 transition-colors"
+                        >
+                          {msg.attachment_type?.startsWith('image/') ? (
+                            <Image className="h-4 w-4 text-violet-600 shrink-0" />
+                          ) : (
+                            <FileText className="h-4 w-4 text-violet-600 shrink-0" />
+                          )}
+                          <span className="text-xs text-slate-700 truncate flex-1">
+                            {msg.attachment_name || 'Documento'}
+                          </span>
+                          <Download className="h-3 w-3 text-slate-400 shrink-0" />
+                        </a>
+                      ))}
+                    </div>
                   </div>
                 </motion.div>
               )}
