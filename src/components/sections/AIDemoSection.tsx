@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import DOMPurify from 'dompurify';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -195,13 +196,20 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
     }, 500 + Math.random() * 300);
   };
 
+  // SECURITY: Uses DOMPurify to sanitize HTML even though content is static from DEMO_RESPONSES
+  // This provides defense-in-depth in case dynamic content is added in the future
   const renderMessage = (content: string) => {
-    return content
+    const html = content
       .replace(/\*\*(.*?)\*\*/g, '<strong class="text-primary font-semibold">$1</strong>')
       .replace(/\n/g, '<br/>')
       .replace(/• (.*?)(<br\/>|$)/g, '<span class="flex items-start gap-1"><span class="text-primary">•</span><span>$1</span></span>')
       .replace(/✅/g, '<span class="text-emerald-500">✅</span>')
       .replace(/📅|📊|💰|🎯|🚀|💸|🛒|💼|👋|💬|👇/g, '<span class="inline-block">$&</span>');
+    
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: ['strong', 'br', 'span'],
+      ALLOWED_ATTR: ['class']
+    });
   };
 
   return (
