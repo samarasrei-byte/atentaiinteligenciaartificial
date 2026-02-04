@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
-import { STRIPE_PLANS, formatPrice, DAILY_QUESTION_LIMIT } from "@/lib/stripe";
+import { STRIPE_PLANS, formatPrice, AI_LIMITS } from "@/lib/stripe";
 
 interface Message {
   role: "user" | "assistant";
@@ -217,8 +217,8 @@ export function AISection() {
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const isPremium = subscription.subscribed && subscription.plan === 'premium';
-  const plan = STRIPE_PLANS.premium;
+  const isPremium = subscription.subscribed && (subscription.plan === 'control' || subscription.plan === 'performance');
+  const plan = STRIPE_PLANS.control;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

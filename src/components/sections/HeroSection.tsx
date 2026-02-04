@@ -64,7 +64,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
             </span>
-            <span>LC 214/2025 • +2.500 profissionais</span>
+            <span>BI Financeiro • IA Assistiva • Supervisão Humana</span>
           </motion.div>
 
           {/* Headline - Clean and focused */}
@@ -74,7 +74,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1]"
           >
-            Sua Empresa
+            Clareza, Controle e
             <motion.span 
               className="block text-transparent bg-clip-text bg-gradient-to-r from-accent via-yellow-400 to-accent mt-2"
               animate={{ 
@@ -87,7 +87,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               }}
               style={{ backgroundSize: "200% 200%" }}
             >
-              Pronta para a Reforma
+              Performance Financeira
             </motion.span>
           </motion.h1>
 
@@ -98,10 +98,10 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            <span className="text-white font-semibold">IA especializada</span> + <span className="text-accent font-semibold">Especialistas humanos</span> para guiar você na reforma tributária.
+            Plataforma de <span className="text-white font-semibold">BI financeiro</span> integrado à contabilidade com <span className="text-accent font-semibold">IA assistiva</span> e supervisão humana obrigatória.
           </motion.p>
 
-          {/* CTA Buttons - COMEÇAR goes to profile selection */}
+          {/* CTA Buttons */}
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -147,7 +147,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
           >
             <Bot className="w-6 h-6 text-accent" />
             <span className="text-sm font-semibold text-white flex items-center gap-1.5">
-              Powered by AtentAI <Sparkles className="w-4 h-4 text-accent" />
+              Powered by Atentai <Sparkles className="w-4 h-4 text-accent" />
             </span>
           </motion.div>
 
@@ -158,7 +158,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.6 }}
             className="mt-8 text-white/70 text-sm"
           >
-            A partir de <span className="text-accent font-semibold">{formatPrice(STRIPE_PLANS.simulator.price)}/mês</span>
+            A partir de <span className="text-accent font-semibold">{formatPrice(STRIPE_PLANS.clarity.price)}/mês</span>
           </motion.p>
         </div>
       </motion.div>

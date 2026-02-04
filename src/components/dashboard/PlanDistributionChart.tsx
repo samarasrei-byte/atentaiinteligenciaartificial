@@ -11,30 +11,30 @@ interface PlanData {
 }
 
 interface PlanDistributionChartProps {
-  simulatorCount: number;
-  premiumCount: number;
-  contadorCount: number;
+  clarityCount: number;
+  controlCount: number;
+  performanceCount: number;
 }
 
-export function PlanDistributionChart({ simulatorCount, premiumCount, contadorCount }: PlanDistributionChartProps) {
+export function PlanDistributionChart({ clarityCount, controlCount, performanceCount }: PlanDistributionChartProps) {
   const data: PlanData[] = [
     { 
-      name: 'Simulador', 
-      value: simulatorCount, 
-      revenue: simulatorCount * STRIPE_PLANS.simulator.price,
-      color: 'hsl(var(--primary))' 
-    },
-    { 
-      name: 'AtentAI Premium', 
-      value: premiumCount, 
-      revenue: premiumCount * STRIPE_PLANS.premium.price,
+      name: 'Atentai Clarity', 
+      value: clarityCount, 
+      revenue: clarityCount * STRIPE_PLANS.clarity.price,
       color: 'hsl(var(--info))' 
     },
     { 
-      name: 'Contador Premium', 
-      value: contadorCount, 
-      revenue: contadorCount * STRIPE_PLANS.contador.price,
-      color: 'hsl(var(--success))' 
+      name: 'Atentai Control', 
+      value: controlCount, 
+      revenue: controlCount * STRIPE_PLANS.control.price,
+      color: 'hsl(var(--primary))' 
+    },
+    { 
+      name: 'Atentai Performance', 
+      value: performanceCount, 
+      revenue: performanceCount * STRIPE_PLANS.performance.price,
+      color: 'hsl(var(--accent))' 
     },
   ].filter(d => d.value > 0);
 
