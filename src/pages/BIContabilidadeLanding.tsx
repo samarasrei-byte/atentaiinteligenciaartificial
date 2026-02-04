@@ -329,12 +329,12 @@ const BIContabilidadeLanding = () => {
                 {/* CTA Buttons */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-8">
                   <Button 
-                    onClick={handleCTA}
+                    onClick={() => document.getElementById('bi-pricing')?.scrollIntoView({ behavior: 'smooth' })}
                     size="lg"
                     className="bg-white text-indigo-900 hover:bg-indigo-100 font-bold px-8 py-6 text-lg rounded-2xl shadow-2xl shadow-indigo-500/30 hover:shadow-indigo-500/50 transition-all hover:scale-105 group"
                   >
                     <Sparkles className="h-5 w-5 mr-2 group-hover:rotate-12 transition-transform" />
-                    Solicitar análise gratuita
+                    Veja os Planos
                     <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Button>
                   <Button 
@@ -452,8 +452,8 @@ const BIContabilidadeLanding = () => {
         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-background to-transparent" />
       </section>
 
-      {/* BI Pricing Plans Section - Right after hero for high conversion */}
-      <BIPricingSection />
+      {/* BI Pricing Plans Section - Moved after "Quem pode usar" for better flow */}
+      {/* See section after useCases for actual placement */}
 
       {/* Capabilities Bar */}
       <section className="py-8 bg-muted/30 border-y border-border/50 relative z-20">
@@ -649,6 +649,11 @@ const BIContabilidadeLanding = () => {
             ))}
           </div>
         </div>
+      </section>
+
+      {/* BI Pricing Plans Section - After "Quem pode usar" */}
+      <section id="bi-pricing">
+        <BIPricingSection />
       </section>
 
       {/* How it Works - Timeline */}
