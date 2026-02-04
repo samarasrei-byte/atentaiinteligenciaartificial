@@ -444,7 +444,39 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
                           : 'bg-muted rounded-bl-md'
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      {/* Detectar e renderizar botões de pagamento Stripe */}
+                      {msg.content.includes('stripe.com') || msg.content.includes('checkout.stripe.com') ? (
+                        <div className="space-y-3">
+                          <p className="text-sm whitespace-pre-wrap">
+                            {msg.content.split(/https?:\/\/[^\s]+/)[0]}
+                          </p>
+                          {(() => {
+                            const urlMatch = msg.content.match(/(https?:\/\/[^\s]+stripe[^\s]+)/);
+                            if (urlMatch) {
+                              return (
+                                <a
+                                  href={urlMatch[1]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
+                                    isOwn 
+                                      ? 'bg-white/20 hover:bg-white/30 text-white' 
+                                      : 'bg-primary hover:bg-primary/90 text-white'
+                                  }`}
+                                >
+                                  💳 Pagar Agora
+                                </a>
+                              );
+                            }
+                            return null;
+                          })()}
+                          <p className="text-sm whitespace-pre-wrap">
+                            {msg.content.split(/https?:\/\/[^\s]+/).slice(1).join('')}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                      )}
                       
                       {msg.attachment_url && (
                         <a

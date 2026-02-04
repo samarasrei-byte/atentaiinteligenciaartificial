@@ -53,109 +53,109 @@ export const BIDashboard: React.FC = () => {
         </div>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="bg-white border-slate-200">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500 mb-1">Receita Total</p>
-                <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.totalRevenue)}</p>
+      {/* KPI Cards - Responsivo Mobile/Tablet/Desktop */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        <Card className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-slate-500 mb-1 truncate">Receita Total</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900 truncate">{formatCurrency(stats.totalRevenue)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600">
-                <DollarSign className="h-6 w-6 text-white" />
+              <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 shrink-0">
+                <DollarSign className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
-            <div className="flex items-center gap-1 mt-3 text-sm">
+            <div className="flex items-center gap-1 mt-2 sm:mt-3 text-xs sm:text-sm">
               {stats.revenueGrowth >= 0 ? (
                 <>
-                  <ArrowUpRight className="h-4 w-4 text-emerald-600" />
+                  <ArrowUpRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600" />
                   <span className="text-emerald-600 font-medium">+{stats.revenueGrowth}%</span>
                 </>
               ) : (
                 <>
-                  <ArrowDownRight className="h-4 w-4 text-red-600" />
+                  <ArrowDownRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600" />
                   <span className="text-red-600 font-medium">{stats.revenueGrowth}%</span>
                 </>
               )}
-              <span className="text-slate-500">vs mês anterior</span>
+              <span className="text-slate-500 truncate">vs mês anterior</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500 mb-1">Receita Mensal</p>
-                <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.monthlyRevenue)}</p>
+        <Card className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-slate-500 mb-1 truncate">Receita Mensal</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900 truncate">{formatCurrency(stats.monthlyRevenue)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600">
-                <Wallet className="h-6 w-6 text-white" />
+              <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 shrink-0">
+                <Wallet className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
-            <div className="flex items-center gap-1 mt-3 text-sm">
+            <div className="flex items-center gap-1 mt-2 sm:mt-3 text-xs sm:text-sm">
               {stats.revenueGrowth >= 0 ? (
-                <TrendingUp className="h-4 w-4 text-emerald-600" />
+                <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-600" />
               ) : (
-                <TrendingDown className="h-4 w-4 text-red-600" />
+                <TrendingDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-600" />
               )}
               <span className={stats.revenueGrowth >= 0 ? "text-emerald-600 font-medium" : "text-red-600 font-medium"}>
                 {stats.revenueGrowth >= 0 ? '+' : ''}{stats.revenueGrowth}%
               </span>
-              <span className="text-slate-500">crescimento</span>
+              <span className="text-slate-500 truncate">crescimento</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500 mb-1">Assinaturas Ativas</p>
-                <p className="text-2xl font-bold text-slate-900">{stats.activeSubscriptions}</p>
+        <Card className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-slate-500 mb-1 truncate">Assinaturas Ativas</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900">{stats.activeSubscriptions}</p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600">
-                <CreditCard className="h-6 w-6 text-white" />
+              <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-violet-500 to-violet-600 shrink-0">
+                <CreditCard className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
-            <div className="flex items-center gap-1 mt-3 text-sm">
+            <div className="flex items-center gap-1 mt-2 sm:mt-3 text-xs sm:text-sm">
               <span className="text-slate-500">de {stats.totalSubscriptions} total</span>
             </div>
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-slate-200">
-          <CardContent className="p-5">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-slate-500 mb-1">Ticket Médio</p>
-                <p className="text-2xl font-bold text-slate-900">{formatCurrency(stats.averageTicket)}</p>
+        <Card className="bg-white border-slate-200 hover:shadow-md transition-shadow">
+          <CardContent className="p-4 sm:p-5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs sm:text-sm text-slate-500 mb-1 truncate">Ticket Médio</p>
+                <p className="text-xl sm:text-2xl font-bold text-slate-900 truncate">{formatCurrency(stats.averageTicket)}</p>
               </div>
-              <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600">
-                <Calculator className="h-6 w-6 text-white" />
+              <div className="p-2.5 sm:p-3 rounded-xl bg-gradient-to-br from-amber-500 to-amber-600 shrink-0">
+                <Calculator className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
               </div>
             </div>
-            <div className="flex items-center gap-1 mt-3 text-sm">
+            <div className="flex items-center gap-1 mt-2 sm:mt-3 text-xs sm:text-sm">
               <span className="text-slate-500">por transação</span>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      {/* Charts - Responsivo */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Revenue Chart */}
         <Card className="lg:col-span-2 bg-white border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <BarChart3 className="h-5 w-5 text-indigo-600" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <BarChart3 className="h-4 w-4 sm:h-5 sm:w-5 text-indigo-600" />
               DRE Simplificada
             </CardTitle>
-            <CardDescription>Receitas vs Despesas - Últimos 6 meses</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Receitas vs Despesas - Últimos 6 meses</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[300px]">
+          <CardContent className="p-3 sm:p-6">
+            <div className="h-[220px] sm:h-[300px]">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={revenueData}>
                   <defs>
@@ -186,15 +186,15 @@ export const BIDashboard: React.FC = () => {
 
         {/* Service Distribution */}
         <Card className="bg-white border-slate-200">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <PieChartIcon className="h-5 w-5 text-violet-600" />
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+              <PieChartIcon className="h-4 w-4 sm:h-5 sm:w-5 text-violet-600" />
               Distribuição por Serviço
             </CardTitle>
-            <CardDescription>Solicitações por categoria</CardDescription>
+            <CardDescription className="text-xs sm:text-sm">Solicitações por categoria</CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="h-[250px]">
+          <CardContent className="p-3 sm:p-6">
+            <div className="h-[200px] sm:h-[250px]">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
