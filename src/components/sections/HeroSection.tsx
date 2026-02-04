@@ -64,7 +64,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-success"></span>
             </span>
-            <span>BI Financeiro • IA Assistiva • Supervisão Humana</span>
+            <span>Reforma Tributária 2026 • IBS + CBS • Nova Era Fiscal</span>
           </motion.div>
 
           {/* Headline - Clean and focused */}
@@ -74,7 +74,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight leading-[1.1]"
           >
-            Clareza, Controle e
+            Reforma Tributária
             <motion.span 
               className="block text-transparent bg-clip-text bg-gradient-to-r from-accent via-yellow-400 to-accent mt-2"
               animate={{ 
@@ -87,7 +87,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
               }}
               style={{ backgroundSize: "200% 200%" }}
             >
-              Performance Financeira
+              Começa em 2026
             </motion.span>
           </motion.h1>
 
@@ -98,7 +98,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="text-lg sm:text-xl text-white/80 mb-10 max-w-2xl mx-auto leading-relaxed"
           >
-            Plataforma de <span className="text-white font-semibold">BI financeiro</span> integrado à contabilidade com <span className="text-accent font-semibold">IA assistiva</span> e supervisão humana obrigatória.
+            Prepare sua empresa para o <span className="text-white font-semibold">IBS e CBS</span>. Simulador tributário, <span className="text-accent font-semibold">IA assistiva</span> e consultoria especializada para a transição.
           </motion.p>
 
           {/* CTA Buttons */}
