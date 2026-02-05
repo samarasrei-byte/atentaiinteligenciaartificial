@@ -9,11 +9,11 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Shield, Lock, CheckCircle2, 
-  Building2, Zap, Star, ArrowRight, ArrowLeft,
+  Building2, Zap, Star, ArrowRight, ArrowLeft, XCircle,
   Clock, Users, Heart, Handshake,
   MessageCircle, Sparkles,
   TrendingUp, Award, User, Scale,
-  CreditCard
+  CreditCard, AlertTriangle, Ban
 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { Header } from "@/components/layout/Header";
@@ -25,6 +25,14 @@ const PARTNER_INFO = {
   role: 'Especialista em Limpa Nome',
   avatar: null,
 };
+
+// Pain points for high conversion
+const PAIN_POINTS = [
+  "Cansado de ter crédito negado?",
+  "Seu nome está sujo na praça?",
+  "Cobradores ligando todo dia?",
+  "Não consegue financiar nada?",
+];
 
 export default function LimpaNomeLanding() {
   const navigate = useNavigate();
@@ -52,6 +60,10 @@ export default function LimpaNomeLanding() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  // Direct checkout per plan
+  const handleCheckoutPF = () => navigate('/checkout/limpa-nome-pf');
+  const handleCheckoutPJ = () => navigate('/checkout/limpa-nome-pj');
 
   const handleNavigate = (section: string) => {
     if (section === "hero") {
@@ -126,7 +138,21 @@ export default function LimpaNomeLanding() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      <Header onNavigate={handleNavigate} />
+      {/* Custom Header for dark hero - Logo in white */}
+      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-lg border-b border-white/10">
+        <div className="container max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+          <button onClick={() => navigate('/')} className="flex items-center gap-2 group">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <Shield className="h-5 w-5 text-white" />
+            </div>
+            <span className="font-bold text-lg text-white">AtentAI</span>
+          </button>
+          <div className="flex items-center gap-2 text-white/80">
+            <Lock className="h-4 w-4" />
+            <span className="text-sm font-medium">Pagamento Seguro</span>
+          </div>
+        </div>
+      </header>
       
       {/* Back Button - Fixed Position */}
       <div className="fixed top-20 left-4 z-50">
@@ -157,12 +183,25 @@ export default function LimpaNomeLanding() {
           >
             {/* Trust Badge */}
             <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
-              <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-slate-900/90 backdrop-blur-sm border-2 border-pink-500/50 text-pink-400 font-bold text-xs sm:text-sm shadow-lg shadow-pink-500/20">
+              <div className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 sm:py-2.5 rounded-full bg-red-600/20 backdrop-blur-sm border-2 border-red-500/50 text-red-400 font-bold text-xs sm:text-sm shadow-lg shadow-red-500/20 animate-pulse">
                 <span className="relative flex h-2.5 w-2.5">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-pink-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-pink-400"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
                 </span>
-                <span>ATENDIMENTO HUMANO • PARCEIROS ESPECIALIZADOS</span>
+                <AlertTriangle className="h-4 w-4" />
+                <span>NOME SUJO? RESOLVA HOJE MESMO!</span>
+              </div>
+            </motion.div>
+            
+            {/* Pain Points Carousel */}
+            <motion.div variants={itemVariants} className="mb-6">
+              <div className="flex flex-wrap justify-center gap-3 px-4">
+                {PAIN_POINTS.map((pain, i) => (
+                  <div key={i} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/30 text-red-300 text-sm">
+                    <XCircle className="h-3.5 w-3.5" />
+                    <span>{pain}</span>
+                  </div>
+                ))}
               </div>
             </motion.div>
             
@@ -171,139 +210,126 @@ export default function LimpaNomeLanding() {
               variants={itemVariants}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 tracking-tight px-2"
             >
-              Limpe seu nome com{" "}
+              CHEGA de ficar com o{" "}
               <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-                acompanhamento humano
+                nome sujo!
               </span>
             </motion.h1>
             
             <motion.p 
               variants={itemVariants}
-              className="text-base sm:text-lg lg:text-xl text-slate-300 mb-8 sm:mb-10 max-w-2xl mx-auto px-4"
+              className="text-base sm:text-lg lg:text-xl text-slate-300 mb-4 max-w-2xl mx-auto px-4"
             >
-              Seu caso será analisado por um <span className="text-white font-medium">parceiro especializado</span>,
-              com <span className="text-rose-400 font-medium">comunicação direta</span> e acompanhamento em tempo real.
+              Limpe seu CPF ou CNPJ em <span className="text-green-400 font-bold">até 7 dias úteis</span> com
+              <span className="text-white font-medium"> processo 100% jurídico</span> e
+              <span className="text-rose-400 font-medium"> pagamento parcelado</span>.
             </motion.p>
 
-            {/* Partner Preview */}
-            <motion.div variants={itemVariants} className="flex justify-center mb-8">
-              <div className="flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                <Avatar className="h-14 w-14 border-2 border-emerald-500/30">
-                  <AvatarFallback className="bg-emerald-500/20 text-emerald-400 text-lg font-bold">
-                    GB
-                  </AvatarFallback>
-                </Avatar>
-                <div className="text-left">
-                  <p className="font-semibold text-white">{PARTNER_INFO.name}</p>
-                  <p className="text-sm text-slate-400">{PARTNER_INFO.role}</p>
-                  <div className="flex items-center gap-1 mt-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-3 w-3 fill-amber-400 text-amber-400" />
-                    ))}
-                    <span className="text-xs text-slate-400 ml-1">5.0</span>
-                  </div>
-                </div>
-              </div>
-            </motion.div>
+            <motion.p variants={itemVariants} className="text-sm text-amber-400 font-semibold mb-8">
+              ⚠️ Não deixe mais o nome sujo te impedir de conquistar seus sonhos!
+            </motion.p>
 
-            {/* Plan Selector */}
-            {/* Price Cards */}
-            <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-6 px-4">
+            {/* Price Cards with CTAs */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-3xl mx-auto mb-8 px-4">
               {/* Card CPF */}
-              <button
-                onClick={() => setSelectedPlan('pf')}
-                className={`
-                  relative flex flex-col p-6 rounded-2xl border-2 transition-all text-left
-                  ${selectedPlan === 'pf' 
-                    ? 'border-rose-500 bg-rose-500/20 shadow-lg shadow-rose-500/30 scale-[1.02]' 
-                    : 'border-white/10 bg-white/5 hover:border-rose-500/50 hover:bg-white/10'
-                  }
-                `}
-              >
-                {selectedPlan === 'pf' && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-rose-500 text-white border-0 shadow-lg">
-                      Selecionado
-                    </Badge>
-                  </div>
-                )}
+              <div className="relative flex flex-col p-6 rounded-2xl border-2 border-blue-500/50 bg-gradient-to-br from-blue-500/20 to-cyan-500/10 text-left hover:border-blue-400 transition-all group">
+                <div className="absolute -top-3 left-4">
+                  <Badge className="bg-blue-500 text-white border-0 shadow-lg text-xs">
+                    PESSOA FÍSICA
+                  </Badge>
+                </div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={`p-3 rounded-xl ${selectedPlan === 'pf' ? 'bg-rose-500' : 'bg-white/10'}`}>
-                    <User className={`h-6 w-6 ${selectedPlan === 'pf' ? 'text-white' : 'text-slate-300'}`} />
+                  <div className="p-3 rounded-xl bg-blue-500">
+                    <User className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className={`font-bold text-lg ${selectedPlan === 'pf' ? 'text-white' : 'text-slate-200'}`}>
-                      Pessoa Física
-                    </p>
-                    <p className="text-sm text-slate-400">Para CPF</p>
+                    <p className="font-bold text-lg text-white">Limpa Nome CPF</p>
+                    <p className="text-sm text-blue-300">Para pessoa física</p>
                   </div>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-sm text-slate-400">R$</span>
-                  <span className={`text-4xl font-bold ${selectedPlan === 'pf' ? 'text-white' : 'text-slate-200'}`}>
+                  <span className="text-sm text-blue-300">R$</span>
+                  <span className="text-5xl font-bold text-white">
                     780
                   </span>
-                  <span className="text-sm text-slate-400">,00</span>
+                  <span className="text-sm text-blue-300">,00</span>
                 </div>
-                <div className="mt-4 pt-4 border-t border-white/10">
+                <p className="text-green-400 text-sm font-semibold mt-1">
+                  ou 4x de R$ 195,00 sem juros
+                </p>
+                <div className="mt-4 pt-4 border-t border-blue-500/30 space-y-2">
                   <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Exclusão de restrições</span>
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span>Exclusão de todas as restrições</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300 mt-2">
-                    <CreditCard className="h-4 w-4 text-emerald-400" />
-                    <span>Parcelamento disponível</span>
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span>Liminar coletiva jurídica</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span>Acompanhamento por 90 dias</span>
                   </div>
                 </div>
-              </button>
+                <Button 
+                  onClick={handleCheckoutPF}
+                  className="w-full mt-6 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-bold py-6 text-base shadow-lg shadow-blue-500/25 group-hover:shadow-blue-500/40 transition-all"
+                >
+                  <Shield className="h-5 w-5 mr-2" />
+                  Limpar meu CPF agora
+                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
 
               {/* Card CNPJ */}
-              <button
-                onClick={() => setSelectedPlan('pj')}
-                className={`
-                  relative flex flex-col p-6 rounded-2xl border-2 transition-all text-left
-                  ${selectedPlan === 'pj' 
-                    ? 'border-rose-500 bg-rose-500/20 shadow-lg shadow-rose-500/30 scale-[1.02]' 
-                    : 'border-white/10 bg-white/5 hover:border-rose-500/50 hover:bg-white/10'
-                  }
-                `}
-              >
-                {selectedPlan === 'pj' && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                    <Badge className="bg-rose-500 text-white border-0 shadow-lg">
-                      Selecionado
-                    </Badge>
-                  </div>
-                )}
+              <div className="relative flex flex-col p-6 rounded-2xl border-2 border-emerald-500/50 bg-gradient-to-br from-emerald-500/20 to-teal-500/10 text-left hover:border-emerald-400 transition-all group">
+                <div className="absolute -top-3 left-4">
+                  <Badge className="bg-emerald-500 text-white border-0 shadow-lg text-xs">
+                    EMPRESA • MAIS PEDIDO
+                  </Badge>
+                </div>
                 <div className="flex items-center gap-3 mb-4">
-                  <div className={`p-3 rounded-xl ${selectedPlan === 'pj' ? 'bg-rose-500' : 'bg-white/10'}`}>
-                    <Building2 className={`h-6 w-6 ${selectedPlan === 'pj' ? 'text-white' : 'text-slate-300'}`} />
+                  <div className="p-3 rounded-xl bg-emerald-500">
+                    <Building2 className="h-6 w-6 text-white" />
                   </div>
                   <div>
-                    <p className={`font-bold text-lg ${selectedPlan === 'pj' ? 'text-white' : 'text-slate-200'}`}>
-                      Empresa
-                    </p>
-                    <p className="text-sm text-slate-400">Para CNPJ</p>
+                    <p className="font-bold text-lg text-white">Limpa Nome CNPJ</p>
+                    <p className="text-sm text-emerald-300">Para empresas</p>
                   </div>
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-sm text-slate-400">R$</span>
-                  <span className={`text-4xl font-bold ${selectedPlan === 'pj' ? 'text-white' : 'text-slate-200'}`}>
+                  <span className="text-sm text-emerald-300">R$</span>
+                  <span className="text-5xl font-bold text-white">
                     970
                   </span>
-                  <span className="text-sm text-slate-400">,00</span>
+                  <span className="text-sm text-emerald-300">,00</span>
                 </div>
-                <div className="mt-4 pt-4 border-t border-white/10">
+                <p className="text-green-400 text-sm font-semibold mt-1">
+                  ou 4x de R$ 242,50 sem juros
+                </p>
+                <div className="mt-4 pt-4 border-t border-emerald-500/30 space-y-2">
                   <div className="flex items-center gap-2 text-sm text-slate-300">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-                    <span>Regularização CNPJ</span>
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span>Regularização completa do CNPJ</span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-slate-300 mt-2">
-                    <CreditCard className="h-4 w-4 text-emerald-400" />
-                    <span>Parcelamento disponível</span>
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span>Volte a ter crédito empresarial</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-green-400" />
+                    <span>Processo jurídico completo</span>
                   </div>
                 </div>
-              </button>
+                <Button 
+                  onClick={handleCheckoutPJ}
+                  className="w-full mt-6 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold py-6 text-base shadow-lg shadow-emerald-500/25 group-hover:shadow-emerald-500/40 transition-all"
+                >
+                  <Building2 className="h-5 w-5 mr-2" />
+                  Limpar meu CNPJ agora
+                  <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
             </motion.div>
 
             {/* Urgency Timer */}
@@ -321,30 +347,14 @@ export default function LimpaNomeLanding() {
               </div>
             </motion.div>
 
-            {/* CTA */}
-            <motion.div variants={itemVariants} className="flex justify-center mb-10 sm:mb-12 px-4">
-              <Button 
-                size="lg" 
-                onClick={handleDirectCheckout}
-                disabled={isCheckoutLoading}
-                className="bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-xl shadow-lg shadow-rose-500/25 hover:shadow-rose-500/40 transition-all duration-300 group disabled:opacity-70"
-              >
-                {isCheckoutLoading ? (
-                  <>
-                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    Iniciando...
-                  </>
-                ) : (
-                  <>
-                    <Users className="h-5 w-5 mr-2" />
-                    Limpar meu nome agora
-                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </>
-                )}
-              </Button>
+            {/* Guarantee & Stats */}
+            <motion.div variants={itemVariants} className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/20 border border-green-500/30 text-green-400 text-sm font-medium">
+                <Shield className="h-4 w-4" />
+                <span>100% de satisfação ou seu dinheiro de volta</span>
+              </div>
             </motion.div>
-
-            {/* Stats */}
+            
             <motion.div 
               variants={itemVariants}
               className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 max-w-2xl mx-auto"

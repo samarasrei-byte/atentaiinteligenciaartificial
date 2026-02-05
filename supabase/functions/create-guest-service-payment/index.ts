@@ -402,7 +402,7 @@ serve(async (req) => {
         },
       ],
       mode: "payment",
-      payment_method_types: ["card", "pix"],
+      payment_method_types: ["card"],
       success_url: `${origin}/payment-success?type=${serviceType}&request_id=${requestId}&guest=true`,
       cancel_url: `${origin}/${
         serviceType === 'ir' ? 'ir' 
