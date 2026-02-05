@@ -6,21 +6,23 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
+import { Card, CardContent } from '@/components/ui/card';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Building2, 
   MapPin, 
   DollarSign, 
   FileText,
-  Check,
   Users,
-  Info
+  Info,
+  TrendingUp,
+  Zap,
+  Building,
+  Factory
 } from 'lucide-react';
-import OnboardingLayoutPremium from './OnboardingLayoutPremium';
-import OnboardingStepHeader from './OnboardingStepHeader';
-import OnboardingOptionCard from './OnboardingOptionCard';
-import { Card, CardContent } from '@/components/ui/card';
+import OnboardingLayoutUltimate from './OnboardingLayoutUltimate';
 import FiscalBenefitCard from './FiscalBenefitCard';
-import RevenueBoard from './RevenueBoard';
+import { cn } from '@/lib/utils';
 
 interface CompanyData {
   company_name: string;
@@ -33,38 +35,32 @@ interface CompanyData {
   employee_count: number;
   state: string;
   city: string;
-  main_activity: string;
 }
 
 const COMPANY_TYPES = [
-  { value: 'mei', label: 'MEI', description: 'Faturamento até R$ 81.000/ano' },
-  { value: 'me', label: 'Microempresa (ME)', description: 'Faturamento até R$ 360.000/ano' },
-  { value: 'epp', label: 'EPP', description: 'Faturamento até R$ 4.800.000/ano' },
-  { value: 'ltda', label: 'LTDA', description: 'Sociedade Limitada' },
-  { value: 'eireli', label: 'EIRELI', description: 'Empresa Individual' },
-  { value: 'sa_fechada', label: 'S.A. Fechada', description: 'Capital fechado' },
-  { value: 'sa_aberta', label: 'S.A. Aberta', description: 'Capital aberto' },
-  { value: 'cooperativa', label: 'Cooperativa', description: 'Sociedade cooperativa' },
+  { value: 'mei', label: 'MEI', icon: Zap },
+  { value: 'me', label: 'ME', icon: Building },
+  { value: 'epp', label: 'EPP', icon: Building2 },
+  { value: 'ltda', label: 'LTDA', icon: Users },
+  { value: 'eireli', label: 'EIRELI', icon: Factory },
+  { value: 'sa_fechada', label: 'S.A.', icon: TrendingUp },
 ];
 
 const TAX_REGIMES = [
-  { value: 'simples_nacional', label: 'Simples Nacional', description: 'Regime simplificado para ME e EPP' },
-  { value: 'lucro_presumido', label: 'Lucro Presumido', description: 'Base de cálculo presumida' },
-  { value: 'lucro_real', label: 'Lucro Real', description: 'Tributos sobre lucro efetivo' },
-  { value: 'lucro_arbitrado', label: 'Lucro Arbitrado', description: 'Quando não há escrituração' },
+  { value: 'simples_nacional', label: 'Simples Nacional' },
+  { value: 'lucro_presumido', label: 'Lucro Presumido' },
+  { value: 'lucro_real', label: 'Lucro Real' },
+  { value: 'lucro_arbitrado', label: 'Lucro Arbitrado' },
 ];
 
 const SECTORS = [
   { value: 'comercio', label: 'Comércio' },
   { value: 'servicos', label: 'Serviços' },
   { value: 'industria', label: 'Indústria' },
-  { value: 'agronegocio', label: 'Agronegócio' },
   { value: 'tecnologia', label: 'Tecnologia' },
   { value: 'saude', label: 'Saúde' },
   { value: 'educacao', label: 'Educação' },
-  { value: 'construcao', label: 'Construção Civil' },
-  { value: 'transporte', label: 'Transporte' },
-  { value: 'alimentacao', label: 'Alimentação' },
+  { value: 'construcao', label: 'Construção' },
   { value: 'outro', label: 'Outro' },
 ];
 
@@ -104,11 +100,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
     employee_count: 0,
     state: '',
     city: '',
-    main_activity: '',
   });
-
-  // Threshold for fiscal benefit: R$ 600.000/month = 60.000.000 cents
-  const FISCAL_BENEFIT_THRESHOLD = 60000000;
 
   const totalSteps = 4;
 
@@ -133,7 +125,17 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(cents / 100);
+  };
+
+  const getCompanySize = () => {
+    const annual = formData.monthly_revenue_cents * 12;
+    if (annual <= 8100000) return { label: 'MEI', color: 'text-green-500' };
+    if (annual <= 36000000) return { label: 'Microempresa', color: 'text-blue-500' };
+    if (annual <= 480000000) return { label: 'EPP', color: 'text-purple-500' };
+    return { label: 'Grande Porte', color: 'text-amber-500' };
   };
 
   const canProceed = () => {
@@ -171,15 +173,14 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
           employee_count: formData.employee_count,
           state: formData.state,
           city: formData.city || null,
-          main_activity: formData.main_activity || null,
           onboarding_completed: true,
         });
 
       if (error) throw error;
 
       toast({
-        title: 'Empresa cadastrada!',
-        description: 'Seus dados foram salvos com sucesso',
+        title: '🎉 Empresa cadastrada!',
+        description: 'Bem-vindo ao seu painel!',
       });
       
       onComplete();
@@ -187,7 +188,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
       toast({
         variant: 'destructive',
         title: 'Erro',
-        description: error.message || 'Erro ao salvar dados da empresa',
+        description: error.message || 'Erro ao salvar dados',
       });
     } finally {
       setIsSubmitting(false);
@@ -195,8 +196,7 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   };
 
   const nextStep = () => {
-    // SEMPRE mostrar sugestão de Análise Fiscal após step 3 (dados financeiros)
-    // para todos os leads, independente do faturamento
+    // Mostrar benefício fiscal após step 3
     if (step === 3 && formData.monthly_revenue_cents > 0 && !fiscalBenefitHandled) {
       setShowFiscalBenefit(true);
       return;
@@ -212,11 +212,10 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
   const handleFiscalBenefitAccept = () => {
     setFiscalBenefitHandled(true);
     setShowFiscalBenefit(false);
-    // Navigate to fiscal module after completing onboarding
     sessionStorage.setItem('pendingFiscalAnalysis', 'true');
     toast({
       title: '🎉 Análise Fiscal Reservada!',
-      description: 'Após o cadastro, você será direcionado para sua análise gratuita.',
+      description: 'Você será direcionado após o cadastro.',
     });
     setStep(step + 1);
   };
@@ -237,12 +236,12 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
     }
   };
 
-  // If showing fiscal benefit, render only that card
+  // Fiscal benefit modal
   if (showFiscalBenefit) {
     return (
-      <OnboardingLayoutPremium
+      <OnboardingLayoutUltimate
         title="Benefício Exclusivo"
-        subtitle="Identificamos uma oportunidade especial para sua empresa"
+        subtitle="Identificamos uma oportunidade"
         icon={Building2}
         iconColor="from-emerald-500 to-primary"
         steps={steps}
@@ -258,14 +257,14 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
           onAccept={handleFiscalBenefitAccept}
           onSkip={handleFiscalBenefitSkip}
         />
-      </OnboardingLayoutPremium>
+      </OnboardingLayoutUltimate>
     );
   }
 
   return (
-    <OnboardingLayoutPremium
+    <OnboardingLayoutUltimate
       title="Configure sua Empresa"
-      subtitle="Personalize sua experiência em poucos passos"
+      subtitle="Personalize em 4 passos rápidos"
       icon={Building2}
       iconColor="from-primary to-blue-500"
       steps={steps}
@@ -277,196 +276,249 @@ const CompanyOnboarding: React.FC<CompanyOnboardingProps> = ({ onComplete }) => 
       isSubmitting={isSubmitting}
       submitLabel="Finalizar"
     >
-      {/* Step 1: Identificação */}
+      {/* Step 1: Identificação - Compacto */}
       {step === 1 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={Building2}
-            title="Identificação da Empresa"
-            description="Informe os dados básicos da sua empresa"
-          />
-          
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="company_name">Razão Social *</Label>
-              <Input
-                id="company_name"
-                value={formData.company_name}
-                onChange={(e) => updateFormData('company_name', e.target.value)}
-                placeholder="Nome oficial da empresa"
-              />
-            </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="company_name" className="text-sm font-medium">
+              Razão Social *
+            </Label>
+            <Input
+              id="company_name"
+              value={formData.company_name}
+              onChange={(e) => updateFormData('company_name', e.target.value)}
+              placeholder="Nome oficial da empresa"
+              className="h-11"
+              autoFocus
+            />
+          </div>
 
+          <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2">
-              <Label htmlFor="trade_name">Nome Fantasia</Label>
+              <Label className="text-sm font-medium">Nome Fantasia</Label>
               <Input
-                id="trade_name"
                 value={formData.trade_name}
                 onChange={(e) => updateFormData('trade_name', e.target.value)}
-                placeholder="Nome comercial (opcional)"
+                placeholder="Opcional"
+                className="h-10"
               />
             </div>
-
             <div className="space-y-2">
-              <Label htmlFor="cnpj">CNPJ</Label>
+              <Label className="text-sm font-medium">CNPJ</Label>
               <Input
-                id="cnpj"
                 value={formData.cnpj}
                 onChange={handleCNPJChange}
                 placeholder="00.000.000/0000-00"
+                className="h-10"
               />
             </div>
+          </div>
 
-            <div className="space-y-3">
-              <Label>Tipo de Empresa *</Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {COMPANY_TYPES.map((type) => (
-                  <OnboardingOptionCard
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Tipo de Empresa *</Label>
+            <div className="grid grid-cols-3 gap-2">
+              {COMPANY_TYPES.map((type) => {
+                const TypeIcon = type.icon;
+                return (
+                  <motion.button
                     key={type.value}
-                    label={type.label}
-                    description={type.description}
-                    selected={formData.company_type === type.value}
+                    type="button"
                     onClick={() => updateFormData('company_type', type.value)}
-                    compact
-                  />
-                ))}
-              </div>
+                    className={cn(
+                      "flex flex-col items-center gap-1 p-2.5 rounded-lg border-2 transition-all",
+                      formData.company_type === type.value
+                        ? "border-primary bg-primary/10 text-foreground"
+                        : "border-border/50 hover:border-primary/30 text-muted-foreground"
+                    )}
+                    whileTap={{ scale: 0.97 }}
+                  >
+                    <TypeIcon className="h-4 w-4" />
+                    <span className="text-xs font-medium">{type.label}</span>
+                  </motion.button>
+                );
+              })}
             </div>
           </div>
         </div>
       )}
 
-      {/* Step 2: Regime Tributário */}
+      {/* Step 2: Regime Tributário - Compacto */}
       {step === 2 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={FileText}
-            title="Regime Tributário"
-            description="Selecione o regime atual da sua empresa"
-          />
-
-          <div className="space-y-4">
-            <div className="space-y-3">
-              <Label>Regime Tributário *</Label>
-              <div className="space-y-2">
-                {TAX_REGIMES.map((regime) => (
-                  <OnboardingOptionCard
-                    key={regime.value}
-                    label={regime.label}
-                    description={regime.description}
-                    selected={formData.tax_regime === regime.value}
-                    onClick={() => updateFormData('tax_regime', regime.value)}
-                  />
-                ))}
-              </div>
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Regime Tributário *</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {TAX_REGIMES.map((regime) => (
+                <motion.button
+                  key={regime.value}
+                  type="button"
+                  onClick={() => updateFormData('tax_regime', regime.value)}
+                  className={cn(
+                    "p-3 rounded-lg border-2 text-left transition-all",
+                    formData.tax_regime === regime.value
+                      ? "border-primary bg-primary/10"
+                      : "border-border/50 hover:border-primary/30"
+                  )}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className={cn(
+                    "text-xs font-medium",
+                    formData.tax_regime === regime.value ? "text-foreground" : "text-muted-foreground"
+                  )}>
+                    {regime.label}
+                  </span>
+                </motion.button>
+              ))}
             </div>
+          </div>
 
-            <div className="space-y-2">
-              <Label>Setor de Atuação *</Label>
-              <Select
-                value={formData.sector}
-                onValueChange={(value) => updateFormData('sector', value)}
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Setor de Atuação *</Label>
+            <Select
+              value={formData.sector}
+              onValueChange={(value) => updateFormData('sector', value)}
+            >
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Selecione o setor" />
+              </SelectTrigger>
+              <SelectContent>
+                {SECTORS.map((sector) => (
+                  <SelectItem key={sector.value} value={sector.value}>
+                    {sector.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Financeiro - Compacto com análise */}
+      {step === 3 && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="revenue" className="text-sm font-medium">
+              Faturamento Mensal *
+            </Label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+                R$
+              </span>
+              <Input
+                id="revenue"
+                type="text"
+                inputMode="decimal"
+                value={formData.monthly_revenue_cents > 0 
+                  ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2 }).format(formData.monthly_revenue_cents / 100) 
+                  : ''}
+                onChange={(e) => {
+                  let rawValue = e.target.value.replace(/[^\d.,]/g, '');
+                  const cleanValue = rawValue.replace(/\./g, '').replace(',', '.');
+                  const numericValue = parseFloat(cleanValue) || 0;
+                  updateFormData('monthly_revenue_cents', Math.round(numericValue * 100));
+                }}
+                placeholder="0,00"
+                className="pl-12 h-14 text-xl font-bold"
+                autoFocus
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Número de Funcionários</Label>
+            <Select
+              value={formData.employee_count.toString()}
+              onValueChange={(value) => updateFormData('employee_count', parseInt(value))}
+            >
+              <SelectTrigger className="h-11">
+                <SelectValue placeholder="Selecione" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="0">Nenhum</SelectItem>
+                <SelectItem value="1">1-5</SelectItem>
+                <SelectItem value="6">6-10</SelectItem>
+                <SelectItem value="11">11-50</SelectItem>
+                <SelectItem value="51">51-100</SelectItem>
+                <SelectItem value="100">100+</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <AnimatePresence>
+            {formData.monthly_revenue_cents > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione o setor" />
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Anual</p>
+                        <p className="text-lg font-bold">
+                          {formatCurrency(formData.monthly_revenue_cents * 12)}
+                        </p>
+                      </div>
+                      <div className={cn("text-sm font-semibold", getCompanySize().color)}>
+                        {getCompanySize().label}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      )}
+
+      {/* Step 4: Localização - Ultra compacto */}
+      {step === 4 && (
+        <div className="space-y-4">
+          <div className="grid grid-cols-3 gap-3">
+            <div className="space-y-2">
+              <Label className="text-sm font-medium">Estado *</Label>
+              <Select
+                value={formData.state}
+                onValueChange={(value) => updateFormData('state', value)}
+              >
+                <SelectTrigger className="h-11">
+                  <SelectValue placeholder="UF" />
                 </SelectTrigger>
                 <SelectContent>
-                  {SECTORS.map((sector) => (
-                    <SelectItem key={sector.value} value={sector.value}>
-                      {sector.label}
+                  {STATES.map((state) => (
+                    <SelectItem key={state} value={state}>
+                      {state}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="main_activity">Atividade Principal</Label>
+            <div className="col-span-2 space-y-2">
+              <Label className="text-sm font-medium">Cidade</Label>
               <Input
-                id="main_activity"
-                value={formData.main_activity}
-                onChange={(e) => updateFormData('main_activity', e.target.value)}
-                placeholder="Ex: Desenvolvimento de software, Comércio varejista..."
+                value={formData.city}
+                onChange={(e) => updateFormData('city', e.target.value)}
+                placeholder="Sua cidade"
+                className="h-11"
               />
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Step 3: Dados Financeiros - NOVO BOARD MODERNO */}
-      {step === 3 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={DollarSign}
-            title="Dados Financeiros"
-            description="Este é o dado mais importante para personalizarmos sua experiência"
-          />
-
-          <RevenueBoard
-            monthlyRevenue={formData.monthly_revenue_cents}
-            employeeCount={formData.employee_count}
-            onRevenueChange={(value) => updateFormData('monthly_revenue_cents', value)}
-            onEmployeeChange={(value) => updateFormData('employee_count', value)}
-            companyType={formData.company_type}
-          />
-        </div>
-      )}
-
-      {/* Step 4: Localização */}
-      {step === 4 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={MapPin}
-            title="Localização"
-            description="Informe onde sua empresa está localizada"
-          />
-
-          <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label>Estado *</Label>
-                <Select
-                  value={formData.state}
-                  onValueChange={(value) => updateFormData('state', value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="UF" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATES.map((state) => (
-                      <SelectItem key={state} value={state}>
-                        {state}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <Card className="bg-muted/30 border-border/50">
+            <CardContent className="p-3">
+              <div className="flex items-start gap-2">
+                <Info className="h-4 w-4 text-muted-foreground flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-muted-foreground">
+                  A localização é usada para calcular impostos estaduais e municipais.
+                </p>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="city">Cidade</Label>
-                <Input
-                  id="city"
-                  value={formData.city}
-                  onChange={(e) => updateFormData('city', e.target.value)}
-                  placeholder="Sua cidade"
-                />
-              </div>
-            </div>
-
-            <Card className="bg-muted/50 border-border">
-              <CardContent className="pt-4">
-                <div className="flex items-start gap-3">
-                  <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-muted-foreground">
-                    A localização é importante para calcularmos os impostos estaduais e municipais corretamente.
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+            </CardContent>
+          </Card>
         </div>
       )}
-    </OnboardingLayoutPremium>
+    </OnboardingLayoutUltimate>
   );
 };
 

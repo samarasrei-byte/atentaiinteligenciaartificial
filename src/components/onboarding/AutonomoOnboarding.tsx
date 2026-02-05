@@ -3,70 +3,52 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
-  MapPin, 
   DollarSign, 
   Briefcase,
-  Check,
   TrendingUp,
   AlertCircle,
-  Sparkles,
   Zap
 } from 'lucide-react';
-import OnboardingLayoutPremium from './OnboardingLayoutPremium';
-import OnboardingStepHeader from './OnboardingStepHeader';
-import OnboardingCard3D from './OnboardingCard3D';
-import OnboardingInput from './OnboardingInput';
+import OnboardingLayoutUltimate from './OnboardingLayoutUltimate';
+import { cn } from '@/lib/utils';
 
 interface AutonomoData {
   profession: string;
   profession_category: string;
   current_regime: string;
   monthly_revenue_average_cents: number;
-  state: string;
-  city: string;
-  cpf: string;
-  phone: string;
-  bio: string;
 }
 
 const PROFESSION_CATEGORIES = [
-  { value: 'saude', label: 'Saúde', examples: 'Médico, Dentista, Fisioterapeuta', icon: '🏥' },
-  { value: 'tecnologia', label: 'Tecnologia', examples: 'Desenvolvedor, Designer, Analista', icon: '💻' },
-  { value: 'juridico', label: 'Jurídico', examples: 'Advogado, Consultor Jurídico', icon: '⚖️' },
-  { value: 'contabilidade', label: 'Contabilidade', examples: 'Contador, Auditor', icon: '📊' },
-  { value: 'engenharia', label: 'Engenharia', examples: 'Engenheiro Civil, Elétrico', icon: '🏗️' },
-  { value: 'educacao', label: 'Educação', examples: 'Professor, Instrutor, Tutor', icon: '📚' },
-  { value: 'consultoria', label: 'Consultoria', examples: 'Consultor de Negócios', icon: '💼' },
-  { value: 'arte_criativo', label: 'Arte e Criativo', examples: 'Fotógrafo, Músico', icon: '🎨' },
-  { value: 'comercio', label: 'Comércio e Vendas', examples: 'Representante, Corretor', icon: '🛒' },
-  { value: 'outros', label: 'Outros', examples: 'Outras profissões', icon: '✨' },
+  { value: 'saude', label: 'Saúde', icon: '🏥' },
+  { value: 'tecnologia', label: 'Tecnologia', icon: '💻' },
+  { value: 'juridico', label: 'Jurídico', icon: '⚖️' },
+  { value: 'contabilidade', label: 'Contabilidade', icon: '📊' },
+  { value: 'engenharia', label: 'Engenharia', icon: '🏗️' },
+  { value: 'educacao', label: 'Educação', icon: '📚' },
+  { value: 'consultoria', label: 'Consultoria', icon: '💼' },
+  { value: 'arte_criativo', label: 'Arte/Criativo', icon: '🎨' },
+  { value: 'comercio', label: 'Comércio', icon: '🛒' },
+  { value: 'outros', label: 'Outros', icon: '✨' },
 ];
 
 const TAX_REGIMES = [
-  { value: 'pessoa_fisica', label: 'Pessoa Física (PF)', description: 'Tributação pelo Carnê-Leão/IRPF', icon: User },
-  { value: 'mei', label: 'MEI', description: 'Microempreendedor Individual (até R$ 81.000/ano)', icon: Zap },
-  { value: 'simples_nacional', label: 'Simples Nacional (ME)', description: 'Microempresa no Simples Nacional', icon: TrendingUp },
-  { value: 'lucro_presumido', label: 'Lucro Presumido', description: 'Empresa no regime de Lucro Presumido', icon: DollarSign },
-  { value: 'nao_sei', label: 'Não sei', description: 'Não tenho certeza do meu regime atual', icon: AlertCircle },
-];
-
-const STATES = [
-  'AC', 'AL', 'AP', 'AM', 'BA', 'CE', 'DF', 'ES', 'GO', 'MA', 
-  'MT', 'MS', 'MG', 'PA', 'PB', 'PR', 'PE', 'PI', 'RJ', 'RN', 
-  'RS', 'RO', 'RR', 'SC', 'SP', 'SE', 'TO'
+  { value: 'pessoa_fisica', label: 'Pessoa Física', icon: User, color: 'border-blue-500/30 bg-blue-500/5' },
+  { value: 'mei', label: 'MEI', icon: Zap, color: 'border-green-500/30 bg-green-500/5' },
+  { value: 'simples_nacional', label: 'Simples Nacional', icon: TrendingUp, color: 'border-purple-500/30 bg-purple-500/5' },
+  { value: 'lucro_presumido', label: 'Lucro Presumido', icon: DollarSign, color: 'border-amber-500/30 bg-amber-500/5' },
+  { value: 'nao_sei', label: 'Não sei', icon: AlertCircle, color: 'border-muted-foreground/20 bg-muted/50' },
 ];
 
 const steps = [
   { id: 1, title: 'Profissão', icon: Briefcase },
   { id: 2, title: 'Regime', icon: DollarSign },
-  { id: 3, title: 'Financeiro', icon: TrendingUp },
+  { id: 3, title: 'Faturamento', icon: TrendingUp },
 ];
 
 interface AutonomoOnboardingProps {
@@ -83,11 +65,6 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
     profession_category: '',
     current_regime: '',
     monthly_revenue_average_cents: 0,
-    state: '',
-    city: '',
-    cpf: '',
-    phone: '',
-    bio: '',
   });
 
   const totalSteps = 3;
@@ -108,38 +85,12 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
-  const formatCPF = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    return numbers.replace(
-      /^(\d{3})(\d{3})(\d{3})(\d{2})$/,
-      '$1.$2.$3-$4'
-    );
-  };
-
-  const handleCPFChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 11);
-    updateFormData('cpf', formatCPF(value));
-  };
-
-  const formatPhone = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 10) {
-      return numbers.replace(/^(\d{2})(\d{4})(\d{4})$/, '($1) $2-$3');
-    }
-    return numbers.replace(/^(\d{2})(\d{5})(\d{4})$/, '($1) $2-$3');
-  };
-
-  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/\D/g, '').slice(0, 11);
-    updateFormData('phone', formatPhone(value));
-  };
-
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL',
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     }).format(cents / 100);
   };
 
@@ -159,26 +110,11 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
   const getRevenueAnalysis = () => {
     const annual = formData.monthly_revenue_average_cents * 12;
     if (annual <= 8100000) {
-      return {
-        icon: Zap,
-        color: 'text-green-500 bg-green-500/10',
-        title: 'MEI Compatível! 🎉',
-        message: 'Seu faturamento é compatível com o MEI! Vamos simular se é a melhor opção para você.',
-      };
+      return { color: 'text-green-500', title: 'Compatível com MEI 🎉' };
     } else if (annual <= 36000000) {
-      return {
-        icon: TrendingUp,
-        color: 'text-blue-500 bg-blue-500/10',
-        title: 'ME - Simples Nacional',
-        message: 'Seu faturamento é compatível com ME (Simples Nacional). Vamos comparar as opções.',
-      };
+      return { color: 'text-blue-500', title: 'ME - Simples Nacional' };
     } else {
-      return {
-        icon: DollarSign,
-        color: 'text-purple-500 bg-purple-500/10',
-        title: 'Estrutura Empresarial',
-        message: 'Seu faturamento indica que uma estrutura empresarial pode ser mais vantajosa.',
-      };
+      return { color: 'text-purple-500', title: 'Estrutura Empresarial' };
     }
   };
 
@@ -195,39 +131,29 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
           profession_category: formData.profession_category,
           current_regime: formData.current_regime,
           monthly_revenue_average_cents: formData.monthly_revenue_average_cents,
-          state: formData.state,
-          city: formData.city || null,
-          cpf: formData.cpf || null,
-          phone: formData.phone || null,
-          bio: formData.bio || null,
         }, { onConflict: 'user_id' });
 
       if (error) throw error;
 
       // Add autonomo role
-      const { error: roleError } = await supabase
+      await supabase
         .from('user_roles')
         .upsert(
           { user_id: user.id, role: 'autonomo' },
           { onConflict: 'user_id,role', ignoreDuplicates: true }
         );
 
-      if (roleError) {
-        console.error('Error adding autonomo role:', roleError);
-      }
-
       toast({
         title: '🎉 Perfil configurado!',
-        description: 'Seus dados foram salvos com sucesso. Bem-vindo!',
+        description: 'Bem-vindo ao seu painel!',
       });
       
-      // Reload page to refresh auth context with new role
       window.location.href = '/autonomo';
     } catch (error: any) {
       toast({
         variant: 'destructive',
         title: 'Erro',
-        description: error.message || 'Erro ao salvar dados do perfil',
+        description: error.message || 'Erro ao salvar dados',
       });
       setIsSubmitting(false);
     }
@@ -248,9 +174,9 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
   };
 
   return (
-    <OnboardingLayoutPremium
+    <OnboardingLayoutUltimate
       title="Configure seu Perfil"
-      subtitle="Personalize sua experiência como autônomo"
+      subtitle="Personalize em 3 passos rápidos"
       icon={User}
       iconColor="from-primary to-primary/80"
       steps={steps}
@@ -262,187 +188,155 @@ const AutonomoOnboarding: React.FC<AutonomoOnboardingProps> = ({ onComplete }) =
       isSubmitting={isSubmitting}
       submitLabel="Começar"
     >
-      {/* Step 1: Profissão */}
+      {/* Step 1: Profissão - Grid compacto */}
       {step === 1 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={Briefcase}
-            title="Sua Profissão"
-            description="Informe sua área de atuação"
-          />
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="profession" className="text-sm font-medium">
+              Qual sua profissão? *
+            </Label>
+            <Input
+              id="profession"
+              value={formData.profession}
+              onChange={(e) => updateFormData('profession', e.target.value)}
+              placeholder="Ex: Desenvolvedor, Médico, Designer..."
+              className="h-11"
+              autoFocus
+            />
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-sm font-medium">Categoria *</Label>
+            <div className="grid grid-cols-2 gap-2">
+              {PROFESSION_CATEGORIES.map((cat) => (
+                <motion.button
+                  key={cat.value}
+                  type="button"
+                  onClick={() => updateFormData('profession_category', cat.value)}
+                  className={cn(
+                    "flex items-center gap-2 p-2.5 rounded-lg border-2 transition-all text-left",
+                    formData.profession_category === cat.value
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-border/50 hover:border-primary/30 text-muted-foreground hover:text-foreground"
+                  )}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <span className="text-base">{cat.icon}</span>
+                  <span className="text-xs font-medium truncate">{cat.label}</span>
+                </motion.button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Step 2: Regime Tributário - Cards verticais compactos */}
+      {step === 2 && (
+        <div className="space-y-3">
+          <p className="text-sm text-muted-foreground">
+            Como você atua atualmente?
+          </p>
           
-          <div className="space-y-4">
-            <motion.div 
-              className="space-y-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Label htmlFor="profession" className="flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" />
-                Profissão *
-              </Label>
+          <div className="space-y-2">
+            {TAX_REGIMES.map((regime) => {
+              const RegimeIcon = regime.icon;
+              const isSelected = formData.current_regime === regime.value;
+              
+              return (
+                <motion.button
+                  key={regime.value}
+                  type="button"
+                  onClick={() => updateFormData('current_regime', regime.value)}
+                  className={cn(
+                    "w-full flex items-center gap-3 p-3 rounded-xl border-2 transition-all text-left",
+                    isSelected
+                      ? "border-primary bg-primary/10"
+                      : `border-border/50 hover:border-primary/30 ${regime.color}`
+                  )}
+                  whileTap={{ scale: 0.99 }}
+                >
+                  <div className={cn(
+                    "w-9 h-9 rounded-lg flex items-center justify-center",
+                    isSelected ? "bg-primary text-primary-foreground" : "bg-muted/50"
+                  )}>
+                    <RegimeIcon className="h-4 w-4" />
+                  </div>
+                  <span className={cn(
+                    "text-sm font-medium",
+                    isSelected ? "text-foreground" : "text-muted-foreground"
+                  )}>
+                    {regime.label}
+                  </span>
+                </motion.button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Step 3: Faturamento - Input grande com análise */}
+      {step === 3 && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="revenue" className="text-sm font-medium">
+              Faturamento mensal médio *
+            </Label>
+            <div className="relative">
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-semibold">
+                R$
+              </span>
               <Input
-                id="profession"
-                value={formData.profession}
-                onChange={(e) => updateFormData('profession', e.target.value)}
-                placeholder="Ex: Desenvolvedor de Software, Médico, Designer..."
-                className="h-12 text-base"
+                id="revenue"
+                type="text"
+                inputMode="decimal"
+                value={formData.monthly_revenue_average_cents > 0 
+                  ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(formData.monthly_revenue_average_cents / 100) 
+                  : ''}
+                onChange={(e) => {
+                  let rawValue = e.target.value;
+                  rawValue = rawValue.replace(/[^\d.,]/g, '');
+                  const cleanValue = rawValue.replace(/\./g, '').replace(',', '.');
+                  const numericValue = parseFloat(cleanValue) || 0;
+                  updateFormData('monthly_revenue_average_cents', Math.round(numericValue * 100));
+                }}
+                placeholder="0,00"
+                className="pl-12 h-14 text-xl font-bold"
                 autoFocus
               />
-            </motion.div>
-
-            <motion.div 
-              className="space-y-3"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Label className="flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-primary" />
-                Categoria Profissional *
-              </Label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {PROFESSION_CATEGORIES.map((cat, idx) => (
-                  <OnboardingCard3D
-                    key={cat.value}
-                    label={`${cat.icon} ${cat.label}`}
-                    description={cat.examples}
-                    selected={formData.profession_category === cat.value}
-                    onClick={() => updateFormData('profession_category', cat.value)}
-                    compact
-                    delay={idx * 0.05}
-                  />
-                ))}
-              </div>
-            </motion.div>
+            </div>
           </div>
-        </div>
-      )}
 
-      {/* Step 2: Regime Tributário */}
-      {step === 2 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={DollarSign}
-            title="Regime Tributário"
-            description="Como você atua hoje?"
-          />
-
-          <div className="space-y-3">
-            {TAX_REGIMES.map((regime, idx) => (
-              <OnboardingCard3D
-                key={regime.value}
-                label={regime.label}
-                description={regime.description}
-                selected={formData.current_regime === regime.value}
-                onClick={() => updateFormData('current_regime', regime.value)}
-                icon={regime.icon}
-                delay={idx * 0.1}
-              />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Step 3: Dados Financeiros */}
-      {step === 3 && (
-        <div className="space-y-6">
-          <OnboardingStepHeader
-            icon={TrendingUp}
-            title="Dados Financeiros"
-            description="Informe seu faturamento médio mensal"
-          />
-
-          <div className="space-y-4">
-            <motion.div 
-              className="space-y-2"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <Label htmlFor="revenue" className="flex items-center gap-2">
-                <DollarSign className="h-4 w-4 text-primary" />
-                Faturamento Mensal Médio *
-              </Label>
-              <div className="relative">
-                <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground font-bold text-lg">R$</span>
-                <Input
-                  id="revenue"
-                  type="text"
-                  inputMode="decimal"
-                  value={formData.monthly_revenue_average_cents > 0 
-                    ? new Intl.NumberFormat('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(formData.monthly_revenue_average_cents / 100) 
-                    : ''}
-                  onChange={(e) => {
-                    // Parse Brazilian number format (1.234,56) correctly
-                    let rawValue = e.target.value;
-                    // Remove everything except digits, comma and dot
-                    rawValue = rawValue.replace(/[^\d.,]/g, '');
-                    // Remove thousand separators (dots) and convert comma to dot for parsing
-                    const cleanValue = rawValue.replace(/\./g, '').replace(',', '.');
-                    const numericValue = parseFloat(cleanValue) || 0;
-                    // Convert to cents
-                    updateFormData('monthly_revenue_average_cents', Math.round(numericValue * 100));
-                  }}
-                  placeholder="0,00"
-                  className="pl-14 h-14 text-xl sm:text-2xl font-bold"
-                  autoFocus
-                />
-              </div>
-              <motion.p 
-                className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2 flex-wrap"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
+          {/* Análise em tempo real */}
+          <AnimatePresence>
+            {formData.monthly_revenue_average_cents > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
               >
-                <TrendingUp className="h-4 w-4 flex-shrink-0" />
-                <span>Faturamento anual estimado:</span>
-                <span className="font-semibold text-foreground">{formatCurrency(formData.monthly_revenue_average_cents * 12)}</span>
-              </motion.p>
-            </motion.div>
-
-            <AnimatePresence>
-              {formData.monthly_revenue_average_cents > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0, y: 20 }}
-                  animate={{ opacity: 1, height: 'auto', y: 0 }}
-                  exit={{ opacity: 0, height: 0, y: -20 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  {(() => {
-                    const analysis = getRevenueAnalysis();
-                    const AnalysisIcon = analysis.icon;
-                    return (
-                      <Card className="overflow-hidden border-2 border-primary/20">
-                        <CardContent className="p-4">
-                          <div className="flex items-start gap-4">
-                            <motion.div 
-                              className={`p-3 rounded-xl ${analysis.color}`}
-                              initial={{ scale: 0 }}
-                              animate={{ scale: 1, rotate: [0, 10, -10, 0] }}
-                              transition={{ duration: 0.5 }}
-                            >
-                              <AnalysisIcon className="h-6 w-6" />
-                            </motion.div>
-                            <div className="flex-1">
-                              <p className="font-bold text-foreground">{analysis.title}</p>
-                              <p className="text-sm text-muted-foreground mt-1">
-                                {analysis.message}
-                              </p>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })()}
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
+                <Card className="border-primary/20 bg-primary/5">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs text-muted-foreground">Anual estimado</p>
+                        <p className="text-lg font-bold text-foreground">
+                          {formatCurrency(formData.monthly_revenue_average_cents * 12)}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className={cn("text-sm font-semibold", getRevenueAnalysis().color)}>
+                          {getRevenueAnalysis().title}
+                        </p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
-
-    </OnboardingLayoutPremium>
+    </OnboardingLayoutUltimate>
   );
 };
 
