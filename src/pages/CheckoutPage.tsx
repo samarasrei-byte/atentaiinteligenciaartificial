@@ -182,6 +182,7 @@ export default function CheckoutPage() {
   const navigate = useNavigate();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedType, setSelectedType] = useState<'pf' | 'pj'>('pf');
   const [formData, setFormData] = useState({
     fullName: searchParams.get('name') || '',
     email: searchParams.get('email') || '',
@@ -191,7 +192,27 @@ export default function CheckoutPage() {
   const [phoneValid, setPhoneValid] = useState(false);
   const [cpfValid, setCpfValid] = useState(false);
 
-  const service = serviceSlug ? serviceConfigs[serviceSlug] : null;
+  // Determine if this is a limpa-nome service to show PF/PJ selector
+  const isLimpaNome = serviceSlug?.startsWith('limpa-nome');
+  
+  // Use selectedType for limpa-nome services, otherwise use URL slug
+  const effectiveSlug = useMemo(() => {
+    if (isLimpaNome) {
+      return `limpa-nome-${selectedType}`;
+    }
+    return serviceSlug;
+  }, [isLimpaNome, selectedType, serviceSlug]);
+  
+  const service = effectiveSlug ? serviceConfigs[effectiveSlug] : null;
+  
+  // Set initial selectedType based on URL
+  useEffect(() => {
+    if (serviceSlug === 'limpa-nome-pj') {
+      setSelectedType('pj');
+    } else if (serviceSlug === 'limpa-nome-pf') {
+      setSelectedType('pf');
+    }
+  }, [serviceSlug]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -333,6 +354,53 @@ export default function CheckoutPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5 }}
           >
+            {/* PF/PJ Selector for Limpa Nome */}
+            {isLimpaNome && (
+              <div className="mb-6">
+                <p className="text-white/60 text-sm mb-3">Selecione o tipo:</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedType('pf')}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${
+                      selectedType === 'pf'
+                        ? 'border-blue-500 bg-blue-500/20'
+                        : 'border-white/20 bg-white/5 hover:border-white/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${selectedType === 'pf' ? 'bg-blue-500' : 'bg-white/10'}`}>
+                        <CreditCard className={`h-5 w-5 ${selectedType === 'pf' ? 'text-white' : 'text-white/60'}`} />
+                      </div>
+                      <div>
+                        <p className={`font-semibold ${selectedType === 'pf' ? 'text-white' : 'text-white/80'}`}>Pessoa Física</p>
+                        <p className="text-xs text-white/50">CPF - R$ 780,00</p>
+                      </div>
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedType('pj')}
+                    className={`p-4 rounded-xl border-2 transition-all text-left ${
+                      selectedType === 'pj'
+                        ? 'border-emerald-500 bg-emerald-500/20'
+                        : 'border-white/20 bg-white/5 hover:border-white/40'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className={`p-2 rounded-lg ${selectedType === 'pj' ? 'bg-emerald-500' : 'bg-white/10'}`}>
+                        <Building2 className={`h-5 w-5 ${selectedType === 'pj' ? 'text-white' : 'text-white/60'}`} />
+                      </div>
+                      <div>
+                        <p className={`font-semibold ${selectedType === 'pj' ? 'text-white' : 'text-white/80'}`}>Empresa</p>
+                        <p className="text-xs text-white/50">CNPJ - R$ 970,00</p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+
             {/* Service Card */}
             <Card className={`bg-white/5 backdrop-blur-xl border-white/10 overflow-hidden`}>
               <CardContent className="p-6 md:p-8">
