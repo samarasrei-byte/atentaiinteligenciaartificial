@@ -52,6 +52,7 @@ import { AdminSubscriptionsPanel } from '@/components/admin/AdminSubscriptionsPa
 import AdminAlertsHub from '@/components/admin/AdminAlertsHub';
 import ServiceManagement from '@/components/admin/ServiceManagement';
 import PanelManagement from '@/components/admin/PanelManagement';
+import { RoleManagementTab } from '@/components/admin/RoleManagementTab';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -275,10 +276,6 @@ const AdminPanel = () => {
 
   const handleRefresh = async () => { setIsRefreshing(true); await fetchAdminData(); toast({ title: 'Dados atualizados!' }); };
   const handleTabChange = (tab: string) => { 
-    if (tab === 'roles') {
-      navigate('/admin/roles');
-      return;
-    }
     // Painéis externos agora são tabs embutidas no admin (não mais navegação externa)
     setActiveTab(tab); 
     setSearchParams({ tab }); 
@@ -424,6 +421,9 @@ const AdminPanel = () => {
           {activeTab === 'metrics' && <UsageMetrics data={{ aiQuestionsToday: stats.aiQuestionsToday, aiQuestionsThisWeek: stats.aiQuestionsThisWeek, aiQuestionsThisMonth: stats.aiQuestionsThisMonth, simulationsToday: stats.simulationsToday, simulationsThisWeek: stats.simulationsThisWeek, simulationsThisMonth: stats.simulationsThisMonth, activeUsersToday: stats.activeUsersToday, activeUsersThisWeek: stats.activeUsersThisWeek, consultationsScheduledThisWeek: 0, consultationsCompletedThisWeek: 0, averageResponseTime: 2.5, peakHour: '14:00' }} />}
           
           {activeTab === 'contadores' && <ContadoresManagement />}
+
+          {/* Gestão de Roles - Nova tab integrada */}
+          {activeTab === 'roles' && <RoleManagementTab />}
 
           {/* Empresas - Lista de empresas cadastradas */}
           {activeTab === 'empresas' && (
