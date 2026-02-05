@@ -33,6 +33,7 @@ import {
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
+import { PaymentLinkRenderer } from '@/components/chat/PaymentLinkRenderer';
 
 interface ChatMessage {
   id: string;
@@ -726,7 +727,7 @@ César`);
                             ? "bg-violet-600 text-white rounded-br-md" 
                             : "bg-white text-slate-900 border border-slate-200 rounded-bl-md"
                         )}>
-                          <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                          <PaymentLinkRenderer content={msg.content} variant="admin" />
                           
                           {/* Renderizar anexos */}
                           {msg.attachment_url && (
