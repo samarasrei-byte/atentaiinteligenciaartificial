@@ -190,20 +190,20 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
 
   // Has active request - show chat
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full overflow-hidden">
       <div>
-        <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground flex items-center gap-2 flex-wrap">
           <MessageSquare className="h-6 w-6 text-primary" />
           Chat {serviceName}
           <Sparkles className="h-4 w-4 text-amber-500" />
         </h2>
-        <p className="text-muted-foreground">
+        <p className="text-sm sm:text-base text-muted-foreground">
           Converse com {specialistName} sobre sua {serviceName.toLowerCase()}
         </p>
       </div>
       
       {activeRequest ? (
-        <FiscalChatPanel requestId={activeRequest.id} serviceType={serviceType} specialistId={specialistId} />
+        <FiscalChatPanel requestId={activeRequest.id} serviceType={serviceType} specialistId={specialistId} className="w-full" />
       ) : (
         <Card className="border-2 border-dashed border-primary/30 bg-primary/5">
           <CardContent className="flex flex-col items-center justify-center min-h-[400px] text-center p-8">

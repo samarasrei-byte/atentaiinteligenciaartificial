@@ -34,6 +34,7 @@ import {
 } from 'lucide-react';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { PaymentLinkRenderer } from '@/components/chat/PaymentLinkRenderer';
 
 interface UserRequestDetailProps {
   requestId: string;
@@ -415,7 +416,7 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
                                 ? 'bg-slate-100 text-slate-900 rounded-tl-sm' 
                                 : 'bg-indigo-600 text-white rounded-tr-sm'
                             }`}>
-                              <p className="text-sm">{message.content}</p>
+                              <PaymentLinkRenderer content={message.content} variant="user" />
                               {message.attachment_url && (
                                 <a 
                                   href={message.attachment_url} 

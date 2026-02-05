@@ -26,6 +26,7 @@ import {
 import { toast } from 'sonner';
 import { format, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { PaymentLinkRenderer } from '@/components/chat/PaymentLinkRenderer';
 
 interface FiscalChatMessage {
   id: string;
@@ -355,7 +356,7 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
   }
 
   return (
-    <Card className={`flex flex-col h-[600px] ${className}`}>
+    <Card className={`flex flex-col h-full min-h-[400px] max-h-[calc(100vh-200px)] ${className}`}>
       {/* Header */}
       <CardHeader className="border-b bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/30 dark:to-indigo-950/30 py-3">
         <div className="flex items-center justify-between">
@@ -438,45 +439,13 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
                     {!isOwn && !showAvatar && <div className="w-10" />}
                     
                     <div
-                      className={`max-w-[75%] px-4 py-2.5 rounded-2xl ${
+                      className={`max-w-[85%] sm:max-w-[75%] px-4 py-2.5 rounded-2xl ${
                         isOwn
                           ? 'bg-primary text-primary-foreground rounded-br-md'
                           : 'bg-muted rounded-bl-md'
                       }`}
                     >
-                      {/* Detectar e renderizar botões de pagamento Stripe */}
-                      {msg.content.includes('stripe.com') || msg.content.includes('checkout.stripe.com') ? (
-                        <div className="space-y-3">
-                          <p className="text-sm whitespace-pre-wrap">
-                            {msg.content.split(/https?:\/\/[^\s]+/)[0]}
-                          </p>
-                          {(() => {
-                            const urlMatch = msg.content.match(/(https?:\/\/[^\s]+stripe[^\s]+)/);
-                            if (urlMatch) {
-                              return (
-                                <a
-                                  href={urlMatch[1]}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
-                                    isOwn 
-                                      ? 'bg-white/20 hover:bg-white/30 text-white' 
-                                      : 'bg-primary hover:bg-primary/90 text-white'
-                                  }`}
-                                >
-                                  💳 Pagar Agora
-                                </a>
-                              );
-                            }
-                            return null;
-                          })()}
-                          <p className="text-sm whitespace-pre-wrap">
-                            {msg.content.split(/https?:\/\/[^\s]+/).slice(1).join('')}
-                          </p>
-                        </div>
-                      ) : (
-                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                      )}
+                      <PaymentLinkRenderer content={msg.content} variant="user" />
                       
                       {msg.attachment_url && (
                         <a
