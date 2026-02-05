@@ -71,6 +71,8 @@ interface Service {
   commission_percent: number;
   icon: string | null;
   is_active: boolean;
+  price_cents: number | null;
+  source: 'affiliate' | 'marketplace';
 }
 
 interface Commission {
@@ -196,11 +198,50 @@ export default function AffiliatePanel() {
         .order('created_at', { ascending: false });
       setLeads(leadsData || []);
 
-      const { data: servicesData } = await supabase
+      // Buscar serviços de afiliados
+      const { data: affiliateServicesData } = await supabase
         .from('affiliate_services')
         .select('*')
         .eq('is_active', true);
-      setServices(servicesData || []);
+      
+      // Buscar serviços do marketplace (admin_services) ativos
+      const { data: marketplaceServicesData } = await supabase
+        .from('admin_services')
+        .select('*')
+        .eq('is_active', true);
+      
+      // Combinar e normalizar os serviços
+      const affiliateServices: Service[] = (affiliateServicesData || []).map(s => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        description: s.description,
+        benefits: s.benefits,
+        commission_percent: s.commission_percent,
+        icon: s.icon,
+        is_active: s.is_active || false,
+        price_cents: s.base_price_cents,
+        source: 'affiliate' as const,
+      }));
+      
+      const marketplaceServices: Service[] = (marketplaceServicesData || []).map(s => ({
+        id: s.id,
+        name: s.name,
+        slug: s.slug,
+        description: s.description,
+        benefits: null,
+        commission_percent: 15, // Comissão padrão para serviços do marketplace
+        icon: s.icon,
+        is_active: s.is_active || false,
+        price_cents: s.price_cents,
+        source: 'marketplace' as const,
+      }));
+      
+      // Combinar e remover duplicatas (priorizar affiliate_services se houver conflito)
+      const affiliateSlugs = new Set(affiliateServices.map(s => s.slug));
+      const uniqueMarketplace = marketplaceServices.filter(s => !affiliateSlugs.has(s.slug));
+      
+      setServices([...affiliateServices, ...uniqueMarketplace]);
 
       const { data: activationsData } = await supabase
         .from('affiliate_service_activations')

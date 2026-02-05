@@ -419,11 +419,6 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   };
 
   const handleItemClick = (tabId: string, chatBadge?: 'guilherme' | 'cesar') => {
-    if (tabId === 'roles') {
-      navigate('/admin/roles');
-      return;
-    }
-    
     // Mark chat as read when clicked
     if (chatBadge) {
       markAsRead(chatBadge);
