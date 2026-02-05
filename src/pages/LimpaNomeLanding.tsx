@@ -207,35 +207,103 @@ export default function LimpaNomeLanding() {
             </motion.div>
 
             {/* Plan Selector */}
-            <motion.div variants={itemVariants} className="flex justify-center gap-4 mb-6">
-              {(['pf', 'pj'] as const).map((plan) => {
-                const PlanIcon = plans[plan].icon;
-                const isSelected = selectedPlan === plan;
-                return (
-                  <button
-                    key={plan}
-                    onClick={() => setSelectedPlan(plan)}
-                    className={`
-                      flex items-center gap-3 px-6 py-4 rounded-xl border-2 transition-all
-                      ${isSelected 
-                        ? 'border-rose-500 bg-rose-500/20 shadow-lg shadow-rose-500/20' 
-                        : 'border-white/10 bg-white/5 hover:border-rose-500/50'
-                      }
-                    `}
-                  >
-                    <PlanIcon className={`h-5 w-5 ${isSelected ? 'text-rose-400' : 'text-slate-400'}`} />
-                    <div className="text-left">
-                      <p className={`font-semibold ${isSelected ? 'text-white' : 'text-slate-300'}`}>
-                        {plans[plan].label}
-                      </p>
-                      <p className="text-sm text-slate-400">
-                        R$ {plans[plan].price.toLocaleString('pt-BR')}
-                      </p>
-                    </div>
-                    {isSelected && <CheckCircle2 className="h-5 w-5 text-rose-400" />}
-                  </button>
-                );
-              })}
+            {/* Price Cards */}
+            <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-2xl mx-auto mb-6 px-4">
+              {/* Card CPF */}
+              <button
+                onClick={() => setSelectedPlan('pf')}
+                className={`
+                  relative flex flex-col p-6 rounded-2xl border-2 transition-all text-left
+                  ${selectedPlan === 'pf' 
+                    ? 'border-rose-500 bg-rose-500/20 shadow-lg shadow-rose-500/30 scale-[1.02]' 
+                    : 'border-white/10 bg-white/5 hover:border-rose-500/50 hover:bg-white/10'
+                  }
+                `}
+              >
+                {selectedPlan === 'pf' && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-rose-500 text-white border-0 shadow-lg">
+                      Selecionado
+                    </Badge>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-3 rounded-xl ${selectedPlan === 'pf' ? 'bg-rose-500' : 'bg-white/10'}`}>
+                    <User className={`h-6 w-6 ${selectedPlan === 'pf' ? 'text-white' : 'text-slate-300'}`} />
+                  </div>
+                  <div>
+                    <p className={`font-bold text-lg ${selectedPlan === 'pf' ? 'text-white' : 'text-slate-200'}`}>
+                      Pessoa Física
+                    </p>
+                    <p className="text-sm text-slate-400">Para CPF</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-sm text-slate-400">R$</span>
+                  <span className={`text-4xl font-bold ${selectedPlan === 'pf' ? 'text-white' : 'text-slate-200'}`}>
+                    780
+                  </span>
+                  <span className="text-sm text-slate-400">,00</span>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <span>Exclusão de restrições</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-300 mt-2">
+                    <CreditCard className="h-4 w-4 text-emerald-400" />
+                    <span>Parcelamento disponível</span>
+                  </div>
+                </div>
+              </button>
+
+              {/* Card CNPJ */}
+              <button
+                onClick={() => setSelectedPlan('pj')}
+                className={`
+                  relative flex flex-col p-6 rounded-2xl border-2 transition-all text-left
+                  ${selectedPlan === 'pj' 
+                    ? 'border-rose-500 bg-rose-500/20 shadow-lg shadow-rose-500/30 scale-[1.02]' 
+                    : 'border-white/10 bg-white/5 hover:border-rose-500/50 hover:bg-white/10'
+                  }
+                `}
+              >
+                {selectedPlan === 'pj' && (
+                  <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                    <Badge className="bg-rose-500 text-white border-0 shadow-lg">
+                      Selecionado
+                    </Badge>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className={`p-3 rounded-xl ${selectedPlan === 'pj' ? 'bg-rose-500' : 'bg-white/10'}`}>
+                    <Building2 className={`h-6 w-6 ${selectedPlan === 'pj' ? 'text-white' : 'text-slate-300'}`} />
+                  </div>
+                  <div>
+                    <p className={`font-bold text-lg ${selectedPlan === 'pj' ? 'text-white' : 'text-slate-200'}`}>
+                      Empresa
+                    </p>
+                    <p className="text-sm text-slate-400">Para CNPJ</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-1">
+                  <span className="text-sm text-slate-400">R$</span>
+                  <span className={`text-4xl font-bold ${selectedPlan === 'pj' ? 'text-white' : 'text-slate-200'}`}>
+                    970
+                  </span>
+                  <span className="text-sm text-slate-400">,00</span>
+                </div>
+                <div className="mt-4 pt-4 border-t border-white/10">
+                  <div className="flex items-center gap-2 text-sm text-slate-300">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                    <span>Regularização CNPJ</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm text-slate-300 mt-2">
+                    <CreditCard className="h-4 w-4 text-emerald-400" />
+                    <span>Parcelamento disponível</span>
+                  </div>
+                </div>
+              </button>
             </motion.div>
 
             {/* Urgency Timer */}

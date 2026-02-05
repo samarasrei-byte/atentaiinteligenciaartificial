@@ -134,10 +134,13 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "https://lovable.dev";
     
     // Create checkout session with PIX + Card support
+    // NOTE: PIX disabled - needs to be activated in Stripe Dashboard first
+    // Once enabled in https://dashboard.stripe.com/account/payments/settings
+    // add 'pix' back to payment_method_types: ['card', 'pix']
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail || undefined,
-      payment_method_types: ['card', 'pix'],
+      payment_method_types: ['card'],
       line_items: [
         {
           price_data: {

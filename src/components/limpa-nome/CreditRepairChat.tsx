@@ -364,7 +364,39 @@ export function CreditRepairChat({
                           : 'bg-muted text-foreground rounded-bl-sm'
                       }`}
                     >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      {/* Detectar e renderizar botões de pagamento Stripe */}
+                      {message.content.includes('stripe.com') || message.content.includes('checkout.stripe.com') ? (
+                        <div className="space-y-3">
+                          <p className="text-sm whitespace-pre-wrap">
+                            {message.content.split(/https?:\/\/[^\s]+/)[0]}
+                          </p>
+                          {(() => {
+                            const urlMatch = message.content.match(/(https?:\/\/[^\s]+stripe[^\s]+)/);
+                            if (urlMatch) {
+                              return (
+                                <a
+                                  href={urlMatch[1]}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg font-medium text-sm transition-all ${
+                                    isMine 
+                                      ? 'bg-white/20 hover:bg-white/30 text-white' 
+                                      : 'bg-primary hover:bg-primary/90 text-white'
+                                  }`}
+                                >
+                                  💳 Pagar Agora
+                                </a>
+                              );
+                            }
+                            return null;
+                          })()}
+                          <p className="text-sm whitespace-pre-wrap">
+                            {message.content.split(/https?:\/\/[^\s]+/).slice(1).join('')}
+                          </p>
+                        </div>
+                      ) : (
+                        <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                      )}
                       {renderAttachment(message)}
                       <div className={`flex items-center gap-1 mt-1 ${isMine ? 'justify-end' : ''}`}>
                         <span className={`text-xs ${isMine ? 'text-primary-foreground/70' : 'text-muted-foreground'}`}>
