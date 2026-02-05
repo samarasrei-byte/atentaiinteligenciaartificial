@@ -62,6 +62,25 @@ const DashboardRouter = () => {
         return;
       }
 
+      // FAST-TRACK: Admin users with admin role go directly to admin panel
+      // This prevents unnecessary delays for known admin accounts
+      if (hasRole('admin')) {
+        if (!hasNavigatedRef.current) {
+          hasNavigatedRef.current = true;
+          navigate('/admin', { replace: true });
+        }
+        return;
+      }
+
+      // FAST-TRACK: equipe_guilherme users go directly to admin (chat-only access)
+      if (hasRole('equipe_guilherme')) {
+        if (!hasNavigatedRef.current) {
+          hasNavigatedRef.current = true;
+          navigate('/admin?tab=chat', { replace: true });
+        }
+        return;
+      }
+
       setIsChecking(true);
 
       try {
@@ -72,13 +91,10 @@ const DashboardRouter = () => {
             const isAffiliate = await withTimeout(checkAffiliateStatus(), 3000, 'checkAffiliateStatus');
 
             // Count special profiles (NOT including empresa/user as it's always available as fallback)
+            // Note: admin and equipe_guilherme are handled via fast-track above, so they won't reach here
             let specialProfilesCount = 0;
             const availableProfiles: string[] = [];
 
-            if (hasRole('admin')) {
-              specialProfilesCount++;
-              availableProfiles.push('admin');
-            }
             // Only count contador if feature is enabled
             if (isContadorEnabled() && hasRole('contador')) {
               specialProfilesCount++;
@@ -123,14 +139,8 @@ const DashboardRouter = () => {
               return;
             }
 
-            // Priority-based routing: admin > contador > affiliate > autonomo > empresa
-            if (hasRole('admin')) {
-              if (!hasNavigatedRef.current) {
-                hasNavigatedRef.current = true;
-                navigate('/admin', { replace: true });
-              }
-              return;
-            }
+            // Priority-based routing: contador > affiliate > autonomo > empresa
+            // Note: admin is already handled via fast-track at the top
             
             // Only route to contador if feature is enabled
             if (isContadorEnabled() && hasRole('contador')) {
