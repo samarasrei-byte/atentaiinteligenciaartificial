@@ -588,7 +588,8 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
           'bg-slate-950 border-r border-slate-800/50',
-          collapsed ? 'w-16' : 'w-72'
+          // Mobile: full width when visible (controlled by parent), Desktop: collapsed/expanded
+          collapsed ? 'w-16' : 'w-64 lg:w-72'
         )}
       >
         {/* Logo */}

@@ -319,7 +319,7 @@ const AdminPanel = () => {
         <StripeSidebar collapsed={false} onToggle={() => setMobileMenuOpen(false)} activeTab={activeTab} onTabChange={handleTabChange} variant="admin" />
       </div>
       
-      <main className={`dashboard-main transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'}`}>
+      <main className={`dashboard-main transition-all duration-300 w-full ${sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-72'}`}>
         <header className="dashboard-header">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">

@@ -1240,7 +1240,7 @@ export default function AffiliatePanel() {
 
       {/* Sidebar */}
       <aside className={`
-        fixed lg:sticky top-0 left-0 z-50 h-screen w-72 
+        fixed lg:sticky top-0 left-0 z-50 h-screen w-64 lg:w-72 
         bg-card/95 backdrop-blur-xl border-r border-border/50
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
