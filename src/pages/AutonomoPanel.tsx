@@ -696,7 +696,7 @@ const AutonomoPanel: React.FC = () => {
       </div>
       
       <main className={cn(
-        'dashboard-main transition-all duration-300',
+        'dashboard-main transition-all duration-300 w-full',
         sidebarCollapsed ? 'lg:ml-16' : 'lg:ml-64'
       )}>
         <header className="dashboard-header">

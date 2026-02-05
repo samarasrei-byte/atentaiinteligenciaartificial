@@ -411,7 +411,9 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
         className={cn(
           'fixed left-0 top-0 z-40 h-screen transition-all duration-300 flex flex-col',
           'bg-sidebar border-r border-sidebar-border safe-area-top overflow-hidden',
-          collapsed ? 'w-14' : 'w-60'
+          // Desktop: controlled width based on collapsed state
+          // Mobile: full width when visible (controlled by parent via transform)
+          collapsed ? 'w-16 lg:w-16' : 'w-64'
         )}
       >
         {/* Logo */}
