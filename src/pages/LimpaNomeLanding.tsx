@@ -1,19 +1,16 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { 
   Shield, Lock, CheckCircle2, 
   Building2, Zap, Star, ArrowRight, ArrowLeft, XCircle,
-  Clock, Users, Heart, Handshake,
-  MessageCircle, Sparkles,
-  TrendingUp, Award, User, Scale,
-  CreditCard, AlertTriangle, Ban
+  Clock, Users, Heart, Handshake, Phone,
+  MessageCircle, Sparkles, Gift, ChevronDown,
+  TrendingUp, Award, User, Scale, ThumbsUp,
+  CreditCard, AlertTriangle, Ban, BadgeCheck
 } from "lucide-react";
 import { motion, useInView } from "framer-motion";
 import { Header } from "@/components/layout/Header";
@@ -41,7 +38,15 @@ export default function LimpaNomeLanding() {
   const [selectedPlan, setSelectedPlan] = useState<'pf' | 'pj'>('pf');
   const [urgencyMinutes, setUrgencyMinutes] = useState(14);
   const [urgencySeconds, setUrgencySeconds] = useState(59);
-  const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
+  const [activeFaq, setActiveFaq] = useState<number | null>(null);
+
+  // FAQ Data
+  const faqs = [
+    { question: "Isso é legal?", answer: "Sim! Usamos liminar coletiva e antecipação do prazo prescricional, ambos previstos no Código de Defesa do Consumidor." },
+    { question: "Em quanto tempo meu nome fica limpo?", answer: "Em média 7 dias úteis após o início do processo jurídico. Casos mais complexos podem levar até 30 dias." },
+    { question: "Funciona para qualquer dívida?", answer: "Funciona para dívidas prescritas ou com irregularidades. Fazemos uma análise prévia do seu caso." },
+    { question: "Qual a garantia?", answer: "100% de satisfação ou seu dinheiro de volta. Se não conseguirmos limpar seu nome, devolvemos o valor integral." },
+  ];
 
   // CHECKOUT FIRST: Direct navigation to checkout page
   const handleDirectCheckout = () => {
@@ -138,34 +143,8 @@ export default function LimpaNomeLanding() {
 
   return (
     <div className="min-h-screen bg-background overflow-x-hidden">
-      {/* Custom Header for dark hero - Logo in white */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-lg border-b border-white/10">
-        <div className="container max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
-          <button onClick={() => navigate('/')} className="flex items-center gap-2 group">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <Shield className="h-5 w-5 text-white" />
-            </div>
-            <span className="font-bold text-lg text-white">AtentAI</span>
-          </button>
-          <div className="flex items-center gap-2 text-white/80">
-            <Lock className="h-4 w-4" />
-            <span className="text-sm font-medium">Pagamento Seguro</span>
-          </div>
-        </div>
-      </header>
-      
-      {/* Back Button - Fixed Position */}
-      <div className="fixed top-20 left-4 z-50">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => navigate('/')}
-          className="bg-white/90 backdrop-blur-sm hover:bg-white shadow-lg border-slate-200"
-        >
-          <ArrowLeft className="h-4 w-4 mr-2" />
-          Voltar
-        </Button>
-      </div>
+      {/* Header padrão com logo original */}
+      <Header onNavigate={handleNavigate} />
       
       {/* Hero Section */}
       <section ref={heroRef} className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
@@ -501,14 +480,9 @@ export default function LimpaNomeLanding() {
 
                   <Button 
                     onClick={handleDirectCheckout}
-                    disabled={isCheckoutLoading}
                     className="w-full"
                   >
-                    {isCheckoutLoading ? (
-                      <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-                    ) : (
-                      <Handshake className="h-5 w-5 mr-2" />
-                    )}
+                    <Handshake className="h-5 w-5 mr-2" />
                     Conectar com Guilherme Barros
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
@@ -564,6 +538,84 @@ export default function LimpaNomeLanding() {
         </div>
       </section>
 
+      {/* FAQ Section */}
+      <section className="py-16 sm:py-20">
+        <div className="container max-w-3xl mx-auto px-4">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
+            <Badge variant="outline" className="mb-4 px-4 py-2">
+              <MessageCircle className="w-3 h-3 mr-2" />
+              Dúvidas frequentes
+            </Badge>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground">
+              Perguntas mais comuns
+            </h2>
+          </motion.div>
+
+          <div className="space-y-3">
+            {faqs.map((faq, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 10 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+              >
+                <button
+                  onClick={() => setActiveFaq(activeFaq === i ? null : i)}
+                  className="w-full text-left p-5 rounded-xl bg-card border border-border hover:border-primary/30 transition-colors"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-foreground">{faq.question}</span>
+                    <ChevronDown className={`h-5 w-5 text-muted-foreground transition-transform ${activeFaq === i ? 'rotate-180' : ''}`} />
+                  </div>
+                  {activeFaq === i && (
+                    <p className="mt-3 text-muted-foreground">{faq.answer}</p>
+                  )}
+                </button>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Guarantee Section */}
+      <section className="py-16 sm:py-20 bg-gradient-to-br from-green-500/5 to-emerald-500/5">
+        <div className="container max-w-4xl mx-auto px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            className="text-center p-8 sm:p-12 rounded-3xl border-2 border-green-500/30 bg-card"
+          >
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-500/20 flex items-center justify-center">
+              <BadgeCheck className="h-10 w-10 text-green-500" />
+            </div>
+            <h3 className="text-2xl sm:text-3xl font-bold text-foreground mb-4">
+              Garantia Total de Satisfação
+            </h3>
+            <p className="text-lg text-muted-foreground mb-6 max-w-2xl mx-auto">
+              Se não conseguirmos limpar seu nome, <span className="text-green-500 font-bold">devolvemos 100% do valor</span>. 
+              Sem letras miúdas, sem complicação. É a nossa promessa.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-600">
+                <ThumbsUp className="h-4 w-4" />
+                <span className="text-sm font-medium">Satisfação garantida</span>
+              </div>
+              <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-green-500/10 text-green-600">
+                <Gift className="h-4 w-4" />
+                <span className="text-sm font-medium">Bônus: Aumento de Score</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* Final CTA */}
       <section className="py-20 sm:py-28">
         <div className="container max-w-3xl mx-auto px-4 text-center">
@@ -582,14 +634,9 @@ export default function LimpaNomeLanding() {
             <Button 
               size="lg"
               onClick={handleDirectCheckout}
-              disabled={isCheckoutLoading}
               className="h-16 px-12 text-lg bg-gradient-to-r from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 disabled:opacity-70"
             >
-              {isCheckoutLoading ? (
-                <Loader2 className="h-5 w-5 mr-2 animate-spin" />
-              ) : (
-                <Users className="h-5 w-5 mr-2" />
-              )}
+              <Users className="h-5 w-5 mr-2" />
               Limpar meu nome agora
               <ArrowRight className="h-5 w-5 ml-2" />
             </Button>
