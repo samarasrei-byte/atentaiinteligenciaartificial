@@ -142,26 +142,45 @@ const AdminPanel = () => {
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'overview');
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  // Check if user has admin or equipe_guilherme (chat-only) access
+  const hasAdminAccess = hasRole('admin');
+  const hasEquipeAccess = hasRole('equipe_guilherme');
+  const hasAnyAdminAccess = hasAdminAccess || hasEquipeAccess;
+
+  // equipe_guilherme can ONLY access chat tabs
+  const chatOnlyTabs = ['chat', 'chat-fiscal', 'chat-bi', 'chat-limpa-nome'];
+  const isAllowedTab = hasAdminAccess || chatOnlyTabs.includes(activeTab);
+
   useEffect(() => {
     if (!authLoading) {
       if (!user) navigate('/auth');
-      else if (!hasRole('admin')) {
+      else if (!hasAnyAdminAccess) {
         toast({ variant: 'destructive', title: 'Acesso negado', description: 'Apenas administradores' });
         navigate('/dashboard');
+      } else if (hasEquipeAccess && !hasAdminAccess && !chatOnlyTabs.includes(activeTab)) {
+        // Redirect equipe_guilherme to chat if they try to access other tabs
+        setActiveTab('chat');
+        setSearchParams({ tab: 'chat' });
       }
     }
-  }, [user, authLoading, hasRole, navigate, toast]);
+  }, [user, authLoading, hasAdminAccess, hasEquipeAccess, hasAnyAdminAccess, navigate, toast, activeTab]);
 
   useEffect(() => {
-    if (user && hasRole('admin')) {
-      fetchAdminData();
-      const ch = supabase.channel('admin-data')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchAdminData())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, () => fetchAdminData())
-        .subscribe();
-      return () => { supabase.removeChannel(ch); };
+    if (user && hasAnyAdminAccess) {
+      // Only fetch full admin data if user has full admin access
+      if (hasAdminAccess) {
+        fetchAdminData();
+        const ch = supabase.channel('admin-data')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => fetchAdminData())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' }, () => fetchAdminData())
+          .subscribe();
+        return () => { supabase.removeChannel(ch); };
+      } else {
+        // For equipe_guilherme, just mark as loaded
+        setIsLoading(false);
+      }
     }
-  }, [user, hasRole]);
+  }, [user, hasAdminAccess, hasAnyAdminAccess]);
 
   const fetchAdminData = async () => {
     try {

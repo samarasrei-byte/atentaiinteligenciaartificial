@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
 import { logAuditEvent } from '@/hooks/useAuditLog';
 
-type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate';
+type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate' | 'equipe_guilherme';
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode;
@@ -19,7 +19,8 @@ const roleLabels: Record<AppRole, string> = {
   contador: 'Contador',
   autonomo: 'Autônomo',
   user: 'Empresa',
-  affiliate: 'Afiliado'
+  affiliate: 'Afiliado',
+  equipe_guilherme: 'Equipe Guilherme'
 };
 
 export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
@@ -30,9 +31,12 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
   // Check if user has the required role OR is admin (admins can access all panels)
   // SPECIAL CASE: 'user' role (Empresa panel) is accessible to ALL authenticated users
   // This ensures anyone who logs in can access the basic empresa panel as a fallback
+  // SPECIAL CASE: 'equipe_guilherme' can access admin panel (chat-only mode enforced by UI)
   const hasAccess = requiredRole === 'user' 
     ? !!user 
-    : (hasRole(requiredRole) || hasRole('admin'));
+    : requiredRole === 'admin'
+      ? (hasRole('admin') || hasRole('equipe_guilherme'))
+      : (hasRole(requiredRole) || hasRole('admin'));
 
   // Log access attempt once
   useEffect(() => {

@@ -384,18 +384,32 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   variant = 'admin',
 }) => {
   const navigate = useNavigate();
-  const { user, profile, signOut } = useAuth();
+  const { user, profile, signOut, hasRole } = useAuth();
   const { unreadGuilherme, unreadCesar, markAsRead, hasBIAccess } = useAutoWelcomeMessages();
   
+  // Check if user is equipe_guilherme (restricted to chat only)
+  const isEquipeGuilherme = hasRole('equipe_guilherme') && !hasRole('admin');
+  
+  // Groups that equipe_guilherme can access (chat groups only)
+  const chatOnlyGroupIds = ['guilherme', 'cesar'];
+  
   const getGroups = () => {
+    let baseGroups: SidebarGroup[];
     switch (variant) {
-      case 'admin': return adminGroups;
-      case 'contador': return contadorGroups;
-      case 'autonomo': return autonomoGroups;
-      case 'empresa': return empresaGroups;
-      case 'afiliado': return afiliadoGroups;
-      default: return adminGroups;
+      case 'admin': baseGroups = adminGroups; break;
+      case 'contador': baseGroups = contadorGroups; break;
+      case 'autonomo': baseGroups = autonomoGroups; break;
+      case 'empresa': baseGroups = empresaGroups; break;
+      case 'afiliado': baseGroups = afiliadoGroups; break;
+      default: baseGroups = adminGroups;
     }
+    
+    // Filter groups for equipe_guilherme - only show chat groups
+    if (variant === 'admin' && isEquipeGuilherme) {
+      return baseGroups.filter(group => chatOnlyGroupIds.includes(group.id));
+    }
+    
+    return baseGroups;
   };
   
   const groups = getGroups();
