@@ -15,6 +15,7 @@ import {
 import { motion, useInView } from "framer-motion";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import limpaNomeHeroImage from "@/assets/limpa-nome-hero.png";
 
 // Parceiro fixo - Guilherme é responsável pelo Limpa Nome
 const PARTNER_INFO = {
@@ -184,14 +185,27 @@ export default function LimpaNomeLanding() {
               </div>
             </motion.div>
             
+            {/* Hero Image */}
+            <motion.div variants={itemVariants} className="mb-6 sm:mb-8">
+              <div className="relative mx-auto max-w-sm sm:max-w-md md:max-w-lg overflow-hidden rounded-2xl shadow-2xl shadow-rose-500/20 border border-white/10">
+                <img 
+                  src={limpaNomeHeroImage} 
+                  alt="Limpe seu nome" 
+                  className="w-full h-auto object-cover object-top"
+                  style={{ clipPath: 'inset(0 0 8% 0)' }}
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/60 via-transparent to-transparent" />
+              </div>
+            </motion.div>
+            
             {/* Headline */}
             <motion.h1 
               variants={itemVariants}
               className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 sm:mb-6 tracking-tight px-2"
             >
-              CHEGA de ficar com o{" "}
+              <span className="text-white">CHEGA</span> de ficar com o{" "}
               <span className="bg-gradient-to-r from-rose-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-                nome sujo!
+                NOME SUJO!
               </span>
             </motion.h1>
             
