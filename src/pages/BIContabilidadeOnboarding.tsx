@@ -571,9 +571,9 @@ const BIContabilidadeOnboarding = () => {
             </p>
           </motion.div>
 
-          {/* Progress Steps */}
+          {/* Progress Steps - Mobile Optimized */}
           <motion.div
-            className="flex items-center justify-center gap-2 md:gap-4 mb-8"
+            className="flex flex-wrap items-center justify-center gap-1 sm:gap-2 md:gap-4 mb-8 px-2"
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2 }}
@@ -587,32 +587,33 @@ const BIContabilidadeOnboarding = () => {
                 <React.Fragment key={s.id}>
                   <motion.div
                     className={cn(
-                      "relative flex flex-col items-center gap-1",
-                      isActive && "scale-110"
+                      "relative flex flex-col items-center gap-0.5 sm:gap-1",
+                      isActive && "scale-105 sm:scale-110"
                     )}
-                    animate={isActive ? { scale: 1.1 } : { scale: 1 }}
+                    animate={isActive ? { scale: 1.05 } : { scale: 1 }}
                   >
                     <motion.div
                       className={cn(
-                        "w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center transition-all duration-300",
+                        "w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-300",
                         isCompleted && "bg-gradient-to-br from-emerald-500 to-emerald-600 shadow-lg shadow-emerald-500/30",
-                        isActive && "bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30 ring-4 ring-indigo-500/20",
+                        isActive && "bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg shadow-indigo-500/30 ring-2 sm:ring-4 ring-indigo-500/20",
                         !isActive && !isCompleted && "bg-slate-800/50 border border-slate-700"
                       )}
                       whileHover={{ scale: 1.05 }}
                     >
                       {isCompleted ? (
-                        <Check className="h-6 w-6 text-white" />
+                        <Check className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                       ) : (
                         <StepIcon className={cn(
-                          "h-5 w-5 md:h-6 md:w-6",
+                          "h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6",
                           isActive ? "text-white" : "text-slate-500"
                         )} />
                       )}
                     </motion.div>
                     <span className={cn(
-                      "text-[10px] md:text-xs font-medium hidden sm:block",
-                      isActive ? "text-indigo-400" : isCompleted ? "text-emerald-400" : "text-slate-500"
+                      "text-[9px] sm:text-[10px] md:text-xs font-medium text-center max-w-[50px] sm:max-w-none truncate",
+                      isActive ? "text-indigo-400" : isCompleted ? "text-emerald-400" : "text-slate-500",
+                      "hidden xs:block sm:block"
                     )}>
                       {s.title}
                     </span>
@@ -620,7 +621,7 @@ const BIContabilidadeOnboarding = () => {
                   
                   {index < STEPS.length - 1 && (
                     <div className={cn(
-                      "w-8 md:w-16 h-1 rounded-full transition-colors duration-300",
+                      "w-4 sm:w-8 md:w-16 h-0.5 sm:h-1 rounded-full transition-colors duration-300 flex-shrink-0",
                       step > s.id ? "bg-gradient-to-r from-emerald-500 to-emerald-600" : "bg-slate-800"
                     )} />
                   )}

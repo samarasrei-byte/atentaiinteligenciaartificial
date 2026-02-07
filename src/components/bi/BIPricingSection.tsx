@@ -195,7 +195,7 @@ export function BIPricingSection() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto px-2">
           {orderedPlans.map((key) => {
             const config = planConfigs[key];
             const Icon = config.icon;
@@ -204,7 +204,7 @@ export function BIPricingSection() {
               <Card 
                 key={key}
                 className={`relative bg-card border-2 transition-all hover:shadow-2xl ${
-                  config.highlight ? 'ring-2 ring-accent md:scale-105 z-10' : 
+                  config.highlight ? 'ring-2 ring-accent md:scale-[1.02] lg:scale-105 z-10' : 
                   config.popular ? 'ring-2 ring-primary' : 'border-border hover:border-primary/50'
                 }`}
               >
