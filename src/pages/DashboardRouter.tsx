@@ -42,23 +42,37 @@ const DashboardRouter = () => {
 
   useEffect(() => {
     hasNavigatedRef.current = false;
+    let safetyTimeoutId: number | undefined;
 
     const determineDestination = async () => {
-      // If auth is still resolving, keep showing loading UI.
-      // But never let it hang indefinitely.
+      // If auth is still resolving, set a safety timeout but wait
       if (loading) {
-        // Safety: if loading gets stuck, force the user back to auth after a short delay.
-        window.setTimeout(() => {
-          if (!hasNavigatedRef.current && latestLoadingRef.current) {
+        // Safety: if loading gets stuck for 5 seconds, try to proceed anyway
+        safetyTimeoutId = window.setTimeout(() => {
+          if (!hasNavigatedRef.current) {
+            console.warn('DashboardRouter: Auth loading timeout - forcing navigation');
+            // If we have a user, go to empresa. Otherwise go to auth.
             hasNavigatedRef.current = true;
-            navigate('/auth', { replace: true });
+            if (user) {
+              navigate('/empresa', { replace: true });
+            } else {
+              navigate('/auth', { replace: true });
+            }
           }
-        }, 10000);
+        }, 5000);
         return;
       }
       
+      // Clear safety timeout since loading completed
+      if (safetyTimeoutId) {
+        window.clearTimeout(safetyTimeoutId);
+      }
+      
       if (!user) {
-        navigate('/auth', { replace: true });
+        if (!hasNavigatedRef.current) {
+          hasNavigatedRef.current = true;
+          navigate('/auth', { replace: true });
+        }
         return;
       }
 
@@ -194,10 +208,17 @@ const DashboardRouter = () => {
     };
 
     determineDestination();
+    
+    // Cleanup timeout on unmount
+    return () => {
+      if (safetyTimeoutId) {
+        window.clearTimeout(safetyTimeoutId);
+      }
+    };
   }, [user, loading, hasRole, roles, navigate, checkAffiliateStatus]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950">
+    <div className="min-h-screen flex items-center justify-center bg-background">
       <div className="text-center space-y-4">
         <Loader2 className="h-10 w-10 animate-spin text-primary mx-auto" />
         <p className="text-white/60 font-medium">
