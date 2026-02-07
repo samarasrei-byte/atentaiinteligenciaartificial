@@ -173,15 +173,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   useEffect(() => {
+    let isInitialLoad = true;
+    
     // Set up auth state listener FIRST
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        // Skip the initial INITIAL_SESSION event - we handle it via getSession()
+        // This prevents the race condition where loading is set to false prematurely
+        if (event === 'INITIAL_SESSION' && isInitialLoad) {
+          return;
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
           // CRITICAL: Await fetchUserData to ensure roles are loaded BEFORE setting loading=false
-          // This fixes the admin routing bug where hasRole('admin') returned false
           await fetchUserData(session.user.id);
         } else {
           setRoles([]);
@@ -193,17 +200,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    // THEN check for existing session
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // CRITICAL: Await to ensure roles are loaded before routing decisions
-        await fetchUserData(session.user.id);
+    // THEN check for existing session - this is the ONLY place that sets loading=false on initial load
+    const initSession = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Error getting session:', error);
+          setLoading(false);
+          isInitialLoad = false;
+          return;
+        }
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // CRITICAL: Await to ensure roles are loaded before routing decisions
+          await fetchUserData(session.user.id);
+        }
+      } catch (error) {
+        console.error('Error initializing session:', error);
+      } finally {
+        // ALWAYS set loading to false after initial session check
+        setLoading(false);
+        isInitialLoad = false;
       }
-      setLoading(false);
-    });
+    };
+    
+    initSession();
 
     return () => authSubscription.unsubscribe();
   }, []);
