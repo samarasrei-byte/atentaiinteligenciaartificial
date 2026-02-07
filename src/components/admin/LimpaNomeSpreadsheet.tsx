@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { Textarea } from '@/components/ui/textarea';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useToast } from '@/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
 import {
   Search,
   Loader2,
@@ -23,10 +25,13 @@ import {
   History,
   FileText,
   Filter,
+  CalendarIcon,
+  FileSpreadsheet,
 } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isWithinInterval, startOfDay, endOfDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
+import { cn } from '@/lib/utils';
 
 interface CreditRepairRequest {
   id: string;
@@ -41,6 +46,9 @@ interface CreditRepairRequest {
   contador_notes: string | null;
   created_at: string;
   data_submitted_at: string | null;
+  updated_at: string;
+  final_price_cents: number;
+  contador_id: string | null;
 }
 
 interface HistoryEntry {
@@ -49,6 +57,12 @@ interface HistoryEntry {
   action_description: string;
   created_at: string;
   metadata: Record<string, any> | null;
+  performed_by: string | null;
+}
+
+interface DateRange {
+  from: Date | undefined;
+  to: Date | undefined;
 }
 
 export function LimpaNomeSpreadsheet() {
@@ -63,9 +77,13 @@ export function LimpaNomeSpreadsheet() {
   const [history, setHistory] = useState<HistoryEntry[]>([]);
   const [notes, setNotes] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange>({ from: undefined, to: undefined });
+  const [contadores, setContadores] = useState<Record<string, string>>({});
+  const [historyDateRange, setHistoryDateRange] = useState<DateRange>({ from: undefined, to: undefined });
 
   useEffect(() => {
     fetchRequests();
+    fetchContadores();
 
     const channel = supabase
       .channel('admin-limpa-nome-spreadsheet')
@@ -75,11 +93,24 @@ export function LimpaNomeSpreadsheet() {
     return () => { supabase.removeChannel(channel); };
   }, []);
 
+  const fetchContadores = async () => {
+    const { data } = await supabase
+      .from('profiles')
+      .select('id, full_name')
+      .not('full_name', 'is', null);
+    
+    if (data) {
+      const map: Record<string, string> = {};
+      data.forEach(p => { map[p.id] = p.full_name || 'Sem nome'; });
+      setContadores(map);
+    }
+  };
+
   const fetchRequests = async () => {
     setIsLoading(true);
     const { data, error } = await supabase
       .from('credit_repair_requests')
-      .select('id, user_id, full_name, cpf, email, phone, birth_date, status, payment_status, contador_notes, created_at, data_submitted_at')
+      .select('id, user_id, full_name, cpf, email, phone, birth_date, status, payment_status, contador_notes, created_at, data_submitted_at, updated_at, final_price_cents, contador_id')
       .order('created_at', { ascending: false });
 
     if (error) {
@@ -110,17 +141,54 @@ export function LimpaNomeSpreadsheet() {
 
   const handleStatusChange = async (requestId: string, newStatus: string) => {
     setIsUpdating(true);
-    const updates: Partial<CreditRepairRequest> = { status: newStatus };
+    const oldRequest = requests.find(r => r.id === requestId);
     
     const { error } = await supabase
       .from('credit_repair_requests')
-      .update(updates)
+      .update({ status: newStatus, updated_at: new Date().toISOString() })
       .eq('id', requestId);
 
     if (error) {
       toast({ title: 'Erro ao atualizar status', variant: 'destructive' });
     } else {
+      // Log history
+      await supabase.from('credit_repair_history').insert({
+        request_id: requestId,
+        action_type: 'status_change',
+        action_description: `Status alterado de "${oldRequest?.status}" para "${newStatus}"`,
+        metadata: { old_status: oldRequest?.status, new_status: newStatus }
+      });
+      
       toast({ title: 'Status atualizado!' });
+      fetchRequests();
+    }
+    setIsUpdating(false);
+  };
+
+  const handleResponsibleChange = async (requestId: string, contadorId: string) => {
+    setIsUpdating(true);
+    const oldRequest = requests.find(r => r.id === requestId);
+    
+    const { error } = await supabase
+      .from('credit_repair_requests')
+      .update({ contador_id: contadorId === 'none' ? null : contadorId, updated_at: new Date().toISOString() })
+      .eq('id', requestId);
+
+    if (error) {
+      toast({ title: 'Erro ao atualizar responsável', variant: 'destructive' });
+    } else {
+      // Log history
+      await supabase.from('credit_repair_history').insert({
+        request_id: requestId,
+        action_type: 'responsible_change',
+        action_description: `Responsável alterado para "${contadores[contadorId] || 'Nenhum'}"`,
+        metadata: { 
+          old_responsible: oldRequest?.contador_id, 
+          new_responsible: contadorId === 'none' ? null : contadorId 
+        }
+      });
+      
+      toast({ title: 'Responsável atualizado!' });
       fetchRequests();
     }
     setIsUpdating(false);
@@ -132,12 +200,20 @@ export function LimpaNomeSpreadsheet() {
 
     const { error } = await supabase
       .from('credit_repair_requests')
-      .update({ contador_notes: notes })
+      .update({ contador_notes: notes, updated_at: new Date().toISOString() })
       .eq('id', selectedRequest.id);
 
     if (error) {
       toast({ title: 'Erro ao salvar observações', variant: 'destructive' });
     } else {
+      // Log history
+      await supabase.from('credit_repair_history').insert({
+        request_id: selectedRequest.id,
+        action_type: 'notes_update',
+        action_description: 'Observações atualizadas',
+        metadata: { notes_preview: notes?.substring(0, 100) }
+      });
+      
       toast({ title: 'Observações salvas!' });
       setShowNotesDialog(false);
       fetchRequests();
@@ -147,6 +223,7 @@ export function LimpaNomeSpreadsheet() {
 
   const openHistoryDialog = async (request: CreditRepairRequest) => {
     setSelectedRequest(request);
+    setHistoryDateRange({ from: undefined, to: undefined });
     await fetchHistory(request.id);
     setShowHistoryDialog(true);
   };
@@ -159,11 +236,11 @@ export function LimpaNomeSpreadsheet() {
 
   const getStatusBadge = (status: string) => {
     const config: Record<string, { class: string; icon: any; label: string }> = {
-      pending: { class: 'bg-amber-500/10 text-amber-500', icon: Clock, label: 'Pendente' },
-      in_progress: { class: 'bg-blue-500/10 text-blue-500', icon: AlertCircle, label: 'Em Andamento' },
-      negotiating: { class: 'bg-purple-500/10 text-purple-500', icon: MessageCircle, label: 'Negociando' },
+      pending: { class: 'bg-amber-500/10 text-amber-500', icon: Clock, label: 'Novo' },
+      in_progress: { class: 'bg-blue-500/10 text-blue-500', icon: AlertCircle, label: 'Em Análise' },
+      negotiating: { class: 'bg-purple-500/10 text-purple-500', icon: MessageCircle, label: 'Aprovado' },
       completed: { class: 'bg-emerald-500/10 text-emerald-500', icon: CheckCircle, label: 'Concluído' },
-      cancelled: { class: 'bg-red-500/10 text-red-500', icon: XCircle, label: 'Cancelado' },
+      cancelled: { class: 'bg-red-500/10 text-red-500', icon: XCircle, label: 'Recusado' },
     };
     const cfg = config[status] || config.pending;
     const Icon = cfg.icon;
@@ -180,69 +257,128 @@ export function LimpaNomeSpreadsheet() {
     return format(new Date(dateString), "dd/MM/yyyy HH:mm", { locale: ptBR });
   };
 
-  const filteredRequests = requests.filter(r => {
-    const matchesSearch = 
-      r.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.cpf?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      r.phone?.includes(searchTerm);
-    const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  });
+  const formatCurrency = (cents: number) => {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
+  };
 
-  const exportToPDF = () => {
-    const doc = new jsPDF();
-    
-    // Header
-    doc.setFontSize(18);
-    doc.text('Relatório Limpa Nome - Clientes', 14, 22);
-    doc.setFontSize(10);
-    doc.text(`Gerado em: ${format(new Date(), "dd/MM/yyyy HH:mm", { locale: ptBR })}`, 14, 30);
-    doc.text(`Total de clientes: ${filteredRequests.length}`, 14, 36);
-
-    // Table headers
-    const startY = 45;
-    const headers = ['Nome', 'CPF/CNPJ', 'Nascimento', 'Telefone', 'Envio', 'Status'];
-    const colWidths = [45, 35, 25, 30, 25, 25];
-    
-    doc.setFontSize(9);
-    doc.setFont('helvetica', 'bold');
-    let xPos = 14;
-    headers.forEach((header, i) => {
-      doc.text(header, xPos, startY);
-      xPos += colWidths[i];
-    });
-
-    // Table rows
-    doc.setFont('helvetica', 'normal');
-    let yPos = startY + 8;
-    
-    filteredRequests.forEach((req, index) => {
-      if (yPos > 280) {
-        doc.addPage();
-        yPos = 20;
+  const filteredRequests = useMemo(() => {
+    return requests.filter(r => {
+      const matchesSearch = 
+        r.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.cpf?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        r.phone?.includes(searchTerm);
+      const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
+      
+      // Date range filter
+      let matchesDate = true;
+      if (dateRange.from || dateRange.to) {
+        const entryDate = r.data_submitted_at ? new Date(r.data_submitted_at) : new Date(r.created_at);
+        if (dateRange.from && dateRange.to) {
+          matchesDate = isWithinInterval(entryDate, { 
+            start: startOfDay(dateRange.from), 
+            end: endOfDay(dateRange.to) 
+          });
+        } else if (dateRange.from) {
+          matchesDate = entryDate >= startOfDay(dateRange.from);
+        } else if (dateRange.to) {
+          matchesDate = entryDate <= endOfDay(dateRange.to);
+        }
       }
-
-      xPos = 14;
-      const row = [
-        req.full_name.substring(0, 25),
-        req.cpf || '-',
-        formatDate(req.birth_date),
-        req.phone || '-',
-        formatDate(req.data_submitted_at),
-        req.status,
-      ];
-
-      row.forEach((cell, i) => {
-        doc.text(cell, xPos, yPos);
-        xPos += colWidths[i];
-      });
-
-      yPos += 7;
+      
+      return matchesSearch && matchesStatus && matchesDate;
     });
+  }, [requests, searchTerm, statusFilter, dateRange]);
 
-    doc.save(`limpa-nome-clientes-${format(new Date(), 'yyyy-MM-dd')}.pdf`);
-    toast({ title: 'PDF exportado com sucesso!' });
+  const filteredHistory = useMemo(() => {
+    if (!historyDateRange.from && !historyDateRange.to) return history;
+    
+    return history.filter(entry => {
+      const entryDate = new Date(entry.created_at);
+      if (historyDateRange.from && historyDateRange.to) {
+        return isWithinInterval(entryDate, { 
+          start: startOfDay(historyDateRange.from), 
+          end: endOfDay(historyDateRange.to) 
+        });
+      } else if (historyDateRange.from) {
+        return entryDate >= startOfDay(historyDateRange.from);
+      } else if (historyDateRange.to) {
+        return entryDate <= endOfDay(historyDateRange.to);
+      }
+      return true;
+    });
+  }, [history, historyDateRange]);
+
+  const getStatusLabel = (status: string) => {
+    const labels: Record<string, string> = {
+      pending: 'Novo',
+      in_progress: 'Em Análise',
+      negotiating: 'Aprovado',
+      completed: 'Concluído',
+      cancelled: 'Recusado',
+    };
+    return labels[status] || status;
+  };
+
+  const prepareExportData = () => {
+    return filteredRequests.map(req => ({
+      'Nome Completo': req.full_name,
+      'CPF': req.cpf || '-',
+      'Data de Nascimento': formatDate(req.birth_date),
+      'Email': req.email || '-',
+      'Telefone': req.phone || '-',
+      'Preço': formatCurrency(req.final_price_cents),
+      'Status': getStatusLabel(req.status),
+      'Responsável': req.contador_id ? (contadores[req.contador_id] || '-') : '-',
+      'Data de Entrada': formatDate(req.data_submitted_at || req.created_at),
+      'Última Atualização': formatDateTime(req.updated_at),
+    }));
+  };
+
+  const exportToCSV = () => {
+    const data = prepareExportData();
+    const ws = XLSX.utils.json_to_sheet(data);
+    const csv = XLSX.utils.sheet_to_csv(ws, { FS: ';' });
+    
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `limpa-nome-leads-${format(new Date(), 'yyyy-MM-dd')}.csv`;
+    link.click();
+    
+    toast({ title: 'CSV exportado com sucesso!' });
+  };
+
+  const exportToXLSX = () => {
+    const data = prepareExportData();
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Leads Limpa Nome');
+    
+    // Auto-width columns
+    const colWidths = Object.keys(data[0] || {}).map(key => ({ wch: Math.max(key.length, 15) }));
+    ws['!cols'] = colWidths;
+    
+    XLSX.writeFile(wb, `limpa-nome-leads-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    
+    toast({ title: 'XLSX exportado com sucesso!' });
+  };
+
+  const exportHistoryToXLSX = () => {
+    const data = filteredHistory.map(entry => ({
+      'Tipo de Ação': entry.action_type.replace('_', ' ').toUpperCase(),
+      'Descrição': entry.action_description,
+      'Data/Hora': formatDateTime(entry.created_at),
+      'Realizado Por': entry.performed_by ? (contadores[entry.performed_by] || entry.performed_by) : 'Sistema',
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(data);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Histórico');
+    
+    XLSX.writeFile(wb, `historico-${selectedRequest?.full_name || 'lead'}-${format(new Date(), 'yyyy-MM-dd')}.xlsx`);
+    
+    toast({ title: 'Histórico exportado!' });
   };
 
   if (isLoading) {
@@ -262,12 +398,12 @@ export function LimpaNomeSpreadsheet() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-emerald-500" />
-                Planilha Única - Limpa Nome
+                Tabela de Leads - Limpa Nome
               </CardTitle>
-              <CardDescription>{filteredRequests.length} clientes</CardDescription>
+              <CardDescription>{filteredRequests.length} leads encontrados</CardDescription>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="relative w-64">
+            <div className="flex items-center gap-2 flex-wrap">
+              <div className="relative w-56">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input 
                   placeholder="Buscar..." 
@@ -276,26 +412,63 @@ export function LimpaNomeSpreadsheet() {
                   className="pl-10" 
                 />
               </div>
+              
               <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-[150px]">
+                <SelectTrigger className="w-[130px]">
                   <Filter className="h-4 w-4 mr-2" />
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="pending">Pendente</SelectItem>
-                  <SelectItem value="in_progress">Em Andamento</SelectItem>
-                  <SelectItem value="negotiating">Negociando</SelectItem>
+                  <SelectItem value="pending">Novo</SelectItem>
+                  <SelectItem value="in_progress">Em Análise</SelectItem>
+                  <SelectItem value="negotiating">Aprovado</SelectItem>
                   <SelectItem value="completed">Concluído</SelectItem>
-                  <SelectItem value="cancelled">Cancelado</SelectItem>
+                  <SelectItem value="cancelled">Recusado</SelectItem>
                 </SelectContent>
               </Select>
+              
+              {/* Date Range Picker */}
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" className={cn("w-[200px] justify-start text-left font-normal", !dateRange.from && "text-muted-foreground")}>
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {dateRange.from ? (
+                      dateRange.to ? (
+                        `${format(dateRange.from, "dd/MM")} - ${format(dateRange.to, "dd/MM")}`
+                      ) : format(dateRange.from, "dd/MM/yyyy")
+                    ) : "Filtrar período"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    initialFocus
+                    mode="range"
+                    defaultMonth={dateRange.from}
+                    selected={{ from: dateRange.from, to: dateRange.to }}
+                    onSelect={(range) => setDateRange({ from: range?.from, to: range?.to })}
+                    numberOfMonths={2}
+                    locale={ptBR}
+                  />
+                  <div className="p-2 border-t">
+                    <Button variant="ghost" size="sm" onClick={() => setDateRange({ from: undefined, to: undefined })}>
+                      Limpar filtro
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
+              
               <Button variant="outline" size="icon" onClick={fetchRequests}>
                 <RefreshCw className="h-4 w-4" />
               </Button>
-              <Button onClick={exportToPDF} className="bg-emerald-600 hover:bg-emerald-700">
+              
+              <Button onClick={exportToCSV} variant="outline">
                 <Download className="h-4 w-4 mr-2" />
-                Exportar PDF
+                CSV
+              </Button>
+              <Button onClick={exportToXLSX} className="bg-emerald-600 hover:bg-emerald-700">
+                <FileSpreadsheet className="h-4 w-4 mr-2" />
+                XLSX
               </Button>
             </div>
           </div>
@@ -305,21 +478,24 @@ export function LimpaNomeSpreadsheet() {
             <Table>
               <TableHeader>
                 <TableRow className="bg-muted/50">
-                  <TableHead className="font-semibold">Nome</TableHead>
-                  <TableHead className="font-semibold">CPF/CNPJ</TableHead>
+                  <TableHead className="font-semibold">Nome Completo</TableHead>
+                  <TableHead className="font-semibold">CPF</TableHead>
                   <TableHead className="font-semibold">Data Nasc.</TableHead>
+                  <TableHead className="font-semibold">Email</TableHead>
                   <TableHead className="font-semibold">Telefone</TableHead>
-                  <TableHead className="font-semibold">Data Envio</TableHead>
+                  <TableHead className="font-semibold">Preço</TableHead>
                   <TableHead className="font-semibold">Status</TableHead>
-                  <TableHead className="font-semibold">Observações</TableHead>
+                  <TableHead className="font-semibold">Responsável</TableHead>
+                  <TableHead className="font-semibold">Data Entrada</TableHead>
+                  <TableHead className="font-semibold">Última Atualização</TableHead>
                   <TableHead className="font-semibold text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredRequests.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
-                      Nenhum cliente encontrado
+                    <TableCell colSpan={11} className="text-center py-8 text-muted-foreground">
+                      Nenhum lead encontrado
                     </TableCell>
                   </TableRow>
                 ) : (
@@ -328,32 +504,46 @@ export function LimpaNomeSpreadsheet() {
                       <TableCell className="font-medium">{request.full_name}</TableCell>
                       <TableCell className="font-mono text-sm">{request.cpf || '-'}</TableCell>
                       <TableCell>{formatDate(request.birth_date)}</TableCell>
+                      <TableCell className="max-w-[150px] truncate">{request.email || '-'}</TableCell>
                       <TableCell>{request.phone || '-'}</TableCell>
-                      <TableCell>{formatDate(request.data_submitted_at)}</TableCell>
+                      <TableCell className="font-medium text-emerald-600">
+                        {formatCurrency(request.final_price_cents)}
+                      </TableCell>
                       <TableCell>
                         <Select 
                           value={request.status} 
                           onValueChange={(v) => handleStatusChange(request.id, v)}
                         >
-                          <SelectTrigger className="w-[140px] h-8">
+                          <SelectTrigger className="w-[130px] h-8">
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="pending">Pendente</SelectItem>
-                            <SelectItem value="in_progress">Em Andamento</SelectItem>
-                            <SelectItem value="negotiating">Negociando</SelectItem>
+                            <SelectItem value="pending">Novo</SelectItem>
+                            <SelectItem value="in_progress">Em Análise</SelectItem>
+                            <SelectItem value="negotiating">Aprovado</SelectItem>
                             <SelectItem value="completed">Concluído</SelectItem>
-                            <SelectItem value="cancelled">Cancelado</SelectItem>
+                            <SelectItem value="cancelled">Recusado</SelectItem>
                           </SelectContent>
                         </Select>
                       </TableCell>
-                      <TableCell className="max-w-[200px] truncate">
-                        {request.contador_notes ? (
-                          <span className="text-sm text-muted-foreground">{request.contador_notes}</span>
-                        ) : (
-                          <span className="text-sm text-muted-foreground italic">-</span>
-                        )}
+                      <TableCell>
+                        <Select 
+                          value={request.contador_id || 'none'} 
+                          onValueChange={(v) => handleResponsibleChange(request.id, v)}
+                        >
+                          <SelectTrigger className="w-[140px] h-8">
+                            <SelectValue placeholder="Selecionar" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="none">Nenhum</SelectItem>
+                            {Object.entries(contadores).map(([id, name]) => (
+                              <SelectItem key={id} value={id}>{name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </TableCell>
+                      <TableCell>{formatDate(request.data_submitted_at || request.created_at)}</TableCell>
+                      <TableCell>{formatDateTime(request.updated_at)}</TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-1">
                           <Button
@@ -393,21 +583,57 @@ export function LimpaNomeSpreadsheet() {
 
       {/* History Dialog */}
       <Dialog open={showHistoryDialog} onOpenChange={setShowHistoryDialog}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <History className="h-5 w-5 text-emerald-500" />
               Histórico - {selectedRequest?.full_name}
             </DialogTitle>
             <DialogDescription>
-              Registro completo de ações e alterações
+              Registro completo de ações e alterações (nunca sobrescrito)
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-4">
-            {history.length === 0 ? (
+          
+          <div className="flex items-center gap-2 mb-4">
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button variant="outline" size="sm" className={cn("justify-start text-left font-normal", !historyDateRange.from && "text-muted-foreground")}>
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {historyDateRange.from ? (
+                    historyDateRange.to ? (
+                      `${format(historyDateRange.from, "dd/MM")} - ${format(historyDateRange.to, "dd/MM")}`
+                    ) : format(historyDateRange.from, "dd/MM/yyyy")
+                  ) : "Filtrar período"}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <Calendar
+                  initialFocus
+                  mode="range"
+                  selected={{ from: historyDateRange.from, to: historyDateRange.to }}
+                  onSelect={(range) => setHistoryDateRange({ from: range?.from, to: range?.to })}
+                  numberOfMonths={2}
+                  locale={ptBR}
+                />
+                <div className="p-2 border-t">
+                  <Button variant="ghost" size="sm" onClick={() => setHistoryDateRange({ from: undefined, to: undefined })}>
+                    Limpar
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
+            
+            <Button variant="outline" size="sm" onClick={exportHistoryToXLSX}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Exportar XLSX
+            </Button>
+          </div>
+          
+          <div className="space-y-3">
+            {filteredHistory.length === 0 ? (
               <p className="text-center text-muted-foreground py-4">Nenhum registro encontrado</p>
             ) : (
-              history.map((entry) => (
+              filteredHistory.map((entry) => (
                 <div key={entry.id} className="p-3 bg-muted/30 rounded-lg border">
                   <div className="flex items-center justify-between mb-1">
                     <Badge variant="outline" className="text-xs">
@@ -418,6 +644,11 @@ export function LimpaNomeSpreadsheet() {
                     </span>
                   </div>
                   <p className="text-sm">{entry.action_description}</p>
+                  {entry.performed_by && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Por: {contadores[entry.performed_by] || entry.performed_by}
+                    </p>
+                  )}
                 </div>
               ))
             )}
