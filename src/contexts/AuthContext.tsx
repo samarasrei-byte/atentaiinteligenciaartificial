@@ -175,15 +175,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // Defer Supabase calls with setTimeout
-          setTimeout(() => {
-            fetchUserData(session.user.id);
-          }, 0);
+          // CRITICAL: Await fetchUserData to ensure roles are loaded BEFORE setting loading=false
+          // This fixes the admin routing bug where hasRole('admin') returned false
+          await fetchUserData(session.user.id);
         } else {
           setRoles([]);
           setProfile(null);
@@ -195,12 +194,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
 
     // THEN check for existing session
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(async ({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
       
       if (session?.user) {
-        fetchUserData(session.user.id);
+        // CRITICAL: Await to ensure roles are loaded before routing decisions
+        await fetchUserData(session.user.id);
       }
       setLoading(false);
     });
