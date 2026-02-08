@@ -142,10 +142,10 @@ export const BIAIChat: React.FC = () => {
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         {/* Chat Area */}
-        <Card className="lg:col-span-3 bg-white border-slate-200">
-          <CardContent className="p-0 flex flex-col h-[600px]">
-            {/* Messages */}
-            <ScrollArea className="flex-1 p-4" ref={scrollRef}>
+        <Card className="lg:col-span-3 bg-white border-slate-200 overflow-hidden">
+          <CardContent className="p-0 flex flex-col h-[600px] md:h-[600px] max-h-[calc(100vh-220px)]">
+            {/* Messages - área de scroll fixa */}
+            <ScrollArea className="flex-1 min-h-0 p-4" ref={scrollRef}>
               <div className="space-y-4">
                 {messages.map((message) => (
                   <div
@@ -214,8 +214,8 @@ export const BIAIChat: React.FC = () => {
               </div>
             </ScrollArea>
 
-            {/* Input */}
-            <div className="p-4 border-t border-slate-200">
+            {/* Input - área fixa que não expande */}
+            <div className="shrink-0 p-4 border-t border-slate-200 bg-white">
               <div className="flex gap-2">
                 <Input
                   placeholder="Pergunte sobre seus dados financeiros..."
