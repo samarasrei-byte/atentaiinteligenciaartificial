@@ -17,6 +17,9 @@ interface EmbeddedFiscalChatProps {
 const GUILHERME_ADMIN_ID = '596de7f7-4352-4058-8855-18f9489a0311'; // Análise Fiscal - Guilherme Barros
 const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9'; // BI Inteligência Fiscal - César
 
+// Lista de IDs de especialistas que NÃO devem criar solicitações para si mesmos
+const SPECIALIST_IDS = [GUILHERME_ADMIN_ID, CESAR_ADMIN_ID];
+
 export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({ 
   variant = 'empresa',
   serviceType = 'fiscal' 
@@ -59,6 +62,12 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
   // Auto-create request when user enters chat without active request
   const createAutoRequest = async () => {
     if (!user?.id || activeRequest || isCreating) return;
+    
+    // IMPORTANTE: Especialistas (Guilherme/César) NÃO devem criar solicitações para si mesmos
+    if (SPECIALIST_IDS.includes(user.id)) {
+      console.log('[EmbeddedFiscalChat] Especialista detectado, não criando solicitação automática:', user.id);
+      return;
+    }
 
     setIsCreating(true);
 
@@ -148,8 +157,14 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
     }
   };
 
-  // Auto-create when no active request and user enters the page
+  // Auto-create when no active request and user enters the page (only for non-specialists)
   useEffect(() => {
+    // Não criar automaticamente se for especialista
+    if (user?.id && SPECIALIST_IDS.includes(user.id)) {
+      console.log('[EmbeddedFiscalChat] Especialista detectado, pulando auto-create');
+      return;
+    }
+    
     if (!isLoading && !activeRequest && user?.id && !isCreating) {
       // Small delay to avoid race conditions
       const timer = setTimeout(() => {
@@ -157,7 +172,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       }, 500);
       return () => clearTimeout(timer);
     }
-  }, [isLoading, activeRequest, user?.id]);
+  }, [isLoading, activeRequest, user?.id, isCreating]);
 
   if (isLoading || isCreating) {
     return (
