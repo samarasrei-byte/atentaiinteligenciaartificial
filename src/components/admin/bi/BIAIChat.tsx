@@ -40,7 +40,7 @@ export const BIAIChat: React.FC = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Olá! Sou a IA assistente do módulo BI + Contabilidade. Posso ajudar você a consultar dados financeiros, analisar tendências e gerar insights. Lembre-se: minhas sugestões são apenas recomendações - todas as decisões finais são suas, Guilherme! 🤝\n\nComo posso ajudar?',
+      content: '🚨 **A Reforma Tributária já começou!** Com o IBS (17,7%) e CBS (8,8%) entrando em vigor, sua empresa precisa se adaptar.\n\nSou a IA assistente do módulo BI + Contabilidade. Posso ajudar você a:\n\n• Analisar o impacto da reforma no seu negócio\n• Consultar dados financeiros e tendências\n• Gerar insights para decisões estratégicas\n\nLembre-se: minhas sugestões são recomendações - todas as decisões finais são suas, Guilherme! 🤝\n\nComo posso ajudar?',
       timestamp: new Date(),
     }
   ]);
