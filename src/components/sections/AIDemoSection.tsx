@@ -110,6 +110,7 @@ interface Message {
 
 export function AIDemoSection() {
   const navigate = useNavigate();
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([
     { 
@@ -125,13 +126,16 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
   const [input, setInput] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // Auto-scroll to bottom when messages change
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  // Auto-scroll: rolar SOMENTE dentro do container de mensagens (evita scroll da página)
+  const scrollToBottom = (behavior: ScrollBehavior = 'auto') => {
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    // Aguarda o DOM atualizar antes de rolar
+    requestAnimationFrame(() => scrollToBottom('auto'));
   }, [messages, isTyping]);
 
   const formatTime = (date: Date) => {
@@ -275,7 +279,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
 
               {/* Messages - Fixed height scrollable area */}
               <div 
-                className="flex-1 overflow-y-auto p-2.5 md:p-3 space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent min-h-0"
+                ref={messagesContainerRef}
+                className="flex-1 overflow-y-auto p-2.5 md:p-3 space-y-2 scrollbar-thin scrollbar-thumb-slate-600 scrollbar-track-transparent min-h-0 overscroll-contain"
                 style={{ backgroundColor: '#0b141a' }}
               >
                 {messages.map((msg, i) => (
@@ -334,8 +339,10 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                   {QUICK_QUESTIONS.map((q) => (
                     <Button 
                       key={q.keyword}
+                      type="button"
                       variant="outline" 
                       size="sm"
+                      onMouseDown={(e) => e.preventDefault()}
                       onClick={() => handleQuickQuestion(q.keyword, q.label)}
                       className="text-[11px] md:text-xs gap-1 md:gap-1.5 bg-[#202c33] border-white/10 text-slate-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all rounded-full px-2.5 md:px-3 h-8 md:h-8 flex-shrink-0"
                     >
