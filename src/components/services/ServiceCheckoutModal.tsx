@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -18,23 +17,7 @@ import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatPrice, SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
 import { useNavigate } from 'react-router-dom';
-
-function openCheckoutPopupOrFallback(url: string) {
-  // Most popup blockers allow a window opened synchronously during the click.
-  // So we open a blank window first, then navigate it.
-  const w = window.open('', '_blank');
-  if (!w) {
-    // Fallback: same-tab redirect (always works)
-    window.location.assign(url);
-    return;
-  }
-  try {
-    w.opener = null;
-  } catch {
-    // ignore
-  }
-  w.location.href = url;
-}
+import { MPTransparentCheckout } from '@/components/payments/MPTransparentCheckout';
 
 interface ServiceConfig {
   id: string;
@@ -42,15 +25,9 @@ interface ServiceConfig {
   description: string;
   icon: React.ElementType;
   gradient: string;
-  /** 'pf' | 'pj' for limpa-nome; null for others */
   serviceType?: 'pf' | 'pj';
-  /** 'checkout' | 'request' */
   flowType: 'checkout' | 'request';
-  /** Edge function for checkout */
-  edgeFunction?: string;
-  /** DB table for request */
   requestTable?: string;
-  /** Price in cents (0 if success fee) */
   priceCents: number;
   features: string[];
   successFee?: boolean;
@@ -65,8 +42,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     gradient: 'from-emerald-500 to-green-600',
     serviceType: 'pf',
     flowType: 'checkout',
-    edgeFunction: 'create-limpa-nome-checkout',
-    priceCents: 78000, // R$ 780,00 - OFFICIAL PRICE
+    priceCents: 78000,
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',
@@ -82,8 +58,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     gradient: 'from-emerald-500 to-green-600',
     serviceType: 'pj',
     flowType: 'checkout',
-    edgeFunction: 'create-limpa-nome-checkout',
-    priceCents: 97000, // R$ 970,00 - OFFICIAL PRICE
+    priceCents: 97000,
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',
@@ -130,7 +105,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
 interface ServiceCheckoutModalProps {
   isOpen: boolean;
   onClose: () => void;
-  serviceKey: string; // 'limpa-nome-pf' | 'limpa-nome-pj' | 'analise-fiscal' | 'bi-contabilidade'
+  serviceKey: string;
   onSuccess?: () => void;
 }
 
@@ -143,6 +118,7 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
   const { user, session, subscription, profile } = useAuth();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
   const [lastClickTime, setLastClickTime] = useState(0);
 
   const config = SERVICE_CONFIGS[serviceKey];
@@ -151,7 +127,6 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
   const Icon = config.icon;
   const isSubscriber = subscription?.subscribed || false;
 
-  // Calculate price with potential discount
   let displayPrice = config.priceCents;
   if (isSubscriber && config.priceCents > 0) {
     const discountKey = serviceKey.startsWith('limpa-nome') 
@@ -163,21 +138,11 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
   }
 
   const handleAction = async () => {
-    // DEBOUNCE: Prevent double-click (2 second cooldown)
     const now = Date.now();
-    if (now - lastClickTime < 2000) {
-      console.log('[ServiceCheckout] Debounced duplicate click');
-      return;
-    }
+    if (now - lastClickTime < 2000) return;
     setLastClickTime(now);
+    if (isLoading) return;
 
-    // Prevent duplicate submissions
-    if (isLoading) {
-      console.log('[ServiceCheckout] Already loading, ignoring');
-      return;
-    }
-
-    // AUTH VALIDATION: User must be logged in before checkout
     if (!user || !session) {
       toast.error('Você precisa estar logado para continuar.');
       navigate('/auth?redirect=' + encodeURIComponent(window.location.pathname));
@@ -185,59 +150,20 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
       return;
     }
 
-    // EMAIL VALIDATION: Ensure user has email
     if (!user.email) {
       toast.error('Email não encontrado. Por favor, complete seu cadastro.');
       return;
     }
 
-    // Open popup immediately to avoid blockers (only for checkout flow)
-    let pendingPopup: Window | null = null;
     if (config.flowType === 'checkout') {
-      pendingPopup = window.open('', '_blank');
-    }
-
-    setIsLoading(true);
-
-    try {
-      if (config.flowType === 'checkout') {
-        // Limpa Nome checkout
-        const { data, error } = await supabase.functions.invoke(config.edgeFunction!, {
-          body: { 
-            serviceType: config.serviceType,
-            email: user.email,
-            fullName: profile?.full_name || 'Cliente',
-          },
-          headers: {
-            Authorization: `Bearer ${session.access_token}`,
-          },
-        });
-
-        if (error) throw error;
-
-        if (data?.url) {
-          if (pendingPopup) {
-            try {
-              pendingPopup.opener = null;
-            } catch {
-              // ignore
-            }
-            pendingPopup.location.href = data.url;
-          } else {
-            openCheckoutPopupOrFallback(data.url);
-          }
-          toast.info('Janela de pagamento aberta. Complete o pagamento para ativar.');
-          onSuccess?.();
-          onClose();
-        } else {
-          throw new Error('URL de checkout não retornada');
-        }
-      } else {
-        // Create request without checkout (Fiscal / BI)
+      // Show embedded Mercado Pago checkout
+      setShowCheckout(true);
+    } else {
+      // Request flow (Fiscal / BI)
+      setIsLoading(true);
+      try {
         const tableName = config.requestTable!;
-        
-        // Generic request insert
-        const { data: request, error } = await supabase
+        const { error } = await supabase
           .from(tableName as any)
           .insert({
             user_id: user.id,
@@ -255,24 +181,21 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
         toast.success('Solicitação enviada! Redirecionando para o chat...');
         onSuccess?.();
         onClose();
-
-        // Redirect to chat
         const chatTab = config.id === 'analise-fiscal' ? 'chat-fiscal' : 'chat-bi';
         navigate(`/empresa?tab=${chatTab}`);
+      } catch (error: any) {
+        console.error('Service action error:', error);
+        toast.error(error.message || 'Erro ao processar. Tente novamente.');
+      } finally {
+        setIsLoading(false);
       }
-    } catch (error: any) {
-      console.error('Service action error:', error);
-      toast.error(error.message || 'Erro ao processar. Tente novamente.');
-      if (pendingPopup) {
-        try {
-          pendingPopup.close();
-        } catch {
-          // ignore
-        }
-      }
-    } finally {
-      setIsLoading(false);
     }
+  };
+
+  const handleMPSuccess = (paymentId: number) => {
+    onSuccess?.();
+    setShowCheckout(false);
+    onClose();
   };
 
   return (
@@ -323,7 +246,6 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
             )}
           </div>
 
-          {/* Discount badge */}
           {isSubscriber && config.priceCents > 0 && displayPrice < config.priceCents && (
             <Badge className="mt-3 bg-white/20 text-white border-white/30">
               10% OFF para assinantes
@@ -332,50 +254,70 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
         </div>
 
         <div className="p-6 space-y-5">
-          {/* Features */}
-          <div className="space-y-3">
-            <p className="font-semibold text-sm text-foreground flex items-center gap-2">
-              <Zap className="h-4 w-4 text-primary" />
-              O que está incluso:
-            </p>
-            <ul className="space-y-2">
-              {config.features.map((feature, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
-                  <Check className="h-4 w-4 text-primary flex-shrink-0" />
-                  {feature}
-                </li>
-              ))}
-            </ul>
-          </div>
+          {/* Embedded Mercado Pago Checkout */}
+          {showCheckout && config.flowType === 'checkout' && user?.email ? (
+            <MPTransparentCheckout
+              amountCents={displayPrice}
+              serviceName={config.name}
+              serviceType={config.serviceType || config.id}
+              description={config.description}
+              payerEmail={user.email}
+              payerName={profile?.full_name || 'Cliente'}
+              accessToken={session?.access_token}
+              metadata={{
+                service_key: serviceKey,
+              }}
+              onSuccess={handleMPSuccess}
+              onError={(err) => console.error('MP error:', err)}
+            />
+          ) : (
+            <>
+              {/* Features */}
+              <div className="space-y-3">
+                <p className="font-semibold text-sm text-foreground flex items-center gap-2">
+                  <Zap className="h-4 w-4 text-primary" />
+                  O que está incluso:
+                </p>
+                <ul className="space-y-2">
+                  {config.features.map((feature, i) => (
+                    <li key={i} className="flex items-center gap-3 text-sm text-muted-foreground">
+                      <Check className="h-4 w-4 text-primary flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+              </div>
 
-          {/* CTA */}
-          <Button
-            onClick={handleAction}
-            disabled={isLoading}
-            size="lg"
-            className={`w-full h-14 text-lg font-semibold bg-gradient-to-r ${config.gradient} hover:opacity-90 shadow-lg transition-all group`}
-          >
-            {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
-            ) : config.flowType === 'checkout' ? (
-              <>
-                <CreditCard className="h-5 w-5 mr-2" />
-                Pagar agora
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </>
-            ) : (
-              <>
-                <MessageCircle className="h-5 w-5 mr-2" />
-                Solicitar e ir para Chat
-                <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
-              </>
-            )}
-          </Button>
+              {/* CTA */}
+              <Button
+                onClick={handleAction}
+                disabled={isLoading}
+                size="lg"
+                className={`w-full h-14 text-lg font-semibold bg-gradient-to-r ${config.gradient} hover:opacity-90 shadow-lg transition-all group`}
+              >
+                {isLoading ? (
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                ) : config.flowType === 'checkout' ? (
+                  <>
+                    <CreditCard className="h-5 w-5 mr-2" />
+                    Pagar agora
+                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </>
+                ) : (
+                  <>
+                    <MessageCircle className="h-5 w-5 mr-2" />
+                    Solicitar e ir para Chat
+                    <ArrowRight className="h-5 w-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </Button>
+            </>
+          )}
 
           {/* Security */}
           <div className="flex items-center justify-center text-xs text-muted-foreground gap-2">
             <Lock className="h-3 w-3" />
-            {config.flowType === 'checkout' ? 'Pagamento seguro via Stripe' : 'Dados protegidos'}
+            {config.flowType === 'checkout' ? 'Pagamento seguro via Mercado Pago' : 'Dados protegidos'}
           </div>
         </div>
       </DialogContent>
