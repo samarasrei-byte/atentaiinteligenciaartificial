@@ -68,3 +68,9 @@ verify_jwt = false
 
 [functions.create-manual-payment-link]
 verify_jwt = false
+
+[functions.create-mp-payment]
+verify_jwt = false
+
+[functions.mp-payment-status]
+verify_jwt = false
