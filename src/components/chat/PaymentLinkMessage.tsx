@@ -11,7 +11,7 @@ import {
   CheckCircle2,
   Lock
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
@@ -44,6 +44,7 @@ export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
   className,
 }) => {
   const { session } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const [isLoading, setIsLoading] = useState(false);
 
   const service = serviceLabels[serviceType];
@@ -59,41 +60,17 @@ export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // Apenas Limpa Nome usa checkout direto via Stripe
-      // Análise Fiscal e BI são vendidos via chat (success fee / sob consulta)
-      const functionMap: Record<string, string> = {
-        'limpanome': 'create-credit-repair-payment',
-        'limpanome-pj': 'create-credit-repair-payment',
-      };
-
-      const { data, error } = await supabase.functions.invoke(functionMap[serviceType], {
-        body: { 
-          serviceType, 
-          amount: servicePriceCents,
-          requestId,
-        },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-        toast.info('Janela de pagamento aberta!');
-      } else {
-        throw new Error('URL de checkout não retornada');
-      }
-    } catch (error: any) {
-      console.error('Payment error:', error);
-      toast.error(error.message || 'Erro ao iniciar pagamento.');
-    } finally {
-      setIsLoading(false);
-    }
+    openCheckout({
+      amountCents: servicePriceCents,
+      serviceName: service.name,
+      serviceType: serviceType,
+      description: `Pagamento ${service.name}`,
+      gradient: service.gradient,
+      metadata: { request_id: requestId },
+      onSuccess: () => {
+        toast.success('Pagamento realizado com sucesso!');
+      },
+    });
   };
 
   if (isPaid) {
@@ -162,7 +139,7 @@ export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
 
         <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
           <Lock className="h-3 w-3" />
-          Pagamento seguro via Stripe
+          Pagamento seguro via Mercado Pago
         </div>
       </div>
     </motion.div>

@@ -259,15 +259,10 @@ export function AISection() {
     setIsCheckingOut(true);
     
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId: plan.priceId },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
+      const { openCheckout } = await import('@/contexts/MPCheckoutContext').then(m => ({ openCheckout: null }));
+      // Redirect to pricing page for subscription checkout
+      navigate('/pricing');
+      return;
     } catch (error: any) {
       console.error('Checkout error:', error);
       toast({

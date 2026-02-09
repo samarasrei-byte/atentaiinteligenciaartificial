@@ -361,7 +361,7 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
               {/* Security */}
               <div className="flex items-center justify-center text-xs text-muted-foreground gap-2">
                 <Lock className="h-3 w-3" />
-                Pagamento seguro via Stripe
+                Pagamento seguro via Mercado Pago
               </div>
             </>
           ) : (

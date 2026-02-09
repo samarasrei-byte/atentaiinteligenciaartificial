@@ -82,18 +82,8 @@ const PlanoAutonomo: React.FC = () => {
 
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: {
-          priceId: 'price_1Shc3X3MU3lG84Gw1OR6C7yf', // Autônomo Master price
-          couponId: couponCode || undefined,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.location.href = data.url;
-      }
+      navigate('/pricing');
+      return;
     } catch (error) {
       console.error('Checkout error:', error);
       toast({

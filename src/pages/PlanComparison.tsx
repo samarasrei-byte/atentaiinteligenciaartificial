@@ -99,15 +99,8 @@ const PlanComparison = () => {
     setLoadingPlan(planKey);
 
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId: STRIPE_PLANS[planKey as keyof typeof STRIPE_PLANS].priceId },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
+      navigate('/pricing');
+      return;
     } catch (error: any) {
       toast({
         variant: 'destructive',
