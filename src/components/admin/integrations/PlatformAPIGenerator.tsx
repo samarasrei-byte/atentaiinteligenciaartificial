@@ -143,10 +143,15 @@ export const PlatformAPIGenerator: React.FC = () => {
   };
 
   const codeExamples = {
-    curl: `curl -X POST "https://api.atentai.com.br/v1/services" \\
+    curl: `# AtentAI API
+curl -X POST "https://api.atentai.com.br/v1/services" \\
   -H "Authorization: Bearer sk_live_atentai_xxx" \\
   -H "Content-Type: application/json" \\
-  -d '{"type": "fiscal_analysis", "user_email": "cliente@email.com"}'`,
+  -d '{"type": "fiscal_analysis", "user_email": "cliente@email.com"}'
+
+# Mercado Pago - Consultar Pagamentos
+curl -H 'Authorization: Bearer <ENV_ACCESS_TOKEN>' \\
+  https://api.mercadopago.com/v1/payments`,
     
     javascript: `import { AtentAI } from '@atentai/sdk';
 
