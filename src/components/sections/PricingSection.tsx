@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -22,6 +22,7 @@ import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
 export function PricingSection() {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
@@ -46,26 +47,20 @@ export function PricingSection() {
 
     setIsLoading(planKey);
     
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { priceId: STRIPE_PLANS[planKey].priceId },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsLoading(null);
-    }
+    openCheckout({
+      amountCents: STRIPE_PLANS[planKey].price,
+      serviceName: STRIPE_PLANS[planKey].name,
+      serviceType: planKey,
+      description: STRIPE_PLANS[planKey].description,
+      gradient: planKey === 'simulator' ? 'from-blue-500 to-cyan-500' : 
+                planKey === 'autonomo' ? 'from-green-500 to-emerald-500' :
+                planKey === 'premium' ? 'from-primary to-primary/70' : 'from-accent to-orange-500',
+      onSuccess: () => {
+        setIsLoading(null);
+        toast({ title: 'Pagamento realizado!', description: 'Sua assinatura foi ativada.' });
+      },
+    });
+    setIsLoading(null);
   };
 
   // All plans including contador

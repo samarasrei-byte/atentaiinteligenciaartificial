@@ -51,18 +51,8 @@ export function BIMarketplaceCards({ variant = 'grid', showTitle = true }: BIMar
     setIsLoading(planKey);
     
     try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { 
-          priceId: plan.priceId,
-          successUrl: `${window.location.origin}/chat/cesar?pagamento=sucesso&plano=${planKey}`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
+      navigate('/pricing');
+      return;
     } catch (error: any) {
       console.error('Checkout error:', error);
       toast({

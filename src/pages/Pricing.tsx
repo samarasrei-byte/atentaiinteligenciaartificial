@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -64,31 +65,8 @@ const Pricing = () => {
       return;
     }
 
-    setIsLoading(planKey);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout', {
-        body: { 
-          priceId: STRIPE_PLANS[planKey].priceId,
-          couponId: appliedCoupon?.id || null,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsLoading(null);
-    }
+    // Navigate to pricing page with MP checkout modal
+    navigate(`/pricing?plan=${planKey}`);
   };
 
   const handleManageSubscription = async () => {
@@ -359,7 +337,7 @@ const Pricing = () => {
         </div>
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
-          <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
+          <p>Pagamento seguro via Mercado Pago. Cancele a qualquer momento.</p>
           <p className="mt-2 text-accent font-medium">Plano Business Pro parcelável em até 10x sem juros!</p>
         </div>
 

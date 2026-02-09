@@ -14,7 +14,7 @@ import {
   CreditCard, Shield, Check, Star, Zap, Lock,
   MessageCircle, FileCheck, Sparkles, Loader2, ArrowRight
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { toast } from 'sonner';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -42,6 +42,7 @@ export const ServicePaywallModal: React.FC<ServicePaywallModalProps> = ({
   onPaymentSuccess,
 }) => {
   const { user, session } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const [isLoading, setIsLoading] = useState(false);
 
   const serviceDetails = {
@@ -96,42 +97,18 @@ export const ServicePaywallModal: React.FC<ServicePaywallModalProps> = ({
       return;
     }
 
-    setIsLoading(true);
-
-    try {
-      // Determine which payment function to call based on service type
-      const functionMap = {
-        'limpanome': 'create-credit-repair-payment',
-        'fiscal': 'create-fiscal-payment',
-        'bi-contabilidade': 'create-fiscal-payment',
-      };
-
-      const { data, error } = await supabase.functions.invoke(functionMap[serviceType], {
-        body: { serviceType, amount: servicePriceCents },
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        // Open Stripe Checkout in new tab (or same window based on preference)
-        window.open(data.url, '_blank');
-        
-        toast.info('Janela de pagamento aberta. Complete o pagamento para continuar.');
-        
-        // Optionally close modal after opening payment
-        // onClose();
-      } else {
-        throw new Error('URL de checkout não retornada');
-      }
-    } catch (error: any) {
-      console.error('Payment error:', error);
-      toast.error(error.message || 'Erro ao iniciar pagamento. Tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
+    openCheckout({
+      amountCents: servicePriceCents,
+      serviceName: service.name,
+      serviceType: serviceType,
+      description: service.description,
+      gradient: service.gradient,
+      onSuccess: () => {
+        toast.success('Pagamento realizado! Serviço ativado.');
+        onPaymentSuccess?.();
+        onClose();
+      },
+    });
   };
 
   return (
@@ -211,7 +188,7 @@ export const ServicePaywallModal: React.FC<ServicePaywallModalProps> = ({
           <div className="flex items-center justify-between text-xs text-muted-foreground">
             <div className="flex items-center gap-2">
               <Lock className="h-3 w-3" />
-              Pagamento seguro via Stripe
+              Pagamento seguro via Mercado Pago
             </div>
             <button
               type="button"

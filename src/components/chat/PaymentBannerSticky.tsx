@@ -12,7 +12,7 @@ import {
   Loader2,
   Sparkles
 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { toast } from 'sonner';
 
 interface PaymentBannerStickyProps {
@@ -56,8 +56,8 @@ export const PaymentBannerSticky: React.FC<PaymentBannerStickyProps> = ({
   onDismiss,
   className,
 }) => {
+  const { openCheckout } = useMPCheckout();
   const [isLoading, setIsLoading] = useState(false);
-  const [isDismissed, setIsDismissed] = useState(false);
 
   const config = serviceConfig[serviceType] || serviceConfig['limpanome'];
   const ServiceIcon = config.icon;
@@ -68,30 +68,25 @@ export const PaymentBannerSticky: React.FC<PaymentBannerStickyProps> = ({
       currency: 'BRL' 
     }).format(cents / 100);
 
+  const [isDismissed, setIsDismissed] = useState(false);
+
   const handlePayment = async () => {
     if (!requestId) {
       toast.error('Erro ao processar pagamento');
       return;
     }
 
-    setIsLoading(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('create-credit-repair-payment', {
-        body: { requestId },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.location.href = data.url;
-      }
-    } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Erro ao iniciar pagamento. Tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
+    openCheckout({
+      amountCents: servicePriceCents,
+      serviceName: config.name,
+      serviceType: serviceType,
+      description: `Ativação do serviço ${config.name}`,
+      gradient: 'from-emerald-500 to-teal-600',
+      metadata: { request_id: requestId },
+      onSuccess: () => {
+        toast.success('Pagamento realizado! Serviço ativado.');
+      },
+    });
   };
 
   const handleDismiss = () => {
@@ -168,7 +163,7 @@ export const PaymentBannerSticky: React.FC<PaymentBannerStickyProps> = ({
         <div className="px-4 sm:px-6 py-2 bg-white/60 border-t border-border/30 flex items-center gap-4 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <Lock className="h-3 w-3" />
-            <span>Pagamento seguro via Stripe</span>
+            <span>Pagamento seguro via Mercado Pago</span>
           </div>
           <span className="hidden sm:inline">•</span>
           <span className="hidden sm:inline">Seus dados estão protegidos</span>

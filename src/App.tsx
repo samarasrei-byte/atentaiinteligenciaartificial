@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { MPCheckoutProvider } from "@/contexts/MPCheckoutContext";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { RoleProtectedRoute } from "@/components/RoleProtectedRoute";
 import { AffiliateProtectedRoute } from "@/components/AffiliateProtectedRoute";
@@ -104,6 +105,7 @@ const App = () => (
     <BrowserRouter>
       <TooltipProvider>
         <AuthProvider>
+        <MPCheckoutProvider>
           <ScrollToTop />
           <Toaster />
           <Sonner />
@@ -323,6 +325,7 @@ const App = () => (
           </div>
           <BottomNavigation />
           <QaModeIndicator />
+        </MPCheckoutProvider>
         </AuthProvider>
       </TooltipProvider>
     </BrowserRouter>
