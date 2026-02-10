@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -22,6 +23,7 @@ import { STRIPE_PLANS, formatPrice } from '@/lib/stripe';
 const PlanoSimulador = () => {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -38,21 +40,17 @@ const PlanoSimulador = () => {
       return;
     }
 
-    setIsLoading(true);
-    
-    try {
-      navigate('/pricing');
-      return;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    openCheckout({
+      amountCents: plan.price,
+      serviceName: plan.name,
+      serviceType: 'simulator',
+      description: 'Acesso completo ao simulador tributário',
+      gradient: 'from-blue-500 to-cyan-500',
+      metadata: { service_key: 'simulator' },
+      onSuccess: () => {
+        toast({ title: 'Assinatura ativada!' });
+      },
+    });
   };
 
   const benefits = [

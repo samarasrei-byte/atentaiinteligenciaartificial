@@ -440,7 +440,7 @@ export function SimulatorSection() {
                               onClick={() => navigate('/pricing')}
                             >
                               <Lock className="w-4 h-4" />
-                              Desbloquear Agora
+                              Ver Planos
                             </Button>
                           </CardContent>
                         </Card>

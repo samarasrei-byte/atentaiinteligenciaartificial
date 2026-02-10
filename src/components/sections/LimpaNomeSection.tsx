@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useScrollAnimation } from "@/hooks/useScrollAnimation";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMPCheckout } from "@/contexts/MPCheckoutContext";
 
 const bureaus = [
   { name: 'SPC', color: 'bg-cyan-500' },
@@ -111,7 +112,8 @@ const plans = {
 
 export function LimpaNomeSection() {
   const navigate = useNavigate();
-  const { subscription } = useAuth();
+  const { subscription, user } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const isSubscribed = subscription.subscribed;
   const { ref, isVisible } = useScrollAnimation<HTMLElement>({ threshold: 0.1 });
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
@@ -179,8 +181,19 @@ export function LimpaNomeSection() {
 
                 const handleCTAClick = (e: React.MouseEvent) => {
                   e.stopPropagation();
-                  // CHECKOUT FIRST: Go directly to checkout, no onboarding
-                  navigate(`/checkout/limpa-nome-${plan.id}`);
+                  if (!user) {
+                    navigate('/auth');
+                    return;
+                  }
+                  openCheckout({
+                    amountCents: planPrice * 100,
+                    serviceName: `Limpa Nome ${plan.id === 'pf' ? 'CPF' : 'CNPJ'}`,
+                    serviceType: `limpa-nome-${plan.id}`,
+                    description: plan.description,
+                    gradient: `${plan.gradientFrom} ${plan.gradientTo}`,
+                    metadata: { service_key: `limpa-nome-${plan.id}` },
+                    onSuccess: () => navigate('/painel'),
+                  });
                 };
                 
                 return (
@@ -441,10 +454,24 @@ export function LimpaNomeSection() {
                     </div>
                   </div>
 
-                  {/* CTA - Navigate to Onboarding Page */}
+                  {/* CTA - Open MP Checkout */}
                   <Button 
                     size="lg"
-                    onClick={() => navigate(`/limpa-nome/onboarding?plan=${selectedPlan}`)}
+                    onClick={() => {
+                      if (!user) {
+                        navigate('/auth');
+                        return;
+                      }
+                      openCheckout({
+                        amountCents: discountedPrice * 100,
+                        serviceName: `Limpa Nome ${selectedPlan === 'pf' ? 'CPF' : 'CNPJ'}`,
+                        serviceType: `limpa-nome-${selectedPlan}`,
+                        description: currentPlan.description,
+                        gradient: `${currentPlan.gradientFrom} ${currentPlan.gradientTo}`,
+                        metadata: { service_key: `limpa-nome-${selectedPlan}` },
+                        onSuccess: () => navigate('/painel'),
+                      });
+                    }}
                     className={`w-full h-16 text-lg font-semibold group transition-all duration-300 bg-gradient-to-r ${currentPlan.gradientFrom} ${currentPlan.gradientTo} hover:opacity-90 shadow-lg border-0`}
                   >
                     <Users className="h-5 w-5 mr-2" />
