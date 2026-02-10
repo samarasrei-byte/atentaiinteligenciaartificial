@@ -26,7 +26,7 @@ type Feature =
 // Estes serviços são do marketplace e não requerem assinatura
 // ============================================================
 type FreeService = 
-  | 'limpa-nome'        // Pago por transação (R$780) - Chat com Guilherme
+  | 'limpa-nome'        // Pago por transação (R$824,50) - Chat com Guilherme
   | 'analise-fiscal'    // Grátis (Success Fee 50%) - Chat com Guilherme  
   | 'bi-contabilidade'; // Sob consulta - Chat com César
 
