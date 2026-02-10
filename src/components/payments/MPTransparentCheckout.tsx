@@ -166,19 +166,11 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
 
   const createPayment = async (paymentMethodId: string, extraBody: Record<string, unknown> = {}) => {
     setIsLoading(true);
+    const startTime = Date.now();
+    
     try {
       const [firstName, ...rest] = payerName.split(' ');
       const lastName = rest.join(' ') || firstName;
-
-      const startTime = Date.now();
-      console.log('[PIX-DEBUG] Starting payment request at', new Date().toISOString());
-
-      // Use fetch directly with real AbortController timeout (30s)
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => {
-        console.log('[PIX-DEBUG] TIMEOUT triggered after', Date.now() - startTime, 'ms');
-        controller.abort();
-      }, 30000);
 
       const requestBody = {
         amount: amountCents,
@@ -199,10 +191,17 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         ...extraBody,
       };
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+      // Use supabase client URL directly - most reliable
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://wtiexyrawenxckctbwzn.supabase.co';
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aWV4eXJhd2VueGNrY3Rid3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNTMzMTksImV4cCI6MjA4MTkyOTMxOX0.487e8ymS3oOol5AKlnPb-eCau7Jjr5i48OpE9WV5GjY';
+      const endpoint = `${supabaseUrl}/functions/v1/create-mp-payment`;
 
-      const response = await fetch(`${supabaseUrl}/functions/v1/create-mp-payment`, {
+      console.log('[PIX] Calling', endpoint, 'method:', paymentMethodId);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+      const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -214,8 +213,8 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
       });
 
       clearTimeout(timeoutId);
-      
-      console.log('[PIX-DEBUG] Response received in', Date.now() - startTime, 'ms, status:', response.status);
+      const elapsed = Date.now() - startTime;
+      console.log('[PIX] Response in', elapsed, 'ms, status:', response.status);
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
@@ -223,16 +222,17 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
       }
 
       const data = await response.json();
-      console.log('[PIX-DEBUG] Data parsed in', Date.now() - startTime, 'ms');
+      console.log('[PIX] Payment created:', data.id, 'status:', data.status, 'in', Date.now() - startTime, 'ms');
 
       if (data.error) throw new Error(data.error);
 
       return data;
     } catch (err: any) {
+      const elapsed = Date.now() - startTime;
+      console.error('[PIX] Error after', elapsed, 'ms:', err.name, err.message);
       const msg = err.name === 'AbortError' 
         ? 'Tempo esgotado (30s). Tente novamente.' 
         : (err.message || 'Erro ao processar pagamento');
-      console.error('[PIX-DEBUG] Error:', err.name, err.message);
       toast.error(msg);
       onError?.(msg);
       throw err;
