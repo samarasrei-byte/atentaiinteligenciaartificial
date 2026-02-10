@@ -15,7 +15,6 @@ const navItems: NavItem[] = [
   { path: "/simulador", icon: Calculator, label: "Simular" },
   { path: "/ai-chat", icon: Bot, label: "IA" },
   { path: "/dashboard", icon: Bell, label: "Painel", requiresAuth: true },
-  { path: "/perfil", icon: User, label: "Perfil", requiresAuth: true },
 ];
 
 export function BottomNavigation() {
