@@ -75,6 +75,31 @@ export const SERVICE_PRICES = {
     stripeKey: 'modulo_fiscal',
   },
 
+  // Contador Premium Plus - Subscription
+  CONTADOR_PREMIUM: {
+    cents: 19700,
+    formatted: 'R$ 197,00',
+    interval: 'month',
+    stripeKey: 'contador_premium',
+    subscriberDiscount: 0,
+  },
+
+  // Atentai Clarity - BI financeiro
+  ATENTAI_CLARITY: {
+    cents: 149700,
+    formatted: 'R$ 1.497,00',
+    stripeKey: 'clarity',
+    subscriberDiscount: 0,
+  },
+
+  // Atentai Control - Controle financeiro avançado
+  ATENTAI_CONTROL: {
+    cents: 349700,
+    formatted: 'R$ 3.497,00',
+    stripeKey: 'control',
+    subscriberDiscount: 0,
+  },
+
   // BI+ Inteligência Fiscal - Valor sob consulta
   BI_INTELIGENCIA_FISCAL: {
     type: 'custom_pricing',

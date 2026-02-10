@@ -22,7 +22,7 @@ const logStep = (step: string, details?: any) => {
 
 // Input validation schema
 const requestSchema = z.object({
-  serviceType: z.enum(['ir', 'credit_repair', 'credit_repair_pf', 'credit_repair_pj', 'certificate', 'company_opening']),
+  serviceType: z.enum(['ir', 'credit_repair', 'credit_repair_pf', 'credit_repair_pj', 'certificate', 'company_opening', 'contador_premium', 'clarity', 'control']),
   email: z.string().email("Email inválido").max(255, "Email muito longo"),
   fullName: z.string().min(2, "Nome muito curto").max(200, "Nome muito longo"),
   cpf: z.string().optional().nullable().transform(val => {
@@ -103,6 +103,21 @@ const SERVICE_CONFIGS: Record<string, { name: string; description: string; baseP
     name: 'Abertura de ME/LTDA',
     description: 'Abertura de Microempresa ou LTDA',
     basePriceCents: 78000,
+  },
+  contador_premium: {
+    name: 'Contador Premium Plus',
+    description: 'Assinatura mensal com contador dedicado',
+    basePriceCents: 19700,
+  },
+  clarity: {
+    name: 'Atentai Clarity',
+    description: 'BI financeiro com supervisão humana',
+    basePriceCents: 149700,
+  },
+  control: {
+    name: 'Atentai Control',
+    description: 'Controle financeiro avançado',
+    basePriceCents: 349700,
   },
 };
 
@@ -271,6 +286,11 @@ serve(async (req) => {
         .single();
       if (error) throw error;
       requestId = request.id;
+    } else if (serviceType === 'contador_premium' || serviceType === 'clarity' || serviceType === 'control') {
+      // Subscription-type services - no separate request table needed for guest
+      // The process-approved-payment function will create the subscription after payment
+      requestId = `sub_${serviceType}_${Date.now()}`;
+      logStep("Subscription service - will be created after payment", { serviceType });
     } else {
       throw new Error("Tipo de serviço não suportado");
     }
