@@ -22,27 +22,27 @@
    variant = 'user',
    className,
  }) => {
-   // Regex para detectar URLs do Stripe
-   const stripeUrlRegex = /(https?:\/\/(?:checkout\.stripe\.com|buy\.stripe\.com)[^\s\)]+)/gi;
-   
-   // Verifica se há links do Stripe no conteúdo
-   const stripeLinks = content.match(stripeUrlRegex);
-   
-   if (!stripeLinks || stripeLinks.length === 0) {
-     // Sem links do Stripe - renderiza texto normal
-     return <p className={cn("text-sm whitespace-pre-wrap leading-relaxed", className)}>{content}</p>;
-   }
-   
-   // Divide o conteúdo em partes (texto + links)
-   const parts = content.split(stripeUrlRegex);
+  // Regex para detectar URLs do Stripe e Mercado Pago
+    const paymentUrlRegex = /(https?:\/\/(?:checkout\.stripe\.com|buy\.stripe\.com|(?:www\.)?mercadopago\.com\.br\/checkout|mpago\.la)[^\s\)]+)/gi;
+    
+    // Verifica se há links de pagamento no conteúdo
+    const paymentLinks = content.match(paymentUrlRegex);
+    
+    if (!paymentLinks || paymentLinks.length === 0) {
+      // Sem links de pagamento - renderiza texto normal
+      return <p className={cn("text-sm whitespace-pre-wrap leading-relaxed", className)}>{content}</p>;
+    }
+    
+    // Divide o conteúdo em partes (texto + links)
+    const parts = content.split(paymentUrlRegex);
    
    return (
      <div className={cn("text-sm whitespace-pre-wrap leading-relaxed space-y-2", className)}>
-       {parts.map((part, index) => {
-         // Verifica se essa parte é um link do Stripe
-         const isStripeLink = stripeLinks.some(link => link === part);
-         
-         if (isStripeLink) {
+      {parts.map((part, index) => {
+          // Verifica se essa parte é um link de pagamento
+          const isPaymentLink = paymentLinks.some(link => link === part);
+          
+          if (isPaymentLink) {
            return (
              <Button
                key={index}
