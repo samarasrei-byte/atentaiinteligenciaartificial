@@ -24,7 +24,13 @@ serve(async (req) => {
     const accessToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
     if (!accessToken) throw new Error("MERCADOPAGO_ACCESS_TOKEN not configured");
 
-    logStep("Access token found", { length: accessToken.length, prefix: accessToken.substring(0, 10) + "..." });
+    // Validate token format
+    if (!accessToken.startsWith("APP_USR-") && !accessToken.startsWith("TEST-")) {
+      logStep("WARNING: Token format unexpected", { length: accessToken.length, prefix: accessToken.substring(0, 10) + "..." });
+      throw new Error("Token do Mercado Pago com formato inválido. Configure um token válido (APP_USR-... ou TEST-...).");
+    }
+
+    logStep("Access token valid", { length: accessToken.length, format: accessToken.startsWith("APP_USR-") ? "production" : "test" });
 
     const {
       amount,
