@@ -16,18 +16,20 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 
 interface PaymentLinkMessageProps {
-  serviceType: 'limpanome' | 'limpanome-pj';
+  serviceType: 'limpanome' | 'limpanome-pj' | 'fiscal' | 'bi' | 'certidao' | 'ir';
   servicePriceCents: number;
   requestId: string;
   isPaid?: boolean;
   className?: string;
 }
 
-// Apenas Limpa Nome tem checkout direto via Stripe
-// Análise Fiscal e BI são vendidos via chat (success fee / sob consulta)
-const serviceLabels = {
+const serviceLabels: Record<string, { name: string; icon: typeof Shield; gradient: string }> = {
   'limpanome': { name: 'Limpa Nome PF', icon: Shield, gradient: 'from-emerald-500 to-green-600' },
   'limpanome-pj': { name: 'Limpa Nome CNPJ', icon: Shield, gradient: 'from-emerald-500 to-green-600' },
+  'fiscal': { name: 'Análise Fiscal', icon: CreditCard, gradient: 'from-blue-500 to-indigo-600' },
+  'bi': { name: 'BI+ Inteligência Fiscal', icon: Sparkles, gradient: 'from-purple-500 to-violet-600' },
+  'certidao': { name: 'Certidão', icon: Shield, gradient: 'from-teal-500 to-cyan-600' },
+  'ir': { name: 'Declaração IR', icon: CreditCard, gradient: 'from-amber-500 to-orange-600' },
 };
 
 /**
@@ -47,7 +49,7 @@ export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
   const { openCheckout } = useMPCheckout();
   const [isLoading, setIsLoading] = useState(false);
 
-  const service = serviceLabels[serviceType];
+  const service = serviceLabels[serviceType] || { name: serviceType, icon: CreditCard, gradient: 'from-primary to-primary/70' };
   const ServiceIcon = service.icon;
   const priceFormatted = (servicePriceCents / 100).toLocaleString('pt-BR', {
     style: 'currency',

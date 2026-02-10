@@ -24,6 +24,9 @@ import {
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from 'sonner';
 
 const DEMO_RESPONSES: Record<string, string> = {
   'ibs': `O **IBS** é o novo imposto que substitui ICMS e ISS! 🎯
@@ -110,6 +113,8 @@ interface Message {
 
 export function AIDemoSection() {
   const navigate = useNavigate();
+  const { openCheckout } = useMPCheckout();
+  const { user } = useAuth();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([
@@ -442,7 +447,25 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
 
                   <Button 
                     className="w-full bg-gradient-to-r from-accent via-orange-500 to-accent hover:from-accent/90 hover:via-orange-400 hover:to-accent/90 text-white font-semibold h-10 md:h-12 text-sm md:text-base group shadow-lg shadow-accent/25"
-                    onClick={() => navigate('/pricing')}
+                    onClick={() => {
+                      if (!user) {
+                        toast.error('Faça login para assinar o plano Premium.');
+                        navigate('/auth');
+                        return;
+                      }
+                      openCheckout({
+                        amountCents: 3900,
+                        serviceName: 'AtentAI Premium',
+                        serviceType: 'premium',
+                        description: 'Acesso completo com IA ilimitada',
+                        gradient: 'from-accent to-orange-500',
+                        metadata: { service_key: 'premium' },
+                        onSuccess: () => {
+                          toast.success('Assinatura Premium ativada!');
+                          navigate('/painel');
+                        },
+                      });
+                    }}
                   >
                     <Gift className="h-4 w-4 md:h-5 md:w-5 mr-1.5 md:mr-2" />
                     Começar Agora
