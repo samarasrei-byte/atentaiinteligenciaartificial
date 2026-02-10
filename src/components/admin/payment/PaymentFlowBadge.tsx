@@ -51,7 +51,7 @@ export const PaymentFlowBadge: React.FC<PaymentFlowBadgeProps> = ({
       <div className={cn("flex items-center gap-2", className)}>
         <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200 gap-1.5">
           <DollarSign className="h-3.5 w-3.5" />
-          {fixedPriceCents ? formatCurrency(fixedPriceCents) : 'R$ 780,00'}
+          {fixedPriceCents ? formatCurrency(fixedPriceCents) : 'R$ 824,50'}
         </Badge>
         {onSendPayment && paymentStatus !== 'paid' && (
           <Button size="sm" variant="default" onClick={onSendPayment} className="h-7 text-xs">

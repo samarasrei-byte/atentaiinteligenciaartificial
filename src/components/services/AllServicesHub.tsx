@@ -66,7 +66,7 @@ export const AllServicesHub: React.FC = () => {
       description: 'Regularize restrições nos bureaus de crédito',
       icon: Shield,
       gradient: 'from-emerald-500 to-green-600',
-      priceCents: 78000, // R$ 780,00 - FIXED PRICE
+      priceCents: 82450, // R$ 824,50 - FIXED PRICE
       features: [
         'Análise completa do histórico',
         'Remoção de registros SERASA/SPC',
@@ -84,7 +84,7 @@ export const AllServicesHub: React.FC = () => {
       description: 'Regularize restrições nos bureaus de crédito',
       icon: Shield,
       gradient: 'from-emerald-500 to-green-600',
-      priceCents: 97000, // R$ 970,00 - FIXED PRICE
+      priceCents: 128000, // R$ 1.280,00 - FIXED PRICE
       features: [
         'Análise completa do histórico',
         'Remoção de registros SERASA/SPC',

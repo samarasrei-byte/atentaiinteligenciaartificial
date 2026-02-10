@@ -36,15 +36,15 @@ const SERVICES_INFO = [
     icon: '🛡️',
     name: 'Limpa Nome PF',
     description: 'Regularização para Pessoa Física (CPF)',
-    commission: 'R$ 156 por venda (20%)',
-    basePrice: 'Preço: R$ 780,00'
+    commission: 'R$ 164,90 por venda (20%)',
+    basePrice: 'Preço: R$ 824,50'
   },
   {
     icon: '🏢',
     name: 'Limpa Nome CNPJ',
     description: 'Regularização para Empresas (CNPJ)',
-    commission: 'R$ 194 por venda (20%)',
-    basePrice: 'Preço: R$ 970,00'
+    commission: 'R$ 256 por venda (20%)',
+    basePrice: 'Preço: R$ 1.280,00'
   },
   {
     icon: '📄',
@@ -778,8 +778,8 @@ export default function AffiliateOnboardingFlow() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
                   <span className="text-sm text-muted-foreground">Limpa Nome</span>
-                  <div className="text-2xl font-bold text-emerald-500">R$ 194</div>
-                  <p className="text-xs text-muted-foreground">20% de R$ 970</p>
+                  <div className="text-2xl font-bold text-emerald-500">R$ 256</div>
+                  <p className="text-xs text-muted-foreground">20% de R$ 1.280</p>
                 </div>
                 <div className="p-4 rounded-xl bg-muted/50 border border-border/50">
                   <span className="text-sm text-muted-foreground">Consultoria</span>
@@ -969,7 +969,7 @@ Descobri uma plataforma que está ajudando empresários a recuperar dinheiro e l
 
 *Serviços disponíveis:*
 🧠 Inteligência Fiscal - Recupere créditos tributários
-🛡️ Limpa Nome Premium - R$ 970 ou 4x R$ 243
+🛡️ Limpa Nome Premium - R$ 1.280 ou 4x R$ 320
 📄 Declaração IR - A partir de R$ 150
 🏢 Abertura de Empresa - R$ 500
 

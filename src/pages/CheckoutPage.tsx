@@ -40,7 +40,7 @@ const serviceConfigs: Record<string, {
       'Acompanhamento humano dedicado',
       'Todas as plataformas: SPC, Serasa, SCPC, Boa Vista',
     ],
-    basePriceCents: 78000, // R$ 780,00 FIXED
+    basePriceCents: 82450, // R$ 824,50 FIXED
     successUrl: '/limpa-nome/sucesso',
     serviceType: 'credit_repair_pf',
   },
@@ -55,7 +55,7 @@ const serviceConfigs: Record<string, {
       'Atendimento humano especializado',
       'Regularização em todas as plataformas',
     ],
-    basePriceCents: 97000, // R$ 970,00 FIXED
+    basePriceCents: 128000, // R$ 1.280,00 FIXED
     successUrl: '/limpa-nome/sucesso',
     serviceType: 'credit_repair_pj',
   },
@@ -374,7 +374,7 @@ export default function CheckoutPage() {
                       </div>
                       <div>
                         <p className={`font-semibold ${selectedType === 'pf' ? 'text-white' : 'text-white/80'}`}>Pessoa Física</p>
-                        <p className="text-xs text-white/50">CPF - R$ 780,00</p>
+                        <p className="text-xs text-white/50">CPF - R$ 824,50</p>
                       </div>
                     </div>
                   </button>
@@ -393,7 +393,7 @@ export default function CheckoutPage() {
                       </div>
                       <div>
                         <p className={`font-semibold ${selectedType === 'pj' ? 'text-white' : 'text-white/80'}`}>Empresa</p>
-                        <p className="text-xs text-white/50">CNPJ - R$ 970,00</p>
+                        <p className="text-xs text-white/50">CNPJ - R$ 1.280,00</p>
                       </div>
                     </div>
                   </button>
