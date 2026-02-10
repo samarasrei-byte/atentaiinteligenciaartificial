@@ -175,11 +175,8 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         headers.Authorization = `Bearer ${accessToken}`;
       }
 
-      // Add timeout via AbortController (30s)
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
-
-      const { data, error } = await supabase.functions.invoke('create-mp-payment', {
+      // Real timeout using Promise.race (30s)
+      const paymentPromise = supabase.functions.invoke('create-mp-payment', {
         body: {
           amount: amountCents,
           description: description || serviceName,
@@ -201,14 +198,18 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         headers,
       });
 
-      clearTimeout(timeoutId);
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error('TIMEOUT')), 30000)
+      );
+
+      const { data, error } = await Promise.race([paymentPromise, timeoutPromise]);
 
       if (error) throw error;
       if (data.error) throw new Error(data.error);
 
       return data;
     } catch (err: any) {
-      const msg = err.name === 'AbortError' 
+      const msg = err.message === 'TIMEOUT' 
         ? 'Tempo esgotado. Tente novamente.' 
         : (err.message || 'Erro ao processar pagamento');
       toast.error(msg);
