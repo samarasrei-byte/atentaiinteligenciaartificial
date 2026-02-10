@@ -7,6 +7,7 @@ import { MessageCircle, Send, Bot, User, Loader2, Lock, Sparkles, CheckCircle, S
 import { motion } from "framer-motion";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { useMPCheckout } from "@/contexts/MPCheckoutContext";
 import { supabase } from "@/integrations/supabase/client";
 import { STRIPE_PLANS, formatPrice, AI_LIMITS } from "@/lib/stripe";
 
@@ -246,6 +247,8 @@ export function AISection() {
     setIsTyping(false);
   };
 
+  const { openCheckout } = useMPCheckout();
+
   const handlePurchase = async () => {
     if (!user) {
       toast({
@@ -256,23 +259,17 @@ export function AISection() {
       return;
     }
 
-    setIsCheckingOut(true);
-    
-    try {
-      const { openCheckout } = await import('@/contexts/MPCheckoutContext').then(m => ({ openCheckout: null }));
-      // Redirect to pricing page for subscription checkout
-      navigate('/pricing');
-      return;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsCheckingOut(false);
-    }
+    openCheckout({
+      amountCents: plan.price,
+      serviceName: 'AtentAI Premium',
+      serviceType: 'premium',
+      description: 'Recursos completos com IA ilimitada',
+      gradient: 'from-violet-500 to-fuchsia-500',
+      metadata: { service_key: 'premium' },
+      onSuccess: () => {
+        toast({ title: 'Assinatura ativada!', description: 'Aproveite o AtentAI Premium.' });
+      },
+    });
   };
 
   const features = [

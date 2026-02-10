@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -31,6 +32,7 @@ import {
 const PlanoAutonomo: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { openCheckout } = useMPCheckout();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const [couponCode, setCouponCode] = useState('');
@@ -80,20 +82,17 @@ const PlanoAutonomo: React.FC = () => {
       return;
     }
 
-    setIsLoading(true);
-    try {
-      navigate('/pricing');
-      return;
-    } catch (error) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: 'Tente novamente em alguns instantes',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    openCheckout({
+      amountCents: finalPrice,
+      serviceName: 'Plano Autônomo',
+      serviceType: 'autonomo',
+      description: 'Dashboard financeiro completo para profissionais autônomos',
+      gradient: 'from-primary to-primary/70',
+      metadata: { service_key: 'autonomo' },
+      onSuccess: () => {
+        toast({ title: 'Assinatura ativada!' });
+      },
+    });
   };
 
   const handleCouponApplied = (_couponId: string, discount: { type: 'percent' | 'amount'; value: number }) => {

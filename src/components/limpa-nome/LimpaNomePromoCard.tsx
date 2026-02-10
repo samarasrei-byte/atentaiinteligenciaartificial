@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -54,7 +55,8 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
   showAIFeature = true
 }) => {
   const navigate = useNavigate();
-  const { subscription } = useAuth();
+  const { subscription, user } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const [selectedPlan, setSelectedPlan] = useState<PlanType>('pf');
   
   const isSubscribed = subscription?.subscribed || false;
@@ -80,8 +82,23 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
     '🎁 Bônus: Regularização de Score!',
   ];
 
-  // ROUTING: Limpa Nome → Direct checkout based on selected plan
-  const getCheckoutRoute = () => `/checkout/limpa-nome-${selectedPlan}`;
+  const handleOpenCheckout = (planId: PlanType = selectedPlan) => {
+    if (!user) {
+      navigate('/auth');
+      return;
+    }
+    const plan = plans[planId];
+    const price = isSubscribed ? Math.round(plan.basePrice * 0.9) : plan.basePrice;
+    openCheckout({
+      amountCents: price,
+      serviceName: `Limpa Nome ${planId === 'pf' ? 'CPF' : 'CNPJ'}`,
+      serviceType: `limpa-nome-${planId}`,
+      description: `Regularização ${planId === 'pf' ? 'CPF' : 'CNPJ'}`,
+      gradient: 'from-rose-500 to-pink-600',
+      metadata: { service_key: `limpa-nome-${planId}` },
+      onSuccess: () => navigate('/painel'),
+    });
+  };
 
   if (variant === 'banner') {
     return (
@@ -112,7 +129,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
                 <span className="text-xl font-bold text-foreground ml-2">{formatPrice(plans.pf.basePrice)}</span>
               </div>
               <Button 
-                onClick={() => navigate('/checkout/limpa-nome-pf')}
+                onClick={() => handleOpenCheckout('pf')}
                 className="bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
               >
                 Limpar Nome
@@ -127,7 +144,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
 
   if (variant === 'compact') {
     return (
-      <Card className="bg-card border-border hover:border-rose-500/30 transition-all group cursor-pointer" onClick={() => navigate('/checkout/limpa-nome-pf')}>
+      <Card className="bg-card border-border hover:border-rose-500/30 transition-all group cursor-pointer" onClick={() => handleOpenCheckout('pf')}>
         <CardContent className="pt-6">
           <div className="flex items-center gap-4">
             <div className="p-3 rounded-xl bg-gradient-to-br from-rose-500 to-pink-600 shadow-lg">
@@ -283,7 +300,7 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
         </div>
 
         <Button 
-          onClick={() => navigate(getCheckoutRoute())}
+          onClick={() => handleOpenCheckout()}
           className="w-full bg-gradient-to-r from-rose-500 to-pink-600 hover:from-rose-600 hover:to-pink-700"
         >
           <ShieldCheck className="h-4 w-4 mr-2" />
