@@ -70,12 +70,12 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
       {children}
 
       <Dialog open={isOpen} onOpenChange={closeCheckout}>
-        <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] md:max-h-[85vh] overflow-y-auto w-[95vw] sm:w-full mx-auto">
+        <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] md:max-h-[85vh] overflow-y-auto w-[95vw] sm:w-full mx-auto [&>button.absolute]:hidden">
           {/* Header */}
           <div className={`bg-gradient-to-br ${options?.gradient || 'from-primary to-primary/70'} p-6 text-white relative`}>
             <button
               onClick={closeCheckout}
-              className="absolute top-4 right-4 p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+              className="absolute top-4 right-4 z-10 p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
             >
               <X className="h-4 w-4" />
             </button>

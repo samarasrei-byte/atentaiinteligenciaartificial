@@ -269,12 +269,12 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] md:max-h-[85vh] overflow-y-auto w-[95vw] sm:w-full mx-auto">
+      <DialogContent className="sm:max-w-lg p-0 overflow-hidden max-h-[90vh] md:max-h-[85vh] overflow-y-auto w-[95vw] sm:w-full mx-auto [&>button.absolute]:hidden">
         {/* Header with gradient */}
         <div className={`bg-gradient-to-br ${config.gradient} p-6 text-white relative`}>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+            className="absolute top-4 right-4 z-10 p-1 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
