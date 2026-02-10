@@ -100,6 +100,51 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     ],
     successFee: false,
   },
+  'contador-premium': {
+    id: 'contador-premium',
+    name: 'Contador Premium Plus',
+    description: 'Assinatura mensal com contador dedicado',
+    icon: MessageCircle,
+    gradient: 'from-amber-500 to-orange-600',
+    flowType: 'checkout',
+    priceCents: 19700,
+    features: [
+      'Contador dedicado exclusivo',
+      'Chat direto ilimitado',
+      'Consultoria fiscal e tributária',
+      'Suporte prioritário',
+    ],
+  },
+  'clarity': {
+    id: 'clarity',
+    name: 'Atentai Clarity',
+    description: 'BI financeiro com supervisão humana',
+    icon: Brain,
+    gradient: 'from-cyan-500 to-blue-600',
+    flowType: 'checkout',
+    priceCents: 149700,
+    features: [
+      'Dashboard financeiro em tempo real',
+      'Supervisão humana especializada',
+      'Onboarding financeiro completo',
+      'Relatórios semanais automatizados',
+    ],
+  },
+  'control': {
+    id: 'control',
+    name: 'Atentai Control',
+    description: 'Controle financeiro avançado com diagnóstico empresarial',
+    icon: Brain,
+    gradient: 'from-violet-500 to-purple-700',
+    flowType: 'checkout',
+    priceCents: 349700,
+    features: [
+      'Tudo do Clarity +',
+      'Diagnóstico empresarial completo',
+      'Automações financeiras avançadas',
+      'Consultoria estratégica mensal',
+    ],
+  },
 };
 
 interface ServiceCheckoutModalProps {
@@ -192,9 +237,33 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
     }
   };
 
-  const handleMPSuccess = (paymentId: number) => {
-    onSuccess?.();
+  const handleMPSuccess = async (paymentId: number, processResult?: any) => {
     setShowCheckout(false);
+    
+    if (processResult?.redirectPath) {
+      // Auto-redirect to panel with chat open
+      toast.success(`Serviço ativado! Redirecionando ao chat com ${processResult.specialist || 'especialista'}...`);
+
+      if (processResult.isNewUser && processResult.tempPassword) {
+        // Auto-login the new user
+        const { error: loginError } = await supabase.auth.signInWithPassword({
+          email: processResult.email,
+          password: processResult.tempPassword,
+        });
+        if (loginError) {
+          console.error('Auto-login failed:', loginError);
+          toast.info('Conta criada! Faça login com o email: ' + processResult.email);
+        }
+      }
+
+      onSuccess?.();
+      onClose();
+      navigate(processResult.redirectPath);
+      return;
+    }
+
+    // Fallback
+    onSuccess?.();
     onClose();
   };
 

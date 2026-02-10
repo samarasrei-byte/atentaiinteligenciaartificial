@@ -12,58 +12,10 @@ verify_jwt = false
 [functions.check-subscription]
 verify_jwt = false
 
-[functions.create-checkout]
-verify_jwt = false
-
-[functions.create-company-opening-payment]
-verify_jwt = false
-
-[functions.create-consultation-payment]
-verify_jwt = false
-
-[functions.customer-portal]
-verify_jwt = false
-
-[functions.validate-coupon]
-verify_jwt = false
-
 [functions.voice-to-text]
 verify_jwt = false
 
-[functions.stripe-connect-onboard]
-verify_jwt = false
-
-[functions.stripe-connect-status]
-verify_jwt = false
-
-[functions.stripe-connect-dashboard]
-verify_jwt = false
-
-[functions.stripe-connect-webhook]
-verify_jwt = false
-
-[functions.create-credit-repair-payment]
-verify_jwt = false
-
-[functions.create-certificate-payment]
-verify_jwt = false
-
-[functions.create-ir-payment]
-verify_jwt = false
-
-[functions.send-cashback-notification]
-verify_jwt = false
-
-[functions.check-expiring-cashback]
-verify_jwt = false
-
 [functions.create-guest-service-payment]
-verify_jwt = false
-
-[functions.process-guest-payment]
-verify_jwt = false
-
-[functions.guest-payment-webhook]
 verify_jwt = false
 
 [functions.create-manual-payment-link]
@@ -73,4 +25,34 @@ verify_jwt = false
 verify_jwt = false
 
 [functions.mp-payment-status]
+verify_jwt = false
+
+[functions.process-approved-payment]
+verify_jwt = false
+
+[functions.mp-payment-webhook]
+verify_jwt = false
+
+[functions.send-cashback-notification]
+verify_jwt = false
+
+[functions.check-expiring-cashback]
+verify_jwt = false
+
+[functions.create-partner-user]
+verify_jwt = false
+
+[functions.create-test-users]
+verify_jwt = false
+
+[functions.generate-churn-message]
+verify_jwt = false
+
+[functions.process-document-expiration]
+verify_jwt = false
+
+[functions.update-partner-password]
+verify_jwt = false
+
+[functions.ai-admin-response]
 verify_jwt = false

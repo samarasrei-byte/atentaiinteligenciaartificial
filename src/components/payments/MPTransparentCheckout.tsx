@@ -17,10 +17,25 @@ interface MPTransparentCheckoutProps {
   description?: string;
   payerEmail: string;
   payerName: string;
+  payerPhone?: string;
   metadata?: Record<string, string>;
-  onSuccess: (paymentId: number) => void;
+  onSuccess: (paymentId: number, processResult?: PostPaymentResult) => void;
   onError?: (error: string) => void;
   accessToken?: string;
+  /** If true, will call process-approved-payment to create account + link service */
+  autoProcessPayment?: boolean;
+  /** Request ID to link to user after payment */
+  requestId?: string;
+}
+
+interface PostPaymentResult {
+  userId: string;
+  isNewUser: boolean;
+  tempPassword?: string;
+  email: string;
+  redirectPath: string;
+  specialist: string;
+  chatType: string;
 }
 
 type PaymentTab = 'pix' | 'card';
@@ -39,10 +54,13 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
   description,
   payerEmail,
   payerName,
+  payerPhone,
   metadata,
   onSuccess,
   onError,
   accessToken,
+  autoProcessPayment = true,
+  requestId,
 }) => {
   const [activeTab, setActiveTab] = useState<PaymentTab>('pix');
   const [isLoading, setIsLoading] = useState(false);
@@ -70,11 +88,51 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
     };
   }, []);
 
+  const processApprovedPayment = useCallback(async (paymentId: number) => {
+    if (!autoProcessPayment) {
+      onSuccess(paymentId);
+      return;
+    }
+
+    try {
+      const headers: Record<string, string> = {};
+      if (accessToken) {
+        headers.Authorization = `Bearer ${accessToken}`;
+      }
+
+      const { data, error } = await supabase.functions.invoke('process-approved-payment', {
+        body: {
+          paymentId,
+          serviceType,
+          serviceName,
+          email: payerEmail,
+          fullName: payerName,
+          phone: payerPhone || '',
+          requestId,
+          metadata,
+        },
+        headers,
+      });
+
+      if (error) {
+        console.error('[MPCheckout] Process error:', error);
+        // Still call onSuccess even if process fails - payment was approved
+        onSuccess(paymentId);
+        return;
+      }
+
+      onSuccess(paymentId, data as PostPaymentResult);
+    } catch (err) {
+      console.error('[MPCheckout] Process error:', err);
+      onSuccess(paymentId);
+    }
+  }, [autoProcessPayment, onSuccess, accessToken, serviceType, serviceName, payerEmail, payerName, payerPhone, requestId, metadata]);
+
   const startPolling = useCallback((paymentId: number) => {
     if (pollingRef.current) clearInterval(pollingRef.current);
     
     let attempts = 0;
-    const maxAttempts = 60; // 5 minutes at 5s intervals
+    const maxAttempts = 60;
     
     pollingRef.current = setInterval(async () => {
       attempts++;
@@ -95,8 +153,8 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         
         if (data.status === 'approved') {
           if (pollingRef.current) clearInterval(pollingRef.current);
-          onSuccess(paymentId);
           toast.success('Pagamento aprovado! 🎉');
+          await processApprovedPayment(paymentId);
         } else if (['rejected', 'cancelled', 'refunded'].includes(data.status)) {
           if (pollingRef.current) clearInterval(pollingRef.current);
         }
@@ -104,7 +162,7 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         // Silently continue polling
       }
     }, 5000);
-  }, [onSuccess]);
+  }, [processApprovedPayment]);
 
   const createPayment = async (paymentMethodId: string, extraBody: Record<string, unknown> = {}) => {
     setIsLoading(true);
@@ -206,8 +264,8 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
       });
 
       if (data.status === 'approved') {
-        onSuccess(data.id);
         toast.success('Pagamento aprovado! 🎉');
+        await processApprovedPayment(data.id);
       } else if (data.status === 'in_process' || data.status === 'pending') {
         startPolling(data.id);
         toast.info('Pagamento em processamento...');
