@@ -28,6 +28,7 @@ const Pricing = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { user, loading, subscription, checkSubscription } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<string | null>(null);
   const [isManaging, setIsManaging] = useState(false);
@@ -65,8 +66,29 @@ const Pricing = () => {
       return;
     }
 
-    // Navigate to pricing page with MP checkout modal
-    navigate(`/pricing?plan=${planKey}`);
+    const plan = STRIPE_PLANS[planKey];
+    const originalPrice = plan.price;
+    const finalPrice = calculateDiscountedPrice(originalPrice);
+
+    setIsLoading(planKey);
+
+    openCheckout({
+      amountCents: finalPrice,
+      serviceName: plan.name,
+      serviceType: planKey,
+      description: plan.description,
+      gradient: getGradient(planKey),
+      metadata: {
+        plan_key: planKey,
+        ...(appliedCoupon ? { coupon_id: appliedCoupon.id } : {}),
+      },
+      onSuccess: () => {
+        setIsLoading(null);
+        toast({ title: 'Pagamento realizado!', description: 'Sua assinatura foi ativada.' });
+        checkSubscription();
+      },
+    });
+    setIsLoading(null);
   };
 
   const handleManageSubscription = async () => {
@@ -338,10 +360,9 @@ const Pricing = () => {
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
           <p>Pagamento seguro via Mercado Pago. Cancele a qualquer momento.</p>
-          <p className="mt-2 text-accent font-medium">Plano Business Pro parcelável em até 10x sem juros!</p>
         </div>
 
-        {/* Seção para Contadores - Only show if feature is enabled */}
+        {/* Seção para Contadores */}
         {isContadorEnabled() && (
           <>
             <Separator className="my-16" />

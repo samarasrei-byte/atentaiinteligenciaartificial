@@ -213,7 +213,7 @@ export function PricingSection() {
         </div>
 
         <div className="mt-12 text-center text-muted-foreground text-sm">
-          <p>Pagamento seguro via Stripe. Cancele a qualquer momento.</p>
+          <p>Pagamento seguro via Mercado Pago. Cancele a qualquer momento.</p>
         </div>
       </div>
     </section>
