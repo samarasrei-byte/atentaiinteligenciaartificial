@@ -64,10 +64,12 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<PaymentTab>('pix');
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingStep, setLoadingStep] = useState<string>('');
   const [copied, setCopied] = useState(false);
   const [pixData, setPixData] = useState<PixData | null>(null);
   const [pollingStatus, setPollingStatus] = useState<string | null>(null);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const warmupDoneRef = useRef(false);
   
   // Card form state
   const [cardForm, setCardForm] = useState({
@@ -80,6 +82,15 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
     identificationNumber: '',
     installments: 1,
   });
+
+  // Pre-warm edge function on mount (fire-and-forget OPTIONS request)
+  useEffect(() => {
+    if (warmupDoneRef.current) return;
+    warmupDoneRef.current = true;
+    const url = (import.meta.env.VITE_SUPABASE_URL || 'https://wtiexyrawenxckctbwzn.supabase.co') + '/functions/v1/create-mp-payment';
+    fetch(url, { method: 'OPTIONS' }).catch(() => {});
+    console.log('[PIX] Pre-warming edge function');
+  }, []);
 
   // Cleanup polling on unmount
   useEffect(() => {
@@ -164,11 +175,13 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
     }, 5000);
   }, [processApprovedPayment]);
 
-  const createPayment = async (paymentMethodId: string, extraBody: Record<string, unknown> = {}) => {
-    setIsLoading(true);
+  const createPayment = async (paymentMethodId: string, extraBody: Record<string, unknown> = {}, retryCount = 0): Promise<any> => {
+    if (retryCount === 0) setIsLoading(true);
     const startTime = Date.now();
     
     try {
+      setLoadingStep(retryCount > 0 ? 'Tentando novamente...' : 'Conectando ao servidor...');
+
       const [firstName, ...rest] = payerName.split(' ');
       const lastName = rest.join(' ') || firstName;
 
@@ -191,15 +204,16 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         ...extraBody,
       };
 
-      // Use supabase client URL directly - most reliable
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://wtiexyrawenxckctbwzn.supabase.co';
       const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aWV4eXJhd2VueGNrY3Rid3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNTMzMTksImV4cCI6MjA4MTkyOTMxOX0.487e8ymS3oOol5AKlnPb-eCau7Jjr5i48OpE9WV5GjY';
       const endpoint = `${supabaseUrl}/functions/v1/create-mp-payment`;
 
-      console.log('[PIX] Calling', endpoint, 'method:', paymentMethodId);
+      console.log('[PIX] Calling', endpoint, 'attempt:', retryCount + 1);
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      const timeoutId = setTimeout(() => controller.abort(), 25000);
+
+      setLoadingStep('Gerando pagamento...');
 
       const response = await fetch(endpoint, {
         method: 'POST',
@@ -221,6 +235,7 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         throw new Error(errorData.error || `Erro HTTP ${response.status}`);
       }
 
+      setLoadingStep('Processando resposta...');
       const data = await response.json();
       console.log('[PIX] Payment created:', data.id, 'status:', data.status, 'in', Date.now() - startTime, 'ms');
 
@@ -229,15 +244,26 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
       return data;
     } catch (err: any) {
       const elapsed = Date.now() - startTime;
-      console.error('[PIX] Error after', elapsed, 'ms:', err.name, err.message);
+      console.error('[PIX] Error after', elapsed, 'ms:', err.name, err.message, 'attempt:', retryCount + 1);
+
+      // Auto-retry once on timeout or network error
+      if (retryCount === 0 && (err.name === 'AbortError' || err.name === 'TypeError')) {
+        console.log('[PIX] Auto-retrying...');
+        setLoadingStep('Reconectando...');
+        return createPayment(paymentMethodId, extraBody, 1);
+      }
+
       const msg = err.name === 'AbortError' 
-        ? 'Tempo esgotado (30s). Tente novamente.' 
+        ? 'Tempo esgotado. Tente novamente.' 
         : (err.message || 'Erro ao processar pagamento');
       toast.error(msg);
       onError?.(msg);
       throw err;
     } finally {
-      setIsLoading(false);
+      if (retryCount === 0 || true) {
+        setIsLoading(false);
+        setLoadingStep('');
+      }
     }
   };
 
@@ -246,17 +272,18 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
     try {
       const data = await createPayment('pix');
 
-      if (data.pix_qr_code_base64 && data.pix_copy_paste) {
+      if (data.pix_qr_code_base64 && (data.pix_copy_paste || data.pix_qr_code)) {
         setPixData({
           qr_code_base64: data.pix_qr_code_base64,
-          copy_paste: data.pix_copy_paste,
+          copy_paste: data.pix_copy_paste || data.pix_qr_code,
           ticket_url: data.ticket_url,
           paymentId: data.id,
         });
         startPolling(data.id);
-        toast.info('PIX gerado! Escaneie o QR Code ou copie o código.');
+        toast.success('PIX gerado! Escaneie o QR Code ou copie o código.');
       } else {
-        throw new Error('Dados do PIX não retornados');
+        console.error('[PIX] Missing data:', JSON.stringify(data));
+        throw new Error('Dados do PIX não retornados. Tente novamente.');
       }
     } catch {
       // Error already handled
@@ -428,11 +455,19 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
           <Button
             onClick={handlePix}
             disabled={isLoading}
-            className="w-full h-12 text-base font-semibold"
+            className="w-full h-14 text-base font-semibold relative overflow-hidden"
             size="lg"
           >
             {isLoading ? (
-              <Loader2 className="h-5 w-5 animate-spin" />
+              <div className="flex flex-col items-center gap-1">
+                <div className="flex items-center gap-2">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <span>{loadingStep || 'Gerando PIX...'}</span>
+                </div>
+                <div className="w-full h-1 bg-primary/20 rounded-full overflow-hidden absolute bottom-0 left-0">
+                  <div className="h-full bg-primary rounded-full animate-pulse" style={{ width: '60%', animation: 'pulse 1.5s ease-in-out infinite' }} />
+                </div>
+              </div>
             ) : (
               <>
                 <QrCode className="h-5 w-5 mr-2" />
