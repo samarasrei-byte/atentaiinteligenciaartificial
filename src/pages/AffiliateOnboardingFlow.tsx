@@ -970,8 +970,8 @@ Descobri uma plataforma que está ajudando empresários a recuperar dinheiro e l
 *Serviços disponíveis:*
 🧠 Inteligência Fiscal - Recupere créditos tributários
 🛡️ Limpa Nome Premium - R$ 1.280 ou 4x R$ 320
-📄 Declaração IR - A partir de R$ 150
-🏢 Abertura de Empresa - R$ 500
+📄 Declaração IR - A partir de R$ 200
+🏢 Abertura de Empresa - R$ 780
 
 👉 *Faça sua análise gratuita:*
 ${affiliateLink}

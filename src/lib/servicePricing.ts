@@ -24,7 +24,7 @@ export const SERVICE_PRICES = {
     formatted: 'R$ 824,50',
     installments: 4,
     installmentValue: 'R$ 206,13',
-    stripeKey: 'credit_repair_pf',
+    serviceKey: 'credit_repair_pf',
     subscriberDiscount: 0,
   },
   LIMPA_NOME_CNPJ: {
@@ -32,7 +32,7 @@ export const SERVICE_PRICES = {
     formatted: 'R$ 1.280,00',
     installments: 4,
     installmentValue: 'R$ 320,00',
-    stripeKey: 'credit_repair_pj',
+    serviceKey: 'credit_repair_pj',
     subscriberDiscount: 0,
   },
 
@@ -40,13 +40,13 @@ export const SERVICE_PRICES = {
   IR_SIMPLES: {
     cents: 20000,
     formatted: 'R$ 200,00',
-    stripeKey: 'ir_simples',
+    serviceKey: 'ir_simples',
     subscriberDiscount: 0,
   },
   IR_COMPLETO: {
     cents: 42000,
     formatted: 'R$ 420,00',
-    stripeKey: 'ir_completo',
+    serviceKey: 'ir_completo',
     subscriberDiscount: 0,
   },
 
@@ -54,7 +54,7 @@ export const SERVICE_PRICES = {
   ABERTURA_EMPRESA: {
     cents: 78000,
     formatted: 'R$ 780,00',
-    stripeKey: 'abertura_empresa',
+    serviceKey: 'abertura_empresa',
     subscriberDiscount: 0,
   },
 
@@ -62,7 +62,7 @@ export const SERVICE_PRICES = {
   CERTIDAO: {
     cents: 8000,
     formatted: 'R$ 80,00',
-    stripeKey: 'certificate',
+    serviceKey: 'certificate',
     subscriberDiscount: 0,
   },
 
@@ -72,7 +72,7 @@ export const SERVICE_PRICES = {
     percentFee: 50,
     minValue: 0,
     description: 'Análise 100% gratuita. Pagamento apenas no êxito (50% do valor recuperado)',
-    stripeKey: 'modulo_fiscal',
+    serviceKey: 'modulo_fiscal',
   },
 
   // Contador Premium Plus - Subscription
@@ -80,7 +80,7 @@ export const SERVICE_PRICES = {
     cents: 19700,
     formatted: 'R$ 197,00',
     interval: 'month',
-    stripeKey: 'contador_premium',
+    serviceKey: 'contador_premium',
     subscriberDiscount: 0,
   },
 
@@ -88,7 +88,7 @@ export const SERVICE_PRICES = {
   ATENTAI_CLARITY: {
     cents: 149700,
     formatted: 'R$ 1.497,00',
-    stripeKey: 'clarity',
+    serviceKey: 'clarity',
     subscriberDiscount: 0,
   },
 
@@ -96,7 +96,7 @@ export const SERVICE_PRICES = {
   ATENTAI_CONTROL: {
     cents: 349700,
     formatted: 'R$ 3.497,00',
-    stripeKey: 'control',
+    serviceKey: 'control',
     subscriberDiscount: 0,
   },
 
@@ -105,7 +105,7 @@ export const SERVICE_PRICES = {
     type: 'custom_pricing',
     formatted: 'Sob consulta',
     description: 'Valor definido após análise do especialista',
-    stripeKey: 'bi_contabilidade',
+    serviceKey: 'bi_contabilidade',
   },
 } as const;
 
@@ -115,7 +115,7 @@ export const SUBSCRIPTION_PLANS = {
     cents: 3900,
     formatted: 'R$ 39,00',
     interval: 'month',
-    stripeKey: 'simulator',
+    serviceKey: 'simulator',
     features: [
       'Simulador de impacto tributário',
       'Comparativo antes/depois',
@@ -127,7 +127,7 @@ export const SUBSCRIPTION_PLANS = {
     cents: 9800,
     formatted: 'R$ 98,00',
     interval: 'month',
-    stripeKey: 'premium',
+    serviceKey: 'premium',
     features: [
       'Agente de IA ilimitado',
       'Simulador tributário completo',
@@ -142,7 +142,7 @@ export const SUBSCRIPTION_PLANS = {
     cents: 19899,
     formatted: 'R$ 198,99',
     interval: 'month',
-    stripeKey: 'contador',
+    serviceKey: 'contador',
     features: [
       'Tudo do AtentAI Premium',
       'Piloto Automático Tributário completo',
@@ -158,7 +158,7 @@ export const SUBSCRIPTION_PLANS = {
     cents: 6500,
     formatted: 'R$ 65,00',
     interval: 'month',
-    stripeKey: 'autonomo',
+    serviceKey: 'autonomo',
     features: [
       'Simulador PF vs PJ completo',
       'Agente de IA especializado',
