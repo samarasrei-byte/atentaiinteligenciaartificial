@@ -190,7 +190,7 @@ const GlassCard = ({
 const SERVICES = [
   { 
     name: 'Limpa Nome PF', 
-    price: 780, // R$ 780,00
+    price: 824.50, // R$ 824,50
     commission: 20, 
     icon: Shield,
     gradient: 'from-cyan-500 to-blue-600',
@@ -199,7 +199,7 @@ const SERVICES = [
   },
   { 
     name: 'Limpa Nome CNPJ', 
-    price: 970, // R$ 970,00
+    price: 1280, // R$ 1.280,00
     commission: 20, 
     icon: Building2,
     gradient: 'from-emerald-500 to-teal-600',

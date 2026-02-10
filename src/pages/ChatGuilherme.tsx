@@ -130,7 +130,7 @@ export default function ChatGuilherme() {
   
   // Service pricing map (only limpanome has direct checkout)
   const servicePricing = {
-    'limpanome': 78000, // R$ 780
+    'limpanome': 82450, // R$ 824,50
     'analise-fiscal': 0, // Pago no êxito - sem checkout direto
     'abertura-empresa': 0, // Via chat
     'geral': 0,

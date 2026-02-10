@@ -166,7 +166,7 @@ const serviceConfigs: ServiceCardConfig[] = [
     checkoutRoute: '/ir',
     category: 'declaracoes',
   },
-  // Limpa Nome PF - R$ 780
+  // Limpa Nome PF - R$ 824,50
   {
     key: 'credit_repair_pf',
     name: 'Limpa Nome Pessoa Física',
@@ -178,7 +178,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       'Acompanhamento humano dedicado',
     ],
     guarantees: ['Atendimento humano', 'Parceria séria'],
-    basePrice: 78000,
+    basePrice: 82450,
     discountPercent: 10,
     installments: 4,
     badge: 'popular',
@@ -209,7 +209,7 @@ const serviceConfigs: ServiceCardConfig[] = [
     checkoutRoute: '/abertura-empresa',
     category: 'empresarial',
   },
-  // Limpa Nome PJ - R$ 970
+  // Limpa Nome PJ - R$ 1.280
   {
     key: 'credit_repair_pj',
     name: 'Limpa Nome Empresa (CNPJ)',
@@ -221,7 +221,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       'Atendimento humano especializado',
     ],
     guarantees: ['Especialistas reais', 'Atendimento responsável'],
-    basePrice: 97000,
+    basePrice: 128000,
     discountPercent: 10,
     installments: 4,
     badge: 'popular',

@@ -93,7 +93,7 @@ const plans = {
     id: 'pf',
     name: 'Pessoa Física',
     description: 'Liminar coletiva para CPF',
-    basePrice: 78000, // R$ 780,00
+    basePrice: 82450, // R$ 824,50
     icon: '👤',
     features: [
       'Liminar coletiva em todos os bureaus',
@@ -107,7 +107,7 @@ const plans = {
     id: 'pj',
     name: 'Empresa (CNPJ)',
     description: 'Liminar coletiva para CNPJ',
-    basePrice: 97000, // R$ 970,00
+    basePrice: 128000, // R$ 1.280,00
     icon: '🏢',
     popular: true,
     features: [

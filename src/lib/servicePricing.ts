@@ -5,9 +5,9 @@
  * 
  * Prices are in cents (BRL) for Stripe compatibility.
  * 
- * OFFICIAL PRICE TABLE (Updated 2026-02-02):
- * - Limpa Nome PF: R$ 780,00
- * - Limpa Nome PJ: R$ 970,00
+ * OFFICIAL PRICE TABLE (Updated 2026-02-10):
+ * - Limpa Nome PF: R$ 824,50
+ * - Limpa Nome PJ: R$ 1.280,00
  * - Certidões: R$ 80,00
  * - IR Simples (CLT): R$ 200,00
  * - IR Completo: R$ 420,00
@@ -20,18 +20,18 @@
 export const SERVICE_PRICES = {
   // Limpa Nome Services - FIXED
   LIMPA_NOME_PF: {
-    cents: 78000,
-    formatted: 'R$ 780,00',
+    cents: 82450,
+    formatted: 'R$ 824,50',
     installments: 4,
-    installmentValue: 'R$ 195,00',
+    installmentValue: 'R$ 206,13',
     stripeKey: 'credit_repair_pf',
     subscriberDiscount: 0,
   },
   LIMPA_NOME_CNPJ: {
-    cents: 97000,
-    formatted: 'R$ 970,00',
+    cents: 128000,
+    formatted: 'R$ 1.280,00',
     installments: 4,
-    installmentValue: 'R$ 242,50',
+    installmentValue: 'R$ 320,00',
     stripeKey: 'credit_repair_pj',
     subscriberDiscount: 0,
   },
@@ -175,8 +175,8 @@ export const SUBSCRIPTION_PLANS = {
 // Affiliate Commissions (20% default)
 export const AFFILIATE_COMMISSIONS = {
   DEFAULT_PERCENT: 20,
-  LIMPA_NOME_PF: 15600, // 20% of 78000
-  LIMPA_NOME_CNPJ: 19400, // 20% of 97000
+  LIMPA_NOME_PF: 16490, // 20% of 82450
+  LIMPA_NOME_CNPJ: 25600, // 20% of 128000
   IR_SIMPLES: 4000, // 20% of 20000
   IR_COMPLETO: 8400, // 20% of 42000
   ABERTURA_EMPRESA: 15600, // 20% of 78000

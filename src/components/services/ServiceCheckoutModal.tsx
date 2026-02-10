@@ -42,7 +42,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     gradient: 'from-emerald-500 to-green-600',
     serviceType: 'pf',
     flowType: 'checkout',
-    priceCents: 78000,
+    priceCents: 82450,
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',
@@ -58,7 +58,7 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     gradient: 'from-emerald-500 to-green-600',
     serviceType: 'pj',
     flowType: 'checkout',
-    priceCents: 97000,
+    priceCents: 128000,
     features: [
       'Análise completa do histórico',
       'Remoção de registros SERASA/SPC',

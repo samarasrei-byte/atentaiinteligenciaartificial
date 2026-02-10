@@ -411,7 +411,7 @@ Guilherme`);
       if (customPaymentAmount) {
         amountCents = Math.round(parseFloat(customPaymentAmount.replace(',', '.')) * 100);
       } else {
-        amountCents = selectedClient.service_type === 'limpa-nome' ? 78000 : 29700; // R$ 780 or R$ 297
+        amountCents = selectedClient.service_type === 'limpa-nome' ? 82450 : 29700; // R$ 824,50 or R$ 297
       }
       
       if (amountCents < 100) {
@@ -720,7 +720,7 @@ Guilherme`);
                       <div className="flex gap-2 mb-3">
                         <Input
                           type="text"
-                          placeholder={selectedClient.service_type === 'limpa-nome' ? '780,00' : '297,00'}
+                          placeholder={selectedClient.service_type === 'limpa-nome' ? '824,50' : '297,00'}
                           value={customPaymentAmount}
                           onChange={(e) => setCustomPaymentAmount(e.target.value)}
                           className="flex-1"
