@@ -117,11 +117,11 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
 }) => {
   const { user, session, subscription, profile } = useAuth();
   const navigate = useNavigate();
+  const config = SERVICE_CONFIGS[serviceKey];
   const [isLoading, setIsLoading] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(true);
   const [lastClickTime, setLastClickTime] = useState(0);
 
-  const config = SERVICE_CONFIGS[serviceKey];
   if (!config) return null;
 
   const Icon = config.icon;
