@@ -2,7 +2,7 @@
  * MERCADO PAGO CONFIGURATION
  * Public key for frontend SDK tokenization
  */
-export const MP_PUBLIC_KEY = "TEST-3c00d3f3-5871-4d12-a6ca-830e8cdf3c8a";
+export const MP_PUBLIC_KEY = "APP_USR-da6f6d3f-6616-45d0-9180-e4c7ca7df001";
 
 /**
  * Load MercadoPago SDK dynamically
