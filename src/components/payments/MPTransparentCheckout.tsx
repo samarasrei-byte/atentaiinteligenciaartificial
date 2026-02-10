@@ -480,24 +480,22 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
             />
           </div>
 
-          {amountCents >= 50000 && (
-            <div className="space-y-2">
-              <Label htmlFor="installments">Parcelas</Label>
-              <select
-                id="installments"
-                value={cardForm.installments}
-                onChange={(e) => setCardForm(prev => ({ ...prev, installments: Number(e.target.value) }))}
-                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
-              >
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map((n) => (
-                  <option key={n} value={n}>
-                    {n}x de {formatPrice(Math.ceil(amountCents / n))}
-                    {n === 1 ? ' (à vista)' : ''}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
+          <div className="space-y-2">
+            <Label htmlFor="installments">Parcelas</Label>
+            <select
+              id="installments"
+              value={cardForm.installments}
+              onChange={(e) => setCardForm(prev => ({ ...prev, installments: Number(e.target.value) }))}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+            >
+              {[1, 2, 3, 4].map((n) => (
+                <option key={n} value={n}>
+                  {n}x de {formatPrice(Math.ceil(amountCents / n))}
+                  {n === 1 ? ' (à vista)' : ' sem juros'}
+                </option>
+              ))}
+            </select>
+          </div>
 
           <Button
             onClick={handleCard}
