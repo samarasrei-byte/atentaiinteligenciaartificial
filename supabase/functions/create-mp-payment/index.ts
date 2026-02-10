@@ -24,6 +24,8 @@ serve(async (req) => {
     const accessToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
     if (!accessToken) throw new Error("MERCADOPAGO_ACCESS_TOKEN not configured");
 
+    logStep("Access token found", { length: accessToken.length, prefix: accessToken.substring(0, 10) + "..." });
+
     const {
       amount,
       description,
@@ -62,9 +64,11 @@ serve(async (req) => {
 
     if (!userEmail) throw new Error("Email do pagador é obrigatório");
 
+    const transactionAmount = Number((amount / 100).toFixed(2));
+
     // Build payment body for Mercado Pago
     const paymentBody: Record<string, unknown> = {
-      transaction_amount: amount / 100, // MP uses reais, not centavos
+      transaction_amount: transactionAmount,
       description: description || serviceName || "Serviço AtentAI",
       payment_method_id: paymentMethodId || "pix",
       payer: {
@@ -89,9 +93,10 @@ serve(async (req) => {
     }
 
     logStep("Creating payment", { 
-      amount: paymentBody.transaction_amount,
+      transaction_amount: transactionAmount,
       method: paymentMethodId,
-      serviceType 
+      serviceType,
+      email: userEmail,
     });
 
     const mpResponse = await fetch(`${MP_API}/v1/payments`, {
@@ -99,22 +104,46 @@ serve(async (req) => {
       headers: {
         "Authorization": `Bearer ${accessToken}`,
         "Content-Type": "application/json",
+        "Accept": "application/json",
         "X-Idempotency-Key": crypto.randomUUID(),
       },
       body: JSON.stringify(paymentBody),
     });
 
-    const mpData = await mpResponse.json();
-
-    if (!mpResponse.ok) {
-      logStep("MP API Error", { status: mpResponse.status, error: mpData });
-      throw new Error(mpData.message || `Mercado Pago error: ${mpResponse.status}`);
+    // Defensive: check content-type before parsing
+    const contentType = mpResponse.headers.get("content-type");
+    if (!contentType?.includes("application/json")) {
+      const textResponse = await mpResponse.text();
+      logStep("MP returned non-JSON", { status: mpResponse.status, body: textResponse.substring(0, 500) });
+      throw new Error(`Mercado Pago retornou resposta inválida (status ${mpResponse.status}). Tente novamente.`);
     }
 
-    logStep("Payment created", { 
+    let mpData: any;
+    try {
+      mpData = await mpResponse.json();
+    } catch (parseError) {
+      logStep("Failed to parse MP response as JSON", { error: String(parseError) });
+      throw new Error("Resposta do Mercado Pago não pôde ser processada. Tente novamente.");
+    }
+
+    if (!mpResponse.ok) {
+      logStep("MP API Error", { status: mpResponse.status, error: JSON.stringify(mpData) });
+      
+      // Extract detailed error message
+      const errorMessage = mpData.message 
+        || mpData.error 
+        || (mpData.cause && Array.isArray(mpData.cause) && mpData.cause[0]?.description)
+        || `Erro no Mercado Pago (${mpResponse.status})`;
+      
+      throw new Error(errorMessage);
+    }
+
+    logStep("Payment created successfully", { 
       id: mpData.id,
       status: mpData.status,
       statusDetail: mpData.status_detail,
+      paymentMethodId: mpData.payment_method_id,
+      hasPointOfInteraction: !!mpData.point_of_interaction,
     });
 
     // Build response based on payment method
@@ -125,13 +154,23 @@ serve(async (req) => {
       payment_method_id: mpData.payment_method_id,
     };
 
-    // PIX: include QR code data
+    // PIX: include QR code data - check multiple possible field locations
     if (mpData.point_of_interaction?.transaction_data) {
       const txData = mpData.point_of_interaction.transaction_data;
       response.pix_qr_code = txData.qr_code;
       response.pix_qr_code_base64 = txData.qr_code_base64;
       response.pix_copy_paste = txData.qr_code;
       response.ticket_url = txData.ticket_url;
+      
+      logStep("PIX data extracted", {
+        hasQrCode: !!txData.qr_code,
+        hasQrCodeBase64: !!txData.qr_code_base64,
+        hasTicketUrl: !!txData.ticket_url,
+      });
+    } else {
+      logStep("No point_of_interaction in response", {
+        keys: Object.keys(mpData),
+      });
     }
 
     return new Response(JSON.stringify(response), {
