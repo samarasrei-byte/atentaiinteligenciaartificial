@@ -170,48 +170,69 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
       const [firstName, ...rest] = payerName.split(' ');
       const lastName = rest.join(' ') || firstName;
 
-      const headers: Record<string, string> = {};
-      if (accessToken) {
-        headers.Authorization = `Bearer ${accessToken}`;
-      }
+      const startTime = Date.now();
+      console.log('[PIX-DEBUG] Starting payment request at', new Date().toISOString());
 
-      // Real timeout using Promise.race (30s)
-      const paymentPromise = supabase.functions.invoke('create-mp-payment', {
-        body: {
-          amount: amountCents,
-          description: description || serviceName,
-          serviceType,
-          serviceName,
-          paymentMethodId,
-          payer: {
-            email: payerEmail,
-            first_name: firstName,
-            last_name: lastName,
-            identification: cardForm.identificationNumber ? {
-              type: cardForm.identificationType,
-              number: cardForm.identificationNumber.replace(/\D/g, ''),
-            } : undefined,
-          },
-          metadata,
-          ...extraBody,
+      // Use fetch directly with real AbortController timeout (30s)
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => {
+        console.log('[PIX-DEBUG] TIMEOUT triggered after', Date.now() - startTime, 'ms');
+        controller.abort();
+      }, 30000);
+
+      const requestBody = {
+        amount: amountCents,
+        description: description || serviceName,
+        serviceType,
+        serviceName,
+        paymentMethodId,
+        payer: {
+          email: payerEmail,
+          first_name: firstName,
+          last_name: lastName,
+          identification: cardForm.identificationNumber ? {
+            type: cardForm.identificationType,
+            number: cardForm.identificationNumber.replace(/\D/g, ''),
+          } : undefined,
         },
-        headers,
+        metadata,
+        ...extraBody,
+      };
+
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+
+      const response = await fetch(`${supabaseUrl}/functions/v1/create-mp-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': supabaseKey,
+          ...(accessToken ? { 'Authorization': `Bearer ${accessToken}` } : {}),
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
       });
 
-      const timeoutPromise = new Promise<never>((_, reject) =>
-        setTimeout(() => reject(new Error('TIMEOUT')), 30000)
-      );
+      clearTimeout(timeoutId);
+      
+      console.log('[PIX-DEBUG] Response received in', Date.now() - startTime, 'ms, status:', response.status);
 
-      const { data, error } = await Promise.race([paymentPromise, timeoutPromise]);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || `Erro HTTP ${response.status}`);
+      }
 
-      if (error) throw error;
+      const data = await response.json();
+      console.log('[PIX-DEBUG] Data parsed in', Date.now() - startTime, 'ms');
+
       if (data.error) throw new Error(data.error);
 
       return data;
     } catch (err: any) {
-      const msg = err.message === 'TIMEOUT' 
-        ? 'Tempo esgotado. Tente novamente.' 
+      const msg = err.name === 'AbortError' 
+        ? 'Tempo esgotado (30s). Tente novamente.' 
         : (err.message || 'Erro ao processar pagamento');
+      console.error('[PIX-DEBUG] Error:', err.name, err.message);
       toast.error(msg);
       onError?.(msg);
       throw err;
