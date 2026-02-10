@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 import { z } from "https://deno.land/x/zod@v3.22.4/mod.ts";
 
@@ -26,42 +25,34 @@ const requestSchema = z.object({
   serviceType: z.enum(['ir', 'credit_repair', 'credit_repair_pf', 'credit_repair_pj', 'certificate', 'company_opening']),
   email: z.string().email("Email inválido").max(255, "Email muito longo"),
   fullName: z.string().min(2, "Nome muito curto").max(200, "Nome muito longo"),
-  // CPF is optional - accept empty string, valid 11-digit number, or null/undefined
   cpf: z.string().optional().nullable().transform(val => {
     if (!val || val.trim() === '') return null;
-    // Remove formatting (dots, dashes)
     const cleaned = val.replace(/\D/g, '');
     if (cleaned.length !== 11) return null;
     return cleaned;
   }),
-  // Phone is optional - accept empty string, valid 10-11 digit number, or null/undefined
   phone: z.string().optional().nullable().transform(val => {
     if (!val || val.trim() === '') return null;
-    // Remove formatting
     const cleaned = val.replace(/\D/g, '');
     if (cleaned.length < 10 || cleaned.length > 11) return null;
     return cleaned;
   }),
-  // IR-specific fields
   irType: z.enum(['simples', 'completo']).optional(),
   fiscalYear: z.number().min(2000).max(2100).optional(),
   hasInvestments: z.boolean().optional(),
   hasRentalIncome: z.boolean().optional(),
   hasForeignIncome: z.boolean().optional(),
   incomeSourcesCount: z.number().min(0).max(100).optional(),
-  // Credit repair fields
-  debtAmountCents: z.number().min(0).max(1000000000).optional(), // Max R$ 10M
-  debtDescription: z.string().max(500, "Descrição muito longa").optional().nullable(),
+  debtAmountCents: z.number().min(0).max(1000000000).optional(),
+  debtDescription: z.string().max(500).optional().nullable(),
   creditors: z.array(z.string().max(100)).max(50).optional(),
   bureausSelected: z.array(z.string().max(50)).max(10).optional(),
-  // Certificate fields
   certificateType: z.string().max(100).optional(),
-  notes: z.string().max(1000, "Notas muito longas").optional().nullable(),
-  // Company opening fields
+  notes: z.string().max(1000).optional().nullable(),
   companyType: z.enum(['mei', 'me', 'ltda']).optional(),
-  profession: z.string().max(100, "Profissão muito longa").optional().nullable(),
-  annualRevenue: z.number().min(0).max(10000000).optional(), // Max R$ 10M
-  monthlyExpenses: z.number().min(0).max(1000000).optional(), // Max R$ 1M
+  profession: z.string().max(100).optional().nullable(),
+  annualRevenue: z.number().min(0).max(10000000).optional(),
+  monthlyExpenses: z.number().min(0).max(1000000).optional(),
   hasEmployees: z.union([z.boolean(), z.literal('yes'), z.literal('no')]).optional(),
   wantsPartner: z.union([z.boolean(), z.literal('yes'), z.literal('no')]).optional(),
   currentSituation: z.string().max(200).optional().nullable(),
@@ -71,62 +62,47 @@ const requestSchema = z.object({
   state: z.string().max(2).optional().nullable(),
 });
 
-// Helper to sanitize string inputs
-const sanitizeString = (str: string | null | undefined): string | null => {
-  if (!str) return null;
-  return str.trim().slice(0, 1000); // Extra safety limit
-};
-
-// Service configurations
-// OFFICIAL PRICES - Single Source of Truth (Updated 2025-01-25)
-const SERVICE_CONFIGS = {
+// Service configurations - OFFICIAL PRICES
+const SERVICE_CONFIGS: Record<string, { name: string; description: string; basePriceCents: number }> = {
   ir_simples: {
     name: 'Declaração IR Simples',
     description: 'Declaração de Imposto de Renda - Modalidade Simples',
-    basePriceCents: 20000, // R$ 200,00
-    discountPercent: 20,
+    basePriceCents: 20000,
   },
   ir_completo: {
     name: 'Declaração IR Completo',
     description: 'Declaração de Imposto de Renda - Modalidade Completa',
-    basePriceCents: 42000, // R$ 420,00
-    discountPercent: 20,
+    basePriceCents: 42000,
   },
   credit_repair: {
     name: 'Limpa Nome Completo',
-    description: 'Regularização em 8 plataformas: SPC, Serasa, SCPC, Boa Vista, Quod, Cenprot, Registrato, CADIN',
-    basePriceCents: 97000, // R$ 970,00
-    discountPercent: 10,
+    description: 'Regularização em 8 plataformas',
+    basePriceCents: 97000,
   },
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
-    description: 'Liminar coletiva para CPF - Exclusão permanente de apontamentos',
-    basePriceCents: 78000, // R$ 780,00
-    discountPercent: 10,
+    description: 'Liminar coletiva para CPF',
+    basePriceCents: 78000,
   },
   credit_repair_pj: {
     name: 'Limpa Nome Empresa (CNPJ)',
-    description: 'Liminar coletiva para CNPJ - Exclusão permanente de apontamentos',
-    basePriceCents: 97000, // R$ 970,00
-    discountPercent: 10,
+    description: 'Liminar coletiva para CNPJ',
+    basePriceCents: 97000,
   },
   certificate: {
     name: 'Certidão',
     description: 'Emissão de Certidão',
-    basePriceCents: 8000, // R$ 80,00
-    discountPercent: 10,
+    basePriceCents: 8000,
   },
   company_opening_mei: {
     name: 'Abertura de MEI',
-    description: 'Abertura de Microempreendedor Individual com acompanhamento completo',
-    basePriceCents: 15000, // R$ 150,00 (MEI separado)
-    discountPercent: 15,
+    description: 'Abertura de Microempreendedor Individual',
+    basePriceCents: 15000,
   },
   company_opening_me: {
     name: 'Abertura de ME/LTDA',
-    description: 'Abertura de Microempresa ou LTDA com análise tributária',
-    basePriceCents: 78000, // R$ 780,00
-    discountPercent: 15,
+    description: 'Abertura de Microempresa ou LTDA',
+    basePriceCents: 78000,
   },
 };
 
@@ -145,16 +121,11 @@ serve(async (req) => {
     logStep("Function started");
 
     const body = await req.json();
-    // Validate and parse input
     let validatedData;
     try {
       validatedData = requestSchema.parse(body);
     } catch (validationError) {
       if (validationError instanceof z.ZodError) {
-        // Log full details server-side, return safe message to client
-        const errors = validationError.errors.map(e => `${e.path.join('.')}: ${e.message}`).join(', ');
-        logStep("Validation failed", { errors });
-        // Return user-friendly message without internal path details
         const userErrors = validationError.errors.map(e => e.message).join(', ');
         throw new Error(`Dados inválidos: ${userErrors}`);
       }
@@ -162,34 +133,14 @@ serve(async (req) => {
     }
 
     const { 
-      serviceType, 
-      email, 
-      fullName, 
-      cpf, 
-      phone,
-      irType,
-      fiscalYear,
-      hasInvestments,
-      hasRentalIncome,
-      hasForeignIncome,
-      incomeSourcesCount,
-      debtAmountCents,
-      debtDescription,
-      creditors,
-      bureausSelected,
-      certificateType,
-      notes,
-      companyType,
-      profession,
-      annualRevenue,
-      monthlyExpenses,
-      hasEmployees,
-      wantsPartner,
-      currentSituation,
-      recommendedRegime,
-      recommendationReasons,
-      city,
-      state,
+      serviceType, email, fullName, cpf, phone,
+      irType, fiscalYear, hasInvestments, hasRentalIncome,
+      hasForeignIncome, incomeSourcesCount,
+      debtAmountCents, debtDescription, creditors, bureausSelected,
+      certificateType, notes,
+      companyType, profession, annualRevenue, monthlyExpenses,
+      hasEmployees, wantsPartner, currentSituation,
+      recommendedRegime, recommendationReasons, city, state,
     } = validatedData;
 
     logStep("Request validated", { serviceType, email: email.substring(0, 3) + '***' });
@@ -216,77 +167,43 @@ serve(async (req) => {
     } else {
       serviceKey = serviceType;
     }
-    const serviceConfig = SERVICE_CONFIGS[serviceKey as keyof typeof SERVICE_CONFIGS];
+    const serviceConfig = SERVICE_CONFIGS[serviceKey];
     
     if (!serviceConfig) {
       throw new Error("Tipo de serviço inválido");
     }
 
-    // Initialize Stripe
-    const stripe = new Stripe(Deno.env.get("STRIPE_SECRET_KEY") || "", {
-      apiVersion: "2025-08-27.basil",
-    });
+    const finalPriceCents = serviceConfig.basePriceCents;
 
-    // Check if subscriber for discount
-    let isSubscriber = false;
-    if (isExistingUser) {
-      const customers = await stripe.customers.list({ email, limit: 1 });
-      if (customers.data.length > 0) {
-        const subscriptions = await stripe.subscriptions.list({
-          customer: customers.data[0].id,
-          status: "active",
-          limit: 1,
-        });
-        isSubscriber = subscriptions.data.length > 0;
-      }
-    }
+    logStep("Price", { finalPriceCents });
 
-    // Calculate price
-    const basePriceCents = serviceConfig.basePriceCents;
-    const discountCents = isSubscriber ? Math.round(basePriceCents * (serviceConfig.discountPercent / 100)) : 0;
-    const finalPriceCents = basePriceCents - discountCents;
-
-    logStep("Price calculation", { basePriceCents, discountCents, finalPriceCents, isSubscriber });
-
-    // Check for existing Stripe customer
-    const customers = await stripe.customers.list({ email, limit: 1 });
-    let customerId: string | undefined;
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-    }
-
-    // Create temporary record based on service type
+    // Create record based on service type
     let requestId: string;
     
     if (serviceType === 'ir') {
       const { data: request, error } = await supabaseAdmin
         .from('ir_requests')
         .insert({
-          user_id: userId || '00000000-0000-0000-0000-000000000000', // Placeholder for guest
+          user_id: userId || '00000000-0000-0000-0000-000000000000',
           ir_type: irType,
           fiscal_year: fiscalYear || new Date().getFullYear() - 1,
           full_name: fullName,
-          cpf: cpf,
-          email: email,
-          phone: phone,
+          cpf, email, phone,
           has_investments: hasInvestments,
           has_rental_income: hasRentalIncome,
           has_foreign_income: hasForeignIncome,
           income_sources_count: incomeSourcesCount,
-          notes: notes,
-          base_price_cents: basePriceCents,
+          notes,
+          base_price_cents: finalPriceCents,
           final_price_cents: finalPriceCents,
-          discount_applied: isSubscriber,
+          discount_applied: false,
           payment_status: 'pending',
         })
         .select()
         .single();
-
       if (error) throw error;
       requestId = request.id;
-      
     } else if (serviceType === 'credit_repair' || serviceType === 'credit_repair_pf' || serviceType === 'credit_repair_pj') {
-      // Find active partner to assign the request
       let partnerId: string | null = null;
       const { data: activePartner } = await supabaseAdmin
         .from('credit_repair_partners')
@@ -294,44 +211,28 @@ serve(async (req) => {
         .eq('is_active', true)
         .limit(1)
         .single();
-      
-      if (activePartner) {
-        partnerId = activePartner.id;
-        logStep("Active partner found", { partnerId });
-      } else {
-        logStep("WARNING: No active partner found - request will be orphaned");
-      }
+      if (activePartner) partnerId = activePartner.id;
 
       const { data: request, error } = await supabaseAdmin
         .from('credit_repair_requests')
         .insert({
           user_id: userId || '00000000-0000-0000-0000-000000000000',
           full_name: fullName,
-          cpf: cpf,
-          email: email,
-          phone: phone,
+          cpf, email, phone,
           debt_amount_cents: debtAmountCents || 0,
           debt_description: debtDescription,
           creditors: creditors || [],
           bureaus_selected: bureausSelected || ['spc', 'serasa', 'scpc', 'boa_vista'],
-          service_price_cents: basePriceCents,
+          service_price_cents: finalPriceCents,
           final_price_cents: finalPriceCents,
-          discount_applied: isSubscriber,
+          discount_applied: false,
           payment_status: 'pending',
-          partner_id: partnerId, // Auto-assign to active partner
+          partner_id: partnerId,
         })
         .select()
         .single();
-
       if (error) throw error;
       requestId = request.id;
-      logStep("Credit repair request created", { 
-        requestId, 
-        partnerId, 
-        serviceType,
-        planType: serviceType === 'credit_repair_pf' ? 'PF' : serviceType === 'credit_repair_pj' ? 'PJ' : 'Standard'
-      });
-      
     } else if (serviceType === 'certificate') {
       const { data: request, error } = await supabaseAdmin
         .from('certificate_requests')
@@ -339,12 +240,11 @@ serve(async (req) => {
           user_id: userId || '00000000-0000-0000-0000-000000000000',
           certificate_type: certificateType || 'certidao_negativa',
           amount_cents: finalPriceCents,
-          notes: notes,
+          notes,
           payment_status: 'pending',
         })
         .select()
         .single();
-
       if (error) throw error;
       requestId = request.id;
     } else if (serviceType === 'company_opening') {
@@ -353,17 +253,14 @@ serve(async (req) => {
         .insert({
           user_id: userId || '00000000-0000-0000-0000-000000000000',
           full_name: fullName,
-          cpf: cpf,
-          email: email,
-          phone: phone,
-          profession: profession,
+          cpf, email, phone,
+          profession,
           annual_revenue_cents: Math.round((annualRevenue || 0) * 100),
           monthly_expenses_cents: Math.round((monthlyExpenses || 0) * 100),
           has_employees: hasEmployees === true || hasEmployees === 'yes',
           wants_partner: wantsPartner === true || wantsPartner === 'yes',
           current_situation: currentSituation,
-          city: city,
-          state: state,
+          city, state,
           recommended_regime: recommendedRegime || companyType,
           recommendation_reasons: recommendationReasons || [],
           service_price_cents: finalPriceCents,
@@ -372,83 +269,20 @@ serve(async (req) => {
         })
         .select()
         .single();
-
       if (error) throw error;
       requestId = request.id;
-      logStep("Company opening request created", { requestId, companyType });
     } else {
       throw new Error("Tipo de serviço não suportado");
     }
 
     logStep("Request created", { requestId, serviceType });
 
-    const origin = req.headers.get("origin") || "https://atent.ai";
-
-    // Create checkout session
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      customer_email: customerId ? undefined : email,
-      line_items: [
-        {
-          price_data: {
-            currency: "brl",
-            product_data: {
-              name: serviceConfig.name + (isSubscriber ? ' (Desconto Assinante)' : ''),
-              description: serviceConfig.description,
-            },
-            unit_amount: finalPriceCents,
-          },
-          quantity: 1,
-        },
-      ],
-      mode: "payment",
-      payment_method_types: ["card"],
-      success_url: `${origin}/payment-success?type=${serviceType}&request_id=${requestId}&guest=true`,
-      cancel_url: `${origin}/${
-        serviceType === 'ir' ? 'ir' 
-        : serviceType === 'credit_repair' ? 'limpa-nome' 
-        : serviceType === 'company_opening' ? 'abertura-empresa'
-        : 'certidoes'
-      }?cancelled=true`,
-      metadata: {
-        request_id: requestId,
-        service_type: serviceType,
-        email: email,
-        full_name: fullName,
-        cpf: cpf || '',
-        phone: phone || '',
-        is_guest: (!isExistingUser).toString(),
-        user_id: userId || '',
-        company_type: companyType || '',
-      },
-    });
-
-    logStep("Checkout session created", { sessionId: session.id });
-
-    // Update request with session ID - company_opening doesn't have stripe_session_id column by default
-    if (serviceType !== 'company_opening') {
-      const tableName = serviceType === 'ir' ? 'ir_requests' 
-        : serviceType === 'credit_repair' ? 'credit_repair_requests' 
-        : 'certificate_requests';
-
-      await supabaseAdmin
-        .from(tableName)
-        .update({ stripe_session_id: session.id })
-        .eq('id', requestId);
-    } else {
-      // Update company_opening_requests payment_status
-      await supabaseAdmin
-        .from('company_opening_requests')
-        .update({ payment_status: 'processing' })
-        .eq('id', requestId);
-    }
-
+    // Return record info for frontend MP checkout
     return new Response(JSON.stringify({ 
-      url: session.url,
+      requestId,
+      serviceName: serviceConfig.name,
+      serviceDescription: serviceConfig.description,
       isExistingUser,
-      isSubscriber,
-      originalPrice: basePriceCents,
-      discount: discountCents,
       finalPrice: finalPriceCents,
     }), {
       headers: { ...corsHeaders, ...securityHeaders, "Content-Type": "application/json" },
@@ -458,12 +292,10 @@ serve(async (req) => {
     const errorMessage = error instanceof Error ? error.message : String(error);
     logStep("ERROR", { message: errorMessage });
     
-    // Determine if error is user-facing (validation) or internal
     const isValidationError = errorMessage.startsWith('Dados inválidos:') || 
                                errorMessage === 'Tipo de serviço inválido' ||
                                errorMessage === 'Tipo de serviço não suportado';
     
-    // Return validation errors to user, but sanitize internal errors
     const clientMessage = isValidationError 
       ? errorMessage 
       : 'Ocorreu um erro ao processar sua solicitação. Por favor, tente novamente.';

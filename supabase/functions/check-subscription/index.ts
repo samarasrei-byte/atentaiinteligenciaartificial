@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -45,14 +44,6 @@ async function checkRateLimit(
   }
 }
 
-// Product ID to plan name mapping - MUST match src/lib/stripe.ts
-const PRODUCT_PLANS: Record<string, string> = {
-  "prod_TeyH8gtLUj9Llu": "simulator", // Simulador Tributário
-  "prod_TedPv32txqdcXM": "premium",   // AtentAI Premium
-  "prod_Tehfc8IkhNyBJ7": "contador",  // Business Pro
-  "prod_Tevvj1l2m0hSOP": "autonomo",  // Autônomo Master
-};
-
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -67,17 +58,11 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
-    logStep("Stripe key verified");
-
     const authHeader = req.headers.get("Authorization");
     if (!authHeader) throw new Error("No authorization header provided");
-    logStep("Authorization header found");
 
     const token = authHeader.replace("Bearer ", "");
     
-    // Try to get user from token, with fallback to JWT payload extraction
     let userId: string;
     let userEmail: string;
     
@@ -86,7 +71,6 @@ serve(async (req) => {
     if (userError) {
       logStep("Auth getUser failed, trying JWT decode fallback", { error: userError.message });
       
-      // Try to decode JWT payload manually as fallback (base64url)
       try {
         const parts = token.split('.');
         if (parts.length !== 3) throw new Error("Invalid token format");
@@ -105,9 +89,6 @@ serve(async (req) => {
 
         logStep("Extracted user from JWT payload", { userId, email: userEmail });
       } catch (decodeError) {
-        logStep("JWT decode fallback failed", {
-          message: decodeError instanceof Error ? decodeError.message : String(decodeError),
-        });
         throw new Error(`Authentication error: ${userError.message}`);
       }
     } else {
@@ -115,10 +96,10 @@ serve(async (req) => {
       if (!user?.email) throw new Error("User not authenticated or email not available");
       userId = user.id;
       userEmail = user.email;
-      logStep("User authenticated via getUser", { userId, email: userEmail });
+      logStep("User authenticated", { userId, email: userEmail });
     }
 
-    // Check rate limit (120 requests per minute - this endpoint is called frequently)
+    // Check rate limit
     const rateLimit = await checkRateLimit(supabaseClient, userId, 'check-subscription', 120, 60);
     
     if (!rateLimit.allowed) {
@@ -132,157 +113,61 @@ serve(async (req) => {
           ...corsHeaders, 
           "Content-Type": "application/json",
           'Retry-After': String(rateLimit.retryAfter || 60),
-          'X-RateLimit-Remaining': '0'
         },
       });
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-    const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
+    // Check database for active subscriptions (Mercado Pago synced)
+    const { data: dbSubscription } = await supabaseClient
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'active')
+      .single();
     
-    if (customers.data.length === 0) {
-      logStep("No Stripe customer found, checking database subscription");
-      
-      // Fallback: check database for manual subscriptions
-      const { data: dbSubscription } = await supabaseClient
-        .from('subscriptions')
-        .select('*')
-        .eq('user_id', userId)
-        .eq('status', 'active')
-        .single();
-      
-      if (dbSubscription && new Date(dbSubscription.current_period_end) > new Date()) {
-        logStep("Found active database subscription", { 
-          plan: dbSubscription.plan_type,
-          endDate: dbSubscription.current_period_end 
-        });
-        return new Response(JSON.stringify({ 
-          subscribed: true,
-          plan: dbSubscription.plan_type,
-          subscription_end: dbSubscription.current_period_end 
-        }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-          status: 200,
-        });
-      }
-      
-      logStep("No active subscription found");
+    if (dbSubscription && new Date(dbSubscription.current_period_end) > new Date()) {
+      logStep("Found active subscription", { 
+        plan: dbSubscription.plan_type,
+        endDate: dbSubscription.current_period_end 
+      });
       return new Response(JSON.stringify({ 
-        subscribed: false,
-        plan: null,
-        subscription_end: null 
+        subscribed: true,
+        plan: dbSubscription.plan_type,
+        subscription_end: dbSubscription.current_period_end,
+        is_past_due: false,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
 
-    const customerId = customers.data[0].id;
-    logStep("Found Stripe customer", { customerId });
+    // Check for pending/past_due subscriptions
+    const { data: pendingSub } = await supabaseClient
+      .from('subscriptions')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'pending')
+      .single();
 
-    // Check for active subscriptions first
-    const activeSubscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "active",
-      limit: 1,
-    });
-
-    // Also check for past_due subscriptions
-    const pastDueSubscriptions = await stripe.subscriptions.list({
-      customer: customerId,
-      status: "past_due",
-      limit: 1,
-    });
-
-    const hasActiveSub = activeSubscriptions.data.length > 0;
-    const hasPastDueSub = pastDueSubscriptions.data.length > 0;
-    let plan = null;
-    let subscriptionEnd = null;
-    let priceId = null;
-    let isPastDue = false;
-
-    // Handle past_due subscriptions
-    if (hasPastDueSub && !hasActiveSub) {
-      const subscription = pastDueSubscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      const productId = subscription.items.data[0].price.product as string;
-      priceId = subscription.items.data[0].price.id;
-      plan = PRODUCT_PLANS[productId] || "unknown";
-      isPastDue = true;
-      
-      logStep("Past due subscription found", { 
-        subscriptionId: subscription.id, 
-        plan,
-        productId,
-        endDate: subscriptionEnd 
-      });
-
-      // Update subscription in database with past_due status
-      await supabaseClient
-        .from('subscriptions')
-        .upsert({
-          user_id: userId,
-          plan_type: plan,
-          status: 'pending', // Mark as pending due to payment issues
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscription.id,
-          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-          current_period_end: subscriptionEnd,
-          price_cents: subscription.items.data[0].price.unit_amount || 0,
-        }, { onConflict: 'user_id' });
-      
-      logStep("Database updated with past_due status");
-
+    if (pendingSub && new Date(pendingSub.current_period_end) > new Date()) {
+      logStep("Found past due subscription", { plan: pendingSub.plan_type });
       return new Response(JSON.stringify({
-        subscribed: false, // Block premium features
-        plan,
-        price_id: priceId,
-        subscription_end: subscriptionEnd,
-        is_past_due: true
+        subscribed: false,
+        plan: pendingSub.plan_type,
+        subscription_end: pendingSub.current_period_end,
+        is_past_due: true,
       }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
         status: 200,
       });
     }
-
-    if (hasActiveSub) {
-      const subscription = activeSubscriptions.data[0];
-      subscriptionEnd = new Date(subscription.current_period_end * 1000).toISOString();
-      const productId = subscription.items.data[0].price.product as string;
-      priceId = subscription.items.data[0].price.id;
-      plan = PRODUCT_PLANS[productId] || "unknown";
-      logStep("Active subscription found", { 
-        subscriptionId: subscription.id, 
-        plan,
-        productId,
-        endDate: subscriptionEnd 
-      });
-
-      // Update subscription in database
-      await supabaseClient
-        .from('subscriptions')
-        .upsert({
-          user_id: userId,
-          plan_type: plan,
-          status: 'active',
-          stripe_customer_id: customerId,
-          stripe_subscription_id: subscription.id,
-          current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-          current_period_end: subscriptionEnd,
-          price_cents: subscription.items.data[0].price.unit_amount || 0,
-        }, { onConflict: 'user_id' });
-      
-      logStep("Database updated");
-    } else {
-      logStep("No active subscription found");
-    }
-
-    return new Response(JSON.stringify({
-      subscribed: hasActiveSub,
-      plan,
-      price_id: priceId,
-      subscription_end: subscriptionEnd,
-      is_past_due: false
+    
+    logStep("No active subscription found");
+    return new Response(JSON.stringify({ 
+      subscribed: false,
+      plan: null,
+      subscription_end: null,
+      is_past_due: false,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

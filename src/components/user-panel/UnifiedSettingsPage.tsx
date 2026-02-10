@@ -90,23 +90,8 @@ export const UnifiedSettingsPage: React.FC = () => {
   };
 
   // --- Subscription ---
-  const handleManageSubscription = async () => {
-    if (!session) {
-      toast.error('Você precisa estar logado');
-      return;
-    }
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('customer-portal', {
-        headers: { Authorization: `Bearer ${session.access_token}` },
-      });
-      if (error) throw error;
-      if (data?.url) window.open(data.url, '_blank');
-    } catch (error: any) {
-      toast.error('Erro ao abrir portal de assinatura');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleManageSubscription = () => {
+    toast.info('Entre em contato com o suporte para gerenciar sua assinatura.');
   };
 
   const handleUpgrade = (plan: PlanType) => {

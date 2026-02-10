@@ -14,31 +14,8 @@ export function PastDueAlert() {
     return null;
   }
 
-  const handleUpdatePayment = async () => {
-    if (!session?.access_token) {
-      toast.error('Sessão expirada. Faça login novamente.');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('customer-portal', {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error) {
-      console.error('Error opening customer portal:', error);
-      toast.error('Erro ao abrir portal de pagamento. Tente novamente.');
-    } finally {
-      setLoading(false);
-    }
+  const handleUpdatePayment = () => {
+    toast.info('Entre em contato com o suporte para atualizar sua forma de pagamento.');
   };
 
   return (

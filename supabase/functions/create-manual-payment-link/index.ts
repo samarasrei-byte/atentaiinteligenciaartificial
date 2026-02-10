@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import Stripe from "https://esm.sh/stripe@18.5.0";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
@@ -12,6 +11,8 @@ const logStep = (step: string, details?: any) => {
   console.log(`[CREATE-MANUAL-PAYMENT-LINK] ${step}${detailsStr}`);
 };
 
+const MP_API = "https://api.mercadopago.com";
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -20,8 +21,8 @@ serve(async (req) => {
   try {
     logStep("Function started");
 
-    const stripeKey = Deno.env.get("STRIPE_SECRET_KEY");
-    if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
+    const accessToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
+    if (!accessToken) throw new Error("MERCADOPAGO_ACCESS_TOKEN not configured");
 
     const supabaseClient = createClient(
       Deno.env.get("SUPABASE_URL") ?? "",
@@ -40,7 +41,7 @@ serve(async (req) => {
     if (!user?.email) throw new Error("User not authenticated");
     logStep("User authenticated", { userId: user.id });
 
-    // Verify user is admin (Guilherme or César)
+    // Verify user is admin
     const { data: userRoles } = await supabaseClient
       .from("user_roles")
       .select("role")
@@ -67,68 +68,58 @@ serve(async (req) => {
       throw new Error("Missing required fields: clientEmail, amountCents, serviceName");
     }
 
-    logStep("Creating payment link", { clientEmail, amountCents, serviceName });
+    logStep("Creating MP payment preference", { clientEmail, amountCents, serviceName });
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-
-    // Check if customer exists
-    const customers = await stripe.customers.list({ email: clientEmail, limit: 1 });
-    let customerId: string | undefined;
-    
-    if (customers.data.length > 0) {
-      customerId = customers.data[0].id;
-      logStep("Found existing customer", { customerId });
-    } else {
-      const customer = await stripe.customers.create({
-        email: clientEmail,
-        name: clientName,
-        metadata: { user_id: clientUserId || '' },
-      });
-      customerId = customer.id;
-      logStep("Created new customer", { customerId });
-    }
-
-    // Create a Checkout Session with payment link
-    const origin = req.headers.get("origin") || "https://atentaiinteligenciaartificial.lovable.app";
-    
-    const session = await stripe.checkout.sessions.create({
-      customer: customerId,
-      line_items: [
+    // Create Mercado Pago payment preference (generates a checkout link)
+    const preferenceBody = {
+      items: [
         {
-          price_data: {
-            currency: "brl",
-            product_data: {
-              name: serviceName,
-              description: `Serviço ${serviceType || 'AtentAI'}`,
-            },
-            unit_amount: amountCents,
-          },
+          title: serviceName,
+          description: `Serviço ${serviceType || 'AtentAI'}`,
           quantity: 1,
+          currency_id: "BRL",
+          unit_price: amountCents / 100, // MP uses reais
         },
       ],
-      mode: "payment",
-      success_url: `${origin}/dashboard?payment=success`,
-      cancel_url: `${origin}/dashboard?payment=cancelled`,
+      payer: {
+        email: clientEmail,
+        name: clientName || '',
+      },
       metadata: {
         service_type: serviceType || 'manual',
         request_id: requestId || '',
         client_user_id: clientUserId || '',
         created_by: user.id,
       },
-      payment_intent_data: {
-        metadata: {
-          service_type: serviceType || 'manual',
-          request_id: requestId || '',
-          client_user_id: clientUserId || '',
-        },
+      back_urls: {
+        success: `${req.headers.get("origin") || "https://atentaiinteligenciaartificial.lovable.app"}/dashboard?payment=success`,
+        failure: `${req.headers.get("origin") || "https://atentaiinteligenciaartificial.lovable.app"}/dashboard?payment=failed`,
+        pending: `${req.headers.get("origin") || "https://atentaiinteligenciaartificial.lovable.app"}/dashboard?payment=pending`,
       },
+      auto_return: "approved",
+    };
+
+    const mpResponse = await fetch(`${MP_API}/checkout/preferences`, {
+      method: "POST",
+      headers: {
+        "Authorization": `Bearer ${accessToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(preferenceBody),
     });
 
-    logStep("Checkout session created", { sessionId: session.id, url: session.url });
+    const mpData = await mpResponse.json();
+
+    if (!mpResponse.ok) {
+      logStep("MP API Error", { status: mpResponse.status, error: mpData });
+      throw new Error(mpData.message || `Mercado Pago error: ${mpResponse.status}`);
+    }
+
+    logStep("MP preference created", { id: mpData.id, url: mpData.init_point });
 
     return new Response(JSON.stringify({ 
-      url: session.url,
-      sessionId: session.id,
+      url: mpData.init_point,
+      preferenceId: mpData.id,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,

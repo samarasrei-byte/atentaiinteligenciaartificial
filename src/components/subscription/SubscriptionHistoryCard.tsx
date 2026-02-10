@@ -103,27 +103,11 @@ export const SubscriptionHistoryCard: React.FC = () => {
     }
   };
 
-  const handleManageSubscription = async () => {
-    if (!user) return;
-
-    setIsManaging(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('customer-portal');
-
-      if (error) throw error;
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      }
-    } catch (error: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Erro',
-        description: error.message || 'Erro ao abrir portal de assinatura',
-      });
-    } finally {
-      setIsManaging(false);
-    }
+  const handleManageSubscription = () => {
+    toast({
+      title: 'Gerenciar Assinatura',
+      description: 'Entre em contato com o suporte para gerenciar sua assinatura.',
+    });
   };
 
   const formatCurrency = (cents: number) => {
