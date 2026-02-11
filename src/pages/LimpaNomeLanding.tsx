@@ -80,8 +80,8 @@ export default function LimpaNomeLanding() {
   };
 
   const plans = {
-    pf: { price: 780, label: 'Pessoa Física', icon: User, description: 'Para CPF' },
-    pj: { price: 970, label: 'Empresa', icon: Building2, description: 'Para CNPJ' },
+    pf: { price: 824.50, originalPrice: 1238, label: 'Pessoa Física', icon: User, description: 'Para CPF' },
+    pj: { price: 1280, originalPrice: 1568, label: 'Empresa', icon: Building2, description: 'Para CNPJ' },
   };
 
   const benefits = [
@@ -240,15 +240,18 @@ export default function LimpaNomeLanding() {
                     <p className="text-sm text-blue-300">Para pessoa física</p>
                   </div>
                 </div>
+                <div className="mb-1">
+                  <span className="text-sm text-blue-300/60 line-through">R$ 1.238,00</span>
+                </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-sm text-blue-300">R$</span>
                   <span className="text-5xl font-bold text-white">
-                    780
+                    824
                   </span>
-                  <span className="text-sm text-blue-300">,00</span>
+                  <span className="text-sm text-blue-300">,50</span>
                 </div>
                 <p className="text-green-400 text-sm font-semibold mt-1">
-                  ou 4x de R$ 195,00 sem juros
+                  ou 4x de R$ 206,13 sem juros
                 </p>
                 <div className="mt-4 pt-4 border-t border-blue-500/30 space-y-2">
                   <div className="flex items-center gap-2 text-sm text-slate-300">
@@ -290,15 +293,18 @@ export default function LimpaNomeLanding() {
                     <p className="text-sm text-emerald-300">Para empresas</p>
                   </div>
                 </div>
+                <div className="mb-1">
+                  <span className="text-sm text-emerald-300/60 line-through">R$ 1.568,00</span>
+                </div>
                 <div className="flex items-baseline gap-1">
                   <span className="text-sm text-emerald-300">R$</span>
                   <span className="text-5xl font-bold text-white">
-                    970
+                    1.280
                   </span>
                   <span className="text-sm text-emerald-300">,00</span>
                 </div>
                 <p className="text-green-400 text-sm font-semibold mt-1">
-                  ou 4x de R$ 242,50 sem juros
+                  ou 4x de R$ 320,00 sem juros
                 </p>
                 <div className="mt-4 pt-4 border-t border-emerald-500/30 space-y-2">
                   <div className="flex items-center gap-2 text-sm text-slate-300">

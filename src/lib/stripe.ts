@@ -13,8 +13,8 @@
  * - Atentai Performance: R$ 8.000+/mês - BI estratégico com integração ERP/CRM
  * 
  * MARKETPLACE SERVICES (One-Time Payments):
- * - Limpa Nome PF: R$ 824,50 (FIXED)
- * - Limpa Nome PJ: R$ 1.280,00 (FIXED)
+ * - Limpa Nome PF: De R$ 1.238,00 por R$ 824,50 (PROMOÇÃO)
+ * - Limpa Nome PJ: De R$ 1.568,00 por R$ 1.280,00 (PROMOÇÃO)
  * - Certidões: R$ 80,00 (FIXED)
  * - IR Simples (CLT): R$ 200,00 (FIXED)
  * - IR Completo: R$ 420,00 (FIXED)
@@ -260,7 +260,8 @@ export const SUBSCRIBER_DISCOUNTS = {
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
     description: 'Regularize seu CPF e limpe restrições',
-    basePrice: 82450, // cents (R$824,50) FIXED
+    basePrice: 82450, // cents (R$824,50) PROMOÇÃO
+    originalPrice: 123800, // cents (R$1.238,00) preço original
     discount: 0,
     discountedPrice: 82450,
     icon: 'User',
@@ -269,7 +270,8 @@ export const SUBSCRIBER_DISCOUNTS = {
   credit_repair_pj: {
     name: 'Limpa Nome Empresa (CNPJ)',
     description: 'Regularize seu CNPJ e limpe restrições',
-    basePrice: 128000, // cents (R$1.280,00) FIXED
+    basePrice: 128000, // cents (R$1.280,00) PROMOÇÃO
+    originalPrice: 156800, // cents (R$1.568,00) preço original
     discount: 0,
     discountedPrice: 128000,
     icon: 'Building2',

@@ -28,6 +28,8 @@ interface MPTransparentCheckoutProps {
   requestId?: string;
   /** Allowed payment methods. Defaults to ['pix', 'card'] */
   allowedMethods?: PaymentTab[];
+  /** If true, disables installments (subscription = 1x only) */
+  isRecurring?: boolean;
 }
 
 interface PostPaymentResult {
@@ -64,6 +66,7 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
   autoProcessPayment = true,
   requestId,
   allowedMethods = ['pix', 'card'],
+  isRecurring = false,
 }) => {
   const [activeTab, setActiveTab] = useState<PaymentTab>(allowedMethods[0]);
   const [isLoading, setIsLoading] = useState(false);
@@ -550,6 +553,7 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
             />
           </div>
 
+          {!isRecurring && (
           <div className="space-y-2">
             <Label htmlFor="installments">Parcelas</Label>
             <select
@@ -566,6 +570,7 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
               ))}
             </select>
           </div>
+          )}
 
           <Button
             onClick={handleCard}

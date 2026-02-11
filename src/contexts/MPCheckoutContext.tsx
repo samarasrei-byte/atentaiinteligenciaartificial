@@ -117,6 +117,7 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 metadata={options.metadata}
                 onSuccess={handleSuccess}
                 allowedMethods={options.allowedMethods}
+                isRecurring={options.isRecurring}
               />
             )}
           </div>

@@ -75,6 +75,7 @@ const plans = {
     shortName: 'Pessoa Física',
     description: 'Regularização de restrições com análise humana especializada.',
     basePrice: 824.50,
+    originalPrice: 1238,
     icon: User,
     iconColor: 'text-cyan-400',
     gradientFrom: 'from-cyan-500',
@@ -94,6 +95,7 @@ const plans = {
     shortName: 'Empresa (CNPJ)',
     description: 'Regularização cadastral com análise fiscal e jurídica especializada.',
     basePrice: 1280,
+    originalPrice: 1568,
     icon: Building2,
     iconColor: 'text-emerald-400',
     gradientFrom: 'from-emerald-500',
@@ -271,11 +273,9 @@ export function LimpaNomeSection() {
                         <span className="text-4xl font-bold text-white">
                           R$ {formatPrice(planPrice)}
                         </span>
-                        {isSubscribed && (
-                          <span className="text-lg text-white/40 line-through">
-                            R$ {formatPrice(plan.basePrice)}
-                          </span>
-                        )}
+                        <span className="text-lg text-white/40 line-through">
+                          R$ {formatPrice((plan as any).originalPrice || plan.basePrice)}
+                        </span>
                       </div>
                       <p className="text-white/50 mt-1">
                         ou <span className="font-semibold text-white/70">4x de R$ {formatPrice(planPrice / 4)}</span> sem juros
@@ -414,11 +414,9 @@ export function LimpaNomeSection() {
                   <div className="mb-6">
                     <p className="text-sm text-white/70 mb-2">Investimento único - {currentPlan.name}</p>
                     <div className="flex items-baseline gap-3">
-                      {isSubscribed && (
-                        <span className="text-2xl text-white/50 line-through">
-                          R$ {formatPrice(basePrice)}
-                        </span>
-                      )}
+                      <span className="text-2xl text-white/50 line-through">
+                        R$ {formatPrice(currentPlan.originalPrice || basePrice)}
+                      </span>
                       <span className={`text-5xl font-bold bg-gradient-to-r ${currentPlan.gradientFrom} ${currentPlan.gradientTo} bg-clip-text text-transparent`}>
                         R$ {formatPrice(discountedPrice)}
                       </span>
