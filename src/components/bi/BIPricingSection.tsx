@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,7 @@ import { BI_PLANS, formatPrice, BIPlanType } from '@/lib/stripe';
 export function BIPricingSection() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
@@ -47,19 +48,21 @@ export function BIPricingSection() {
 
     setIsLoading(planKey);
     
-    try {
-      navigate('/pricing');
-      return;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsLoading(null);
-    }
+    openCheckout({
+      amountCents: plan.price,
+      serviceName: plan.name,
+      serviceType: planKey,
+      description: plan.description,
+      gradient: plan.color,
+      metadata: { service_key: planKey },
+      allowedMethods: ['card'],
+      isRecurring: true,
+      onSuccess: () => {
+        setIsLoading(null);
+        toast({ title: 'Assinatura ativada!', description: `Seu plano ${plan.name} foi ativado.` });
+      },
+    });
+    setIsLoading(null);
   };
 
   // Plan configuration type
