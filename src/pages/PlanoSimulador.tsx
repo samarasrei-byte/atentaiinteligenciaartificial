@@ -47,6 +47,8 @@ const PlanoSimulador = () => {
       description: 'Acesso completo ao simulador tributário',
       gradient: 'from-blue-500 to-cyan-500',
       metadata: { service_key: 'simulator' },
+      allowedMethods: ['card'],
+      isRecurring: true,
       onSuccess: () => {
         toast({ title: 'Assinatura ativada!' });
       },
