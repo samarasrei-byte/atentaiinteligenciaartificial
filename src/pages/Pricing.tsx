@@ -78,6 +78,8 @@ const Pricing = () => {
       serviceType: planKey,
       description: plan.description,
       gradient: getGradient(planKey),
+      allowedMethods: ['card'],
+      isRecurring: true,
       metadata: {
         plan_key: planKey,
         ...(appliedCoupon ? { coupon_id: appliedCoupon.id } : {}),

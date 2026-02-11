@@ -460,6 +460,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                         description: 'Acesso completo com IA ilimitada',
                         gradient: 'from-accent to-orange-500',
                         metadata: { service_key: 'premium' },
+                        allowedMethods: ['card'],
+                        isRecurring: true,
                         onSuccess: () => {
                           toast.success('Assinatura Premium ativada!');
                           navigate('/painel');

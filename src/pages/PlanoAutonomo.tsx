@@ -89,6 +89,8 @@ const PlanoAutonomo: React.FC = () => {
       description: 'Dashboard financeiro completo para profissionais autônomos',
       gradient: 'from-primary to-primary/70',
       metadata: { service_key: 'autonomo' },
+      allowedMethods: ['card'],
+      isRecurring: true,
       onSuccess: () => {
         toast({ title: 'Assinatura ativada!' });
       },

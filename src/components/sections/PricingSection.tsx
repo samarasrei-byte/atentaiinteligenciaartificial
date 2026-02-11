@@ -55,6 +55,8 @@ export function PricingSection() {
       gradient: planKey === 'simulator' ? 'from-blue-500 to-cyan-500' : 
                 planKey === 'autonomo' ? 'from-green-500 to-emerald-500' :
                 planKey === 'premium' ? 'from-primary to-primary/70' : 'from-accent to-orange-500',
+      allowedMethods: ['card'],
+      isRecurring: true,
       onSuccess: () => {
         setIsLoading(null);
         toast({ title: 'Pagamento realizado!', description: 'Sua assinatura foi ativada.' });

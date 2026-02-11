@@ -266,6 +266,8 @@ export function AISection() {
       description: 'Recursos completos com IA ilimitada',
       gradient: 'from-violet-500 to-fuchsia-500',
       metadata: { service_key: 'premium' },
+      allowedMethods: ['card'],
+      isRecurring: true,
       onSuccess: () => {
         toast({ title: 'Assinatura ativada!', description: 'Aproveite o AtentAI Premium.' });
       },

@@ -13,6 +13,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '@/lib/stripe';
 
+type PaymentTab = 'pix' | 'card';
+
 interface MPCheckoutOptions {
   amountCents: number;
   serviceName: string;
@@ -22,6 +24,8 @@ interface MPCheckoutOptions {
   icon?: React.ElementType;
   metadata?: Record<string, string>;
   onSuccess?: (paymentId: number) => void;
+  allowedMethods?: PaymentTab[];
+  isRecurring?: boolean;
 }
 
 interface MPCheckoutContextType {
@@ -95,7 +99,7 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
               <span className="text-4xl font-bold">
                 {options ? formatPrice(options.amountCents) : ''}
               </span>
-              <span className="text-white/70 text-sm">pagamento único</span>
+              <span className="text-white/70 text-sm">{options?.isRecurring ? '/mês' : 'pagamento único'}</span>
             </div>
           </div>
 
@@ -112,6 +116,7 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
                 accessToken={session?.access_token}
                 metadata={options.metadata}
                 onSuccess={handleSuccess}
+                allowedMethods={options.allowedMethods}
               />
             )}
           </div>
