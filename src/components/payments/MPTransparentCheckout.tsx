@@ -26,6 +26,8 @@ interface MPTransparentCheckoutProps {
   autoProcessPayment?: boolean;
   /** Request ID to link to user after payment */
   requestId?: string;
+  /** Allowed payment methods. Defaults to ['pix', 'card'] */
+  allowedMethods?: PaymentTab[];
 }
 
 interface PostPaymentResult {
@@ -61,8 +63,9 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
   accessToken,
   autoProcessPayment = true,
   requestId,
+  allowedMethods = ['pix', 'card'],
 }) => {
-  const [activeTab, setActiveTab] = useState<PaymentTab>('pix');
+  const [activeTab, setActiveTab] = useState<PaymentTab>(allowedMethods[0]);
   const [isLoading, setIsLoading] = useState(false);
   const [loadingStep, setLoadingStep] = useState<string>('');
   const [copied, setCopied] = useState(false);
@@ -431,16 +434,18 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
   return (
     <div className="space-y-4">
       <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as PaymentTab)}>
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="pix" className="flex items-center gap-2">
-            <QrCode className="h-4 w-4" />
-            PIX
-          </TabsTrigger>
-          <TabsTrigger value="card" className="flex items-center gap-2">
-            <CreditCard className="h-4 w-4" />
-            Cartão
-          </TabsTrigger>
-        </TabsList>
+        {allowedMethods.length > 1 && (
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="pix" className="flex items-center gap-2">
+              <QrCode className="h-4 w-4" />
+              PIX
+            </TabsTrigger>
+            <TabsTrigger value="card" className="flex items-center gap-2">
+              <CreditCard className="h-4 w-4" />
+              Cartão
+            </TabsTrigger>
+          </TabsList>
+        )}
 
         {/* PIX Tab */}
         <TabsContent value="pix" className="space-y-4 mt-4">
