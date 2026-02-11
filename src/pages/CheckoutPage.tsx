@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -180,6 +180,7 @@ export default function CheckoutPage() {
   const { serviceSlug } = useParams<{ serviceSlug: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
+  const { openCheckout } = useMPCheckout();
   
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedType, setSelectedType] = useState<'pf' | 'pj'>('pf');
@@ -259,47 +260,25 @@ export default function CheckoutPage() {
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      // Map service type for the backend
-      let backendServiceType = service.serviceType;
-      if (backendServiceType === 'ir_simples' || backendServiceType === 'ir_completo') {
-        backendServiceType = 'ir';
-      } else if (backendServiceType.startsWith('credit_repair')) {
-        // Keep as-is
-      }
-
-      const { data, error } = await supabase.functions.invoke('create-guest-service-payment', {
-        body: {
-          serviceType: service.serviceType.startsWith('credit_repair') 
-            ? service.serviceType 
-            : service.serviceType === 'ir_simples' || service.serviceType === 'ir_completo'
-              ? 'ir'
-              : service.serviceType,
-          email: formData.email.trim().toLowerCase(),
-          fullName: formData.fullName.trim(),
-          phone: formData.phone.replace(/\D/g, ''),
-          cpf: formData.cpf.replace(/\D/g, '') || undefined,
-          irType: service.serviceType === 'ir_simples' ? 'simples' : service.serviceType === 'ir_completo' ? 'completo' : undefined,
-          companyType: service.serviceType === 'company_opening' ? 'me' : undefined,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.url) {
-        toast.success('Redirecionando para pagamento seguro...');
-        window.location.href = data.url;
-      } else {
-        throw new Error('URL de checkout não retornada');
-      }
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast.error(error.message || 'Erro ao processar. Tente novamente.');
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Determine allowed methods: PIX for one-time, card for subscriptions
+    const isOneTime = ['credit_repair_pf', 'credit_repair_pj', 'ir_simples', 'ir_completo', 'company_opening', 'certificate'].includes(service.serviceType);
+    
+    openCheckout({
+      amountCents: finalPrice,
+      serviceName: service.name,
+      serviceType: service.serviceType,
+      description: service.description,
+      allowedMethods: isOneTime ? ['pix'] : ['card'],
+      isRecurring: !isOneTime,
+      metadata: {
+        fullName: formData.fullName.trim(),
+        email: formData.email.trim().toLowerCase(),
+        phone: formData.phone.replace(/\D/g, ''),
+      },
+      onSuccess: () => {
+        navigate('/painel');
+      },
+    });
   };
 
   if (!service) {
