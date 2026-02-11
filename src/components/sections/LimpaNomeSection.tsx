@@ -183,17 +183,15 @@ export function LimpaNomeSection() {
 
                 const handleCTAClick = (e: React.MouseEvent) => {
                   e.stopPropagation();
-                  if (!user) {
-                    navigate('/auth');
-                    return;
-                  }
                   openCheckout({
                     amountCents: planPrice * 100,
                     serviceName: `Limpa Nome ${plan.id === 'pf' ? 'CPF' : 'CNPJ'}`,
-                    serviceType: `limpa-nome-${plan.id}`,
+                    serviceType: `credit_repair_${plan.id}`,
                     description: plan.description,
                     gradient: `${plan.gradientFrom} ${plan.gradientTo}`,
-                    metadata: { service_key: `limpa-nome-${plan.id}` },
+                    metadata: { service_key: `credit_repair_${plan.id}` },
+                    allowedMethods: ['pix'],
+                    isRecurring: false,
                     onSuccess: () => navigate('/painel'),
                   });
                 };

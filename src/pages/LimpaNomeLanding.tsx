@@ -60,7 +60,7 @@ export default function LimpaNomeLanding() {
     openCheckout({
       ...config,
       description: 'Regularização de restrições com análise humana especializada',
-      allowedMethods: ['pix', 'card'],
+      allowedMethods: ['pix'],
       isRecurring: false,
       onSuccess: () => {
         navigate('/painel');
