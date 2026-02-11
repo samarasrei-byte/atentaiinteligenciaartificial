@@ -116,8 +116,8 @@ export const SERVICE_PRICES = {
 // Subscription Plans
 export const SUBSCRIPTION_PLANS = {
   SIMULADOR: {
-    cents: 3900,
-    formatted: 'R$ 39,00',
+    cents: 3999,
+    formatted: 'R$ 39,99',
     interval: 'month',
     serviceKey: 'simulator',
     features: [
