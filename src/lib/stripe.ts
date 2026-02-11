@@ -2,10 +2,10 @@
  * STRIPE CONFIGURATION - Dual Plan System
  * 
  * PLATFORM SUBSCRIPTION PLANS (Legacy - Used across the platform):
- * - Simulador: R$ 29,90/mês - Acesso ao simulador tributário
- * - Autônomo: R$ 49,90/mês - Para profissionais autônomos
- * - Premium: R$ 97,00/mês - Recursos completos
- * - Contador: R$ 197,00/mês - Para contadores
+ * - Simulador: R$ 39,00/mês - Acesso ao simulador tributário
+ * - Autônomo: R$ 65,00/mês - Para profissionais autônomos
+ * - Premium: R$ 98,00/mês - Recursos completos
+ * - Contador: R$ 198,99/mês - Para contadores
  * 
  * BI PLANS (Atentai - Used only in /bi-contabilidade):
  * - Atentai Clarity: R$ 1.497/mês - BI de entrada com clareza financeira
@@ -47,7 +47,7 @@ export const STRIPE_PLANS = {
     name: 'Plano Autônomo',
     priceId: 'price_autonomo_monthly',
     productId: 'prod_autonomo',
-    price: 4990, // cents (R$ 49,90)
+    price: 6500, // cents (R$ 65,00)
     description: 'Para profissionais autônomos',
     tagline: 'Popular',
     features: [
@@ -65,7 +65,7 @@ export const STRIPE_PLANS = {
     name: 'AtentAI Premium',
     priceId: 'price_premium_monthly',
     productId: 'prod_premium',
-    price: 9700, // cents (R$ 97,00)
+    price: 9800, // cents (R$ 98,00)
     description: 'Recursos completos para empresas',
     tagline: 'Completo',
     features: [
@@ -82,7 +82,7 @@ export const STRIPE_PLANS = {
     name: 'Contador Premium Plus',
     priceId: 'price_contador_monthly',
     productId: 'prod_contador',
-    price: 19700, // cents (R$ 197,00)
+    price: 19899, // cents (R$ 198,99)
     description: 'Para contadores e escritórios',
     tagline: 'Profissional',
     features: [
