@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useMPCheckout } from "@/contexts/MPCheckoutContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -36,6 +37,7 @@ const PAIN_POINTS = [
 export default function LimpaNomeLanding() {
   const navigate = useNavigate();
   const { openCheckout } = useMPCheckout();
+  const { user } = useAuth();
   const heroRef = useRef<HTMLDivElement>(null);
   const isHeroInView = useInView(heroRef, { once: true });
   const [selectedPlan, setSelectedPlan] = useState<'pf' | 'pj'>('pf');
@@ -53,6 +55,12 @@ export default function LimpaNomeLanding() {
 
   // Open MP checkout modal with PIX + Card
   const openLimpaNomeCheckout = (plan: 'pf' | 'pj') => {
+    // Guest users → redirect to guest checkout page
+    if (!user) {
+      navigate(`/checkout/limpa-nome-${plan}`);
+      return;
+    }
+
     const config = plan === 'pf' 
       ? { amountCents: 82450, serviceName: 'Limpa Nome Pessoa Física', serviceType: 'credit_repair_pf', gradient: 'from-blue-500 to-cyan-500' }
       : { amountCents: 128000, serviceName: 'Limpa Nome Empresa (CNPJ)', serviceType: 'credit_repair_pj', gradient: 'from-emerald-500 to-teal-500' };

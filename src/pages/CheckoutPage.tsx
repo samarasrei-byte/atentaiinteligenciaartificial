@@ -270,6 +270,8 @@ export default function CheckoutPage() {
       description: service.description,
       allowedMethods: isOneTime ? ['pix'] : ['card'],
       isRecurring: !isOneTime,
+      guestEmail: formData.email.trim().toLowerCase(),
+      guestName: formData.fullName.trim(),
       metadata: {
         fullName: formData.fullName.trim(),
         email: formData.email.trim().toLowerCase(),
@@ -579,12 +581,12 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex items-center gap-1">
                       <BadgeCheck className="h-3 w-3" />
-                      Stripe verificado
+                      Mercado Pago
                     </div>
                   </div>
 
                   <p className="text-[11px] text-center text-slate-400">
-                    Ao clicar em Pagar, você será redirecionado para o checkout seguro do Stripe.
+                    Ao clicar em Pagar, o checkout seguro do Mercado Pago será aberto.
                     Após o pagamento, sua conta será criada automaticamente e você receberá as instruções por e-mail.
                   </p>
                 </form>

@@ -183,6 +183,13 @@ export function LimpaNomeSection() {
 
                 const handleCTAClick = (e: React.MouseEvent) => {
                   e.stopPropagation();
+                  
+                  // Guest user → redirect to guest checkout page
+                  if (!user) {
+                    navigate(`/checkout/limpa-nome-${plan.id}`);
+                    return;
+                  }
+
                   openCheckout({
                     amountCents: planPrice * 100,
                     serviceName: `Limpa Nome ${plan.id === 'pf' ? 'CPF' : 'CNPJ'}`,
