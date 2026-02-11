@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMPCheckout } from "@/contexts/MPCheckoutContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -34,6 +35,7 @@ const PAIN_POINTS = [
 
 export default function LimpaNomeLanding() {
   const navigate = useNavigate();
+  const { openCheckout } = useMPCheckout();
   const heroRef = useRef<HTMLDivElement>(null);
   const isHeroInView = useInView(heroRef, { once: true });
   const [selectedPlan, setSelectedPlan] = useState<'pf' | 'pj'>('pf');
@@ -49,10 +51,24 @@ export default function LimpaNomeLanding() {
     { question: "Qual a garantia?", answer: "100% de satisfação ou seu dinheiro de volta. Se não conseguirmos limpar seu nome, devolvemos o valor integral." },
   ];
 
-  // CHECKOUT FIRST: Direct navigation to checkout page
-  const handleDirectCheckout = () => {
-    navigate(`/checkout/limpa-nome-${selectedPlan}`);
+  // Open MP checkout modal with PIX + Card
+  const openLimpaNomeCheckout = (plan: 'pf' | 'pj') => {
+    const config = plan === 'pf' 
+      ? { amountCents: 82450, serviceName: 'Limpa Nome Pessoa Física', serviceType: 'credit_repair_pf', gradient: 'from-blue-500 to-cyan-500' }
+      : { amountCents: 128000, serviceName: 'Limpa Nome Empresa (CNPJ)', serviceType: 'credit_repair_pj', gradient: 'from-emerald-500 to-teal-500' };
+    
+    openCheckout({
+      ...config,
+      description: 'Regularização de restrições com análise humana especializada',
+      allowedMethods: ['pix', 'card'],
+      isRecurring: false,
+      onSuccess: () => {
+        navigate('/painel');
+      },
+    });
   };
+
+  const handleDirectCheckout = () => openLimpaNomeCheckout(selectedPlan);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -67,9 +83,8 @@ export default function LimpaNomeLanding() {
     return () => clearInterval(timer);
   }, []);
 
-  // Direct checkout per plan
-  const handleCheckoutPF = () => navigate('/checkout/limpa-nome-pf');
-  const handleCheckoutPJ = () => navigate('/checkout/limpa-nome-pj');
+  const handleCheckoutPF = () => openLimpaNomeCheckout('pf');
+  const handleCheckoutPJ = () => openLimpaNomeCheckout('pj');
 
   const handleNavigate = (section: string) => {
     if (section === "hero") {
