@@ -339,7 +339,7 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
               onSuccess={handleMPSuccess}
               onError={(err) => console.error('MP error:', err)}
               allowedMethods={
-                ['contador-premium', 'clarity', 'control'].includes(serviceKey)
+                ['contador-premium', 'clarity', 'control', 'performance', 'simulator', 'autonomo', 'premium'].includes(serviceKey)
                   ? ['card']
                   : ['pix']
               }

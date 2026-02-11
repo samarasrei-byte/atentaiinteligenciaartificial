@@ -155,6 +155,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
         metadata: {
           service_key: service.key,
         },
+        ...(service.isSubscription ? { allowedMethods: ['card'] as ('pix' | 'card')[], isRecurring: true } : {}),
         onSuccess: () => {
           toast.success('Pagamento realizado com sucesso!');
         },
