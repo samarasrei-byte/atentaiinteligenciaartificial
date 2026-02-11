@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,7 @@ import { STRIPE_PLANS, formatPrice, AI_LIMITS } from '@/lib/stripe';
 const PlanoAtenteAi = () => {
   const navigate = useNavigate();
   const { user, subscription } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -39,21 +40,19 @@ const PlanoAtenteAi = () => {
       return;
     }
 
-    setIsLoading(true);
-    
-    try {
-      navigate('/pricing');
-      return;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    openCheckout({
+      amountCents: plan.price,
+      serviceName: plan.name,
+      serviceType: 'premium',
+      description: plan.description,
+      gradient: 'from-primary to-primary/70',
+      metadata: { service_key: 'premium' },
+      allowedMethods: ['card'],
+      isRecurring: true,
+      onSuccess: () => {
+        toast({ title: 'Assinatura ativada!' });
+      },
+    });
   };
 
   const benefits = [
