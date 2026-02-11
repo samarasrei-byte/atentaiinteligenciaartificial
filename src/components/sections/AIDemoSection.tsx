@@ -454,7 +454,7 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                         return;
                       }
                       openCheckout({
-                        amountCents: 3900,
+                        amountCents: 9800,
                         serviceName: 'AtentAI Premium',
                         serviceType: 'premium',
                         description: 'Acesso completo com IA ilimitada',

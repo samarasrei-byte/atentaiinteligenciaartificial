@@ -103,6 +103,8 @@ export const ServicePaywallModal: React.FC<ServicePaywallModalProps> = ({
       serviceType: serviceType,
       description: service.description,
       gradient: service.gradient,
+      allowedMethods: ['card'],
+      isRecurring: true,
       onSuccess: () => {
         toast.success('Pagamento realizado! Serviço ativado.');
         onPaymentSuccess?.();

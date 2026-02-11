@@ -69,6 +69,8 @@ export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
       description: `Pagamento ${service.name}`,
       gradient: service.gradient,
       metadata: { request_id: requestId },
+      allowedMethods: ['card'],
+      isRecurring: true,
       onSuccess: () => {
         toast.success('Pagamento realizado com sucesso!');
       },
