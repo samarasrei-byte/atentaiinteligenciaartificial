@@ -20,6 +20,7 @@ export interface ServiceCardConfig {
   features: string[];
   guarantees: string[];
   basePrice: number;
+  originalPrice?: number;
   discountPercent: number;
   installments?: number;
   badge?: 'popular' | 'free' | 'new' | 'premium' | 'coming_soon';
@@ -272,7 +273,12 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
             ) : (
               <div>
                 <div className="flex items-baseline gap-2 flex-wrap">
-                  {isSubscriber && service.discountPercent > 0 && (
+                  {service.originalPrice && (
+                    <span className="text-sm text-slate-400 line-through">
+                      {formatPrice(service.originalPrice)}
+                    </span>
+                  )}
+                  {isSubscriber && service.discountPercent > 0 && !service.originalPrice && (
                     <span className="text-sm text-slate-400 line-through">
                       {formatPrice(service.basePrice)}
                     </span>
@@ -280,9 +286,9 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                   <span className="text-2xl font-bold text-slate-900">
                     {formatPrice(discountedPrice)}
                   </span>
-                  {isSubscriber && service.discountPercent > 0 && (
+                  {(service.originalPrice || (isSubscriber && service.discountPercent > 0)) && (
                     <Badge className="bg-accent/10 text-accent border-0 text-[10px]">
-                      -{service.discountPercent}%
+                      {service.originalPrice ? 'PROMOÇÃO' : `-${service.discountPercent}%`}
                     </Badge>
                   )}
                 </div>

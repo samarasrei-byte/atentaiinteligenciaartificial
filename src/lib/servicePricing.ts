@@ -5,9 +5,9 @@
  * 
  * Prices are in cents (BRL) for Stripe compatibility.
  * 
- * OFFICIAL PRICE TABLE (Updated 2026-02-10):
- * - Limpa Nome PF: R$ 824,50
- * - Limpa Nome PJ: R$ 1.280,00
+ * OFFICIAL PRICE TABLE (Updated 2026-02-11):
+ * - Limpa Nome PF: De R$ 1.238,00 por R$ 824,50 (PROMOÇÃO)
+ * - Limpa Nome PJ: De R$ 1.568,00 por R$ 1.280,00 (PROMOÇÃO)
  * - Certidões: R$ 80,00
  * - IR Simples (CLT): R$ 200,00
  * - IR Completo: R$ 420,00
@@ -22,6 +22,8 @@ export const SERVICE_PRICES = {
   LIMPA_NOME_PF: {
     cents: 82450,
     formatted: 'R$ 824,50',
+    originalCents: 123800, // R$ 1.238,00 (preço original)
+    originalFormatted: 'R$ 1.238,00',
     installments: 4,
     installmentValue: 'R$ 206,13',
     serviceKey: 'credit_repair_pf',
@@ -30,6 +32,8 @@ export const SERVICE_PRICES = {
   LIMPA_NOME_CNPJ: {
     cents: 128000,
     formatted: 'R$ 1.280,00',
+    originalCents: 156800, // R$ 1.568,00 (preço original)
+    originalFormatted: 'R$ 1.568,00',
     installments: 4,
     installmentValue: 'R$ 320,00',
     serviceKey: 'credit_repair_pj',
