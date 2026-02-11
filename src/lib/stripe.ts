@@ -2,7 +2,7 @@
  * STRIPE CONFIGURATION - Dual Plan System
  * 
  * PLATFORM SUBSCRIPTION PLANS (Legacy - Used across the platform):
- * - Simulador: R$ 39,00/mês - Acesso ao simulador tributário
+ * - Simulador: R$ 39,99/mês - Acesso ao simulador tributário
  * - Autônomo: R$ 65,00/mês - Para profissionais autônomos
  * - Premium: R$ 98,00/mês - Recursos completos
  * - Contador: R$ 198,99/mês - Para contadores

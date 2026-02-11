@@ -272,7 +272,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       '5 perguntas à IA por dia',
     ],
     guarantees: ['Atualizado 2026', 'IBS + CBS'],
-    basePrice: 3900, // R$ 39,00/mês (valor auditado do Stripe)
+    basePrice: 3999, // R$ 39,99/mês
     discountPercent: 0,
     cta: 'Assinar Agora',
     color: 'blue',
