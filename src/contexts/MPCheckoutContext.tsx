@@ -26,6 +26,9 @@ interface MPCheckoutOptions {
   onSuccess?: (paymentId: number) => void;
   allowedMethods?: PaymentTab[];
   isRecurring?: boolean;
+  // Guest checkout fields (used when user is not authenticated)
+  guestEmail?: string;
+  guestName?: string;
 }
 
 interface MPCheckoutContextType {
@@ -47,17 +50,20 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const [options, setOptions] = useState<MPCheckoutOptions | null>(null);
 
   const openCheckout = useCallback((opts: MPCheckoutOptions) => {
-    if (!user || !session) {
+    // Allow guest checkout if guestEmail is provided
+    const hasGuestData = opts.guestEmail && opts.guestEmail.trim().length > 0;
+    
+    if (!user && !hasGuestData) {
       toast.error('Você precisa estar logado para continuar.');
       return;
     }
-    if (!user.email) {
+    if (!user?.email && !hasGuestData) {
       toast.error('Email não encontrado. Complete seu cadastro.');
       return;
     }
     setOptions(opts);
     setIsOpen(true);
-  }, [user, session]);
+  }, [user]);
 
   const closeCheckout = useCallback(() => {
     setIsOpen(false);
@@ -105,14 +111,14 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
           {/* Checkout */}
           <div className="p-6">
-            {options && user?.email && (
+            {options && (user?.email || options.guestEmail) && (
               <MPTransparentCheckout
                 amountCents={options.amountCents}
                 serviceName={options.serviceName}
                 serviceType={options.serviceType}
                 description={options.description}
-                payerEmail={user.email}
-                payerName={profile?.full_name || 'Cliente'}
+                payerEmail={user?.email || options.guestEmail || ''}
+                payerName={profile?.full_name || options.guestName || 'Cliente'}
                 accessToken={session?.access_token}
                 metadata={options.metadata}
                 onSuccess={handleSuccess}

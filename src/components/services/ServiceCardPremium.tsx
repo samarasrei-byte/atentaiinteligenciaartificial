@@ -113,6 +113,19 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
     purple: 'from-purple-500 to-pink-600',
   };
 
+  // One-time service types that must use PIX only
+  const ONE_TIME_SERVICES = ['credit_repair_pf', 'credit_repair_pj', 'ir_simples', 'ir_completo', 'company_opening', 'certificate'];
+
+  // Mapping from serviceType to checkout page slug for guest checkout
+  const SERVICE_TO_CHECKOUT_SLUG: Record<string, string> = {
+    'credit_repair_pf': 'limpa-nome-pf',
+    'credit_repair_pj': 'limpa-nome-pj',
+    'ir_simples': 'ir-simples',
+    'ir_completo': 'ir-completo',
+    'company_opening': 'abertura-empresa',
+    'certificate': 'certidao',
+  };
+
   const handleCTAClick = () => {
     // Services that route to chat/onboarding (no direct payment)
     const CHAT_ROUTES: Record<string, string> = {
@@ -139,13 +152,22 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       return;
     }
 
-    // All paid services → open Mercado Pago transparent checkout
+    // All paid services → check auth
     if (service.basePrice > 0) {
+      // Guest user → redirect to guest checkout page
       if (!user) {
-        toast.error('Faça login para continuar.');
-        navigate('/auth');
+        const checkoutSlug = SERVICE_TO_CHECKOUT_SLUG[service.serviceType];
+        if (checkoutSlug) {
+          navigate(`/checkout/${checkoutSlug}`);
+        } else {
+          toast.error('Faça login para continuar.');
+          navigate('/auth');
+        }
         return;
       }
+
+      // Logged-in user → open MP checkout modal directly
+      const isOneTime = ONE_TIME_SERVICES.includes(service.serviceType);
 
       openCheckout({
         amountCents: discountedPrice,
@@ -156,7 +178,8 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
         metadata: {
           service_key: service.key,
         },
-        ...(service.isSubscription ? { allowedMethods: ['card'] as ('pix' | 'card')[], isRecurring: true } : {}),
+        allowedMethods: service.isSubscription ? ['card'] : (isOneTime ? ['pix'] : ['pix', 'card']),
+        isRecurring: !!service.isSubscription,
         onSuccess: () => {
           toast.success('Pagamento realizado com sucesso!');
         },
