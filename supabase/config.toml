@@ -56,3 +56,6 @@ verify_jwt = false
 
 [functions.ai-admin-response]
 verify_jwt = false
+
+[functions.analyze-dre]
+verify_jwt = false

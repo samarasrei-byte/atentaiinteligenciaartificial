@@ -1580,6 +1580,63 @@ export type Database = {
         }
         Relationships: []
       }
+      dre_analyses: {
+        Row: {
+          ai_full_analysis: string | null
+          ai_kpis: Json | null
+          ai_recommendations: string | null
+          ai_summary: string | null
+          analyzed_at: string | null
+          client_name: string | null
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size_bytes: number | null
+          id: string
+          period_label: string | null
+          raw_text: string | null
+          status: string
+          updated_at: string
+          uploaded_by: string
+        }
+        Insert: {
+          ai_full_analysis?: string | null
+          ai_kpis?: Json | null
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          analyzed_at?: string | null
+          client_name?: string | null
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size_bytes?: number | null
+          id?: string
+          period_label?: string | null
+          raw_text?: string | null
+          status?: string
+          updated_at?: string
+          uploaded_by: string
+        }
+        Update: {
+          ai_full_analysis?: string | null
+          ai_kpis?: Json | null
+          ai_recommendations?: string | null
+          ai_summary?: string | null
+          analyzed_at?: string | null
+          client_name?: string | null
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          id?: string
+          period_label?: string | null
+          raw_text?: string | null
+          status?: string
+          updated_at?: string
+          uploaded_by?: string
+        }
+        Relationships: []
+      }
       financial_costs: {
         Row: {
           amount_cents: number

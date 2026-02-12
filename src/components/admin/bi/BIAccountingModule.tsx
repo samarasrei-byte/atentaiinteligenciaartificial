@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
 import { 
   LayoutDashboard, 
@@ -20,6 +21,7 @@ import { BIAutomations } from './BIAutomations';
 import { BIRequestsInbox } from './BIRequestsInbox';
 import { BIRealtimeNotifications } from './BIRealtimeNotifications';
 import { ServiceDocuments } from '../documents/ServiceDocuments';
+import { DREAnalysis } from './DREAnalysis';
 
 export const BIAccountingModule: React.FC = () => {
   const [activeTab, setActiveTab] = useState('inbox');
@@ -123,6 +125,8 @@ export const BIAccountingModule: React.FC = () => {
         </TabsContent>
 
         <TabsContent value="documents" className="space-y-4">
+          <DREAnalysis />
+          <Separator className="my-6" />
           <ServiceDocuments 
             serviceType="bi" 
             serviceName="BI Contabilidade" 
