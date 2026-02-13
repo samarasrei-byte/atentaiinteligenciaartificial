@@ -144,20 +144,23 @@ export const DREAnalysis: React.FC = () => {
         file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
         file.type === 'application/vnd.ms-excel') {
       try {
+        console.time('Excel parsing');
         const buffer = await file.arrayBuffer();
-        const workbook = XLSX.read(buffer, { type: 'array' });
+        const workbook = XLSX.read(buffer, { type: 'array', dense: true });
         const allText: string[] = [];
         
-        workbook.SheetNames.forEach((sheetName) => {
+        for (const sheetName of workbook.SheetNames) {
           const sheet = workbook.Sheets[sheetName];
           if (sheet) {
             allText.push(`=== ${sheetName} ===`);
             const csv = XLSX.utils.sheet_to_csv(sheet, { blankrows: false });
             allText.push(csv);
           }
-        });
+        }
         
         const text = allText.join('\n\n');
+        console.timeEnd('Excel parsing');
+        console.log('Excel text extracted:', text.length, 'chars');
         if (text.length > 100) {
           return text;
         }
@@ -228,6 +231,7 @@ export const DREAnalysis: React.FC = () => {
 
   const triggerAnalysis = async (analysisId: string, documentText: string, name?: string, period?: string) => {
     setIsAnalyzing(analysisId);
+    toast({ title: '🔄 Analisando DRE...', description: 'A IA está processando o documento. Isso pode levar até 30 segundos.' });
     try {
       const { data, error } = await supabase.functions.invoke('analyze-dre', {
         body: { analysisId, documentText, clientName: name, periodLabel: period },
