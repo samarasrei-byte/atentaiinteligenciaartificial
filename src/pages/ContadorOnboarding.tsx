@@ -407,11 +407,6 @@ const ContadorOnboarding = () => {
       }
 
       // Refresh user data to update roles in context
-      const { refreshUserData } = await import('@/contexts/AuthContext').then(m => {
-        // We need to trigger a refresh, but since we can't access the hook directly here,
-        // we'll reload the page briefly to ensure context is updated
-        return { refreshUserData: () => {} };
-      });
 
       toast({
         title: 'Perfil criado com sucesso!',
