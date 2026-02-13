@@ -73,8 +73,8 @@ export const DREAnalysis: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: 'Arquivo muito grande', description: 'Máximo 10MB', variant: 'destructive' });
+    if (file.size > 25 * 1024 * 1024) {
+      toast({ title: 'Arquivo muito grande', description: 'Máximo 25MB', variant: 'destructive' });
       return;
     }
 
