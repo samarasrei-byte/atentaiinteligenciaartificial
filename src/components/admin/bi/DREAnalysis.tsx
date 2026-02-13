@@ -7,11 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Separator } from '@/components/ui/separator';
+import { Textarea } from '@/components/ui/textarea';
 import { 
-  Upload, FileText, Brain, Loader2, TrendingUp, TrendingDown, 
+  Upload, Brain, Loader2, TrendingUp,
   AlertTriangle, CheckCircle, BarChart3, RefreshCw, Eye, Trash2,
-  ArrowUpRight, ArrowDownRight
+  ArrowUpRight, ArrowDownRight, ClipboardPaste, Send
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -40,6 +40,9 @@ export const DREAnalysis: React.FC = () => {
   const [selectedAnalysis, setSelectedAnalysis] = useState<DREAnalysisRecord | null>(null);
   const [clientName, setClientName] = useState('');
   const [periodLabel, setPeriodLabel] = useState('');
+  const [manualText, setManualText] = useState('');
+  const [showManualInput, setShowManualInput] = useState(false);
+  const [pendingAnalysisId, setPendingAnalysisId] = useState<string | null>(null);
 
   const loadAnalyses = useCallback(async () => {
     setIsLoading(true);
@@ -71,7 +74,6 @@ export const DREAnalysis: React.FC = () => {
 
     setIsUploading(true);
     try {
-      // Upload file to storage
       const fileExt = file.name.split('.').pop();
       const filePath = `${user.id}/${Date.now()}.${fileExt}`;
 
@@ -81,7 +83,6 @@ export const DREAnalysis: React.FC = () => {
 
       if (uploadError) throw uploadError;
 
-      // Create analysis record
       const { data: record, error: insertError } = await supabase
         .from('dre_analyses')
         .insert({
@@ -98,38 +99,98 @@ export const DREAnalysis: React.FC = () => {
 
       if (insertError) throw insertError;
 
-      toast({ title: 'Documento enviado!', description: 'Clique em "Analisar com IA" para processar.' });
+      // Try to extract text from file
+      const text = await extractTextFromFile(file);
+      
+      if (text && text.length > 100 && record) {
+        // Auto-analyze if text extraction worked
+        toast({ title: 'Documento enviado!', description: 'Iniciando análise com IA...' });
+        await loadAnalyses();
+        await triggerAnalysis((record as DREAnalysisRecord).id, text, clientName, periodLabel);
+      } else if (record) {
+        // Text extraction failed (likely PDF) - ask user to paste text
+        toast({ 
+          title: 'Documento enviado!', 
+          description: 'Cole o texto do DRE abaixo para a IA analisar (PDFs precisam de texto manual).', 
+        });
+        setPendingAnalysisId((record as DREAnalysisRecord).id);
+        setShowManualInput(true);
+        await loadAnalyses();
+      }
+
       setClientName('');
       setPeriodLabel('');
-      await loadAnalyses();
-
-      // Extract text from file for analysis
-      const text = await extractTextFromFile(file);
-      if (text && record) {
-        await triggerAnalysis((record as DREAnalysisRecord).id, text, clientName, periodLabel);
-      }
     } catch (error: any) {
       console.error('Upload error:', error);
       toast({ title: 'Erro no upload', description: error.message, variant: 'destructive' });
     } finally {
       setIsUploading(false);
-      // Reset file input
       e.target.value = '';
     }
   };
 
   const extractTextFromFile = async (file: File): Promise<string | null> => {
-    // For text-based files, read directly
     if (file.type === 'text/plain' || file.type === 'text/csv' || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
       return await file.text();
     }
-    // For other files (PDF, Excel), we'll rely on the user pasting data or future OCR
-    // For now, try to read as text
+    // PDFs and binary files can't be read as text on the client
     try {
       const text = await file.text();
-      if (text && text.length > 50) return text;
+      // Check if it's actually readable text (not binary garbage)
+      const nonPrintable = (text.match(/[^\x20-\x7E\xA0-\xFF\n\r\t]/g) || []).length;
+      if (nonPrintable < text.length * 0.1 && text.length > 100) {
+        return text;
+      }
     } catch {}
     return null;
+  };
+
+  const handleManualAnalysis = async () => {
+    if (!manualText.trim() || !pendingAnalysisId) {
+      toast({ title: 'Cole o texto do DRE', description: 'O campo de texto não pode estar vazio.', variant: 'destructive' });
+      return;
+    }
+    
+    await triggerAnalysis(pendingAnalysisId, manualText.trim(), clientName, periodLabel);
+    setManualText('');
+    setShowManualInput(false);
+    setPendingAnalysisId(null);
+  };
+
+  const handleAnalyzeFromText = async () => {
+    if (!manualText.trim() || !user) {
+      toast({ title: 'Cole o texto do DRE', variant: 'destructive' });
+      return;
+    }
+
+    setIsUploading(true);
+    try {
+      const { data: record, error: insertError } = await supabase
+        .from('dre_analyses')
+        .insert({
+          uploaded_by: user.id,
+          file_name: `DRE-texto-${new Date().toLocaleDateString('pt-BR').replace(/\//g, '-')}.txt`,
+          file_path: 'manual-text-input',
+          client_name: clientName || null,
+          period_label: periodLabel || null,
+          status: 'pending',
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+
+      await loadAnalyses();
+      await triggerAnalysis((record as DREAnalysisRecord).id, manualText.trim(), clientName, periodLabel);
+      setManualText('');
+      setShowManualInput(false);
+      setClientName('');
+      setPeriodLabel('');
+    } catch (error: any) {
+      toast({ title: 'Erro', description: error.message, variant: 'destructive' });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   const triggerAnalysis = async (analysisId: string, documentText: string, name?: string, period?: string) => {
@@ -164,6 +225,11 @@ export const DREAnalysis: React.FC = () => {
     }
   };
 
+  const retryAnalysisWithText = (analysisId: string) => {
+    setPendingAnalysisId(analysisId);
+    setShowManualInput(true);
+  };
+
   const formatCurrency = (cents: number) => {
     return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(cents / 100);
   };
@@ -180,11 +246,11 @@ export const DREAnalysis: React.FC = () => {
             Análise de DRE com Inteligência Artificial
           </CardTitle>
           <CardDescription>
-            Envie um DRE (PDF, CSV, TXT ou XLSX) e a IA irá extrair KPIs, gerar resumo executivo e recomendações estratégicas.
+            Envie um DRE ou cole o texto diretamente. A IA irá extrair KPIs, gerar resumo executivo e recomendações estratégicas.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="grid sm:grid-cols-3 gap-3 mb-4">
+        <CardContent className="space-y-4">
+          <div className="grid sm:grid-cols-2 gap-3">
             <Input
               placeholder="Nome do cliente (opcional)"
               value={clientName}
@@ -195,13 +261,16 @@ export const DREAnalysis: React.FC = () => {
               value={periodLabel}
               onChange={(e) => setPeriodLabel(e.target.value)}
             />
-            <label className="cursor-pointer">
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3">
+            <label className="cursor-pointer flex-1">
               <input
                 type="file"
                 className="hidden"
                 accept=".pdf,.csv,.txt,.xls,.xlsx,.doc,.docx"
                 onChange={handleFileUpload}
-                disabled={isUploading}
+                disabled={isUploading || isAnalyzing !== null}
               />
               <Button asChild className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={isUploading}>
                 <span>
@@ -210,13 +279,69 @@ export const DREAnalysis: React.FC = () => {
                   ) : (
                     <Upload className="h-4 w-4 mr-2" />
                   )}
-                  {isUploading ? 'Enviando...' : 'Enviar DRE'}
+                  {isUploading ? 'Enviando...' : 'Enviar Arquivo DRE'}
                 </span>
               </Button>
             </label>
+            <Button 
+              variant="outline" 
+              className="flex-1 border-indigo-300 text-indigo-700 hover:bg-indigo-50"
+              onClick={() => setShowManualInput(!showManualInput)}
+            >
+              <ClipboardPaste className="h-4 w-4 mr-2" />
+              {showManualInput ? 'Ocultar Campo de Texto' : 'Colar Texto do DRE'}
+            </Button>
           </div>
+
+          {/* Manual text input area */}
+          {showManualInput && (
+            <div className="space-y-3 p-4 bg-white rounded-lg border border-indigo-200">
+              <p className="text-sm font-medium text-indigo-700">
+                📋 Cole o conteúdo do DRE abaixo (copie do PDF ou planilha):
+              </p>
+              <Textarea
+                placeholder={`Cole aqui o texto do DRE...
+
+Exemplo:
+Receita Bruta: R$ 1.500.000,00
+(-) Deduções: R$ 150.000,00
+Receita Líquida: R$ 1.350.000,00
+(-) CMV: R$ 810.000,00
+Lucro Bruto: R$ 540.000,00
+...`}
+                value={manualText}
+                onChange={(e) => setManualText(e.target.value)}
+                className="min-h-[150px] font-mono text-sm"
+              />
+              <div className="flex gap-2">
+                <Button
+                  onClick={pendingAnalysisId ? handleManualAnalysis : handleAnalyzeFromText}
+                  disabled={!manualText.trim() || isAnalyzing !== null}
+                  className="bg-indigo-600 hover:bg-indigo-700"
+                >
+                  {isAnalyzing ? (
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4 mr-2" />
+                  )}
+                  {isAnalyzing ? 'Analisando...' : 'Analisar com IA'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setShowManualInput(false);
+                    setManualText('');
+                    setPendingAnalysisId(null);
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          )}
+
           <p className="text-xs text-muted-foreground">
-            📎 Formatos aceitos: PDF, CSV, TXT, XLS, XLSX • Máximo 10MB • A análise usa IA com supervisão humana
+            📎 Formatos aceitos: PDF, CSV, TXT, XLS, XLSX • Máximo 10MB • Para PDFs, copie e cole o texto • A análise usa IA com supervisão humana
           </p>
         </CardContent>
       </Card>
@@ -243,7 +368,7 @@ export const DREAnalysis: React.FC = () => {
                   <div className="text-center py-12 px-4">
                     <BarChart3 className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
                     <p className="text-sm text-muted-foreground">Nenhuma análise ainda</p>
-                    <p className="text-xs text-muted-foreground mt-1">Envie um DRE acima para começar</p>
+                    <p className="text-xs text-muted-foreground mt-1">Envie um DRE ou cole o texto acima para começar</p>
                   </div>
                 ) : (
                   <div className="divide-y">
@@ -277,8 +402,12 @@ export const DREAnalysis: React.FC = () => {
                                 Analisando
                               </Badge>
                             ) : (
-                              <Badge className="bg-amber-100 text-amber-700 border-amber-200 text-[10px]">
-                                Pendente
+                              <Badge 
+                                className="bg-amber-100 text-amber-700 border-amber-200 text-[10px] cursor-pointer"
+                                onClick={(e) => { e.stopPropagation(); retryAnalysisWithText(a.id); }}
+                              >
+                                <ClipboardPaste className="h-3 w-3 mr-1" />
+                                Colar Texto
                               </Badge>
                             )}
                             <Button
@@ -336,6 +465,7 @@ const AnalysisDetail: React.FC<{
         <div className="text-center">
           <Loader2 className="h-10 w-10 text-indigo-400 animate-spin mx-auto mb-3" />
           <p className="text-muted-foreground">Análise em processamento...</p>
+          <p className="text-xs text-muted-foreground mt-1">Se estiver pendente, cole o texto do DRE clicando no badge "Colar Texto"</p>
         </div>
       </Card>
     );
