@@ -586,6 +586,7 @@ const AutonomoPanel: React.FC = () => {
           </div>
         );
       case 'subscription':
+      case 'assinatura':
         return <SubscriptionManagement />;
       case 'support':
         return (
@@ -630,8 +631,6 @@ const AutonomoPanel: React.FC = () => {
         return <EmbeddedTimelineReforma variant="autonomo" />;
       case 'settings':
       case 'configuracoes':
-      case 'subscription':
-      case 'assinatura':
         return <UnifiedSettingsPage />;
       case 'servicos':
       case 'ver-todos-servicos':
