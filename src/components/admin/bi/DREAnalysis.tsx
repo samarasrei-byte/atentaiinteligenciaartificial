@@ -11,8 +11,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Upload, Brain, Loader2, TrendingUp,
   AlertTriangle, CheckCircle, BarChart3, RefreshCw, Eye, Trash2,
-  ArrowUpRight, ArrowDownRight, ClipboardPaste, Send
+  ArrowUpRight, ArrowDownRight, ClipboardPaste, Send, FileSpreadsheet, Download, GitCompareArrows
 } from 'lucide-react';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -38,6 +40,8 @@ export const DREAnalysis: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState<string | null>(null);
   const [selectedAnalysis, setSelectedAnalysis] = useState<DREAnalysisRecord | null>(null);
+  const [compareAnalysis, setCompareAnalysis] = useState<DREAnalysisRecord | null>(null);
+  const [compareMode, setCompareMode] = useState(false);
   const [clientName, setClientName] = useState('');
   const [periodLabel, setPeriodLabel] = useState('');
   const [manualText, setManualText] = useState('');
@@ -130,13 +134,42 @@ export const DREAnalysis: React.FC = () => {
   };
 
   const extractTextFromFile = async (file: File): Promise<string | null> => {
+    // Text/CSV files
     if (file.type === 'text/plain' || file.type === 'text/csv' || file.name.endsWith('.txt') || file.name.endsWith('.csv')) {
       return await file.text();
     }
-    // PDFs and binary files can't be read as text on the client
+    
+    // Excel files - use xlsx library
+    if (file.name.endsWith('.xls') || file.name.endsWith('.xlsx') || 
+        file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+        file.type === 'application/vnd.ms-excel') {
+      try {
+        const buffer = await file.arrayBuffer();
+        const workbook = XLSX.read(buffer, { type: 'array' });
+        const allText: string[] = [];
+        
+        workbook.SheetNames.forEach((sheetName) => {
+          const sheet = workbook.Sheets[sheetName];
+          if (sheet) {
+            allText.push(`=== ${sheetName} ===`);
+            const csv = XLSX.utils.sheet_to_csv(sheet, { blankrows: false });
+            allText.push(csv);
+          }
+        });
+        
+        const text = allText.join('\n\n');
+        if (text.length > 100) {
+          return text;
+        }
+      } catch (err) {
+        console.error('Excel parse error:', err);
+      }
+      return null;
+    }
+    
+    // Other files - try reading as text
     try {
       const text = await file.text();
-      // Check if it's actually readable text (not binary garbage)
       const nonPrintable = (text.match(/[^\x20-\x7E\xA0-\xFF\n\r\t]/g) || []).length;
       if (nonPrintable < text.length * 0.1 && text.length > 100) {
         return text;
@@ -353,10 +386,26 @@ Lucro Bruto: R$ 540.000,00
             <CardHeader className="pb-2">
               <div className="flex items-center justify-between">
                 <CardTitle className="text-base">Análises Realizadas</CardTitle>
-                <Button variant="ghost" size="icon" onClick={loadAnalyses} className="h-8 w-8">
-                  <RefreshCw className="h-4 w-4" />
-                </Button>
+                <div className="flex items-center gap-1">
+                  <Button 
+                    variant={compareMode ? "default" : "ghost"} 
+                    size="sm" 
+                    onClick={() => { setCompareMode(!compareMode); setCompareAnalysis(null); }}
+                    className={`h-8 text-xs ${compareMode ? 'bg-indigo-600 hover:bg-indigo-700' : ''}`}
+                  >
+                    <GitCompareArrows className="h-3.5 w-3.5 mr-1" />
+                    Comparar
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={loadAnalyses} className="h-8 w-8">
+                    <RefreshCw className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
+              {compareMode && (
+                <p className="text-xs text-indigo-600 mt-1">
+                  {!selectedAnalysis ? 'Selecione a 1ª análise' : !compareAnalysis ? 'Agora selecione a 2ª análise' : 'Comparando duas análises'}
+                </p>
+              )}
             </CardHeader>
             <CardContent className="p-0">
               <ScrollArea className="h-[450px]">
@@ -375,9 +424,21 @@ Lucro Bruto: R$ 540.000,00
                     {analyses.map((a) => (
                       <button
                         key={a.id}
-                        onClick={() => setSelectedAnalysis(a)}
+                        onClick={() => {
+                          if (compareMode) {
+                            if (!selectedAnalysis) {
+                              setSelectedAnalysis(a);
+                            } else if (selectedAnalysis.id !== a.id) {
+                              setCompareAnalysis(a);
+                            }
+                          } else {
+                            setSelectedAnalysis(a);
+                            setCompareAnalysis(null);
+                          }
+                        }}
                         className={`w-full text-left p-4 hover:bg-muted/50 transition-colors ${
-                          selectedAnalysis?.id === a.id ? 'bg-indigo-50 border-l-2 border-indigo-500' : ''
+                          selectedAnalysis?.id === a.id ? 'bg-indigo-50 border-l-2 border-indigo-500' : 
+                          compareAnalysis?.id === a.id ? 'bg-purple-50 border-l-2 border-purple-500' : ''
                         }`}
                       >
                         <div className="flex items-start justify-between gap-2">
@@ -431,7 +492,14 @@ Lucro Bruto: R$ 540.000,00
 
         {/* Analysis Detail */}
         <div className="lg:col-span-3">
-          {selectedAnalysis ? (
+          {compareMode && selectedAnalysis && compareAnalysis ? (
+            <ComparisonView
+              analysis1={selectedAnalysis}
+              analysis2={compareAnalysis}
+              formatCurrency={formatCurrency}
+              formatPercent={formatPercent}
+            />
+          ) : selectedAnalysis ? (
             <AnalysisDetail
               analysis={selectedAnalysis}
               formatCurrency={formatCurrency}
@@ -441,7 +509,9 @@ Lucro Bruto: R$ 540.000,00
             <Card className="h-[520px] flex items-center justify-center">
               <div className="text-center">
                 <Eye className="h-12 w-12 text-muted-foreground/30 mx-auto mb-3" />
-                <p className="text-muted-foreground text-sm">Selecione uma análise para visualizar</p>
+                <p className="text-muted-foreground text-sm">
+                  {compareMode ? 'Selecione duas análises para comparar' : 'Selecione uma análise para visualizar'}
+                </p>
               </div>
             </Card>
           )}
@@ -503,10 +573,21 @@ const AnalysisDetail: React.FC<{
                   Analisado {analysis.analyzed_at && formatDistanceToNow(new Date(analysis.analyzed_at), { addSuffix: true, locale: ptBR })}
                 </CardDescription>
               </div>
-              <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
-                <CheckCircle className="h-3 w-3 mr-1" />
-                Concluído
-              </Badge>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-7 text-xs"
+                  onClick={() => exportPDF(analysis, kpiItems, formatCurrency, formatPercent)}
+                >
+                  <Download className="h-3 w-3 mr-1" />
+                  PDF
+                </Button>
+                <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                  <CheckCircle className="h-3 w-3 mr-1" />
+                  Concluído
+                </Badge>
+              </div>
             </div>
           </CardHeader>
         </Card>
@@ -588,6 +669,199 @@ const AnalysisDetail: React.FC<{
               </p>
             </CardContent>
           </Card>
+        )}
+      </div>
+    </ScrollArea>
+  );
+};
+
+// PDF Export helper
+const exportPDF = (
+  analysis: DREAnalysisRecord,
+  kpiItems: { label: string; value: number; type: string }[],
+  formatCurrency: (v: number) => string,
+  formatPercent: (v: number) => string
+) => {
+  const doc = new jsPDF();
+  let y = 20;
+  
+  doc.setFontSize(18);
+  doc.text('Relatório DRE — BI+ Contabilidade™', 14, y);
+  y += 10;
+  
+  doc.setFontSize(10);
+  doc.setTextColor(100);
+  doc.text(`Arquivo: ${analysis.file_name}`, 14, y);
+  y += 5;
+  if (analysis.client_name) { doc.text(`Cliente: ${analysis.client_name}`, 14, y); y += 5; }
+  if (analysis.period_label) { doc.text(`Período: ${analysis.period_label}`, 14, y); y += 5; }
+  doc.text(`Gerado em: ${new Date().toLocaleDateString('pt-BR')}`, 14, y);
+  y += 12;
+  
+  // KPIs
+  if (kpiItems.length > 0) {
+    doc.setFontSize(13);
+    doc.setTextColor(0);
+    doc.text('KPIs Extraídos', 14, y);
+    y += 8;
+    doc.setFontSize(10);
+    kpiItems.forEach((kpi) => {
+      const val = kpi.type === 'currency' ? formatCurrency(kpi.value) : formatPercent(kpi.value);
+      doc.text(`${kpi.label}: ${val}`, 18, y);
+      y += 6;
+      if (y > 270) { doc.addPage(); y = 20; }
+    });
+    y += 6;
+  }
+  
+  // Summary
+  if (analysis.ai_summary) {
+    doc.setFontSize(13);
+    doc.text('Resumo Executivo', 14, y);
+    y += 8;
+    doc.setFontSize(9);
+    const lines = doc.splitTextToSize(analysis.ai_summary, 180);
+    lines.forEach((line: string) => {
+      if (y > 275) { doc.addPage(); y = 20; }
+      doc.text(line, 14, y);
+      y += 5;
+    });
+    y += 6;
+  }
+  
+  // Recommendations
+  if (analysis.ai_recommendations) {
+    if (y > 240) { doc.addPage(); y = 20; }
+    doc.setFontSize(13);
+    doc.text('Recomendações Estratégicas', 14, y);
+    y += 8;
+    doc.setFontSize(9);
+    const lines = doc.splitTextToSize(analysis.ai_recommendations, 180);
+    lines.forEach((line: string) => {
+      if (y > 275) { doc.addPage(); y = 20; }
+      doc.text(line, 14, y);
+      y += 5;
+    });
+  }
+  
+  // Footer
+  const pageCount = doc.getNumberOfPages();
+  for (let i = 1; i <= pageCount; i++) {
+    doc.setPage(i);
+    doc.setFontSize(8);
+    doc.setTextColor(150);
+    doc.text('AtentAI — BI+ Contabilidade™ | IA acelera. Humano decide.', 14, 290);
+    doc.text(`Página ${i}/${pageCount}`, 180, 290);
+  }
+  
+  doc.save(`DRE-${analysis.client_name || 'analise'}-${new Date().toISOString().slice(0,10)}.pdf`);
+};
+
+// Comparison View component
+const ComparisonView: React.FC<{
+  analysis1: DREAnalysisRecord;
+  analysis2: DREAnalysisRecord;
+  formatCurrency: (v: number) => string;
+  formatPercent: (v: number) => string;
+}> = ({ analysis1, analysis2, formatCurrency, formatPercent }) => {
+  const kpis1 = analysis1.ai_kpis || {};
+  const kpis2 = analysis2.ai_kpis || {};
+
+  const kpiKeys = [
+    { key: 'receita_bruta_cents', label: 'Receita Bruta', type: 'currency' },
+    { key: 'receita_liquida_cents', label: 'Receita Líquida', type: 'currency' },
+    { key: 'lucro_bruto_cents', label: 'Lucro Bruto', type: 'currency' },
+    { key: 'ebitda_cents', label: 'EBITDA', type: 'currency' },
+    { key: 'lucro_liquido_cents', label: 'Lucro Líquido', type: 'currency' },
+    { key: 'margem_bruta_percent', label: 'Margem Bruta', type: 'percent' },
+    { key: 'margem_liquida_percent', label: 'Margem Líquida', type: 'percent' },
+    { key: 'margem_ebitda_percent', label: 'Margem EBITDA', type: 'percent' },
+  ].filter(k => kpis1[k.key] != null || kpis2[k.key] != null);
+
+  const calcVariation = (v1: number | null, v2: number | null) => {
+    if (v1 == null || v2 == null || v1 === 0) return null;
+    return ((v2 - v1) / Math.abs(v1)) * 100;
+  };
+
+  const fmt = (val: number | null, type: string) => {
+    if (val == null) return '—';
+    return type === 'currency' ? formatCurrency(val) : formatPercent(val);
+  };
+
+  if (analysis1.status !== 'analyzed' || analysis2.status !== 'analyzed') {
+    return (
+      <Card className="h-[520px] flex items-center justify-center">
+        <p className="text-muted-foreground text-sm">Ambas as análises precisam estar concluídas para comparar.</p>
+      </Card>
+    );
+  }
+
+  return (
+    <ScrollArea className="h-[520px]">
+      <div className="space-y-4 pr-4">
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2">
+              <GitCompareArrows className="h-5 w-5 text-purple-600" />
+              Comparativo de Períodos
+            </CardTitle>
+            <CardDescription>
+              {analysis1.client_name || analysis1.file_name} vs {analysis2.client_name || analysis2.file_name}
+            </CardDescription>
+          </CardHeader>
+        </Card>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b">
+                <th className="text-left p-2 text-muted-foreground font-medium">KPI</th>
+                <th className="text-right p-2 font-medium text-indigo-700">
+                  {analysis1.period_label || 'Período 1'}
+                </th>
+                <th className="text-right p-2 font-medium text-purple-700">
+                  {analysis2.period_label || 'Período 2'}
+                </th>
+                <th className="text-right p-2 font-medium text-muted-foreground">Variação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {kpiKeys.map(({ key, label, type }) => {
+                const v1 = kpis1[key] ?? null;
+                const v2 = kpis2[key] ?? null;
+                const variation = calcVariation(v1, v2);
+                return (
+                  <tr key={key} className="border-b last:border-0 hover:bg-muted/30">
+                    <td className="p-2 text-muted-foreground">{label}</td>
+                    <td className="p-2 text-right font-mono font-medium">{fmt(v1, type)}</td>
+                    <td className="p-2 text-right font-mono font-medium">{fmt(v2, type)}</td>
+                    <td className="p-2 text-right">
+                      {variation != null ? (
+                        <span className={`inline-flex items-center gap-1 font-medium ${variation >= 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                          {variation >= 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
+                          {Math.abs(variation).toFixed(1)}%
+                        </span>
+                      ) : '—'}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        {/* Side-by-side summaries */}
+        {(analysis1.ai_summary || analysis2.ai_summary) && (
+          <div className="grid grid-cols-2 gap-3">
+            <Card className="p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Resumo — {analysis1.period_label || 'Período 1'}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed line-clamp-6">{analysis1.ai_summary || '—'}</p>
+            </Card>
+            <Card className="p-3">
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Resumo — {analysis2.period_label || 'Período 2'}</p>
+              <p className="text-xs text-muted-foreground leading-relaxed line-clamp-6">{analysis2.ai_summary || '—'}</p>
+            </Card>
+          </div>
         )}
       </div>
     </ScrollArea>
