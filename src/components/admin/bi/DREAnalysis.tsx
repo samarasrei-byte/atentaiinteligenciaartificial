@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { useToast } from '@/hooks/use-toast';
@@ -39,6 +39,8 @@ export const DREAnalysis: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState<string | null>(null);
+  const [analysisStep, setAnalysisStep] = useState(0);
+  const analysisTimerRef = useRef<NodeJS.Timeout | null>(null);
   const [selectedAnalysis, setSelectedAnalysis] = useState<DREAnalysisRecord | null>(null);
   const [compareAnalysis, setCompareAnalysis] = useState<DREAnalysisRecord | null>(null);
   const [compareMode, setCompareMode] = useState(false);
@@ -229,9 +231,26 @@ export const DREAnalysis: React.FC = () => {
     }
   };
 
+  const analysisSteps = [
+    '📄 Lendo documento...',
+    '🔍 Extraindo dados financeiros...',
+    '🧮 Calculando KPIs...',
+    '🤖 IA analisando margens e tendências...',
+    '📊 Gerando recomendações estratégicas...',
+    '✍️ Finalizando relatório...',
+  ];
+
   const triggerAnalysis = async (analysisId: string, documentText: string, name?: string, period?: string) => {
     setIsAnalyzing(analysisId);
-    toast({ title: '🔄 Analisando DRE...', description: 'A IA está processando o documento. Isso pode levar até 30 segundos.' });
+    setAnalysisStep(0);
+    
+    // Animate through steps
+    let step = 0;
+    analysisTimerRef.current = setInterval(() => {
+      step = Math.min(step + 1, analysisSteps.length - 1);
+      setAnalysisStep(step);
+    }, 4000);
+
     try {
       const { data, error } = await supabase.functions.invoke('analyze-dre', {
         body: { analysisId, documentText, clientName: name, periodLabel: period },
@@ -246,7 +265,9 @@ export const DREAnalysis: React.FC = () => {
       console.error('Analysis error:', error);
       toast({ title: 'Erro na análise', description: error.message, variant: 'destructive' });
     } finally {
+      if (analysisTimerRef.current) clearInterval(analysisTimerRef.current);
       setIsAnalyzing(null);
+      setAnalysisStep(0);
     }
   };
 
@@ -462,10 +483,17 @@ Lucro Bruto: R$ 540.000,00
                                 Analisado
                               </Badge>
                             ) : a.status === 'analyzing' || isAnalyzing === a.id ? (
-                              <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 text-[10px]">
-                                <Loader2 className="h-3 w-3 mr-1 animate-spin" />
-                                Analisando
-                              </Badge>
+                              <div className="flex flex-col gap-1">
+                                <Badge className="bg-indigo-100 text-indigo-700 border-indigo-200 text-[10px]">
+                                  <Loader2 className="h-3 w-3 mr-1 animate-spin" />
+                                  Analisando
+                                </Badge>
+                                {isAnalyzing === a.id && (
+                                  <p className="text-[9px] text-indigo-500 animate-pulse max-w-[140px] truncate">
+                                    {analysisSteps[analysisStep]}
+                                  </p>
+                                )}
+                              </div>
                             ) : (
                               <Badge 
                                 className="bg-amber-100 text-amber-700 border-amber-200 text-[10px] cursor-pointer"
