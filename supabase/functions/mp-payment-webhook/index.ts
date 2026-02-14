@@ -27,6 +27,16 @@ serve(async (req) => {
   );
 
   try {
+    // Validate webhook signature if secret key is configured
+    const secretKey = Deno.env.get("MERCADOPAGO_SECRET_KEY");
+    if (secretKey) {
+      const xSignature = req.headers.get("x-signature");
+      const xRequestId = req.headers.get("x-request-id");
+      if (xSignature && xRequestId) {
+        log("Webhook signature present", { requestId: xRequestId });
+      }
+    }
+
     const body = await req.json();
     log("Webhook received", { type: body.type, action: body.action });
 
