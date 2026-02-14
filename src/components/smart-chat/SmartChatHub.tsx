@@ -45,7 +45,7 @@ export const SmartChatHub: React.FC = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Olá! Sou o **assistente de BI do César**. Posso te ajudar com:\n\n- 📊 **KPIs em tempo real** de todos os serviços\n- 🔔 **Alertas de performance** e anomalias\n- 💡 **Insights automáticos** e recomendações estratégicas\n- 📈 **Análise de dados** contábeis e financeiros\n\nO que você gostaria de analisar?',
+      content: 'Olá! Sou o assistente de BI do César. Posso te ajudar com:\n\n📊 KPIs em tempo real de todos os serviços\n🔔 Alertas de performance e anomalias\n💡 Insights automáticos e recomendações estratégicas\n📈 Análise de dados contábeis e financeiros\n\nO que você gostaria de analisar?',
       timestamp: new Date(),
     }
   ]);
@@ -97,26 +97,26 @@ export const SmartChatHub: React.FC = () => {
 
       if (lowerQuery.includes('resumo') || lowerQuery.includes('hoje') || lowerQuery.includes('geral')) {
         kpiData = kpis.filter(k => ['ln_conversion', 'fiscal_pending', 'bi_mrr', 'total_revenue'].includes(k.id));
-        response = `📊 **Resumo de Performance - ${new Date().toLocaleDateString('pt-BR')}**\n\nAqui estão os KPIs principais:`;
+        response = `📊 Resumo de Performance - ${new Date().toLocaleDateString('pt-BR')}\n\nAqui estão os KPIs principais:`;
       } else if (lowerQuery.includes('limpa nome') || lowerQuery.includes('limpa-nome')) {
         kpiData = kpis.filter(k => k.service === 'limpa_nome');
-        response = `🛡️ **Status do Limpa Nome**\n\nAqui estão os indicadores atuais:`;
+        response = `🛡️ Status do Limpa Nome\n\nAqui estão os indicadores atuais:`;
       } else if (lowerQuery.includes('fiscal') || lowerQuery.includes('análise')) {
         kpiData = kpis.filter(k => k.service === 'analise_fiscal');
-        response = `📋 **Status das Análises Fiscais**\n\nAqui estão os indicadores:`;
+        response = `📋 Status das Análises Fiscais\n\nAqui estão os indicadores:`;
       } else if (lowerQuery.includes('alerta') || lowerQuery.includes('crítico')) {
         const criticalAlerts = alerts.filter(a => a.level === 'critical');
         if (criticalAlerts.length > 0) {
-          response = `⚠️ **Alertas Críticos (${criticalAlerts.length})**\n\n`;
+          response = `⚠️ Alertas Críticos (${criticalAlerts.length})\n\n`;
           criticalAlerts.forEach(alert => {
-            response += `• **${alert.title}** (${serviceConfig[alert.service].label})\n  ${alert.description}\n\n`;
+            response += `• ${alert.title} (${serviceConfig[alert.service].label})\n  ${alert.description}\n\n`;
           });
         } else {
-          response = `✅ **Nenhum alerta crítico!**\n\nTudo está operando dentro dos parâmetros esperados.`;
+          response = `✅ Nenhum alerta crítico!\n\nTudo está operando dentro dos parâmetros esperados.`;
         }
       } else if (lowerQuery.includes('bi') || lowerQuery.includes('mrr') || lowerQuery.includes('assinatura')) {
         kpiData = kpis.filter(k => k.service === 'bi');
-        response = `📈 **Métricas de BI & Assinaturas**\n\nAqui estão os indicadores:`;
+        response = `📈 Métricas de BI e Assinaturas\n\nAqui estão os indicadores:`;
       } else {
         response = `Entendi sua pergunta sobre "${messageText}". Aqui está um resumo geral dos indicadores mais relevantes:`;
         kpiData = kpis.slice(0, 4);

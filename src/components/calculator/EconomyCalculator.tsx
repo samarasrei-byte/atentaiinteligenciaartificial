@@ -356,7 +356,7 @@ export function EconomyCalculator() {
 
         {/* Info */}
         <p className="text-[11px] text-muted-foreground text-center">
-          ⚖️ Alíquota base: {BASE_TAX_RATE}% (CBS + IBS conforme EC 132/2023)
+          ⚖️ Alíquota base: {BASE_TAX_RATE}% (CBS 8,8% + IBS 17,7% conforme LC 214/2025)
         </p>
       </CardContent>
     </Card>

@@ -66,72 +66,78 @@ const transitionAlerts: TransitionAlert[] = [
   },
   {
     year: 2027,
-    phase: 'Início da Transição',
-    ibsRate: 8.0,
+    phase: 'Extinção PIS/COFINS',
+    ibsRate: 0.1,
     cbsRate: 8.8,
-    totalRate: 16.8,
+    totalRate: 8.9,
     oldSystemReduction: 0,
     splitPayment: true,
     cashbackActive: true,
     alerts: [
       {
         type: 'warning',
-        title: 'Aumento Significativo',
-        description: 'IBS sobe para 8% e CBS para 8,8%. Total de 16,8% no novo sistema.',
+        title: 'PIS e COFINS Extintos',
+        description: 'PIS e COFINS são extintos. CBS entra com alíquota plena de 8,8%. IBS permanece em 0,1% (teste).',
         icon: <TrendingUp className="h-4 w-4" />
       },
       {
         type: 'info',
-        title: 'Sistema Duplo Ativo',
-        description: 'Empresas devem calcular tributos nos dois sistemas simultaneamente.',
+        title: 'Imposto Seletivo Inicia',
+        description: 'Início da cobrança do Imposto Seletivo sobre produtos nocivos à saúde e ao meio ambiente.',
         icon: <Building2 className="h-4 w-4" />
+      },
+      {
+        type: 'info',
+        title: 'ICMS e ISS Mantidos',
+        description: 'ICMS e ISS continuam integralmente em vigor. IPI reduzido a zero (exceto Zona Franca).',
+        icon: <Receipt className="h-4 w-4" />
       }
     ]
   },
   {
     year: 2028,
-    phase: 'Transição Ativa',
-    ibsRate: 10.0,
+    phase: 'Pré-Transição Estadual',
+    ibsRate: 0.1,
     cbsRate: 8.8,
-    totalRate: 18.8,
-    oldSystemReduction: 10,
+    totalRate: 8.9,
+    oldSystemReduction: 0,
     splitPayment: true,
     cashbackActive: true,
     alerts: [
       {
-        type: 'action',
-        title: 'Redução de 10% no Sistema Antigo',
-        description: 'ICMS, ISS, PIS e COFINS reduzidos em 10%. Aproveite créditos remanescentes.',
-        icon: <ArrowRight className="h-4 w-4" />
+        type: 'info',
+        title: 'Último Ano Antes da Transição Estadual',
+        description: 'ICMS e ISS ainda a 100%. Prepare-se: a transição estadual/municipal inicia em 2029.',
+        icon: <Clock className="h-4 w-4" />
       },
       {
-        type: 'warning',
-        title: 'IBS Aumenta para 10%',
-        description: 'IBS estadual/municipal sobe para 10%. CBS mantém 8,8%.',
-        icon: <TrendingUp className="h-4 w-4" />
+        type: 'action',
+        title: 'Prepare Seus Sistemas',
+        description: 'Adapte ERP e sistemas fiscais para o IBS que começará a substituir ICMS/ISS em 2029.',
+        icon: <ArrowRight className="h-4 w-4" />
       }
     ]
   },
   {
     year: 2029,
-    phase: 'Transição Ativa',
-    ibsRate: 20.0,
+    phase: 'Início Transição Estadual',
+    ibsRate: 1.77,
     cbsRate: 8.8,
-    totalRate: 28.8,
-    oldSystemReduction: 20,
+    totalRate: 10.57,
+    oldSystemReduction: 10,
     splitPayment: true,
     cashbackActive: true,
     alerts: [
       {
         type: 'warning',
-        title: 'IBS Dobra para 20%',
-        description: 'Maior salto do IBS. Sistema antigo reduzido em 20%.',
-        icon: <AlertTriangle className="h-4 w-4" />
+        title: 'IBS Começa a Substituir ICMS/ISS',
+        description: 'IBS a 1,77% (10% da alíquota final). ICMS e ISS reduzidos em 10%.',
+        icon: <TrendingUp className="h-4 w-4" />
       },
       {
         type: 'action',
         title: 'Revisar Precificação',
-        description: 'Carga tributária total pode impactar preços. Revise sua estratégia.',
+        description: 'Com dois sistemas coexistindo, revise preços e margens para evitar perdas.',
         icon: <Coins className="h-4 w-4" />
       }
     ]
@@ -139,23 +145,23 @@ const transitionAlerts: TransitionAlert[] = [
   {
     year: 2030,
     phase: 'Transição Intermediária',
-    ibsRate: 40.0,
+    ibsRate: 3.54,
     cbsRate: 8.8,
-    totalRate: 48.8,
-    oldSystemReduction: 40,
+    totalRate: 12.34,
+    oldSystemReduction: 20,
     splitPayment: true,
     cashbackActive: true,
     alerts: [
       {
         type: 'warning',
-        title: 'Ponto Médio da Transição',
-        description: 'IBS em 40%, sistema antigo reduzido pela metade.',
-        icon: <AlertTriangle className="h-4 w-4" />
+        title: 'IBS Sobe para 3,54%',
+        description: 'IBS a 20% da alíquota final. ICMS e ISS reduzidos em 20%.',
+        icon: <TrendingUp className="h-4 w-4" />
       },
       {
         type: 'info',
         title: 'Créditos em Migração',
-        description: 'Verifique saldo de créditos do sistema antigo para compensação.',
+        description: 'Verifique saldo de créditos de ICMS para compensação durante a transição.',
         icon: <Receipt className="h-4 w-4" />
       }
     ]
@@ -163,17 +169,17 @@ const transitionAlerts: TransitionAlert[] = [
   {
     year: 2031,
     phase: 'Transição Avançada',
-    ibsRate: 60.0,
+    ibsRate: 5.31,
     cbsRate: 8.8,
-    totalRate: 68.8,
-    oldSystemReduction: 60,
+    totalRate: 14.11,
+    oldSystemReduction: 30,
     splitPayment: true,
     cashbackActive: true,
     alerts: [
       {
         type: 'action',
-        title: 'Novo Sistema Predominante',
-        description: 'IBS já representa 60%. Priorize adaptação total ao novo modelo.',
+        title: 'IBS a 5,31%',
+        description: 'IBS a 30% da alíquota final. ICMS e ISS reduzidos em 30%. Priorize adaptação total.',
         icon: <Building2 className="h-4 w-4" />
       }
     ]
@@ -181,23 +187,23 @@ const transitionAlerts: TransitionAlert[] = [
   {
     year: 2032,
     phase: 'Pré-Definitivo',
-    ibsRate: 80.0,
+    ibsRate: 7.08,
     cbsRate: 8.8,
-    totalRate: 88.8,
-    oldSystemReduction: 80,
+    totalRate: 15.88,
+    oldSystemReduction: 40,
     splitPayment: true,
     cashbackActive: true,
     alerts: [
       {
         type: 'warning',
         title: 'Último Ano de Transição',
-        description: 'Sistema antigo em apenas 20%. Prepare-se para extinção total.',
+        description: 'IBS a 7,08% (40% da alíquota final). ICMS e ISS reduzidos em 40%.',
         icon: <Clock className="h-4 w-4" />
       },
       {
         type: 'action',
         title: 'Extinguir Créditos Remanescentes',
-        description: 'Utilize todos os créditos de ICMS, ISS, PIS e COFINS antes de 2033.',
+        description: 'Utilize todos os créditos de ICMS e ISS antes da extinção total em 2033.',
         icon: <AlertTriangle className="h-4 w-4" />
       }
     ]
@@ -215,13 +221,13 @@ const transitionAlerts: TransitionAlert[] = [
       {
         type: 'success',
         title: 'Transição Concluída',
-        description: 'ICMS, ISS, PIS e COFINS extintos. Apenas IBS (17,7%) + CBS (8,8%).',
+        description: 'ICMS, ISS, PIS e COFINS extintos. Apenas IBS (17,7%) + CBS (8,8%) = 26,5%.',
         icon: <CheckCircle2 className="h-4 w-4" />
       },
       {
         type: 'info',
-        title: 'Alíquota Única de Referência',
-        description: 'Total de 26,5% com sistema simplificado e não-cumulativo.',
+        title: 'Alíquota de Referência: 26,5%',
+        description: 'Sistema simplificado e não-cumulativo. Tributação 100% no destino.',
         icon: <Coins className="h-4 w-4" />
       }
     ]
