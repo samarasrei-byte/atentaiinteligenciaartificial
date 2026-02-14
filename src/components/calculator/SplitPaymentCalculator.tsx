@@ -121,16 +121,19 @@ export function SplitPaymentCalculator({ className }: SplitPaymentCalculatorProp
   const selectedCompany = companyTypes.find(c => c.id === companyType);
 
   // Taxas por ano de transição
+  // Alíquotas de transição conforme LC 214/2025
+  // CBS: plena (8,8%) a partir de 2027
+  // IBS: transição estadual/municipal 2029-2033 (10%, 20%, 30%, 40%, 100% da alíquota final)
   const getTransitionRates = (year: number) => {
     const rates: Record<number, { ibsPercent: number; cbsPercent: number }> = {
       2026: { ibsPercent: 0.1, cbsPercent: 0.9 },
-      2027: { ibsPercent: 8.0, cbsPercent: 8.8 },
-      2028: { ibsPercent: 10.0, cbsPercent: 8.8 },
-      2029: { ibsPercent: 20.0, cbsPercent: 8.8 },
-      2030: { ibsPercent: 40.0, cbsPercent: 8.8 },
-      2031: { ibsPercent: 60.0, cbsPercent: 8.8 },
-      2032: { ibsPercent: 80.0, cbsPercent: 8.8 },
-      2033: { ibsPercent: IBS_RATE, cbsPercent: CBS_RATE }
+      2027: { ibsPercent: 0.1, cbsPercent: CBS_RATE },
+      2028: { ibsPercent: 0.1, cbsPercent: CBS_RATE },
+      2029: { ibsPercent: IBS_RATE * 0.10, cbsPercent: CBS_RATE }, // 1,77%
+      2030: { ibsPercent: IBS_RATE * 0.20, cbsPercent: CBS_RATE }, // 3,54%
+      2031: { ibsPercent: IBS_RATE * 0.30, cbsPercent: CBS_RATE }, // 5,31%
+      2032: { ibsPercent: IBS_RATE * 0.40, cbsPercent: CBS_RATE }, // 7,08%
+      2033: { ibsPercent: IBS_RATE, cbsPercent: CBS_RATE }          // 17,7%
     };
     return rates[year] || { ibsPercent: IBS_RATE, cbsPercent: CBS_RATE };
   };
