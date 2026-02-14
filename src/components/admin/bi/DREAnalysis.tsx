@@ -399,7 +399,7 @@ Lucro Bruto: R$ 540.000,00
           )}
 
           <p className="text-xs text-muted-foreground">
-            📎 Formatos aceitos: PDF, CSV, TXT, XLS, XLSX • Máximo 10MB • Para PDFs, copie e cole o texto • A análise usa IA com supervisão humana
+            📎 Formatos aceitos: PDF, CSV, TXT, XLS, XLSX • Máximo 25MB • Para PDFs, copie e cole o texto • A análise usa IA com supervisão humana
           </p>
         </CardContent>
       </Card>
