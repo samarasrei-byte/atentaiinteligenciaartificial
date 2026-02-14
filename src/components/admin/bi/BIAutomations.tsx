@@ -326,7 +326,7 @@ export const BIAutomations: React.FC = () => {
             <p className="font-medium text-indigo-800">Agentes de IA com Supervisão</p>
             <p className="text-sm text-indigo-700 mt-1">
               Todos os agentes de IA são configurados para <strong>sugerir ações</strong>, nunca para executar automaticamente. 
-              Cada ação requer aprovação explícita de Guilherme antes de ser executada.
+              Cada ação requer aprovação explícita de César antes de ser executada.
             </p>
           </div>
         </div>

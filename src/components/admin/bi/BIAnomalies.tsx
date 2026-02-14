@@ -131,7 +131,7 @@ export const BIAnomalies: React.FC = () => {
           change: 45,
           detected_at: new Date(Date.now() - 86400000),
           status: 'reviewed',
-          reviewed_by: 'Guilherme',
+          reviewed_by: 'César',
         }
       );
 
@@ -145,7 +145,7 @@ export const BIAnomalies: React.FC = () => {
 
   const handleReview = (id: string, action: 'reviewed' | 'dismissed') => {
     setAnomalies(prev => prev.map(a => 
-      a.id === id ? { ...a, status: action, reviewed_by: 'Guilherme' } : a
+      a.id === id ? { ...a, status: action, reviewed_by: 'César' } : a
     ));
   };
 
