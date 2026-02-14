@@ -64,7 +64,7 @@ export const BIReports: React.FC = () => {
       type: 'operational',
       status: 'approved',
       generated_at: new Date(Date.now() - 86400000),
-      approved_by: 'Guilherme',
+      approved_by: 'César',
       approved_at: new Date(Date.now() - 3600000),
       content: 'Métricas de desempenho por serviço com recomendações...',
     },
@@ -74,7 +74,7 @@ export const BIReports: React.FC = () => {
       type: 'tax',
       status: 'sent',
       generated_at: new Date(Date.now() - 172800000),
-      approved_by: 'Guilherme',
+      approved_by: 'César',
       approved_at: new Date(Date.now() - 86400000),
       recipient: 'contabilidade@empresa.com',
       content: 'Consolidação fiscal do trimestre...',
@@ -110,7 +110,7 @@ export const BIReports: React.FC = () => {
   const handleApprove = (id: string) => {
     setReports(prev => prev.map(r => 
       r.id === id 
-        ? { ...r, status: 'approved' as const, approved_by: 'Guilherme', approved_at: new Date() } 
+        ? { ...r, status: 'approved' as const, approved_by: 'César', approved_at: new Date() } 
         : r
     ));
   };
@@ -301,7 +301,7 @@ export const BIReports: React.FC = () => {
             <p className="font-medium text-amber-800">Importante: Validação Humana</p>
             <p className="text-sm text-amber-700 mt-1">
               Todos os relatórios gerados pela IA passam por revisão humana antes de serem enviados. 
-              Nenhum relatório é enviado automaticamente sem a aprovação de Guilherme.
+              Nenhum relatório é enviado automaticamente sem a aprovação de César.
             </p>
           </div>
         </div>

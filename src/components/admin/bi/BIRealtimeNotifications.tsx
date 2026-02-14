@@ -330,7 +330,7 @@ export const BIRealtimeNotifications: React.FC<BIRealtimeNotificationsProps> = (
               </p>
               <div className="flex items-center gap-2 mt-4 text-xs text-slate-400">
                 <User className="h-3 w-3" />
-                <span>Guilherme receberá as notificações</span>
+                <span>César receberá as notificações</span>
               </div>
             </div>
           ) : (
