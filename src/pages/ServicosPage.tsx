@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { ServiceCardPremium, ServiceCardConfig } from '@/components/services/ServiceCardPremium';
 import { motion } from 'framer-motion';
 import { isFeatureEnabled } from '@/lib/featureFlags';
+import { STRIPE_PLANS } from '@/lib/stripe';
 import { 
   MessageSquare, 
   Building2, 
@@ -272,7 +273,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       '5 perguntas à IA por dia',
     ],
     guarantees: ['Atualizado 2026', 'IBS + CBS'],
-    basePrice: 3999, // R$ 39,99/mês
+    basePrice: STRIPE_PLANS.simulator.price, // R$ 39,99/mês
     discountPercent: 0,
     cta: 'Assinar Agora',
     color: 'blue',
@@ -297,7 +298,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       'Comparador PF vs PJ',
     ],
     guarantees: ['Painel dedicado', 'Suporte IA'],
-    basePrice: 4990, // R$ 49,90/mês
+    basePrice: STRIPE_PLANS.autonomo.price, // R$ 65,00/mês
     discountPercent: 0,
     badge: 'popular',
     cta: 'Assinar Agora',
@@ -323,7 +324,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       'Suporte prioritário',
     ],
     guarantees: ['IA sem limites', 'Prioridade total'],
-    basePrice: 9700, // R$ 97,00/mês
+    basePrice: STRIPE_PLANS.premium.price, // R$ 98,00/mês
     discountPercent: 0,
     cta: 'Assinar Agora',
     color: 'accent',
@@ -348,7 +349,7 @@ const serviceConfigs: ServiceCardConfig[] = [
       'White label',
     ],
     guarantees: ['Gestão de carteira', 'API exclusiva'],
-    basePrice: 19700, // R$ 197,00/mês
+    basePrice: STRIPE_PLANS.contador.price, // R$ 198,99/mês
     discountPercent: 0,
     badge: 'coming_soon',
     cta: 'Em Breve',
