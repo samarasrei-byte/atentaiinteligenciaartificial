@@ -808,24 +808,24 @@ const BIContabilidadeLanding = () => {
             <Button 
               onClick={handleCTA}
               size="lg"
-              className="bg-white text-indigo-900 hover:bg-indigo-100 font-bold px-12 py-8 text-xl rounded-2xl shadow-2xl shadow-black/30 hover:shadow-black/50 transition-all hover:scale-105 group"
+              className="bg-white text-indigo-900 hover:bg-indigo-100 font-bold px-8 sm:px-12 py-6 sm:py-8 text-base sm:text-xl rounded-2xl shadow-2xl shadow-black/30 hover:shadow-black/50 transition-all hover:scale-105 group max-w-full"
             >
-              <Sparkles className="h-6 w-6 mr-3 group-hover:rotate-12 transition-transform" />
-              Solicitar análise no BI+ Contabilidade™
-              <ArrowRight className="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" />
+              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 flex-shrink-0 group-hover:rotate-12 transition-transform" />
+              <span className="truncate">Solicitar análise</span>
+              <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 ml-2 sm:ml-3 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
             </Button>
 
-            <div className="flex items-center justify-center gap-8 mt-10 text-indigo-300/70">
+            <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-8 mt-8 sm:mt-10 text-indigo-300/70 text-sm sm:text-base">
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400 flex-shrink-0" />
                 <span>100% Gratuito</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400 flex-shrink-0" />
                 <span>Sem compromisso</span>
               </div>
               <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                <CheckCircle2 className="h-4 w-4 sm:h-5 sm:w-5 text-emerald-400 flex-shrink-0" />
                 <span>Resposta em 24h</span>
               </div>
             </div>
