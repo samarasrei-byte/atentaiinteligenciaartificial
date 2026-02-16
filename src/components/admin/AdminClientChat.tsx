@@ -119,7 +119,7 @@ export function AdminClientChat() {
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  // isGeneratingAI removed - AI responses paused to save tokens
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
   const [showPaymentRequest, setShowPaymentRequest] = useState(false);
   const [showReceivedDocs, setShowReceivedDocs] = useState(false);
@@ -291,74 +291,125 @@ export function AdminClientChat() {
     setIsSending(false);
   };
 
-  const generateAIResponse = async () => {
+  // ========== MENSAGENS AUTOMÁTICAS HUMANIZADAS (sem IA) ==========
+  const [showQuickMessages, setShowQuickMessages] = useState(false);
+
+  const getFirstName = (fullName: string) => fullName?.split(' ')[0] || 'Cliente';
+
+  const quickMessageTemplates = {
+    'limpa-nome': {
+      welcome: (name: string) => {
+        const greetings = ['Oi', 'Olá', 'E aí'];
+        const g = greetings[Math.floor(Math.random() * greetings.length)];
+        return `${g}, ${name}! Tudo bem? 😊
+
+Aqui é o Guilherme, responsável pelo seu processo de Limpa Nome.
+
+Recebi sua solicitação e já estou organizando tudo por aqui. Pra dar início, vou precisar de alguns documentos seus:
+
+📄 RG ou CNH (frente e verso)
+📄 Comprovante de residência atualizado
+📄 Uma consulta recente do seu score (pode ser do Serasa ou SPC)
+
+Pode mandar foto ou PDF aqui mesmo no chat, fica à vontade!
+
+Assim que receber, já começo a trabalhar no seu caso. Qualquer dúvida, é só chamar!
+
+Guilherme`;
+      },
+      followUp: (name: string) => {
+        const greetings = ['Oi', 'Olá', 'E aí'];
+        const g = greetings[Math.floor(Math.random() * greetings.length)];
+        return `${g}, ${name}! Passando pra dar uma atualização.
+
+Estou acompanhando seu processo de perto e tá tudo caminhando bem. Preciso só confirmar se você já conseguiu enviar os documentos pendentes?
+
+Se tiver qualquer dúvida sobre o que preciso, me chama aqui que te explico direitinho.
+
+Guilherme`;
+      },
+      statusUpdate: (name: string) => {
+        return `${name}, boas notícias! 🎉
+
+Tive avanço no seu processo. Estou trabalhando nas pendências e em breve te mando o resultado.
+
+Fica tranquilo(a) que tá tudo sendo acompanhado pessoalmente por mim.
+
+Qualquer coisa, já sabe, é só chamar aqui!
+
+Guilherme`;
+      },
+    },
+    'fiscal': {
+      welcome: (name: string) => {
+        const greetings = ['Oi', 'Olá'];
+        const g = greetings[Math.floor(Math.random() * greetings.length)];
+        return `${g}, ${name}! Tudo certo? 😊
+
+Aqui é o Guilherme, da equipe de Análise Fiscal.
+
+Já recebi sua solicitação e vou começar a trabalhar no seu caso. Pra isso, preciso de alguns documentos:
+
+📄 Última declaração de IR (se tiver)
+📄 Certidão Negativa de Débitos (federal)
+📄 Contrato Social da empresa
+
+Pode enviar direto aqui no chat, aceito PDF, foto ou imagem.
+
+Me avisa quando enviar que já começo a análise!
+
+Guilherme`;
+      },
+      followUp: (name: string) => {
+        return `Oi, ${name}! Passando pra checar como estamos.
+
+Já recebeu os documentos que pedi? Se tiver dificuldade pra conseguir algum deles, me avisa que posso te orientar.
+
+Estou por aqui!
+
+Guilherme`;
+      },
+      statusUpdate: (name: string) => {
+        return `${name}, atualizando você sobre a análise fiscal:
+
+Estou revisando os documentos e em breve tenho o relatório completo. Vou te avisar assim que finalizar.
+
+Qualquer dúvida, pode chamar!
+
+Guilherme`;
+      },
+    },
+    'bi': {
+      welcome: (name: string) => {
+        return `Oi, ${name}! Tudo bem?
+
+Aqui é o Guilherme. Recebi sua solicitação e vou encaminhar pro César, nosso especialista em BI e Contabilidade.
+
+Ele vai entrar em contato em breve pra dar início à análise!
+
+Guilherme`;
+      },
+      followUp: (name: string) => {
+        return `Oi, ${name}! Só passando pra ver se está tudo certo e se precisa de alguma coisa.
+
+Me avisa se tiver dúvida!
+
+Guilherme`;
+      },
+      statusUpdate: (name: string) => {
+        return `${name}, seu processo está sendo acompanhado de perto. Em breve teremos novidades!
+
+Guilherme`;
+      },
+    },
+  };
+
+  const handleQuickMessage = (type: 'welcome' | 'followUp' | 'statusUpdate') => {
     if (!selectedClient) return;
-
-    setIsGeneratingAI(true);
-
-    try {
-      const context = selectedClient.service_type === 'limpa-nome' 
-        ? `Serviço: Limpa Nome. Valor dívida: R$ ${((selectedClient.debt_amount_cents || 0) / 100).toFixed(2)}. CPF: ${selectedClient.cpf || 'N/I'}.`
-        : `Serviço: Fiscal. CNPJ: ${selectedClient.cnpj || 'N/I'}. Valor: R$ ${((selectedClient.identified_value_cents || 0) / 100).toFixed(2)}.`;
-
-      const conversationHistory = messages.length > 0 
-        ? messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'Guilherme' : 'Cliente'}]: ${m.content}`).join('\n')
-        : 'Primeiro contato';
-
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-admin-response`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-        body: JSON.stringify({
-          clientName: selectedClient.full_name,
-          serviceType: selectedClient.service_type,
-          status: selectedClient.status,
-          context,
-          conversationHistory,
-          action: messages.length === 0 
-            ? 'Gerar boas-vindas como Guilherme'
-            : 'Gerar resposta de acompanhamento como Guilherme',
-        }),
-      });
-
-      if (response.ok) {
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let aiResponse = '';
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ') && !line.includes('[DONE]')) {
-                try {
-                  const data = JSON.parse(line.slice(6));
-                  const content = data.choices?.[0]?.delta?.content;
-                  if (content) aiResponse += content;
-                } catch {}
-              }
-            }
-          }
-        }
-
-        setNewMessage(aiResponse.trim());
-        toast({ title: '✨ Resposta gerada', description: 'Revise antes de enviar.' });
-      } else {
-        toast({ title: 'Erro ao gerar', variant: 'destructive' });
-      }
-    } catch (error) {
-      console.error('AI error:', error);
-      toast({ title: 'Erro ao gerar resposta', variant: 'destructive' });
-    } finally {
-      setIsGeneratingAI(false);
-    }
+    const firstName = getFirstName(selectedClient.full_name);
+    const templates = quickMessageTemplates[selectedClient.service_type];
+    setNewMessage(templates[type](firstName));
+    setShowQuickMessages(false);
   };
 
   const handleDocumentRequest = (docLabel: string) => {
@@ -940,19 +991,11 @@ Guilherme`);
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={generateAIResponse}
-                      disabled={isGeneratingAI}
-                      className={cn(
-                        "shrink-0 gap-2 h-10 border-slate-200 text-slate-700",
-                        isGeneratingAI && "animate-pulse"
-                      )}
+                      onClick={() => setShowQuickMessages(!showQuickMessages)}
+                      className="shrink-0 gap-2 h-10 border-slate-200 text-slate-700"
                     >
-                      {isGeneratingAI ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Sparkles className={cn("h-4 w-4", theme.accent)} />
-                      )}
-                      <span className="hidden sm:inline">Gerar com IA</span>
+                      <MessageCircle className={cn("h-4 w-4", theme.accent)} />
+                      <span className="hidden sm:inline">Mensagem Rápida</span>
                     </Button>
                     
                     <Input
@@ -975,6 +1018,48 @@ Guilherme`);
                       )}
                     </Button>
                   </div>
+
+                  {/* Quick Messages Panel */}
+                  <AnimatePresence>
+                    {showQuickMessages && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <div className="flex gap-2 flex-wrap pt-2">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleQuickMessage('welcome')}
+                            className="text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                          >
+                            👋 Boas-vindas + Docs
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleQuickMessage('followUp')}
+                            className="text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                          >
+                            📋 Acompanhamento
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleQuickMessage('statusUpdate')}
+                            className="text-xs gap-1.5 border-amber-200 text-amber-700 hover:bg-amber-50"
+                          >
+                            🎉 Atualização
+                          </Button>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                   
                   <AnimatePresence>
                     {newMessage && (
@@ -984,8 +1069,7 @@ Guilherme`);
                         exit={{ opacity: 0, y: -5 }}
                         className="text-xs text-slate-500 flex items-center gap-1.5"
                       >
-                        <Sparkles className="h-3 w-3 text-amber-500" />
-                        Revise antes de enviar.
+                        ✏️ Revise antes de enviar.
                       </motion.p>
                     )}
                   </AnimatePresence>
