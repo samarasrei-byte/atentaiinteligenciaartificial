@@ -91,7 +91,7 @@ export function CesarClientChat() {
   const [newMessage, setNewMessage] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  // isGeneratingAI removed - AI responses paused to save tokens
   const [showDocumentRequest, setShowDocumentRequest] = useState(false);
   const [showPaymentRequest, setShowPaymentRequest] = useState(false);
   const [showReceivedDocs, setShowReceivedDocs] = useState(false);
@@ -251,69 +251,65 @@ export function CesarClientChat() {
     setIsSending(false);
   };
 
-  const generateAIResponse = async () => {
+  // ========== MENSAGENS AUTOMÁTICAS HUMANIZADAS (sem IA - tokens pausados) ==========
+  const [showQuickMessages, setShowQuickMessages] = useState(false);
+
+  const getFirstName = (fullName: string) => fullName?.split(' ')[0] || 'Cliente';
+
+  const quickMessageTemplatesBI = {
+    welcome: (name: string) => {
+      const greetings = ['Oi', 'Olá'];
+      const g = greetings[Math.floor(Math.random() * greetings.length)];
+      return `${g}, ${name}! Tudo bem? 😊
+
+Aqui é o César, responsável pelo seu BI+ Contabilidade.
+
+Que bom ter você com a gente! Pra começar a montar seu painel financeiro, vou precisar de alguns documentos:
+
+📄 Balanço Patrimonial mais recente
+📄 DRE (Demonstração de Resultado)
+📄 Fluxo de Caixa dos últimos 3 meses
+
+Pode mandar Excel, PDF ou imagem aqui mesmo no chat.
+
+Assim que receber, já começo o diagnóstico financeiro da sua empresa!
+
+César`;
+    },
+    followUp: (name: string) => {
+      return `Oi, ${name}! Passando pra checar se conseguiu separar os documentos contábeis.
+
+Se tiver dificuldade com algum deles, me avisa que posso te orientar sobre onde conseguir.
+
+Estou por aqui!
+
+César`;
+    },
+    statusUpdate: (name: string) => {
+      return `${name}, atualizando sobre sua análise:
+
+Estou revisando os documentos e montando os primeiros indicadores do seu painel. Em breve compartilho os insights iniciais.
+
+Qualquer dúvida, pode chamar!
+
+César`;
+    },
+    requestDRE: (name: string) => {
+      return `Oi, ${name}!
+
+Pra avançar com a análise, preciso do seu DRE (Demonstração de Resultado do Exercício) atualizado.
+
+Se tiver em Excel fica ainda melhor pra gente trabalhar os dados. Pode mandar aqui mesmo!
+
+César`;
+    },
+  };
+
+  const handleQuickMessage = (type: 'welcome' | 'followUp' | 'statusUpdate' | 'requestDRE') => {
     if (!selectedClient) return;
-
-    setIsGeneratingAI(true);
-
-    try {
-      const context = `Serviço: BI+ Inteligência Fiscal. CNPJ: ${selectedClient.cnpj || 'N/I'}. Cliente desde: ${new Date(selectedClient.created_at).toLocaleDateString('pt-BR')}.`;
-
-      const response = await fetch(`${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ai-admin-response`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${(await supabase.auth.getSession()).data.session?.access_token}`,
-        },
-        body: JSON.stringify({
-          clientName: selectedClient.full_name,
-          serviceType: 'bi-contabilidade',
-          status: selectedClient.status,
-          context,
-          conversationHistory: messages.slice(-10).map(m => `[${m.sender_id === user?.id ? 'César' : 'Cliente'}]: ${m.content}`).join('\n'),
-          action: messages.length === 0 
-            ? 'Gerar boas-vindas profissional como César, especialista em BI e Contabilidade'
-            : 'Gerar resposta técnica e profissional como César',
-          persona: 'cesar', // Explicitly set César persona
-        }),
-      });
-
-      if (response.ok) {
-        const reader = response.body?.getReader();
-        const decoder = new TextDecoder();
-        let aiResponse = '';
-
-        if (reader) {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            
-            const chunk = decoder.decode(value, { stream: true });
-            const lines = chunk.split('\n');
-            
-            for (const line of lines) {
-              if (line.startsWith('data: ') && !line.includes('[DONE]')) {
-                try {
-                  const data = JSON.parse(line.slice(6));
-                  const content = data.choices?.[0]?.delta?.content;
-                  if (content) aiResponse += content;
-                } catch {}
-              }
-            }
-          }
-        }
-
-        setNewMessage(aiResponse.trim());
-        toast({ title: '✨ Resposta gerada', description: 'Revise antes de enviar.' });
-      } else {
-        toast({ title: 'Erro ao gerar', variant: 'destructive' });
-      }
-    } catch (error) {
-      console.error('AI error:', error);
-      toast({ title: 'Erro ao gerar resposta', variant: 'destructive' });
-    } finally {
-      setIsGeneratingAI(false);
-    }
+    const firstName = getFirstName(selectedClient.full_name);
+    setNewMessage(quickMessageTemplatesBI[type](firstName));
+    setShowQuickMessages(false);
   };
 
   const handleDocumentRequest = (docLabel: string) => {
@@ -847,14 +843,9 @@ César`);
                     variant="ghost" 
                     size="icon" 
                     className="h-9 w-9 text-slate-500 hover:text-violet-600 hover:bg-violet-50"
-                    onClick={generateAIResponse}
-                    disabled={isGeneratingAI}
+                    onClick={() => setShowQuickMessages(!showQuickMessages)}
                   >
-                    {isGeneratingAI ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Bot className="h-4 w-4" />
-                    )}
+                    <MessageCircle className="h-4 w-4" />
                   </Button>
                 </div>
                 
@@ -881,6 +872,63 @@ César`);
                   )}
                 </Button>
               </div>
+              
+              {/* Quick Messages Panel */}
+              <AnimatePresence>
+                {showQuickMessages && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="flex gap-2 flex-wrap pt-2">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickMessage('welcome')}
+                        className="text-xs gap-1.5 border-violet-200 text-violet-700 hover:bg-violet-50"
+                      >
+                        👋 Boas-vindas + Docs
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickMessage('followUp')}
+                        className="text-xs gap-1.5 border-blue-200 text-blue-700 hover:bg-blue-50"
+                      >
+                        📋 Acompanhamento
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickMessage('statusUpdate')}
+                        className="text-xs gap-1.5 border-amber-200 text-amber-700 hover:bg-amber-50"
+                      >
+                        🎉 Atualização
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleQuickMessage('requestDRE')}
+                        className="text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+                      >
+                        📄 Solicitar DRE
+                      </Button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              
+              {newMessage && (
+                <p className="text-xs text-slate-500 flex items-center gap-1.5 pt-1">
+                  ✏️ Revise antes de enviar.
+                </p>
+              )}
             </form>
           </div>
         ) : (
