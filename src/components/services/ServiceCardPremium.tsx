@@ -124,6 +124,9 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
     'ir_completo': 'ir-completo',
     'company_opening': 'abertura-empresa',
     'certificate': 'certidao',
+    'simulator': 'simulador',
+    'autonomo': 'autonomo',
+    'premium': 'premium',
   };
 
   const handleCTAClick = () => {
@@ -178,8 +181,8 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
         metadata: {
           service_key: service.key,
         },
-        allowedMethods: service.isSubscription ? ['card'] : (isOneTime ? ['pix'] : ['pix', 'card']),
-        isRecurring: !!service.isSubscription,
+        allowedMethods: ['pix'],
+        isRecurring: false,
         onSuccess: () => {
           toast.success('Pagamento realizado com sucesso!');
         },

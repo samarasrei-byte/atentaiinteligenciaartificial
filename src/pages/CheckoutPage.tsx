@@ -133,7 +133,52 @@ const serviceConfigs: Record<string, {
     basePriceCents: 0,
     successUrl: '/bi-contabilidade/sucesso',
     serviceType: 'bi_contabilidade',
-    isCustomPricing: true, // Valor sob consulta
+    isCustomPricing: true,
+  },
+  'simulador': {
+    name: 'Simulador Tributário',
+    description: 'Simule o impacto da reforma tributária na sua empresa com IA',
+    icon: Scale,
+    color: 'blue',
+    features: [
+      'Simulador tributário completo',
+      'Comparação de regimes',
+      'Exportação em PDF',
+      '5 perguntas à IA por dia',
+    ],
+    basePriceCents: 3999,
+    successUrl: '/painel',
+    serviceType: 'simulator',
+  },
+  'autonomo': {
+    name: 'Plano Autônomo',
+    description: 'Dashboard financeiro completo para profissionais liberais',
+    icon: Briefcase,
+    color: 'blue',
+    features: [
+      'Tudo do Simulador +',
+      'Dashboard financeiro',
+      'Metas financeiras',
+      'Comparador PF vs PJ',
+    ],
+    basePriceCents: 6500,
+    successUrl: '/painel',
+    serviceType: 'autonomo',
+  },
+  'premium': {
+    name: 'AtentAI Premium',
+    description: 'Recursos completos com IA ilimitada e suporte prioritário',
+    icon: Star,
+    color: 'accent',
+    features: [
+      'Tudo do Autônomo +',
+      'IA ilimitada',
+      'Simulador de locação',
+      'Suporte prioritário',
+    ],
+    basePriceCents: 9800,
+    successUrl: '/painel',
+    serviceType: 'premium',
   },
 };
 
@@ -260,16 +305,16 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Determine allowed methods: PIX for one-time, card for subscriptions
-    const isOneTime = ['credit_repair_pf', 'credit_repair_pj', 'ir_simples', 'ir_completo', 'company_opening', 'certificate'].includes(service.serviceType);
+    // Determine allowed methods: PIX for all services (user preference)
+    const allowedMethods: ('pix' | 'card')[] = ['pix'];
     
     openCheckout({
       amountCents: finalPrice,
       serviceName: service.name,
       serviceType: service.serviceType,
       description: service.description,
-      allowedMethods: isOneTime ? ['pix'] : ['card'],
-      isRecurring: !isOneTime,
+      allowedMethods,
+      isRecurring: false,
       guestEmail: formData.email.trim().toLowerCase(),
       guestName: formData.fullName.trim(),
       metadata: {
