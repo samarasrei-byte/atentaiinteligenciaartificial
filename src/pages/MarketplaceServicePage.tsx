@@ -34,8 +34,6 @@ interface ServiceConfig {
   description: string;
   price: number;
   priceLabel: string;
-  discountedPrice?: string;
-  subscriberDiscount?: number;
   icon: any;
   color: string;
   features: string[];
@@ -51,8 +49,6 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     description: 'Você não recebe apenas um CNPJ — você recebe decisão estratégica. Analisamos o melhor regime e cuidamos de tudo.',
     price: 78000,
     priceLabel: 'R$ 780,00',
-    discountedPrice: 'R$ 663,00',
-    subscriberDiscount: 15,
     icon: Building2,
     color: 'blue',
     features: [
@@ -72,8 +68,6 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     description: 'Certidões oficiais, válidas e verificáveis. Tudo pronto, revisado por contador, sem dor de cabeça.',
     price: 8000,
     priceLabel: 'R$ 80,00',
-    discountedPrice: 'R$ 72,00',
-    subscriberDiscount: 10,
     icon: FileCheck,
     color: 'green',
     features: [
@@ -92,8 +86,6 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     description: 'Sua declaração feita por contador especializado, enviada corretamente à Receita e com comprovante.',
     price: 20000,
     priceLabel: 'R$ 200,00',
-    discountedPrice: 'R$ 160,00',
-    subscriberDiscount: 20,
     icon: FileText,
     color: 'amber',
     features: [
@@ -112,8 +104,6 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     description: 'Análise de todas as fontes de renda com otimização fiscal legal. Ideal para autônomos e investidores.',
     price: 42000,
     priceLabel: 'R$ 420,00',
-    discountedPrice: 'R$ 336,00',
-    subscriberDiscount: 20,
     icon: FileSpreadsheet,
     color: 'orange',
     features: [
@@ -302,24 +292,7 @@ export default function MarketplaceServicePage() {
                       </div>
                     ) : (
                       <div>
-                        {isSubscriber && serviceConfig.discountedPrice ? (
-                          <>
-                            <p className="text-sm text-slate-500 line-through">{serviceConfig.priceLabel}</p>
-                            <p className="text-3xl font-bold text-primary">{serviceConfig.discountedPrice}</p>
-                            <Badge className="bg-primary/10 text-primary mt-2">
-                              {serviceConfig.subscriberDiscount}% OFF para assinantes
-                            </Badge>
-                          </>
-                        ) : (
-                          <>
-                            <p className="text-3xl font-bold text-slate-900">{serviceConfig.priceLabel}</p>
-                            {serviceConfig.subscriberDiscount && (
-                              <p className="text-sm text-primary mt-1">
-                                Assinantes pagam {serviceConfig.discountedPrice} ({serviceConfig.subscriberDiscount}% OFF)
-                              </p>
-                            )}
-                          </>
-                        )}
+                        <p className="text-3xl font-bold text-slate-900">{serviceConfig.priceLabel}</p>
                       </div>
                     )}
                   </div>

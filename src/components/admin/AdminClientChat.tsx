@@ -462,7 +462,7 @@ Guilherme`);
       if (customPaymentAmount) {
         amountCents = Math.round(parseFloat(customPaymentAmount.replace(',', '.')) * 100);
       } else {
-        amountCents = selectedClient.service_type === 'limpa-nome' ? 82450 : 29700; // R$ 824,50 or R$ 297
+        amountCents = selectedClient.service_type === 'limpa-nome' ? 82450 : 0; // R$ 824,50 or custom (fiscal is success fee)
       }
       
       if (amountCents < 100) {
