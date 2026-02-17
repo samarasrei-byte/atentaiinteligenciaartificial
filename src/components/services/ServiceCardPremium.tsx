@@ -181,8 +181,8 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
         metadata: {
           service_key: service.key,
         },
-        allowedMethods: ['pix'],
-        isRecurring: false,
+        allowedMethods: isOneTime ? ['pix'] : ['card'],
+        isRecurring: !isOneTime,
         onSuccess: () => {
           toast.success('Pagamento realizado com sucesso!');
         },
