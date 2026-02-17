@@ -73,21 +73,34 @@ export const DREAnalysis: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    const allowedExtensions = ['pdf', 'csv', 'txt', 'xls', 'xlsx', 'doc', 'docx'];
+    const ext = file.name.split('.').pop()?.toLowerCase() || '';
+    if (!allowedExtensions.includes(ext)) {
+      toast({ title: 'Formato não suportado', description: `Use: ${allowedExtensions.join(', ')}`, variant: 'destructive' });
+      e.target.value = '';
+      return;
+    }
+
     if (file.size > 25 * 1024 * 1024) {
       toast({ title: 'Arquivo muito grande', description: 'Máximo 25MB', variant: 'destructive' });
+      e.target.value = '';
       return;
     }
 
     setIsUploading(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const filePath = `${user.id}/${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${Date.now()}.${ext}`;
 
       const { error: uploadError } = await supabase.storage
         .from('dre-documents')
         .upload(filePath, file);
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        if (uploadError.message?.includes('security') || uploadError.message?.includes('policy')) {
+          throw new Error('Sem permissão para upload. Verifique se você tem acesso de admin/contador.');
+        }
+        throw uploadError;
+      }
 
       const { data: record, error: insertError } = await supabase
         .from('dre_analyses')
@@ -103,18 +116,21 @@ export const DREAnalysis: React.FC = () => {
         .select()
         .single();
 
-      if (insertError) throw insertError;
+      if (insertError) {
+        if (insertError.message?.includes('security') || insertError.message?.includes('policy')) {
+          throw new Error('Sem permissão para criar análise. Acesso restrito a admin/contador.');
+        }
+        throw insertError;
+      }
 
       // Try to extract text from file
       const text = await extractTextFromFile(file);
       
       if (text && text.length > 100 && record) {
-        // Auto-analyze if text extraction worked
         toast({ title: 'Documento enviado!', description: 'Iniciando análise com IA...' });
         await loadAnalyses();
         await triggerAnalysis((record as DREAnalysisRecord).id, text, clientName, periodLabel);
       } else if (record) {
-        // Text extraction failed (likely PDF) - ask user to paste text
         toast({ 
           title: 'Documento enviado!', 
           description: 'Cole o texto do DRE abaixo para a IA analisar (PDFs precisam de texto manual).', 
@@ -128,7 +144,7 @@ export const DREAnalysis: React.FC = () => {
       setPeriodLabel('');
     } catch (error: any) {
       console.error('Upload error:', error);
-      toast({ title: 'Erro no upload', description: error.message, variant: 'destructive' });
+      toast({ title: 'Erro no upload', description: error.message || 'Erro desconhecido ao enviar arquivo', variant: 'destructive' });
     } finally {
       setIsUploading(false);
       e.target.value = '';
@@ -251,20 +267,55 @@ export const DREAnalysis: React.FC = () => {
       setAnalysisStep(step);
     }, 4000);
 
+    // Timeout controller - 90s max
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 90000);
+
     try {
+      // Validate text length
+      if (documentText.length < 50) {
+        throw new Error('Texto do DRE muito curto. Cole pelo menos 50 caracteres com dados financeiros.');
+      }
+      if (documentText.length > 100000) {
+        documentText = documentText.substring(0, 100000);
+      }
+
       const { data, error } = await supabase.functions.invoke('analyze-dre', {
         body: { analysisId, documentText, clientName: name, periodLabel: period },
       });
 
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (error) {
+        // Parse Supabase function error
+        const errMsg = typeof error === 'object' && error.message ? error.message : String(error);
+        if (errMsg.includes('Failed to send') || errMsg.includes('FunctionsFetchError')) {
+          throw new Error('Falha de conexão com o servidor. Verifique sua internet e tente novamente.');
+        }
+        throw new Error(errMsg);
+      }
+      
+      if (data?.error) {
+        throw new Error(data.error);
+      }
 
       toast({ title: '✅ Análise concluída!', description: 'DRE processado com sucesso pela IA.' });
       await loadAnalyses();
     } catch (error: any) {
       console.error('Analysis error:', error);
-      toast({ title: 'Erro na análise', description: error.message, variant: 'destructive' });
+      
+      let description = error.message || 'Erro desconhecido';
+      if (error.name === 'AbortError' || description.includes('abort')) {
+        description = 'A análise demorou mais de 90 segundos. Tente com um texto menor ou tente novamente.';
+      }
+      
+      // Mark as failed in DB so user can retry
+      await supabase
+        .from('dre_analyses')
+        .update({ status: 'pending' })
+        .eq('id', analysisId);
+      
+      toast({ title: 'Erro na análise', description, variant: 'destructive' });
     } finally {
+      clearTimeout(timeoutId);
       if (analysisTimerRef.current) clearInterval(analysisTimerRef.current);
       setIsAnalyzing(null);
       setAnalysisStep(0);
