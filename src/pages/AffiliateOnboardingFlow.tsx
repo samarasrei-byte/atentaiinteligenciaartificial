@@ -64,7 +64,7 @@ const SERVICES_INFO = [
     icon: '🏗️',
     name: 'Abertura de Empresa',
     description: 'Abertura completa de CNPJ',
-    commission: 'R$ 117 por venda (15%)',
+    commission: 'R$ 156 por venda (20%)',
     basePrice: 'Preço: R$ 780,00'
   }
 ];
