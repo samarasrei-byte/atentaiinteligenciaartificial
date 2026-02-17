@@ -337,25 +337,33 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
           </div>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl border border-indigo-100">
-            <Avatar className="h-12 w-12 border-2 border-indigo-200">
-              <AvatarFallback className="bg-indigo-100 text-indigo-700 font-bold">G</AvatarFallback>
-            </Avatar>
-            <div className="flex-1">
-              <p className="font-semibold text-slate-900">Guilherme Barros</p>
-              <p className="text-sm text-slate-600">Especialista BI+ Contabilidade™</p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="bg-white border-indigo-200 text-indigo-700">
-                <Brain className="h-3 w-3 mr-1" />
-                IA Assistida
-              </Badge>
-              <Badge variant="outline" className="bg-white border-emerald-200 text-emerald-700">
-                <ShieldCheck className="h-3 w-3 mr-1" />
-                Validação Humana
-              </Badge>
-            </div>
-          </div>
+          {(() => {
+            const isBIRequest = requestType === 'fiscal' && (request?.notes || '').toUpperCase().startsWith('[BI]');
+            const specialistName = isBIRequest ? 'César' : 'Guilherme Barros';
+            const specialistRole = isBIRequest ? 'Especialista BI+ Contabilidade™' : 'Especialista Fiscal & Limpa Nome';
+            const specialistInitial = isBIRequest ? 'C' : 'G';
+            return (
+              <div className="flex items-center gap-4 p-4 bg-gradient-to-r from-indigo-50 to-violet-50 rounded-xl border border-indigo-100">
+                <Avatar className="h-12 w-12 border-2 border-indigo-200">
+                  <AvatarFallback className="bg-indigo-100 text-indigo-700 font-bold">{specialistInitial}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <p className="font-semibold text-slate-900">{specialistName}</p>
+                  <p className="text-sm text-slate-600">{specialistRole}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Badge variant="outline" className="bg-white border-indigo-200 text-indigo-700">
+                    <Brain className="h-3 w-3 mr-1" />
+                    IA Assistida
+                  </Badge>
+                  <Badge variant="outline" className="bg-white border-emerald-200 text-emerald-700">
+                    <ShieldCheck className="h-3 w-3 mr-1" />
+                    Validação Humana
+                  </Badge>
+                </div>
+              </div>
+            );
+          })()}
         </CardContent>
       </Card>
 

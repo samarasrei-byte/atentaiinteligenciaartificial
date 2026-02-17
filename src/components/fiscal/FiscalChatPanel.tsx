@@ -247,15 +247,24 @@ export const FiscalChatPanel: React.FC<FiscalChatPanelProps> = ({
 
     if (uploadError) {
       console.error('Upload error:', uploadError);
+      if (uploadError.message?.includes('security') || uploadError.message?.includes('policy')) {
+        toast.error('Sem permissão para upload. Faça login novamente.');
+      } else if (uploadError.message?.includes('too large') || uploadError.message?.includes('size')) {
+        toast.error('Arquivo muito grande. Máximo 10MB.');
+      } else {
+        toast.error('Erro ao enviar arquivo. Tente novamente.');
+      }
       return null;
     }
 
+    // Use 7 days (604800s) instead of 1h to prevent broken attachments
     const { data, error: signedUrlError } = await supabase.storage
       .from('chat-attachments')
-      .createSignedUrl(fileName, 3600);
+      .createSignedUrl(fileName, 604800);
 
     if (signedUrlError || !data?.signedUrl) {
       console.error('Signed URL error:', signedUrlError);
+      toast.error('Arquivo enviado mas erro ao gerar link. Tente novamente.');
       return null;
     }
 
