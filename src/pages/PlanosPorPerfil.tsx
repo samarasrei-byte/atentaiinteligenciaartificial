@@ -204,7 +204,7 @@ const PlanosPorPerfil = () => {
             
             <Button
               variant="outline"
-              onClick={() => navigate('/planos')}
+              onClick={() => navigate('/pricing')}
               className="border-primary text-primary hover:bg-primary/10"
             >
               Comparar Todos
@@ -413,7 +413,7 @@ const PlanosPorPerfil = () => {
                     </p>
                     <Button 
                       variant="outline"
-                      onClick={() => navigate('/planos')}
+                      onClick={() => navigate('/pricing')}
                     >
                       Ver Comparativo Completo
                     </Button>
