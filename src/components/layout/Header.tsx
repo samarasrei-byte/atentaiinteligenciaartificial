@@ -22,9 +22,9 @@ export function Header({ onNavigate }: HeaderProps) {
 
   // Navigation menu items - Simplified header (2026-02-03)
   const navItems = [
-    { label: "Módulo Fiscal", icon: Shield, section: "fiscal", description: "Recuperação tributária com IA" },
-    { label: "BI+ Inteligência", icon: Brain, href: "/bi-contabilidade", description: "Dashboard financeiro inteligente" },
-    { label: "Marketplace", icon: Briefcase, href: "/servicos", description: "Serviços contábeis e jurídicos" },
+    { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
+    { label: "BI+ Inteligência", icon: Brain, href: "/bi-contabilidade" },
+    { label: "Marketplace", icon: Briefcase, href: "/servicos" },
   ];
 
   /**
@@ -64,53 +64,46 @@ export function Header({ onNavigate }: HeaderProps) {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-b border-border/30 shadow-sm safe-area-top">
       <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between h-16 sm:h-[72px]">
-          {/* Logo with infinite red background */}
+        <div className="flex items-center justify-between h-14 sm:h-16">
+          {/* Logo */}
           <button 
             onClick={() => onNavigate("hero")}
-            className="relative flex items-center gap-2 group transition-transform duration-300 hover:scale-105 -ml-4 px-5 py-2 self-stretch"
+            className="flex items-center gap-2 group transition-transform duration-300 hover:scale-105"
           >
-            {/* Red background extending to the left edge */}
-            <div className="absolute inset-y-0 right-0 bg-red-600" style={{ left: '-100vw' }} />
             <img 
               src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="relative z-10 h-9 sm:h-11 md:h-12 w-auto transition-all duration-300 group-hover:brightness-110"
+              className="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300 group-hover:brightness-110"
             />
           </button>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center gap-2">
-            {navItems.map((item) => {
-              const content = (
-                <div className="flex items-center gap-2.5">
-                  <item.icon className="w-5 h-5 text-primary" />
-                  <div className="text-left">
-                    <span className="block text-sm font-semibold leading-tight">{item.label}</span>
-                    <span className="block text-[11px] text-muted-foreground leading-tight">{item.description}</span>
-                  </div>
-                </div>
-              );
-              return 'href' in item ? (
+          <nav className="hidden md:flex items-center gap-1">
+            {navItems.map((item) => (
+              'href' in item ? (
                 <Button
                   key={item.label}
                   variant="ghost"
                   asChild
-                  className="h-auto py-2.5 px-3.5 hover:bg-primary/5"
+                  className="flex items-center gap-2 relative"
                 >
-                  <Link to={item.href}>{content}</Link>
+                  <Link to={item.href}>
+                    <item.icon className="w-4 h-4" />
+                    {item.label}
+                  </Link>
                 </Button>
               ) : (
                 <Button
                   key={item.section}
                   variant="ghost"
                   onClick={() => onNavigate(item.section)}
-                  className="h-auto py-2.5 px-3.5 hover:bg-primary/5"
+                  className="flex items-center gap-2"
                 >
-                  {content}
+                  <item.icon className="w-4 h-4" />
+                  {item.label}
                 </Button>
-              );
-            })}
+              )
+            ))}
           </nav>
 
           {/* CTA Buttons - COMEÇAR vs ENTRAR */}
