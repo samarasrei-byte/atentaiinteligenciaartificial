@@ -35,7 +35,7 @@ const profiles = [
       { icon: Clock, text: 'Acompanhamento das mudanças legais' },
     ],
     cta: 'Simular Impostos',
-    route: '/comecar',
+    route: '/onboarding',
     isComingSoon: false,
   },
   {
@@ -53,7 +53,7 @@ const profiles = [
       { icon: Zap, text: 'Simulador específico para sua profissão' },
     ],
     cta: 'Fazer Análise',
-    route: '/comecar',
+    route: '/autonomo-onboarding',
     isComingSoon: false,
   },
   {
