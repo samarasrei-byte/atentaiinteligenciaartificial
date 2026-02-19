@@ -155,21 +155,8 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       return;
     }
 
-    // All paid services → check auth
+    // All paid services → open checkout
     if (service.basePrice > 0) {
-      // Guest user → redirect to guest checkout page
-      if (!user) {
-        const checkoutSlug = SERVICE_TO_CHECKOUT_SLUG[service.serviceType];
-        if (checkoutSlug) {
-          navigate(`/checkout/${checkoutSlug}`);
-        } else {
-          toast.error('Faça login para continuar.');
-          navigate('/auth');
-        }
-        return;
-      }
-
-      // Logged-in user → open MP checkout modal directly
       const isOneTime = ONE_TIME_SERVICES.includes(service.serviceType);
 
       openCheckout({
@@ -183,6 +170,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
         },
         allowedMethods: isOneTime ? ['pix'] : ['card'],
         isRecurring: !isOneTime,
+        requireGuestInfo: !user, // Show guest form if not logged in
         onSuccess: () => {
           toast.success('Pagamento realizado com sucesso!');
         },

@@ -183,12 +183,6 @@ export function LimpaNomeSection() {
 
                 const handleCTAClick = (e: React.MouseEvent) => {
                   e.stopPropagation();
-                  
-                  // Guest user → redirect to guest checkout page
-                  if (!user) {
-                    navigate(`/checkout/limpa-nome-${plan.id}`);
-                    return;
-                  }
 
                   openCheckout({
                     amountCents: planPrice * 100,
@@ -199,6 +193,7 @@ export function LimpaNomeSection() {
                     metadata: { service_key: `credit_repair_${plan.id}` },
                     allowedMethods: ['pix'],
                     isRecurring: false,
+                    requireGuestInfo: !user, // Show guest form if not logged in
                     onSuccess: () => navigate('/painel'),
                   });
                 };

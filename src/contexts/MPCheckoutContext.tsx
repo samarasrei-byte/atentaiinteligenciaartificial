@@ -12,6 +12,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '@/lib/stripe';
+import { GuestInfoForm } from '@/components/payments/GuestInfoForm';
 
 type PaymentTab = 'pix' | 'card';
 
@@ -29,6 +30,8 @@ interface MPCheckoutOptions {
   // Guest checkout fields (used when user is not authenticated)
   guestEmail?: string;
   guestName?: string;
+  // If true, show guest form before checkout when user is not logged in
+  requireGuestInfo?: boolean;
 }
 
 interface MPCheckoutContextType {
@@ -48,32 +51,74 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { user, session, profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState<MPCheckoutOptions | null>(null);
+  const [guestStep, setGuestStep] = useState<'form' | 'checkout'>('checkout');
+  const [guestData, setGuestData] = useState<{ name: string; email: string; phone: string } | null>(null);
 
   const openCheckout = useCallback((opts: MPCheckoutOptions) => {
-    // Allow guest checkout if guestEmail is provided
+    // If user is logged in, go straight to checkout
+    if (user?.email) {
+      setOptions(opts);
+      setGuestStep('checkout');
+      setGuestData(null);
+      setIsOpen(true);
+      return;
+    }
+
+    // If guest data already provided, go straight to checkout
     const hasGuestData = opts.guestEmail && opts.guestEmail.trim().length > 0;
-    
-    if (!user && !hasGuestData) {
-      toast.error('Você precisa estar logado para continuar.');
+    if (hasGuestData) {
+      setOptions(opts);
+      setGuestStep('checkout');
+      setGuestData(null);
+      setIsOpen(true);
       return;
     }
-    if (!user?.email && !hasGuestData) {
-      toast.error('Email não encontrado. Complete seu cadastro.');
+
+    // Guest user without data → show form first
+    if (opts.requireGuestInfo) {
+      setOptions(opts);
+      setGuestStep('form');
+      setGuestData(null);
+      setIsOpen(true);
       return;
     }
-    setOptions(opts);
-    setIsOpen(true);
+
+    // No user and no guest info → error
+    toast.error('Você precisa estar logado para continuar.');
   }, [user]);
 
   const closeCheckout = useCallback(() => {
     setIsOpen(false);
     setOptions(null);
+    setGuestStep('checkout');
+    setGuestData(null);
   }, []);
+
+  const handleGuestSubmit = useCallback((data: { name: string; email: string; phone: string }) => {
+    setGuestData(data);
+    if (options) {
+      setOptions({
+        ...options,
+        guestEmail: data.email,
+        guestName: data.name,
+        metadata: {
+          ...options.metadata,
+          fullName: data.name,
+          email: data.email,
+          phone: data.phone,
+        },
+      });
+    }
+    setGuestStep('checkout');
+  }, [options]);
 
   const handleSuccess = useCallback((paymentId: number) => {
     options?.onSuccess?.(paymentId);
     closeCheckout();
   }, [options, closeCheckout]);
+
+  const payerEmail = user?.email || options?.guestEmail || guestData?.email || '';
+  const payerName = profile?.full_name || options?.guestName || guestData?.name || 'Cliente';
 
   return (
     <MPCheckoutContext.Provider value={{ openCheckout, closeCheckout }}>
@@ -109,22 +154,30 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
             </div>
           </div>
 
-          {/* Checkout */}
+          {/* Content */}
           <div className="p-6">
-            {options && (user?.email || options.guestEmail) && (
-              <MPTransparentCheckout
-                amountCents={options.amountCents}
+            {guestStep === 'form' && options ? (
+              <GuestInfoForm
                 serviceName={options.serviceName}
-                serviceType={options.serviceType}
-                description={options.description}
-                payerEmail={user?.email || options.guestEmail || ''}
-                payerName={profile?.full_name || options.guestName || 'Cliente'}
-                accessToken={session?.access_token}
-                metadata={options.metadata}
-                onSuccess={handleSuccess}
-                allowedMethods={options.allowedMethods}
-                isRecurring={options.isRecurring}
+                onSubmit={handleGuestSubmit}
+                onCancel={closeCheckout}
               />
+            ) : (
+              options && payerEmail && (
+                <MPTransparentCheckout
+                  amountCents={options.amountCents}
+                  serviceName={options.serviceName}
+                  serviceType={options.serviceType}
+                  description={options.description}
+                  payerEmail={payerEmail}
+                  payerName={payerName}
+                  accessToken={session?.access_token}
+                  metadata={options.metadata}
+                  onSuccess={handleSuccess}
+                  allowedMethods={options.allowedMethods}
+                  isRecurring={options.isRecurring}
+                />
+              )
             )}
           </div>
         </DialogContent>
