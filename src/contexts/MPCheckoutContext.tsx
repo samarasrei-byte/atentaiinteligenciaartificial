@@ -10,9 +10,8 @@ import { X } from 'lucide-react';
 import { MPTransparentCheckout } from '@/components/payments/MPTransparentCheckout';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '@/lib/stripe';
-import { GuestInfoForm } from '@/components/payments/GuestInfoForm';
+import { GuestEmailCapture } from '@/components/payments/GuestEmailCapture';
 
 type PaymentTab = 'pix' | 'card';
 
@@ -30,7 +29,7 @@ interface MPCheckoutOptions {
   // Guest checkout fields (used when user is not authenticated)
   guestEmail?: string;
   guestName?: string;
-  // If true, show guest form before checkout when user is not logged in
+  // If true, show inline email capture when user is not logged in
   requireGuestInfo?: boolean;
 }
 
@@ -51,15 +50,13 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { user, session, profile } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [options, setOptions] = useState<MPCheckoutOptions | null>(null);
-  const [guestStep, setGuestStep] = useState<'form' | 'checkout'>('checkout');
-  const [guestData, setGuestData] = useState<{ name: string; email: string; phone: string } | null>(null);
+  const [guestEmail, setGuestEmail] = useState<string | null>(null);
 
   const openCheckout = useCallback((opts: MPCheckoutOptions) => {
     // If user is logged in, go straight to checkout
     if (user?.email) {
       setOptions(opts);
-      setGuestStep('checkout');
-      setGuestData(null);
+      setGuestEmail(null);
       setIsOpen(true);
       return;
     }
@@ -68,17 +65,15 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     const hasGuestData = opts.guestEmail && opts.guestEmail.trim().length > 0;
     if (hasGuestData) {
       setOptions(opts);
-      setGuestStep('checkout');
-      setGuestData(null);
+      setGuestEmail(opts.guestEmail!);
       setIsOpen(true);
       return;
     }
 
-    // Guest user without data → show form first
+    // Guest user without data → open modal, will show email capture inline
     if (opts.requireGuestInfo) {
       setOptions(opts);
-      setGuestStep('form');
-      setGuestData(null);
+      setGuestEmail(null);
       setIsOpen(true);
       return;
     }
@@ -90,35 +85,21 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const closeCheckout = useCallback(() => {
     setIsOpen(false);
     setOptions(null);
-    setGuestStep('checkout');
-    setGuestData(null);
+    setGuestEmail(null);
   }, []);
 
-  const handleGuestSubmit = useCallback((data: { name: string; email: string; phone: string }) => {
-    setGuestData(data);
-    if (options) {
-      setOptions({
-        ...options,
-        guestEmail: data.email,
-        guestName: data.name,
-        metadata: {
-          ...options.metadata,
-          fullName: data.name,
-          email: data.email,
-          phone: data.phone,
-        },
-      });
-    }
-    setGuestStep('checkout');
-  }, [options]);
+  const handleGuestEmailSubmit = useCallback((email: string) => {
+    setGuestEmail(email);
+  }, []);
 
   const handleSuccess = useCallback((paymentId: number) => {
     options?.onSuccess?.(paymentId);
     closeCheckout();
   }, [options, closeCheckout]);
 
-  const payerEmail = user?.email || options?.guestEmail || guestData?.email || '';
-  const payerName = profile?.full_name || options?.guestName || guestData?.name || 'Cliente';
+  const payerEmail = user?.email || guestEmail || options?.guestEmail || '';
+  const payerName = profile?.full_name || options?.guestName || 'Cliente';
+  const isGuestWithoutEmail = !user?.email && !payerEmail;
 
   return (
     <MPCheckoutContext.Provider value={{ openCheckout, closeCheckout }}>
@@ -156,11 +137,10 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
           {/* Content */}
           <div className="p-6">
-            {guestStep === 'form' && options ? (
-              <GuestInfoForm
+            {isGuestWithoutEmail && options ? (
+              <GuestEmailCapture
                 serviceName={options.serviceName}
-                onSubmit={handleGuestSubmit}
-                onCancel={closeCheckout}
+                onSubmit={handleGuestEmailSubmit}
               />
             ) : (
               options && payerEmail && (
