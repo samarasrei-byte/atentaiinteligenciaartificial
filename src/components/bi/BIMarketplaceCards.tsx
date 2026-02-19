@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Check,
-  Loader2,
   Sparkles,
   Star,
   BarChart3,
@@ -28,41 +27,36 @@ export function BIMarketplaceCards({ variant = 'grid', showTitle = true }: BIMar
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();
-  const [isLoading, setIsLoading] = useState<string | null>(null);
+  const { openCheckout } = useMPCheckout();
 
-  const handlePurchase = async (planKey: BIPlanType) => {
-    if (!user) {
-      toast({
-        title: 'Faça login primeiro',
-        description: 'Você precisa estar logado para contratar um plano',
-      });
-      navigate('/auth');
-      return;
-    }
-
+  const handlePurchase = (planKey: BIPlanType) => {
     const plan = BI_PLANS[planKey];
     
-    // All BI plans redirect to César chat after purchase intent
-    if (planKey === 'performance' || ('customPricing' in plan && plan.customPricing)) {
+    // Performance → always chat with César
+    if (planKey === 'performance') {
       navigate(`/chat/cesar?servico=bi-${planKey}&plano=${planKey}`);
       return;
     }
 
-    setIsLoading(planKey);
-    
-    try {
-      navigate('/pricing');
-      return;
-    } catch (error: any) {
-      console.error('Checkout error:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Erro ao iniciar checkout',
-        description: error.message || 'Tente novamente mais tarde',
-      });
-    } finally {
-      setIsLoading(null);
-    }
+    // Clarity & Control → open checkout modal
+    const gradientMap: Record<string, string> = {
+      clarity: 'from-blue-500 to-cyan-500',
+      control: 'from-primary to-primary/70',
+    };
+
+    openCheckout({
+      amountCents: plan.price,
+      serviceName: plan.name,
+      serviceType: planKey,
+      description: plan.description,
+      gradient: gradientMap[planKey] || 'from-primary to-primary/70',
+      allowedMethods: ['card'],
+      isRecurring: true,
+      requireGuestInfo: !user,
+      onSuccess: () => {
+        // Will be handled by process-approved-payment
+      },
+    });
   };
 
   // Plan config type
@@ -222,15 +216,9 @@ export function BIMarketplaceCards({ variant = 'grid', showTitle = true }: BIMar
 
                 <Button
                   onClick={() => handlePurchase(key)}
-                  disabled={isLoading === key}
                   className={`w-full bg-gradient-to-r ${config.gradient} hover:opacity-90 text-white font-medium`}
                 >
-                  {isLoading === key ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                      Processando...
-                    </>
-                  ) : config.customPricing ? (
+                  {config.customPricing ? (
                     <>
                       <MessageSquare className="h-4 w-4 mr-2" />
                       {config.cta}
