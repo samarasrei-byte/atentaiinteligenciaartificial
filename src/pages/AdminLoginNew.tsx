@@ -99,6 +99,12 @@ const AdminLoginNew = () => {
         return;
       }
 
+      // CRITICAL: Clear any stale onboarding/redirect flags to prevent redirect loops
+      sessionStorage.removeItem('pendingOnboardingData');
+      sessionStorage.removeItem('selectedUserType');
+      sessionStorage.removeItem('isNewSignup');
+      sessionStorage.removeItem('postAuthRedirect');
+
       // Fast-track for known admins - skip extra verification
       if (isKnownAdmin(email)) {
         setLoginState('success');

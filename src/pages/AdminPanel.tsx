@@ -153,7 +153,7 @@ const AdminPanel = () => {
 
   useEffect(() => {
     if (!authLoading) {
-      if (!user) navigate('/auth');
+      if (!user) navigate('/admin/login');
       else if (!hasAnyAdminAccess) {
         toast({ variant: 'destructive', title: 'Acesso negado', description: 'Apenas administradores' });
         navigate('/dashboard');
