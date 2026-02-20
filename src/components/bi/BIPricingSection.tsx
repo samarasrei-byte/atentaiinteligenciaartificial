@@ -29,15 +29,6 @@ export function BIPricingSection() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
 
   const handleSubscribe = async (planKey: BIPlanType) => {
-    if (!user) {
-      toast({
-        title: 'Faça login primeiro',
-        description: 'Você precisa estar logado para assinar um plano',
-      });
-      navigate('/auth');
-      return;
-    }
-
     const plan = BI_PLANS[planKey];
     
     // For Performance plan with custom pricing, redirect to César chat
@@ -47,16 +38,22 @@ export function BIPricingSection() {
     }
 
     setIsLoading(planKey);
+
+    const gradientMap: Record<string, string> = {
+      clarity: 'from-blue-500 to-cyan-500',
+      control: 'from-primary to-primary/70',
+    };
     
     openCheckout({
       amountCents: plan.price,
       serviceName: plan.name,
       serviceType: planKey,
       description: plan.description,
-      gradient: plan.color,
+      gradient: gradientMap[planKey] || plan.color,
       metadata: { service_key: planKey },
       allowedMethods: ['card'],
       isRecurring: true,
+      requireGuestInfo: !user,
       onSuccess: () => {
         setIsLoading(null);
         toast({ title: 'Assinatura ativada!', description: `Seu plano ${plan.name} foi ativado.` });
