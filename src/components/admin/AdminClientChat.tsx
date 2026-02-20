@@ -238,18 +238,18 @@ export function AdminClientChat() {
     };
   }, [selectedClient, user]);
 
-  // Validate links before sending - alert if not Stripe
+  // Validate links before sending - alert if not Mercado Pago
   const validateMessageLinks = (message: string): boolean => {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const urls = message.match(urlRegex) || [];
     
     for (const url of urls) {
-      // Check if it's a payment-related URL that's not from Stripe
+      // Check if it's a payment-related URL that's not from Mercado Pago
       if (url.includes('pay') || url.includes('checkout') || url.includes('pagamento')) {
-        if (!url.includes('stripe.com') && !url.includes('checkout.stripe.com')) {
+        if (!url.includes('mercadopago.com.br') && !url.includes('mpago.la')) {
           toast({
             title: '⚠️ Link suspeito detectado!',
-            description: 'Apenas links do Stripe são permitidos para pagamentos. Use o botão "Pagar" para gerar links seguros.',
+            description: 'Apenas links do Mercado Pago são permitidos para pagamentos. Use o botão "Pagar" para gerar links seguros.',
             variant: 'destructive',
           });
           return false;
@@ -501,7 +501,7 @@ Guilherme`);
 Segue o link pro pagamento do seu **${serviceLabel}**:
 
 💰 Valor: **${price}**
-✅ Pagamento seguro (Stripe)
+✅ Pagamento seguro (Mercado Pago)
 📋 Parcela no cartão
 
 🔗 ${paymentUrl}
@@ -792,7 +792,7 @@ Guilherme`);
                             <CreditCard className="h-5 w-5 text-white" />
                           </div>
                           <div>
-                            <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento Stripe</h4>
+                            <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento</h4>
                             <p className="text-xs text-slate-500">
                               {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal'} • Valor customizável
                             </p>
@@ -830,7 +830,7 @@ Guilherme`);
                         )}
                       </Button>
                       <p className="text-xs text-slate-400 mt-2 text-center">
-                        Link gerado via Stripe • Pagamento seguro
+                        Link gerado via Mercado Pago • Pagamento seguro
                       </p>
                     </div>
                   </motion.div>
