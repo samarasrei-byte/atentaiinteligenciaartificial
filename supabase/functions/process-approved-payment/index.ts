@@ -25,11 +25,17 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
 };
 
 // Service → welcome message
-function getWelcomeMessage(serviceType: string, serviceName: string, userName: string): string {
+function getWelcomeMessage(serviceType: string, serviceName: string, userName: string, cpf?: string | null): string {
   const firstName = userName.split(' ')[0] || 'Cliente';
   
+  // For Limpa Nome PF: if CPF was already provided in checkout, don't ask again
+  const cpfAlreadyProvided = cpf && cpf.length >= 11;
+  const limpaNomePfNextSteps = cpfAlreadyProvided
+    ? `Já temos seu CPF registrado (${cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}) ✅\n\nPara darmos início ao processo, preciso apenas de:\n📝 Um breve contexto sobre a restrição\n📄 Documentos que tiver disponíveis`
+    : `Para darmos início ao processo, preciso que me envie:\n📄 Seu CPF\n📝 Um breve contexto sobre a restrição`;
+
   const messages: Record<string, string> = {
-    'credit_repair_pf': `Pagamento confirmado ✅\nSeu serviço **Limpa Nome Pessoa Física** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara darmos início ao processo, preciso que me envie:\n📄 Seu CPF\n📝 Um breve contexto sobre a restrição\n\nEstou à disposição para ajudar! 🤝`,
+    'credit_repair_pf': `Pagamento confirmado ✅\nSeu serviço **Limpa Nome Pessoa Física** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\n${limpaNomePfNextSteps}\n\nEstou à disposição para ajudar! 🤝`,
     'credit_repair_pj': `Pagamento confirmado ✅\nSeu serviço **Limpa Nome Empresa (CNPJ)** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara iniciarmos, preciso que me envie:\n📄 CNPJ da empresa\n📝 Porte da empresa e breve contexto\n\nVamos resolver isso juntos! 🤝`,
     'contador_premium': `Pagamento confirmado ✅\nSua assinatura **Contador Premium Plus** já está ativa.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com seu contador responsável.\n\nEstou à disposição para qualquer dúvida contábil, fiscal ou tributária. Como posso ajudar? 🤝`,
     'clarity': `Pagamento confirmado ✅\nSeu plano **Atentai Clarity** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista de BI financeiro.\n\nVamos iniciar seu onboarding financeiro:\n📊 Qual o segmento da sua empresa?\n💰 Faturamento mensal aproximado?\n🎯 Quais métricas são mais importantes para você?\n\nVamos transformar seus dados em decisões! 📈`,
@@ -236,8 +242,22 @@ serve(async (req) => {
       log("Subscription created/updated", { planType: plan.planType });
     }
 
-    // 4. Create welcome chat message
-    const welcomeMessage = getWelcomeMessage(serviceType, serviceName || serviceType, fullName || 'Cliente');
+    // 4. Fetch CPF if available (for Limpa Nome, already captured in checkout)
+    let userCpf: string | null = null;
+    if (serviceType === 'credit_repair_pf' || serviceType === 'credit_repair_pj' || serviceType === 'credit_repair') {
+      const { data: reqData } = await supabaseAdmin
+        .from('credit_repair_requests')
+        .select('cpf')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      userCpf = reqData?.cpf || null;
+      log("CPF lookup", { hasCpf: !!userCpf });
+    }
+
+    // 5. Create welcome chat message
+    const welcomeMessage = getWelcomeMessage(serviceType, serviceName || serviceType, fullName || 'Cliente', userCpf);
 
     await supabaseAdmin.from('user_welcome_chats').upsert({
       user_id: userId,
