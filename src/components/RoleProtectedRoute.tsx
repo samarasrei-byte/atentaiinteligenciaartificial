@@ -65,8 +65,12 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
     );
   }
 
-  // Not authenticated - redirect to login
+  // Not authenticated - redirect to appropriate login
   if (!user) {
+    // Admin routes go to dedicated admin login
+    if (requiredRole === 'admin') {
+      return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    }
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
   
