@@ -360,15 +360,18 @@ export default function CheckoutPage() {
       if (data?.success) {
         toast.success('✅ Simulação concluída! Redirecionando ao chat...');
         
-        // If new user was created, log them in
-        if (data.isNewUser && data.tempPassword) {
-          const { error: loginError } = await supabase.auth.signInWithPassword({
+        // Auto-login using session token from edge function
+        if (data.accessToken && data.refreshToken) {
+          await supabase.auth.setSession({
+            access_token: data.accessToken,
+            refresh_token: data.refreshToken,
+          });
+        } else if (data.isNewUser && data.tempPassword) {
+          // Fallback: log in with temp password for new users
+          await supabase.auth.signInWithPassword({
             email: data.email,
             password: data.tempPassword,
           });
-          if (loginError) {
-            toast.error('Conta criada mas login automático falhou. Use o e-mail: ' + data.email);
-          }
         }
 
         // Redirect to chat
