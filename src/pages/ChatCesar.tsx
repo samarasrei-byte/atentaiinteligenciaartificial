@@ -175,20 +175,44 @@ export default function ChatCesar() {
     return baseMessages;
   };
   
+  // Persist message to database
+  const persistMessage = async (content: string, senderType: 'user' | 'specialist' | 'system', attachmentUrl?: string, attachmentName?: string, attachmentType?: string) => {
+    if (!user) return;
+    try {
+      await supabase.from('specialist_chat_messages').insert({
+        specialist_channel: 'cesar',
+        service_type: context.type,
+        request_id: requestId || null,
+        sender_id: user.id,
+        sender_type: senderType,
+        content,
+        attachment_url: attachmentUrl || null,
+        attachment_name: attachmentName || null,
+        attachment_type: attachmentType || null,
+      });
+    } catch (err) {
+      console.error('Error persisting message:', err);
+    }
+  };
+
   const handleSendMessage = async () => {
     if (!newMessage.trim() || isSending) return;
     
     setIsSending(true);
     
+    const msgContent = newMessage.trim();
     const userMessage: Message = {
       id: `user-${Date.now()}`,
-      content: newMessage.trim(),
+      content: msgContent,
       sender: 'user',
       timestamp: new Date(),
     };
     
     setMessages(prev => [...prev, userMessage]);
     setNewMessage('');
+    
+    // Persist to database
+    await persistMessage(msgContent, 'user');
     
     setTimeout(() => {
       const responses = [
@@ -197,9 +221,10 @@ export default function ChatCesar() {
         'Perfeito! Já inclui isso na análise.',
       ];
       
+      const response = responses[Math.floor(Math.random() * responses.length)];
       setMessages(prev => [...prev, {
         id: `specialist-${Date.now()}`,
-        content: responses[Math.floor(Math.random() * responses.length)],
+        content: response,
         sender: 'specialist',
         timestamp: new Date(),
       }]);
@@ -212,8 +237,8 @@ export default function ChatCesar() {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    if (file.size > 10 * 1024 * 1024) {
-      toast({ title: 'Arquivo muito grande', description: 'Máximo 10MB', variant: 'destructive' });
+    if (file.size > 50 * 1024 * 1024) {
+      toast({ title: 'Arquivo muito grande', description: 'Máximo 50MB', variant: 'destructive' });
       return;
     }
     
@@ -229,20 +254,28 @@ export default function ChatCesar() {
       
       if (uploadError) throw uploadError;
       
-      const { data: urlData } = supabase.storage
+      // Use signed URL (bucket is private) - 7 days validity
+      const { data: signedData, error: signedError } = await supabase.storage
         .from('chat-attachments')
-        .getPublicUrl(fileName);
+        .createSignedUrl(fileName, 604800);
+      
+      if (signedError) throw signedError;
+      
+      const attachmentUrl = signedData.signedUrl;
       
       const attachmentMessage: Message = {
         id: `user-${Date.now()}`,
         content: `📎 Documento enviado: ${file.name}`,
         sender: 'user',
         timestamp: new Date(),
-        attachmentUrl: urlData.publicUrl,
+        attachmentUrl,
         attachmentName: file.name,
       };
       
       setMessages(prev => [...prev, attachmentMessage]);
+      
+      // Persist attachment to database
+      await persistMessage(`📎 Documento enviado: ${file.name}`, 'user', attachmentUrl, file.name, file.type);
       
       setTimeout(() => {
         setMessages(prev => [...prev, {

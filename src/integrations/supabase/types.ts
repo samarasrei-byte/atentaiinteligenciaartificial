@@ -2340,6 +2340,51 @@ export type Database = {
         }
         Relationships: []
       }
+      specialist_chat_messages: {
+        Row: {
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          content: string
+          created_at: string
+          id: string
+          read_at: string | null
+          request_id: string | null
+          sender_id: string
+          sender_type: string
+          service_type: string
+          specialist_channel: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          content: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          request_id?: string | null
+          sender_id: string
+          sender_type: string
+          service_type: string
+          specialist_channel: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          content?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          request_id?: string | null
+          sender_id?: string
+          sender_type?: string
+          service_type?: string
+          specialist_channel?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
