@@ -429,7 +429,43 @@ export function FiscalAnalysisManagement() {
               {selectedRequest.notes && (
                 <div>
                   <Label className="text-muted-foreground">Observações</Label>
-                  <p className="mt-1 p-3 bg-muted rounded-lg text-sm">{selectedRequest.notes}</p>
+                  {(() => {
+                    try {
+                      const parsed = JSON.parse(selectedRequest.notes);
+                      if (typeof parsed === 'object' && parsed !== null) {
+                        const labelMap: Record<string, string> = {
+                          businessType: "Tipo de Negócio",
+                          sector: "Setor",
+                          employeeCount: "Funcionários",
+                          state: "Estado",
+                          city: "Cidade",
+                          mainConcern: "Principal Preocupação",
+                          currentAccountant: "Contador Atual",
+                          urgency: "Urgência",
+                          additionalInfo: "Informações Adicionais",
+                          documentsCount: "Qtd. Documentos",
+                          monthlyRevenue: "Receita Mensal",
+                          taxRegime: "Regime Tributário",
+                        };
+                        return (
+                          <div className="mt-1 p-3 bg-muted rounded-lg text-sm grid grid-cols-2 gap-2">
+                            {Object.entries(parsed).map(([key, value]) => {
+                              const displayValue = value === "" || value === null || value === undefined ? "Não informado" : String(value);
+                              return (
+                                <div key={key}>
+                                  <span className="text-muted-foreground text-xs">{labelMap[key] || key}</span>
+                                  <p className="font-medium capitalize">{displayValue}</p>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        );
+                      }
+                    } catch {
+                      // not JSON, render as text
+                    }
+                    return <p className="mt-1 p-3 bg-muted rounded-lg text-sm">{selectedRequest.notes}</p>;
+                  })()}
                 </div>
               )}
 
