@@ -38,10 +38,10 @@ const AdminLoginNew = () => {
     if (isLoggingIn) return;
     if (!authLoading && user) {
       if (hasRole('admin') || hasRole('equipe_guilherme')) {
-        window.location.href = '/admin';
+        navigate('/admin', { replace: true });
       }
     }
-  }, [user, hasRole, authLoading, isLoggingIn]);
+  }, [user, hasRole, authLoading, isLoggingIn, navigate]);
 
   // Quick admin access - skip role check for known admin emails
   const isKnownAdmin = (email: string): boolean => {
@@ -115,9 +115,9 @@ const AdminLoginNew = () => {
       if (isKnownAdmin(email)) {
         setLoginState('success');
         toast.success('Acesso autorizado!');
-        // Wait briefly for onAuthStateChange to process the login and load roles
-        await new Promise(resolve => setTimeout(resolve, 500));
-        navigate('/admin', { replace: true });
+        // Force full page reload to ensure AuthContext initializes fresh with the new session
+        await refreshUserData();
+        window.location.href = '/admin';
         return;
       }
 
@@ -128,9 +128,8 @@ const AdminLoginNew = () => {
       if (isAdmin) {
         setLoginState('success');
         toast.success('Acesso autorizado!');
-        // Wait briefly for onAuthStateChange to process the login and load roles
-        await new Promise(resolve => setTimeout(resolve, 500));
-        navigate('/admin', { replace: true });
+        await refreshUserData();
+        window.location.href = '/admin';
       } else {
         await supabase.auth.signOut();
         setAttempts(prev => prev + 1);
