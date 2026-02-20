@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
+import { useNavigate, useSearchParams, useLocation, Link } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -101,6 +101,7 @@ const features = [
 
 const Auth = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const { user, signIn, signUp, loading: authLoading } = useAuth();
   const { toast } = useToast();
@@ -139,7 +140,14 @@ const Auth = () => {
       if (pendingOnboardingData) {
         saveOnboardingData(user.id);
       } else {
-        // Check for post-auth redirect first
+        // Check for post-auth redirect from RoleProtectedRoute (state.from)
+        const fromRoute = (location.state as any)?.from?.pathname;
+        if (fromRoute && fromRoute !== '/auth') {
+          navigate(fromRoute, { replace: true });
+          return;
+        }
+        
+        // Check for post-auth redirect from sessionStorage
         const postAuthRedirect = sessionStorage.getItem('postAuthRedirect');
         if (postAuthRedirect) {
           sessionStorage.removeItem('postAuthRedirect');
