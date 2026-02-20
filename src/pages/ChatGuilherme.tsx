@@ -136,7 +136,7 @@ export default function ChatGuilherme() {
     'geral': 0,
   };
   
-  // Load user profile, check payment status, and initial messages
+  // Load user profile, check payment status, load chat history
   useEffect(() => {
     const loadData = async () => {
       if (!user) return;
@@ -163,12 +163,80 @@ export default function ChatGuilherme() {
         setIsPaid(isPaidRequest);
       }
       
-      // Load welcome message based on context (with payment status for Limpa Nome)
-      const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name, isPaidRequest);
-      setMessages(welcomeMessages);
+      // Load existing chat history from database
+      let query = supabase
+        .from('specialist_chat_messages')
+        .select('*')
+        .eq('specialist_channel', 'guilherme')
+        .eq('service_type', context.type)
+        .order('created_at', { ascending: true });
+      
+      // Filter by request_id if available, otherwise by sender (user's own messages)
+      if (requestId) {
+        query = query.eq('request_id', requestId);
+      } else {
+        query = query.eq('sender_id', user.id);
+      }
+      
+      const { data: existingMessages } = await query;
+      
+      if (existingMessages && existingMessages.length > 0) {
+        // Convert DB messages to Message format
+        const dbMessages: Message[] = existingMessages.map((msg) => ({
+          id: msg.id,
+          content: msg.content,
+          sender: (msg.sender_type === 'user' ? 'user' : msg.sender_type === 'system' ? 'system' : 'specialist') as 'user' | 'specialist' | 'system',
+          timestamp: new Date(msg.created_at),
+          attachmentUrl: msg.attachment_url || undefined,
+          attachmentName: msg.attachment_name || undefined,
+        }));
+        setMessages(dbMessages);
+      } else {
+        // No history - show welcome messages
+        const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name, isPaidRequest);
+        setMessages(welcomeMessages);
+      }
     };
     
     loadData();
+  }, [user, context.type, requestId]);
+  
+  // Subscribe to realtime new messages
+  useEffect(() => {
+    if (!user) return;
+    
+    const channel = supabase
+      .channel('specialist-chat-guilherme')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'specialist_chat_messages',
+          filter: `specialist_channel=eq.guilherme`,
+        },
+        (payload) => {
+          const msg = payload.new as any;
+          // Only add messages relevant to this chat and not sent by current user
+          if (msg.sender_id !== user.id && msg.service_type === context.type) {
+            if (requestId && msg.request_id !== requestId) return;
+            const newMsg: Message = {
+              id: msg.id,
+              content: msg.content,
+              sender: msg.sender_type === 'user' ? 'user' : msg.sender_type === 'system' ? 'system' : 'specialist',
+              timestamp: new Date(msg.created_at),
+              attachmentUrl: msg.attachment_url || undefined,
+              attachmentName: msg.attachment_name || undefined,
+            };
+            setMessages(prev => [...prev, newMsg]);
+          }
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user, context.type, requestId]);
   
   // Auto-scroll to bottom on new messages (using requestAnimationFrame per No-Jump standard)

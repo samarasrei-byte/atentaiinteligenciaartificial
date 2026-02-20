@@ -124,6 +124,7 @@ export default function ChatCesar() {
   const [isWhatsAppConnected] = useState(true);
   const [userProfile, setUserProfile] = useState<any>(null);
   
+  // Load user profile and chat history
   useEffect(() => {
     const loadData = async () => {
       if (!user) return;
@@ -136,12 +137,77 @@ export default function ChatCesar() {
       
       setUserProfile(profile);
       
-      const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name);
-      setMessages(welcomeMessages);
+      // Load existing chat history from database
+      let query = supabase
+        .from('specialist_chat_messages')
+        .select('*')
+        .eq('specialist_channel', 'cesar')
+        .eq('service_type', context.type)
+        .order('created_at', { ascending: true });
+      
+      if (requestId) {
+        query = query.eq('request_id', requestId);
+      } else {
+        query = query.eq('sender_id', user.id);
+      }
+      
+      const { data: existingMessages } = await query;
+      
+      if (existingMessages && existingMessages.length > 0) {
+        const dbMessages: Message[] = existingMessages.map((msg) => ({
+          id: msg.id,
+          content: msg.content,
+          sender: (msg.sender_type === 'user' ? 'user' : msg.sender_type === 'system' ? 'system' : 'specialist') as 'user' | 'specialist' | 'system',
+          timestamp: new Date(msg.created_at),
+          attachmentUrl: msg.attachment_url || undefined,
+          attachmentName: msg.attachment_name || undefined,
+        }));
+        setMessages(dbMessages);
+      } else {
+        const welcomeMessages = getWelcomeMessages(context.type, profile?.full_name);
+        setMessages(welcomeMessages);
+      }
     };
     
     loadData();
-  }, [user, context.type]);
+  }, [user, context.type, requestId]);
+  
+  // Subscribe to realtime new messages
+  useEffect(() => {
+    if (!user) return;
+    
+    const channel = supabase
+      .channel('specialist-chat-cesar')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'specialist_chat_messages',
+          filter: `specialist_channel=eq.cesar`,
+        },
+        (payload) => {
+          const msg = payload.new as any;
+          if (msg.sender_id !== user.id && msg.service_type === context.type) {
+            if (requestId && msg.request_id !== requestId) return;
+            const newMsg: Message = {
+              id: msg.id,
+              content: msg.content,
+              sender: msg.sender_type === 'user' ? 'user' : msg.sender_type === 'system' ? 'system' : 'specialist',
+              timestamp: new Date(msg.created_at),
+              attachmentUrl: msg.attachment_url || undefined,
+              attachmentName: msg.attachment_name || undefined,
+            };
+            setMessages(prev => [...prev, newMsg]);
+          }
+        }
+      )
+      .subscribe();
+    
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, context.type, requestId]);
   
   useEffect(() => {
     if (scrollRef.current) {
