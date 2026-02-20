@@ -324,8 +324,21 @@ export default function CheckoutPage() {
         email: formData.email.trim().toLowerCase(),
         phone: formData.phone.replace(/\D/g, ''),
       },
-      onSuccess: () => {
-        navigate('/painel');
+      onSuccess: async (_paymentId: number, processResult?: any) => {
+        // Auto-login if session tokens are available
+        if (processResult?.accessToken && processResult?.refreshToken) {
+          await supabase.auth.setSession({
+            access_token: processResult.accessToken,
+            refresh_token: processResult.refreshToken,
+          });
+        } else if (processResult?.isNewUser && processResult?.tempPassword) {
+          await supabase.auth.signInWithPassword({
+            email: processResult.email,
+            password: processResult.tempPassword,
+          });
+        }
+        // Redirect to chat or panel
+        navigate(processResult?.redirectPath || '/painel');
       },
     });
   };

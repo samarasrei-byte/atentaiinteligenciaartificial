@@ -23,7 +23,7 @@ interface MPCheckoutOptions {
   gradient?: string;
   icon?: React.ElementType;
   metadata?: Record<string, string>;
-  onSuccess?: (paymentId: number) => void;
+  onSuccess?: (paymentId: number, processResult?: any) => void;
   allowedMethods?: PaymentTab[];
   isRecurring?: boolean;
   // Guest checkout fields (used when user is not authenticated)
@@ -92,8 +92,8 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setGuestEmail(email);
   }, []);
 
-  const handleSuccess = useCallback((paymentId: number) => {
-    options?.onSuccess?.(paymentId);
+  const handleSuccess = useCallback((paymentId: number, processResult?: any) => {
+    options?.onSuccess?.(paymentId, processResult);
     closeCheckout();
   }, [options, closeCheckout]);
 
