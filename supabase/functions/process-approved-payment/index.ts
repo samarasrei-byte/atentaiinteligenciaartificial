@@ -126,15 +126,12 @@ serve(async (req) => {
     }
 
     async function findOrCreateUser(): Promise<string> {
-      // Search by email
-      const { data: existingUsers } = await supabaseAdmin.auth.admin.listUsers();
-      const foundUser = existingUsers?.users?.find(
-        (u: any) => u.email?.toLowerCase() === email.toLowerCase()
-      );
+      // Use getUserByEmail instead of listing ALL users (much faster)
+      const { data: existingUser, error: lookupError } = await supabaseAdmin.auth.admin.getUserByEmail(email.toLowerCase());
 
-      if (foundUser) {
-        log("Existing user found by email", { userId: foundUser.id });
-        return foundUser.id;
+      if (!lookupError && existingUser?.user) {
+        log("Existing user found by email", { userId: existingUser.user.id });
+        return existingUser.user.id;
       }
 
       // Create new user

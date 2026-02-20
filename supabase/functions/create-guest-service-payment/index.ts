@@ -160,15 +160,14 @@ serve(async (req) => {
 
     logStep("Request validated", { serviceType, email: email.substring(0, 3) + '***' });
 
-    // Check if user already exists
+    // Check if user already exists - use getUserByEmail (fast) instead of listUsers (slow)
     let userId: string | null = null;
     let isExistingUser = false;
     
-    const { data: existingUser } = await supabaseAdmin.auth.admin.listUsers();
-    const foundUser = existingUser?.users?.find(u => u.email?.toLowerCase() === email.toLowerCase());
+    const { data: existingUser, error: lookupError } = await supabaseAdmin.auth.admin.getUserByEmail(email.toLowerCase());
     
-    if (foundUser) {
-      userId = foundUser.id;
+    if (!lookupError && existingUser?.user) {
+      userId = existingUser.user.id;
       isExistingUser = true;
       logStep("Existing user found", { userId });
     }
