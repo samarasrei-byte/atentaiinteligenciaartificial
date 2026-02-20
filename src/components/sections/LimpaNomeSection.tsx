@@ -191,7 +191,7 @@ export function LimpaNomeSection() {
                     description: plan.description,
                     gradient: `${plan.gradientFrom} ${plan.gradientTo}`,
                     metadata: { service_key: `credit_repair_${plan.id}` },
-                    allowedMethods: ['pix'],
+                    allowedMethods: ['pix', 'card'],
                     isRecurring: false,
                     requireGuestInfo: !user, // Show guest form if not logged in
                     onSuccess: () => navigate('/painel'),

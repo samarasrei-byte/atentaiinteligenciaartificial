@@ -168,7 +168,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
         metadata: {
           service_key: service.key,
         },
-        allowedMethods: isOneTime ? ['pix'] : ['card'],
+        allowedMethods: isOneTime ? ['pix', 'card'] : ['card'],
         isRecurring: !isOneTime,
         requireGuestInfo: !user, // Show guest form if not logged in
         onSuccess: () => {
