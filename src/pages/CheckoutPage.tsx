@@ -333,7 +333,8 @@ export default function CheckoutPage() {
   // === TEST SIMULATION ===
   const isTestEnvironment = window.location.hostname.includes('lovable.app') || 
     window.location.hostname.includes('lovableproject.com') || 
-    window.location.hostname === 'localhost';
+    window.location.hostname === 'localhost' ||
+    window.location.hostname.includes('atentai.com.br');
 
   const handleSimulatePayment = async () => {
     if (!formData.fullName.trim() || !formData.email.trim()) {
