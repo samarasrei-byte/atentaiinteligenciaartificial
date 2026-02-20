@@ -430,8 +430,10 @@ export function FiscalAnalysisManagement() {
                 <div>
                   <Label className="text-muted-foreground">Observações</Label>
                   {(() => {
+                    const notesText = selectedRequest.notes || "";
+                    // Try to parse as JSON
                     try {
-                      const parsed = JSON.parse(selectedRequest.notes);
+                      const parsed = JSON.parse(notesText);
                       if (typeof parsed === 'object' && parsed !== null) {
                         const labelMap: Record<string, string> = {
                           businessType: "Tipo de Negócio",
@@ -446,15 +448,49 @@ export function FiscalAnalysisManagement() {
                           documentsCount: "Qtd. Documentos",
                           monthlyRevenue: "Receita Mensal",
                           taxRegime: "Regime Tributário",
+                          profession: "Profissão",
+                          annualRevenue: "Faturamento Anual",
+                          monthlyExpenses: "Despesas Mensais",
+                          hasEmployees: "Possui Funcionários",
+                          wantsPartner: "Deseja Sócio",
+                          currentSituation: "Situação Atual",
+                          phone: "Telefone",
+                          email: "E-mail",
+                          cpf: "CPF",
+                          fullName: "Nome Completo",
+                          companyName: "Nome da Empresa",
+                          cnpj: "CNPJ",
+                        };
+                        const valueMap: Record<string, string> = {
+                          pf: "Pessoa Física",
+                          pj: "Pessoa Jurídica",
+                          mei: "MEI",
+                          simples: "Simples Nacional",
+                          lucro_presumido: "Lucro Presumido",
+                          lucro_real: "Lucro Real",
+                          autonomo: "Autônomo",
+                          servicos: "Serviços",
+                          comercio: "Comércio",
+                          industria: "Indústria",
+                          sim: "Sim",
+                          nao: "Não",
+                          true: "Sim",
+                          false: "Não",
+                          high: "Alta",
+                          medium: "Média",
+                          low: "Baixa",
                         };
                         return (
-                          <div className="mt-1 p-3 bg-muted rounded-lg text-sm grid grid-cols-2 gap-2">
+                          <div className="mt-1 p-3 bg-muted rounded-lg text-sm grid grid-cols-2 gap-x-4 gap-y-3">
                             {Object.entries(parsed).map(([key, value]) => {
-                              const displayValue = value === "" || value === null || value === undefined ? "Não informado" : String(value);
+                              const strVal = String(value ?? "");
+                              const displayValue = strVal === "" || strVal === "null" || strVal === "undefined" || strVal === "0" && key !== "employeeCount"
+                                ? "Não informado" 
+                                : (valueMap[strVal.toLowerCase()] || strVal);
                               return (
                                 <div key={key}>
-                                  <span className="text-muted-foreground text-xs">{labelMap[key] || key}</span>
-                                  <p className="font-medium capitalize">{displayValue}</p>
+                                  <span className="text-muted-foreground text-xs">{labelMap[key] || key.replace(/([A-Z])/g, ' $1').replace(/^./, s => s.toUpperCase())}</span>
+                                  <p className="font-medium">{displayValue}</p>
                                 </div>
                               );
                             })}
@@ -462,9 +498,16 @@ export function FiscalAnalysisManagement() {
                         );
                       }
                     } catch {
-                      // not JSON, render as text
+                      // Not JSON
                     }
-                    return <p className="mt-1 p-3 bg-muted rounded-lg text-sm">{selectedRequest.notes}</p>;
+                    // If text contains JSON-like characters, clean it
+                    const cleanText = notesText
+                      .replace(/[{}[\]"]/g, '')
+                      .replace(/,/g, ', ')
+                      .replace(/:/g, ': ')
+                      .replace(/\s+/g, ' ')
+                      .trim();
+                    return <p className="mt-1 p-3 bg-muted rounded-lg text-sm">{cleanText || "Sem observações"}</p>;
                   })()}
                 </div>
               )}
