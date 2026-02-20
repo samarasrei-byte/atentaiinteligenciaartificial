@@ -241,11 +241,19 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
     setShowCheckout(false);
     
     if (processResult?.redirectPath) {
-      // Auto-redirect to panel with chat open
       toast.success(`Serviço ativado! Redirecionando ao chat com ${processResult.specialist || 'especialista'}...`);
 
-      if (processResult.isNewUser && processResult.tempPassword) {
-        // Auto-login the new user
+      // Auto-login: prefer session tokens, fallback to password
+      if (processResult.accessToken && processResult.refreshToken) {
+        try {
+          await supabase.auth.setSession({
+            access_token: processResult.accessToken,
+            refresh_token: processResult.refreshToken,
+          });
+        } catch (e) {
+          console.error('Auto-login setSession failed:', e);
+        }
+      } else if (processResult.isNewUser && processResult.tempPassword) {
         const { error: loginError } = await supabase.auth.signInWithPassword({
           email: processResult.email,
           password: processResult.tempPassword,

@@ -12,6 +12,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { formatPrice } from '@/lib/stripe';
 import { GuestEmailCapture } from '@/components/payments/GuestEmailCapture';
+import { supabase } from '@/integrations/supabase/client';
+import { useNavigate } from 'react-router-dom';
 
 type PaymentTab = 'pix' | 'card';
 
@@ -92,10 +94,40 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     setGuestEmail(email);
   }, []);
 
-  const handleSuccess = useCallback((paymentId: number, processResult?: any) => {
+  const navigate = useNavigate();
+
+  const handleSuccess = useCallback(async (paymentId: number, processResult?: any) => {
+    // Auto-login centralized: set session tokens if available
+    if (processResult?.accessToken && processResult?.refreshToken) {
+      try {
+        await supabase.auth.setSession({
+          access_token: processResult.accessToken,
+          refresh_token: processResult.refreshToken,
+        });
+      } catch (e) {
+        console.error('[MPCheckout] Auto-login setSession failed:', e);
+      }
+    } else if (processResult?.isNewUser && processResult?.tempPassword) {
+      try {
+        await supabase.auth.signInWithPassword({
+          email: processResult.email,
+          password: processResult.tempPassword,
+        });
+      } catch (e) {
+        console.error('[MPCheckout] Auto-login password failed:', e);
+      }
+    }
+
+    // Call original onSuccess callback
     options?.onSuccess?.(paymentId, processResult);
     closeCheckout();
-  }, [options, closeCheckout]);
+
+    // Auto-redirect to chat if redirectPath is available and no custom onSuccess handled it
+    if (processResult?.redirectPath) {
+      toast.success(`Serviço ativado! Redirecionando ao chat com ${processResult.specialist || 'especialista'}...`);
+      navigate(processResult.redirectPath);
+    }
+  }, [options, closeCheckout, navigate]);
 
   const payerEmail = user?.email || guestEmail || options?.guestEmail || '';
   const payerName = profile?.full_name || options?.guestName || 'Cliente';
