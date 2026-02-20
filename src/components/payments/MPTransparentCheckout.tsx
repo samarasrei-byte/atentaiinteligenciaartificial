@@ -40,6 +40,8 @@ interface PostPaymentResult {
   redirectPath: string;
   specialist: string;
   chatType: string;
+  accessToken?: string;
+  refreshToken?: string;
 }
 
 type PaymentTab = 'pix' | 'card';

@@ -231,7 +231,30 @@ serve(async (req) => {
 
     log("Welcome chat created", { chatType: specialist.chatType });
 
-    // 5. Build redirect URL
+    // 5. Generate session for auto-login (works for both new and existing users)
+    const { data: magicLinkData, error: magicLinkError } = await supabaseAdmin.auth.admin.generateLink({
+      type: 'magiclink',
+      email: email.toLowerCase(),
+    });
+
+    let accessToken: string | undefined;
+    let refreshToken: string | undefined;
+
+    if (!magicLinkError && magicLinkData?.properties?.hashed_token) {
+      const { data: sessionData, error: sessionError } = await supabaseAdmin.auth.verifyOtp({
+        type: 'magiclink',
+        token_hash: magicLinkData.properties.hashed_token,
+      });
+      if (!sessionError && sessionData?.session) {
+        accessToken = sessionData.session.access_token;
+        refreshToken = sessionData.session.refresh_token;
+        log("Session generated for auto-login");
+      } else {
+        log("Could not generate session", { error: sessionError?.message });
+      }
+    }
+
+    // 6. Build redirect URL
     const serviceParam = serviceType === 'credit_repair_pf' || serviceType === 'credit_repair_pj' || serviceType === 'credit_repair'
       ? 'limpanome'
       : serviceType === 'contador_premium'
@@ -253,6 +276,8 @@ serve(async (req) => {
       redirectPath,
       specialist: specialist.specialist,
       chatType: specialist.chatType,
+      accessToken,
+      refreshToken,
     }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
       status: 200,
