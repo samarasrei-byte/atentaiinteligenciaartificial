@@ -154,13 +154,32 @@ serve(async (req) => {
 
       log("New user created", { userId: newUser.user.id });
 
-      // Ensure profile exists (trigger should handle this, but just in case)
+      // Ensure profile exists
       await supabaseAdmin.from('profiles').upsert({
         user_id: newUser.user.id,
         full_name: fullName || '',
         email: email.toLowerCase(),
         phone: phone || '',
       }, { onConflict: 'user_id' });
+
+      // Assign 'user' role so DashboardRouter works correctly
+      await supabaseAdmin.from('user_roles').upsert({
+        user_id: newUser.user.id,
+        role: 'user',
+      }, { onConflict: 'user_id,role' });
+      log("Role 'user' assigned to new user");
+
+      // Send password reset email so user can set their own password later
+      const siteUrl = Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '') || '';
+      const { error: resetError } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'recovery',
+        email: email.toLowerCase(),
+      });
+      if (resetError) {
+        log("Password reset email failed (non-blocking)", { error: resetError.message });
+      } else {
+        log("Password reset link generated for new user");
+      }
 
       return newUser.user.id;
     }
@@ -263,6 +282,7 @@ serve(async (req) => {
           ? 'bi-contabilidade'
           : serviceType;
 
+    // Redirect to user panel with chat tab auto-opened (instead of standalone chat page)
     const redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
 
     log("Process complete", { userId, isNewUser, redirectPath });
