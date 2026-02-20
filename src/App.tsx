@@ -97,6 +97,7 @@ import LimpaNomePaymentSuccess from "./pages/LimpaNomePaymentSuccess";
 import LimpaNomeDataCollection from "./pages/LimpaNomeDataCollection";
 import CheckoutPage from "./pages/CheckoutPage";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
+import LimpaNomeColaborador from "./pages/LimpaNomeColaborador";
 
 const queryClient = new QueryClient();
 
@@ -294,6 +295,11 @@ const App = () => (
               <Route path="/admin/metrics" element={
                 <RoleProtectedRoute requiredRole="admin">
                   <MetricsDashboard />
+                </RoleProtectedRoute>
+              } />
+              <Route path="/colaborador/limpa-nome" element={
+                <RoleProtectedRoute requiredRole="equipe_guilherme">
+                  <LimpaNomeColaborador />
                 </RoleProtectedRoute>
               } />
               <Route path="/chat/:consultationId" element={
