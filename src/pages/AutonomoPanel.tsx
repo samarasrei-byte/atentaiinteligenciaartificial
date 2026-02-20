@@ -81,6 +81,7 @@ import { ServiceNotificationBell } from '@/components/notifications/ServiceNotif
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { CashbackCard } from '@/components/calculator/CashbackCard';
 import { CashbackHistoryCard } from '@/components/calculator/CashbackHistoryCard';
+import { UpgradeToEmpresaCard } from '@/components/autonomos/UpgradeToEmpresaCard';
 import { ComingSoonSection } from '@/components/layout/ComingSoonSection';
 import TaxTransitionSimulator from '@/components/simulator/TaxTransitionSimulator';
 import { EmbeddedTimelineReforma } from '@/components/reforma/EmbeddedTimelineReforma';
@@ -391,6 +392,9 @@ const AutonomoPanel: React.FC = () => {
 
       {/* Limpa Nome Card - Novidade */}
       <LimpaNomePromoCard variant="full" showAIFeature={true} />
+
+      {/* Upgrade para Painel Empresa */}
+      <UpgradeToEmpresaCard />
 
       {/* Company Opening Status Card */}
       <Card className="border-emerald-500/30 bg-gradient-to-br from-emerald-500/5 to-transparent">
