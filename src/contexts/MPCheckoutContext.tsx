@@ -98,21 +98,25 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
 
   const handleSuccess = useCallback(async (paymentId: number, processResult?: any) => {
     // Auto-login centralized: set session tokens if available
+    let loginSucceeded = false;
+    
     if (processResult?.accessToken && processResult?.refreshToken) {
       try {
-        await supabase.auth.setSession({
+        const { error } = await supabase.auth.setSession({
           access_token: processResult.accessToken,
           refresh_token: processResult.refreshToken,
         });
+        if (!error) loginSucceeded = true;
       } catch (e) {
         console.error('[MPCheckout] Auto-login setSession failed:', e);
       }
     } else if (processResult?.isNewUser && processResult?.tempPassword) {
       try {
-        await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email: processResult.email,
           password: processResult.tempPassword,
         });
+        if (!error) loginSucceeded = true;
       } catch (e) {
         console.error('[MPCheckout] Auto-login password failed:', e);
       }
@@ -122,9 +126,28 @@ export const MPCheckoutProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     options?.onSuccess?.(paymentId, processResult);
     closeCheckout();
 
-    // Auto-redirect to chat if redirectPath is available and no custom onSuccess handled it
+    // Auto-redirect to chat if redirectPath is available
     if (processResult?.redirectPath) {
       toast.success(`Serviço ativado! Redirecionando ao chat com ${processResult.specialist || 'especialista'}...`);
+      
+      if (loginSucceeded) {
+        // Wait for AuthContext to process the new session before navigating
+        // This prevents ProtectedRoute from seeing user=null and redirecting to /auth
+        await new Promise<void>((resolve) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+              subscription.unsubscribe();
+              resolve();
+            }
+          });
+          // Safety timeout — don't wait forever
+          setTimeout(() => {
+            subscription.unsubscribe();
+            resolve();
+          }, 2000);
+        });
+      }
+      
       navigate(processResult.redirectPath);
     }
   }, [options, closeCheckout, navigate]);
