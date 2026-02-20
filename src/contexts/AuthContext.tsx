@@ -177,9 +177,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Set up auth state listener FIRST
     const { data: { subscription: authSubscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+      (event, session) => {
         // Skip the initial INITIAL_SESSION event - we handle it via getSession()
-        // This prevents the race condition where loading is set to false prematurely
         if (event === 'INITIAL_SESSION' && isInitialLoad) {
           return;
         }
@@ -188,15 +187,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // CRITICAL: Await fetchUserData to ensure roles are loaded BEFORE setting loading=false
-          await fetchUserData(session.user.id);
+          // CRITICAL: Defer fetchUserData to avoid deadlock with signInWithPassword
+          // The SDK awaits onAuthStateChange callbacks, so we must not make async
+          // database calls synchronously here - use setTimeout to break the chain
+          const userId = session.user.id;
+          setTimeout(async () => {
+            await fetchUserData(userId);
+            setLoading(false);
+          }, 0);
         } else {
           setRoles([]);
           setProfile(null);
           setSubscription({ subscribed: false, plan: null, subscriptionEnd: null, isPastDue: false });
           setUserStatus({ isAffiliate: false, isPartner: false, affiliateId: null, partnerId: null });
+          setLoading(false);
         }
-        setLoading(false);
       }
     );
 
