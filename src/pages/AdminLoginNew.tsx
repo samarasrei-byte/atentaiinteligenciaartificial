@@ -29,20 +29,20 @@ const AdminLoginNew = () => {
   const [loginState, setLoginState] = useState<LoginState>('idle');
   const [attempts, setAttempts] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   const { user, hasRole, loading: authLoading, refreshUserData } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in as admin
+  // Redirect if already logged in as admin (only on initial page load, not during login flow)
   useEffect(() => {
+    if (isLoggingIn) return; // Don't interfere during active login
     if (!authLoading && user) {
-      if (hasRole('admin')) {
+      if (hasRole('admin') || hasRole('equipe_guilherme')) {
         navigate('/admin', { replace: true });
-      } else {
-        // User is logged in but NOT admin - sign them out so they can login with admin account
-        supabase.auth.signOut();
       }
+      // Don't sign out non-admin users automatically - it causes login loops
     }
-  }, [user, hasRole, navigate, authLoading]);
+  }, [user, hasRole, navigate, authLoading, isLoggingIn]);
 
   // Quick admin access - skip role check for known admin emails
   const isKnownAdmin = (email: string): boolean => {
@@ -79,7 +79,7 @@ const AdminLoginNew = () => {
       return;
     }
     
-    setLoginState('authenticating');
+    setIsLoggingIn(true);
     
     try {
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -95,12 +95,14 @@ const AdminLoginNew = () => {
           setErrorMessage(authError.message);
         }
         setLoginState('error');
+        setIsLoggingIn(false);
         return;
       }
 
       if (!authData.user) {
         setErrorMessage('Erro ao autenticar. Tente novamente.');
         setLoginState('error');
+        setIsLoggingIn(false);
         return;
       }
 
@@ -133,6 +135,7 @@ const AdminLoginNew = () => {
         setAttempts(prev => prev + 1);
         setErrorMessage('Sua conta não possui permissão de administrador');
         setLoginState('error');
+        setIsLoggingIn(false);
       }
       
     } catch (error) {
@@ -140,6 +143,7 @@ const AdminLoginNew = () => {
       setErrorMessage('Erro inesperado. Tente novamente.');
       setAttempts(prev => prev + 1);
       setLoginState('error');
+      setIsLoggingIn(false);
     }
   };
 
