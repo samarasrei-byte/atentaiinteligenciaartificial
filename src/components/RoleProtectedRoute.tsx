@@ -75,6 +75,11 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
   }
   
   if (!hasAccess) {
+    // For admin routes, redirect to admin login so user can sign in with admin account
+    if (requiredRole === 'admin') {
+      return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    }
+
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950 p-4 relative overflow-hidden">
         {/* Background effects */}
