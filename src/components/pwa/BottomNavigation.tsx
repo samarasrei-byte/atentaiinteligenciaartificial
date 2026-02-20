@@ -31,7 +31,8 @@ export function BottomNavigation() {
     "/contador-onboarding",
     "/comecar",
     "/admin",
-    "/checkout"
+    "/checkout",
+    "/chat"
   ];
   const shouldHide = hiddenPaths.some(path => location.pathname.startsWith(path));
 

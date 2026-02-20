@@ -144,7 +144,11 @@ export default function ChatCesar() {
   }, [user, context.type]);
   
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollRef.current) {
+      requestAnimationFrame(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      });
+    }
   }, [messages]);
   
   const getWelcomeMessages = (serviceType: string, userName?: string): Message[] => {
@@ -268,7 +272,7 @@ export default function ChatCesar() {
   );
   
   return (
-    <div className="min-h-screen bg-slate-50/80 flex flex-col">
+    <div className="min-h-[100dvh] bg-slate-50/80 flex flex-col">
       <Header onNavigate={() => navigate('/')} />
       
       <main className="flex-1 pt-20 pb-6">
@@ -285,7 +289,7 @@ export default function ChatCesar() {
           </Button>
           
           {/* Chat Container */}
-          <ChatContainer className="h-[calc(100vh-180px)] min-h-[500px]">
+          <ChatContainer className="h-[calc(100dvh-180px)] min-h-[400px]">
             {/* Header - Violet/Indigo gradient for César */}
             <ChatHeader
               avatar={

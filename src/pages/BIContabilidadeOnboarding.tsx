@@ -498,24 +498,22 @@ const BIContabilidadeOnboarding = () => {
       </div>
 
       {/* Header */}
-      <header className="relative z-20 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="relative z-20 border-b border-border bg-white/95 backdrop-blur-lg sticky top-0">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
-              <Brain className="h-6 w-6 text-white" />
-            </div>
+            <img src="/logo-atentai.png" alt="AtentAI" className="h-8" />
             <div>
-              <span className="font-bold text-lg text-white">BI+ Contabilidade</span>
-              <span className="text-[10px] text-indigo-400 block -mt-1">by AtentAI™</span>
+              <span className="font-bold text-lg text-foreground">BI+ Contabilidade</span>
+              <span className="text-[10px] text-primary block -mt-1">by AtentAI™</span>
             </div>
           </Link>
           
           <div className="flex items-center gap-3">
-            <Badge variant="outline" className="bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hidden sm:flex">
+            <Badge variant="outline" className="bg-emerald-50 text-emerald-600 border-emerald-200 hidden sm:flex">
               <Shield className="h-3 w-3 mr-1" />
               Dados Seguros
             </Badge>
-            <Badge variant="outline" className="bg-indigo-500/10 text-indigo-400 border-indigo-500/30 hidden sm:flex">
+            <Badge variant="outline" className="bg-indigo-50 text-indigo-600 border-indigo-200 hidden sm:flex">
               <Clock className="h-3 w-3 mr-1" />
               Resposta em 4h
             </Badge>
