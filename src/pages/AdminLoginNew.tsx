@@ -35,14 +35,13 @@ const AdminLoginNew = () => {
 
   // Redirect if already logged in as admin (only on initial page load, not during login flow)
   useEffect(() => {
-    if (isLoggingIn) return; // Don't interfere during active login
+    if (isLoggingIn) return;
     if (!authLoading && user) {
       if (hasRole('admin') || hasRole('equipe_guilherme')) {
-        navigate('/admin', { replace: true });
+        window.location.href = '/admin';
       }
-      // Don't sign out non-admin users automatically - it causes login loops
     }
-  }, [user, hasRole, navigate, authLoading, isLoggingIn]);
+  }, [user, hasRole, authLoading, isLoggingIn]);
 
   // Quick admin access - skip role check for known admin emails
   const isKnownAdmin = (email: string): boolean => {
@@ -116,8 +115,10 @@ const AdminLoginNew = () => {
       if (isKnownAdmin(email)) {
         setLoginState('success');
         toast.success('Acesso autorizado!');
+        // Wait for role data to fully load before navigating
         await refreshUserData();
-        navigate('/admin', { replace: true });
+        // Use window.location for reliable navigation that bypasses React state race conditions
+        window.location.href = '/admin';
         return;
       }
 
@@ -129,7 +130,8 @@ const AdminLoginNew = () => {
         setLoginState('success');
         toast.success('Acesso autorizado!');
         await refreshUserData();
-        navigate('/admin', { replace: true });
+        // Use window.location for reliable navigation that bypasses React state race conditions
+        window.location.href = '/admin';
       } else {
         await supabase.auth.signOut();
         setAttempts(prev => prev + 1);
