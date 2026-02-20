@@ -59,9 +59,9 @@ serve(async (req) => {
       });
     }
 
-    // Find user by email
-    const { data: users } = await supabaseClient.auth.admin.listUsers();
-    const targetUser = users?.users?.find(u => u.email === email);
+    // Find user by email - use getUserByEmail (fast) instead of listUsers (slow)
+    const { data: userData, error: lookupError } = await supabaseClient.auth.admin.getUserByEmail(email);
+    const targetUser = !lookupError ? userData?.user : null;
 
     if (!targetUser) {
       // User doesn't exist, create them
