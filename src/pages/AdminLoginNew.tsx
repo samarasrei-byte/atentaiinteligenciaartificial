@@ -115,10 +115,9 @@ const AdminLoginNew = () => {
       if (isKnownAdmin(email)) {
         setLoginState('success');
         toast.success('Acesso autorizado!');
-        // Wait for role data to fully load before navigating
-        await refreshUserData();
-        // Use window.location for reliable navigation that bypasses React state race conditions
-        window.location.href = '/admin';
+        // Wait briefly for onAuthStateChange to process the login and load roles
+        await new Promise(resolve => setTimeout(resolve, 500));
+        navigate('/admin', { replace: true });
         return;
       }
 
@@ -129,9 +128,9 @@ const AdminLoginNew = () => {
       if (isAdmin) {
         setLoginState('success');
         toast.success('Acesso autorizado!');
-        await refreshUserData();
-        // Use window.location for reliable navigation that bypasses React state race conditions
-        window.location.href = '/admin';
+        // Wait briefly for onAuthStateChange to process the login and load roles
+        await new Promise(resolve => setTimeout(resolve, 500));
+        navigate('/admin', { replace: true });
       } else {
         await supabase.auth.signOut();
         setAttempts(prev => prev + 1);
@@ -151,13 +150,8 @@ const AdminLoginNew = () => {
 
   const isLoading = loginState === 'authenticating' || loginState === 'checking_role' || loginState === 'success';
 
-  if (authLoading) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-red-400" />
-      </div>
-    );
-  }
+  // Don't block the login form on authLoading - show form immediately
+  // The useEffect will handle redirect if already logged in
 
   return (
     <SplitLoginLayout
