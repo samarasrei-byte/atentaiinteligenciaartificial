@@ -86,11 +86,11 @@ const DashboardRouter = () => {
         return;
       }
 
-      // FAST-TRACK: equipe_guilherme users go directly to admin (chat-only access)
+      // FAST-TRACK: equipe_guilherme users go to dedicated Limpa Nome Colaborador panel
       if (hasRole('equipe_guilherme')) {
         if (!hasNavigatedRef.current) {
           hasNavigatedRef.current = true;
-          navigate('/admin?tab=chat', { replace: true });
+          navigate('/colaborador/limpa-nome', { replace: true });
         }
         return;
       }
