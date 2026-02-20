@@ -27,7 +27,8 @@ import {
   Bot,
   CreditCard,
   Download,
-  Image
+  Image,
+  ArrowLeft
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -125,6 +126,7 @@ export function AdminClientChat() {
   const [showReceivedDocs, setShowReceivedDocs] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal' | 'bi'>('all');
+  const [showClientList, setShowClientList] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const theme = selectedClient ? serviceThemes[selectedClient.service_type] : null;
@@ -542,9 +544,24 @@ Guilherme`);
   const fiscalCount = clients.filter(c => c.service_type === 'fiscal').length;
   const biCount = clients.filter(c => c.service_type === 'bi').length;
 
+  // Handle client selection - on mobile, hide list and show chat
+  const handleSelectClient = (client: ClientRequest) => {
+    setSelectedClient(client);
+    // On mobile, hide the client list when a client is selected
+    if (window.innerWidth < 768) {
+      setShowClientList(false);
+    }
+  };
+
+  // Handle back to list on mobile
+  const handleBackToList = () => {
+    setShowClientList(true);
+    setSelectedClient(null);
+  };
+
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center h-[600px] bg-white rounded-xl border border-slate-200">
+      <div className="flex items-center justify-center h-full bg-white rounded-xl border border-slate-200">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-emerald-600" />
           <p className="text-slate-500 text-sm">Carregando atendimentos...</p>
@@ -554,7 +571,7 @@ Guilherme`);
   }
 
   return (
-    <div className="h-[calc(100vh-160px)] min-h-[600px] flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Header Fixo */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
         <div className="flex items-center gap-3">
@@ -575,8 +592,13 @@ Guilherme`);
       {/* Container Principal */}
       <div className="flex-1 flex min-h-0">
         
-        {/* Lista de Clientes - SCROLL APENAS AQUI */}
-        <div className="w-80 shrink-0 flex flex-col border-r border-slate-200 bg-white">
+        {/* Lista de Clientes - Responsive */}
+        <div className={cn(
+          "flex flex-col border-r border-slate-200 bg-white",
+          "w-full md:w-72 lg:w-80 md:shrink-0",
+          // On mobile: show/hide based on state
+          showClientList ? "flex" : "hidden md:flex"
+        )}>
           {/* Busca e Filtros - Fixo */}
           <div className="p-3 space-y-2 border-b border-slate-100 bg-slate-50/50 shrink-0">
             <div className="relative">
@@ -645,7 +667,7 @@ Guilherme`);
                   return (
                     <button
                       key={client.id}
-                      onClick={() => setSelectedClient(client)}
+                      onClick={() => handleSelectClient(client)}
                       className={cn(
                         "w-full px-3 py-3 text-left transition-all",
                         isSelected ? clientTheme.light : "hover:bg-slate-50"
@@ -689,20 +711,32 @@ Guilherme`);
           </div>
         </div>
 
-        {/* Área do Chat - ESTÁTICA */}
-        <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
+        {/* Área do Chat - Responsive */}
+        <div className={cn(
+          "flex-1 flex flex-col min-w-0 bg-slate-50",
+          !showClientList ? "flex" : "hidden md:flex"
+        )}>
           {selectedClient && theme ? (
             <>
               {/* Header do Chat - Fixo */}
-              <div className={cn("shrink-0 px-4 py-3 border-b", theme.primary)}>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold bg-white/20">
+              <div className={cn("shrink-0 px-2 sm:px-4 py-2 sm:py-3 border-b", theme.primary)}>
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                    {/* Back button - mobile only */}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleBackToList}
+                      className="md:hidden shrink-0 text-white hover:bg-white/10 h-8 w-8"
+                    >
+                      <ArrowLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-semibold bg-white/20 shrink-0 text-xs sm:text-sm">
                       {getInitials(selectedClient.full_name)}
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-white">{selectedClient.full_name}</h3>
-                      <p className="text-xs text-white/80">{selectedClient.email}</p>
+                    <div className="min-w-0">
+                      <h3 className="font-semibold text-white text-sm sm:text-base truncate">{selectedClient.full_name}</h3>
+                      <p className="text-[10px] sm:text-xs text-white/80 truncate">{selectedClient.email}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
