@@ -34,8 +34,13 @@ const AdminLoginNew = () => {
 
   // Redirect if already logged in as admin
   useEffect(() => {
-    if (!authLoading && user && hasRole('admin')) {
-      navigate('/admin', { replace: true });
+    if (!authLoading && user) {
+      if (hasRole('admin')) {
+        navigate('/admin', { replace: true });
+      } else {
+        // User is logged in but NOT admin - sign them out so they can login with admin account
+        supabase.auth.signOut();
+      }
     }
   }, [user, hasRole, navigate, authLoading]);
 
