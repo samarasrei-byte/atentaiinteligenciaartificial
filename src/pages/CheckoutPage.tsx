@@ -307,8 +307,8 @@ export default function CheckoutPage() {
       return;
     }
 
-    // Determine allowed methods: PIX for all services (user preference)
-    const allowedMethods: ('pix' | 'card')[] = ['pix'];
+    // Allow both PIX and Card payments with installments
+    const allowedMethods: ('pix' | 'card')[] = ['pix', 'card'];
     
     openCheckout({
       amountCents: finalPrice,
