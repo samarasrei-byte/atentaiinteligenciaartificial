@@ -171,9 +171,13 @@ export default function ChatGuilherme() {
     loadData();
   }, [user, context.type, requestId]);
   
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages (using requestAnimationFrame per No-Jump standard)
   useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (scrollRef.current) {
+      requestAnimationFrame(() => {
+        scrollRef.current?.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      });
+    }
   }, [messages]);
   
   const getWelcomeMessages = (serviceType: string, userName?: string, isPaidService?: boolean): Message[] => {
@@ -320,7 +324,7 @@ export default function ChatGuilherme() {
   );
   
   return (
-    <div className="min-h-screen bg-slate-50/80 flex flex-col">
+    <div className="min-h-[100dvh] bg-slate-50/80 flex flex-col">
       <Header onNavigate={() => navigate('/')} />
       
       <main className="flex-1 pt-20 pb-6">
@@ -340,7 +344,7 @@ export default function ChatGuilherme() {
           {/* Users should not reach this page without paying */}
           
           {/* Chat Container with proper height */}
-          <ChatContainer className="h-[calc(100vh-180px)] min-h-[500px]">
+          <ChatContainer className="h-[calc(100dvh-180px)] min-h-[400px]">
             {/* Header */}
             <ChatHeader
               avatar={

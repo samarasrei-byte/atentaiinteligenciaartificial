@@ -428,12 +428,12 @@ export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       {/* Header */}
-      <header className="border-b border-white/10 bg-slate-900/80 backdrop-blur-xl sticky top-0 z-50">
-        <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+      <header className="border-b border-border bg-white/95 backdrop-blur-lg sticky top-0 z-50">
+        <div className="container max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-8" />
           </Link>
-          <div className="flex items-center gap-2 text-white/60 text-sm">
+          <div className="flex items-center gap-2 text-muted-foreground text-sm">
             <Lock className="h-4 w-4" />
             <span>Pagamento Seguro</span>
           </div>
