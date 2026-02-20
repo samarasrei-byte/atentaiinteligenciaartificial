@@ -23,7 +23,7 @@
    className,
  }) => {
   // Regex para detectar URLs do Stripe e Mercado Pago
-    const paymentUrlRegex = /(https?:\/\/(?:checkout\.stripe\.com|buy\.stripe\.com|(?:www\.)?mercadopago\.com\.br\/checkout|mpago\.la)[^\s\)]+)/gi;
+    const paymentUrlRegex = /(https?:\/\/(?:(?:www\.)?mercadopago\.com\.br\/checkout|mpago\.la)[^\s\)]+)/gi;
     
     // Verifica se há links de pagamento no conteúdo
     const paymentLinks = content.match(paymentUrlRegex);
