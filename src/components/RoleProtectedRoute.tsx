@@ -4,7 +4,7 @@ import { Loader2, ShieldX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Link } from 'react-router-dom';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { logAuditEvent } from '@/hooks/useAuditLog';
 
 type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate' | 'equipe_guilherme';
@@ -27,11 +27,19 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
   const { user, loading, hasRole } = useAuth();
   const location = useLocation();
   const loggedRef = useRef(false);
+  const [timedOut, setTimedOut] = useState(false);
+
+  // Safety timeout: if loading takes more than 8 seconds, stop waiting
+  useEffect(() => {
+    if (!loading) {
+      setTimedOut(false);
+      return;
+    }
+    const timer = setTimeout(() => setTimedOut(true), 8000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   // Check if user has the required role OR is admin (admins can access all panels)
-  // SPECIAL CASE: 'user' role (Empresa panel) is accessible to ALL authenticated users
-  // This ensures anyone who logs in can access the basic empresa panel as a fallback
-  // SPECIAL CASE: 'equipe_guilherme' can access admin panel (chat-only mode enforced by UI)
   const hasAccess = requiredRole === 'user' 
     ? !!user 
     : requiredRole === 'admin'
@@ -54,7 +62,7 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
     }
   }, [loading, user, hasAccess, location.pathname, requiredRole]);
 
-  if (loading) {
+  if (loading && !timedOut) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-950">
         <div className="text-center space-y-4">
@@ -63,6 +71,14 @@ export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRout
         </div>
       </div>
     );
+  }
+
+  // If timed out and still loading, treat as not authenticated
+  if (timedOut && loading) {
+    if (requiredRole === 'admin') {
+      return <Navigate to="/admin/login" state={{ from: location }} replace />;
+    }
+    return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
   // Not authenticated - redirect to appropriate login

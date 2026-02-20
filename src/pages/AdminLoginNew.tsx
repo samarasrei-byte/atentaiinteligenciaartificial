@@ -29,25 +29,17 @@ const AdminLoginNew = () => {
   const [loginState, setLoginState] = useState<LoginState>('idle');
   const [attempts, setAttempts] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const { user, hasRole, loading: authLoading, refreshUserData } = useAuth();
+  const [pendingRedirect, setPendingRedirect] = useState(false);
+  const { user, hasRole, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
-  // Redirect if already logged in as admin (only on initial page load, not during login flow)
+  // Single unified redirect effect: handles both "already logged in" and "just logged in"
   useEffect(() => {
-    if (isLoggingIn) return;
-    if (!authLoading && user) {
-      if (hasRole('admin') || hasRole('equipe_guilherme')) {
-        navigate('/admin', { replace: true });
-      }
+    if (authLoading) return;
+    if (user && (hasRole('admin') || hasRole('equipe_guilherme'))) {
+      navigate('/admin', { replace: true });
     }
-  }, [user, hasRole, authLoading, isLoggingIn, navigate]);
-
-  // Quick admin access - skip role check for known admin emails
-  const isKnownAdmin = (email: string): boolean => {
-    const knownAdmins = ['admin@atentai.com.br', 'contato@atentai.com.br'];
-    return knownAdmins.includes(email.toLowerCase().trim());
-  };
+  }, [user, hasRole, authLoading, navigate]);
 
   // Direct database check for admin role
   const checkAdminRoleDirectly = async (userId: string): Promise<boolean> => {
@@ -56,15 +48,9 @@ const AdminLoginNew = () => {
         _user_id: userId,
         _role: 'admin'
       });
-      
-      if (error) {
-        console.error('Error checking admin role:', error);
-        return false;
-      }
-      
+      if (error) return false;
       return data === true;
-    } catch (err) {
-      console.error('Exception checking admin role:', err);
+    } catch {
       return false;
     }
   };
@@ -78,7 +64,7 @@ const AdminLoginNew = () => {
       return;
     }
     
-    setIsLoggingIn(true);
+    setLoginState('authenticating');
     
     try {
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
@@ -88,54 +74,47 @@ const AdminLoginNew = () => {
       
       if (authError) {
         setAttempts(prev => prev + 1);
-        if (authError.message.includes('Invalid login credentials')) {
-          setErrorMessage('Email ou senha incorretos');
-        } else {
-          setErrorMessage(authError.message);
-        }
+        setErrorMessage(
+          authError.message.includes('Invalid login credentials')
+            ? 'Email ou senha incorretos'
+            : authError.message
+        );
         setLoginState('error');
-        setIsLoggingIn(false);
         return;
       }
 
       if (!authData.user) {
         setErrorMessage('Erro ao autenticar. Tente novamente.');
         setLoginState('error');
-        setIsLoggingIn(false);
         return;
       }
 
-      // CRITICAL: Clear any stale onboarding/redirect flags to prevent redirect loops
+      // Clear stale redirect flags
       sessionStorage.removeItem('pendingOnboardingData');
       sessionStorage.removeItem('selectedUserType');
       sessionStorage.removeItem('isNewSignup');
       sessionStorage.removeItem('postAuthRedirect');
 
-      // Fast-track for known admins - skip extra verification
-      if (isKnownAdmin(email)) {
-        setLoginState('success');
-        toast.success('Acesso autorizado!');
-        // Force full page reload to ensure AuthContext initializes fresh with the new session
-        await refreshUserData();
-        window.location.href = '/admin';
-        return;
-      }
-
       setLoginState('checking_role');
-      
+
+      // Check admin role directly in the database (doesn't depend on AuthContext)
       const isAdmin = await checkAdminRoleDirectly(authData.user.id);
-      
-      if (isAdmin) {
+
+      // Also accept known admin emails as fast-track
+      const knownAdmins = ['admin@atentai.com.br', 'contato@atentai.com.br'];
+      const isKnown = knownAdmins.includes(email.trim().toLowerCase());
+
+      if (isAdmin || isKnown) {
         setLoginState('success');
         toast.success('Acesso autorizado!');
-        await refreshUserData();
-        window.location.href = '/admin';
+        setPendingRedirect(true);
+        // The useEffect above will handle navigation once AuthContext finishes loading
+        // But also set a fallback timeout in case AuthContext is slow
       } else {
         await supabase.auth.signOut();
         setAttempts(prev => prev + 1);
         setErrorMessage('Sua conta não possui permissão de administrador');
         setLoginState('error');
-        setIsLoggingIn(false);
       }
       
     } catch (error) {
@@ -143,14 +122,19 @@ const AdminLoginNew = () => {
       setErrorMessage('Erro inesperado. Tente novamente.');
       setAttempts(prev => prev + 1);
       setLoginState('error');
-      setIsLoggingIn(false);
     }
   };
 
-  const isLoading = loginState === 'authenticating' || loginState === 'checking_role' || loginState === 'success';
+  // Fallback: if pendingRedirect is true for more than 3 seconds, force navigate
+  useEffect(() => {
+    if (!pendingRedirect) return;
+    const timer = setTimeout(() => {
+      navigate('/admin', { replace: true });
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, [pendingRedirect, navigate]);
 
-  // Don't block the login form on authLoading - show form immediately
-  // The useEffect will handle redirect if already logged in
+  const isLoading = loginState === 'authenticating' || loginState === 'checking_role' || loginState === 'success';
 
   return (
     <SplitLoginLayout
@@ -166,13 +150,8 @@ const AdminLoginNew = () => {
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center lg:text-left">
-          {/* Mobile logo */}
           <div className="lg:hidden mb-6">
-            <img 
-              src="/logo-atentai.png" 
-              alt="AtentAI" 
-              className="h-10 w-auto mx-auto"
-            />
+            <img src="/logo-atentai.png" alt="AtentAI" className="h-10 w-auto mx-auto" />
           </div>
           
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-xs font-medium mb-4">
@@ -199,9 +178,7 @@ const AdminLoginNew = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-sm font-medium">
-              Email
-            </Label>
+            <Label htmlFor="email" className="text-sm font-medium">Email</Label>
             <div className="relative">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
               <Input
@@ -219,9 +196,7 @@ const AdminLoginNew = () => {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password" className="text-sm font-medium">
-              Senha
-            </Label>
+            <Label htmlFor="password" className="text-sm font-medium">Senha</Label>
             <div className="relative">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
               <Input
@@ -266,7 +241,7 @@ const AdminLoginNew = () => {
                 className="p-3 rounded-xl bg-green-500/10 border border-green-500/20 flex items-center justify-center gap-2"
               >
                 <CheckCircle className="h-5 w-5 text-green-500" />
-                <p className="text-sm text-green-600 dark:text-green-400">Acesso autorizado!</p>
+                <p className="text-sm text-green-600 dark:text-green-400">Acesso autorizado! Redirecionando...</p>
               </motion.div>
             )}
           </AnimatePresence>
