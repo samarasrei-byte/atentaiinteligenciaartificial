@@ -24,11 +24,16 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'bi_contabilidade': { chatType: 'cesar', specialist: 'César' },
 };
 
-function getWelcomeMessage(serviceType: string, serviceName: string, userName: string): string {
+function getWelcomeMessage(serviceType: string, serviceName: string, userName: string, cpf?: string | null): string {
   const firstName = userName.split(' ')[0] || 'Cliente';
   
+  const cpfAlreadyProvided = cpf && cpf.length >= 11;
+  const limpaNomePfNextSteps = cpfAlreadyProvided
+    ? `Já temos seu CPF registrado (${cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.***.***-$4')}) ✅\n\nPara darmos início ao processo, preciso apenas de:\n📝 Um breve contexto sobre a restrição\n📄 Documentos que tiver disponíveis`
+    : `Para darmos início ao processo, preciso que me envie:\n📄 Seu CPF\n📝 Um breve contexto sobre a restrição`;
+
   const messages: Record<string, string> = {
-    'credit_repair_pf': `[SIMULAÇÃO DE TESTE] Pagamento confirmado ✅\nSeu serviço **Limpa Nome Pessoa Física** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara darmos início ao processo, preciso que me envie:\n📄 Seu CPF\n📝 Um breve contexto sobre a restrição\n\nEstou à disposição para ajudar! 🤝`,
+    'credit_repair_pf': `[SIMULAÇÃO DE TESTE] Pagamento confirmado ✅\nSeu serviço **Limpa Nome Pessoa Física** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\n${limpaNomePfNextSteps}\n\nEstou à disposição para ajudar! 🤝`,
     'credit_repair_pj': `[SIMULAÇÃO DE TESTE] Pagamento confirmado ✅\nSeu serviço **Limpa Nome Empresa (CNPJ)** já está ativo.\n\nOlá, ${firstName}! 👋\nPara iniciarmos, preciso que me envie:\n📄 CNPJ da empresa\n📝 Porte da empresa e breve contexto\n\nVamos resolver isso juntos! 🤝`,
   };
 
@@ -166,8 +171,21 @@ serve(async (req) => {
       log("Subscription created (TEST)", { planType: plan.planType });
     }
 
-    // 3. Create welcome chat message
-    const welcomeMessage = getWelcomeMessage(serviceType, serviceName || serviceType, fullName || 'Cliente');
+    // 3. Fetch CPF if available
+    let userCpf: string | null = null;
+    if (serviceType === 'credit_repair_pf' || serviceType === 'credit_repair_pj' || serviceType === 'credit_repair') {
+      const { data: reqData } = await supabaseAdmin
+        .from('credit_repair_requests')
+        .select('cpf')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      userCpf = reqData?.cpf || null;
+    }
+
+    // 4. Create welcome chat message
+    const welcomeMessage = getWelcomeMessage(serviceType, serviceName || serviceType, fullName || 'Cliente', userCpf);
 
     await supabaseAdmin.from('user_welcome_chats').upsert({
       user_id: userId,
