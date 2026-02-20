@@ -325,20 +325,13 @@ export default function CheckoutPage() {
         phone: formData.phone.replace(/\D/g, ''),
       },
       onSuccess: async (_paymentId: number, processResult?: any) => {
-        // Auto-login if session tokens are available
-        if (processResult?.accessToken && processResult?.refreshToken) {
-          await supabase.auth.setSession({
-            access_token: processResult.accessToken,
-            refresh_token: processResult.refreshToken,
-          });
-        } else if (processResult?.isNewUser && processResult?.tempPassword) {
-          await supabase.auth.signInWithPassword({
-            email: processResult.email,
-            password: processResult.tempPassword,
-          });
+        // Auto-login is handled centrally by MPCheckoutContext
+        // Just handle any extra redirect logic here if needed
+        // Note: MPCheckoutContext already does setSession + navigate(redirectPath)
+        // so we only need a fallback if no redirectPath is set
+        if (!processResult?.redirectPath) {
+          navigate('/painel');
         }
-        // Redirect to chat or panel
-        navigate(processResult?.redirectPath || '/painel');
       },
     });
   };
@@ -374,23 +367,35 @@ export default function CheckoutPage() {
         toast.success('✅ Simulação concluída! Redirecionando ao chat...');
         
         // Auto-login using session token from edge function
+        let loginOk = false;
         if (data.accessToken && data.refreshToken) {
-          await supabase.auth.setSession({
+          const { error } = await supabase.auth.setSession({
             access_token: data.accessToken,
             refresh_token: data.refreshToken,
           });
+          if (!error) loginOk = true;
         } else if (data.isNewUser && data.tempPassword) {
-          // Fallback: log in with temp password for new users
-          await supabase.auth.signInWithPassword({
+          const { error } = await supabase.auth.signInWithPassword({
             email: data.email,
             password: data.tempPassword,
           });
+          if (!error) loginOk = true;
         }
 
-        // Redirect to chat
-        setTimeout(() => {
-          navigate(data.redirectPath || '/chat/guilherme?servico=limpanome');
-        }, 1500);
+        // Wait for AuthContext to update before navigating
+        if (loginOk) {
+          await new Promise<void>((resolve) => {
+            const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+              if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+                subscription.unsubscribe();
+                resolve();
+              }
+            });
+            setTimeout(() => { subscription.unsubscribe(); resolve(); }, 2000);
+          });
+        }
+
+        navigate(data.redirectPath || '/chat/guilherme?servico=limpanome');
       } else {
         toast.error(data?.error || 'Erro na simulação');
       }

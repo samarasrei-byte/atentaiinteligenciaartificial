@@ -243,13 +243,15 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
     if (processResult?.redirectPath) {
       toast.success(`Serviço ativado! Redirecionando ao chat com ${processResult.specialist || 'especialista'}...`);
 
+      let loginSucceeded = false;
       // Auto-login: prefer session tokens, fallback to password
       if (processResult.accessToken && processResult.refreshToken) {
         try {
-          await supabase.auth.setSession({
+          const { error } = await supabase.auth.setSession({
             access_token: processResult.accessToken,
             refresh_token: processResult.refreshToken,
           });
+          if (!error) loginSucceeded = true;
         } catch (e) {
           console.error('Auto-login setSession failed:', e);
         }
@@ -258,10 +260,24 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
           email: processResult.email,
           password: processResult.tempPassword,
         });
-        if (loginError) {
+        if (!loginError) loginSucceeded = true;
+        else {
           console.error('Auto-login failed:', loginError);
           toast.info('Conta criada! Faça login com o email: ' + processResult.email);
         }
+      }
+
+      // Wait for AuthContext to process the session before navigating
+      if (loginSucceeded) {
+        await new Promise<void>((resolve) => {
+          const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+            if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED' || event === 'INITIAL_SESSION') {
+              subscription.unsubscribe();
+              resolve();
+            }
+          });
+          setTimeout(() => { subscription.unsubscribe(); resolve(); }, 2000);
+        });
       }
 
       onSuccess?.();
