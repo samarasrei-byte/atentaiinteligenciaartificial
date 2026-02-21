@@ -481,7 +481,7 @@ export default function FiscalAnalysisOnboarding() {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-6 mt-12">
+      <footer className="border-t border-white/10 py-6 pb-28 mt-12">
         <div className="container max-w-4xl mx-auto px-4 text-center text-white/40 text-sm">
           <p>© {new Date().getFullYear()} AtentAI — Inteligência tributária para todos.</p>
         </div>
