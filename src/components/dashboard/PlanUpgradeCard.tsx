@@ -15,7 +15,7 @@ import {
   Brain,
   Zap
 } from 'lucide-react';
-import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanType } from '@/lib/plans';
 import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
 import { isContadorEnabled } from '@/lib/featureFlags';
 
@@ -98,7 +98,7 @@ export function PlanUpgradeCard() {
     );
   }
 
-  const nextPlanData = STRIPE_PLANS[nextPlan];
+  const nextPlanData = PLANS[nextPlan];
   const NextPlanIcon = planIcons[nextPlan];
   const reasons = upgradeReasons[nextPlan];
 

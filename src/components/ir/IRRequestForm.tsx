@@ -12,7 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { MaskedInput } from '@/components/ui/masked-input';
 import { AffiliateCouponInput, AppliedAffiliateCoupon, calculateAffiliateCouponDiscount } from '@/components/pricing/AffiliateCouponInput';
 import { useToast } from '@/hooks/use-toast';
-import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
+import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
 import { cleanDocument } from '@/lib/documentValidation';
 import { 
   FileText, 

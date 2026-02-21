@@ -16,7 +16,7 @@ import GlowingProgress from '@/components/onboarding/GlowingProgress';
 import FloatingCard from '@/components/onboarding/FloatingCard';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { STRIPE_PLANS } from '@/lib/stripe';
+import { PLANS } from '@/lib/plans';
 
 type UserType = 'empresa' | 'autonomo' | 'contador';
 type Step = 'value' | 'email' | 'profile' | 'card';
@@ -123,10 +123,10 @@ const TrialOnboarding = () => {
     
     try {
       const priceId = selectedType === 'contador' 
-        ? STRIPE_PLANS.contador.priceId 
+        ? PLANS.contador.priceId 
         : selectedType === 'autonomo'
-          ? STRIPE_PLANS.autonomo.priceId
-          : STRIPE_PLANS.premium.priceId;
+          ? PLANS.autonomo.priceId
+          : PLANS.premium.priceId;
 
       const { data, error } = await supabase.functions.invoke('create-trial-checkout', {
         body: {

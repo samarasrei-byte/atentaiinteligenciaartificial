@@ -39,7 +39,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
-import { PlanType } from '@/lib/stripe';
+import { PlanType } from '@/lib/plans';
 
 interface SidebarItem {
   icon: React.ElementType;

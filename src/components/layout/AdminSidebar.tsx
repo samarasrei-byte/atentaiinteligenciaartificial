@@ -310,7 +310,7 @@ const AdminSidebar: React.FC<AdminSidebarProps> = ({
           collapsed ? 'w-14' : 'w-60'
         )}
       >
-        {/* Logo - Clean Stripe Style */}
+        {/* Logo */}
         <div className="flex items-center justify-between px-3 py-3 border-b border-border">
           <div className={cn('flex items-center gap-2', collapsed && 'justify-center w-full')}>
             <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center shadow-sm">

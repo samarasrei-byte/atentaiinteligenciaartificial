@@ -90,7 +90,7 @@ export const FinancialRevenues: React.FC = () => {
           plan: null,
           type: 'one_time',
           amount: p.amount_cents,
-          source: 'stripe'
+          source: 'mercadopago'
         });
       });
 
@@ -103,7 +103,7 @@ export const FinancialRevenues: React.FC = () => {
           plan: s.plan_type,
           type: 'subscription',
           amount: s.price_cents,
-          source: 'stripe'
+          source: 'mercadopago'
         });
       });
 

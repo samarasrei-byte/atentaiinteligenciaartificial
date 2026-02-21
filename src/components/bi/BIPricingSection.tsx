@@ -19,7 +19,7 @@ import {
   AlertTriangle
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { BI_PLANS, formatPrice, BIPlanType } from '@/lib/stripe';
+import { BI_PLANS, formatPrice, BIPlanType } from '@/lib/plans';
 
 export function BIPricingSection() {
   const navigate = useNavigate();
@@ -286,7 +286,7 @@ export function BIPricingSection() {
 
         <div className="mt-12 text-center">
           <p className="text-muted-foreground text-sm">
-            Pagamento seguro via Stripe. Cancele a qualquer momento.
+            Pagamento seguro via Mercado Pago. Cancele a qualquer momento.
           </p>
           <p className="text-xs text-muted-foreground mt-2">
             Todos os planos incluem suporte prioritário e validação humana obrigatória.

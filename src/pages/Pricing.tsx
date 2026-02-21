@@ -20,7 +20,7 @@ import {
   Star
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanType } from '@/lib/plans';
 import { CouponInput } from '@/components/pricing/CouponInput';
 import { isContadorEnabled } from '@/lib/featureFlags';
 
@@ -66,7 +66,7 @@ const Pricing = () => {
       return;
     }
 
-    const plan = STRIPE_PLANS[planKey];
+    const plan = PLANS[planKey];
     const originalPrice = plan.price;
     const finalPrice = calculateDiscountedPrice(originalPrice);
 
@@ -222,7 +222,7 @@ const Pricing = () => {
           {subscription.subscribed && subscription.plan && (
             <div className="mt-6 inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full">
               <Crown className="h-5 w-5" />
-              <span>Você está no plano <strong>{STRIPE_PLANS[subscription.plan]?.name}</strong></span>
+              <span>Você está no plano <strong>{PLANS[subscription.plan]?.name}</strong></span>
             </div>
           )}
           
@@ -250,7 +250,7 @@ const Pricing = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           {orderedPlans.map((key) => {
-            const plan = STRIPE_PLANS[key];
+            const plan = PLANS[key];
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
             const isHighlight = 'highlight' in plan && plan.highlight;

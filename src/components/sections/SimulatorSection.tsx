@@ -22,7 +22,7 @@ import {
   SimulationResult,
 } from "@/lib/taxData";
 import { exportSimulationToPdf } from "@/lib/exportPdf";
-import { STRIPE_PLANS, formatPrice } from "@/lib/stripe";
+import { PLANS, formatPrice } from "@/lib/plans";
 
 export function SimulatorSection() {
   const navigate = useNavigate();
@@ -432,7 +432,7 @@ export function SimulatorSection() {
                             </div>
                             <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
                               <Sparkles className="w-4 h-4 text-accent" />
-                              <span>A partir de {formatPrice(STRIPE_PLANS.simulator.price)}/mês</span>
+                              <span>A partir de {formatPrice(PLANS.simulator.price)}/mês</span>
                             </div>
                             <Button 
                               variant="accent" 

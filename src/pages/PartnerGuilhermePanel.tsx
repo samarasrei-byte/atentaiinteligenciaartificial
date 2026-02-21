@@ -401,7 +401,7 @@ export default function PartnerGuilhermePanel() {
             <div>
               <p className="text-sm text-muted-foreground mb-1">Receita Total (100% Plataforma)</p>
               <p className="text-3xl font-bold text-emerald-400">{formatCurrency(stats.totalRevenue)}</p>
-              <p className="text-xs text-muted-foreground mt-2">Pagamentos processados via Stripe</p>
+              <p className="text-xs text-muted-foreground mt-2">Pagamentos processados via Mercado Pago</p>
             </div>
             <div className="h-16 w-16 rounded-2xl bg-emerald-500/20 flex items-center justify-center">
               <DollarSign className="h-8 w-8 text-emerald-400" />

@@ -8,7 +8,7 @@ import { Loader2, CreditCard, QrCode, Copy, Check, RefreshCw } from 'lucide-reac
 import { loadMercadoPago, MP_STATUS_MAP } from '@/lib/mercadopago';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { formatPrice } from '@/lib/stripe';
+import { formatPrice } from '@/lib/plans';
 
 interface MPTransparentCheckoutProps {
   amountCents: number;

@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 import { useMPCheckout } from "@/contexts/MPCheckoutContext";
 import { supabase } from "@/integrations/supabase/client";
-import { STRIPE_PLANS, formatPrice, AI_LIMITS } from "@/lib/stripe";
+import { PLANS, formatPrice, AI_LIMITS } from "@/lib/plans";
 
 interface Message {
   role: "user" | "assistant";
@@ -219,7 +219,7 @@ export function AISection() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const isPremium = subscription.subscribed && (subscription.plan === 'premium' || subscription.plan === 'contador');
-  const plan = STRIPE_PLANS.premium;
+  const plan = PLANS.premium;
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });

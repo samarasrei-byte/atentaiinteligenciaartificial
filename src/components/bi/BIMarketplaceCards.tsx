@@ -16,7 +16,7 @@ import {
   MessageSquare
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { BI_PLANS, BIPlanType } from '@/lib/stripe';
+import { BI_PLANS, BIPlanType } from '@/lib/plans';
 
 interface BIMarketplaceCardsProps {
   variant?: 'grid' | 'horizontal';

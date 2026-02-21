@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { STRIPE_PLANS } from '@/lib/stripe';
+import { PLANS } from '@/lib/plans';
 
 interface MonthlyConsultationUsage {
   used: number;
@@ -36,7 +36,7 @@ export function useMonthlyConsultations() {
         // Get the monthly limit based on plan (performance tier has consultations)
         const plan = subscription.plan;
         const monthlyLimit = plan === 'contador' 
-          ? (STRIPE_PLANS.contador as any).monthlyConsultations || 3
+          ? (PLANS.contador as any).monthlyConsultations || 3
           : 0;
 
         if (monthlyLimit === 0) {

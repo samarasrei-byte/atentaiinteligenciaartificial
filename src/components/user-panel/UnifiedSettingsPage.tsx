@@ -16,7 +16,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanType } from '@/lib/plans';
 import { InPanelUpgradeModal } from '@/components/subscription/InPanelUpgradeModal';
 import { SubscriptionHistoryCard } from '@/components/subscription/SubscriptionHistoryCard';
 
@@ -63,7 +63,7 @@ export const UnifiedSettingsPage: React.FC = () => {
 
   const currentPlan = subscription.plan;
   const isSubscribed = subscription.subscribed;
-  const planDetails = currentPlan ? STRIPE_PLANS[currentPlan] : null;
+  const planDetails = currentPlan ? PLANS[currentPlan] : null;
 
   // --- Profile ---
   const handleSaveProfile = async () => {
@@ -344,7 +344,7 @@ export const UnifiedSettingsPage: React.FC = () => {
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {(['simulator', 'autonomo', 'premium', 'contador'] as PlanType[]).map((plan) => {
-                  const planInfo = STRIPE_PLANS[plan];
+                  const planInfo = PLANS[plan];
                   const isCurrentPlan = currentPlan === plan;
                   return (
                     <Card key={plan} className={`relative ${isCurrentPlan ? 'border-primary border-2' : 'border-border'}`}>

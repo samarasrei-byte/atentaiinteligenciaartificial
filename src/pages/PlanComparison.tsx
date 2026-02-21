@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { STRIPE_PLANS, formatPrice } from '@/lib/stripe';
+import { PLANS, formatPrice } from '@/lib/plans';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { 
@@ -206,7 +206,7 @@ const PlanComparison = () => {
             </div>
             
             {displayPlans.map((planKey) => {
-              const plan = STRIPE_PLANS[planKey as keyof typeof STRIPE_PLANS];
+              const plan = PLANS[planKey as keyof typeof PLANS];
               const isCurrentPlan = subscription.subscribed && subscription.plan === planKey;
               
               return (
@@ -281,7 +281,7 @@ const PlanComparison = () => {
         {/* CTA Buttons */}
         <div className={`grid grid-cols-1 gap-6 mt-8 ${displayPlans.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
           {displayPlans.map((planKey) => {
-            const plan = STRIPE_PLANS[planKey as keyof typeof STRIPE_PLANS];
+            const plan = PLANS[planKey as keyof typeof PLANS];
             const isCurrentPlan = subscription.subscribed && subscription.plan === planKey;
             const isLoading = loadingPlan === planKey;
             

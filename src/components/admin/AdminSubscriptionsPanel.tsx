@@ -13,7 +13,7 @@ import {
   CheckCircle,
   Star
 } from 'lucide-react';
-import { STRIPE_PLANS, formatPrice } from '@/lib/stripe';
+import { PLANS, formatPrice } from '@/lib/plans';
 
 interface PlanCardProps {
   name: string;
@@ -113,22 +113,22 @@ export const AdminSubscriptionsPanel: React.FC<AdminSubscriptionsPanelProps> = (
 }) => {
   const currentPlans = [
     {
-      ...STRIPE_PLANS.simulator,
+      ...PLANS.simulator,
       icon: Zap,
       gradient: 'from-blue-500 to-cyan-500',
     },
     {
-      ...STRIPE_PLANS.autonomo,
+      ...PLANS.autonomo,
       icon: Briefcase,
       gradient: 'from-green-500 to-emerald-500',
     },
     {
-      ...STRIPE_PLANS.premium,
+      ...PLANS.premium,
       icon: Crown,
       gradient: 'from-primary to-primary/70',
     },
     {
-      ...STRIPE_PLANS.contador,
+      ...PLANS.contador,
       icon: Building2,
       gradient: 'from-accent to-orange-500',
     },

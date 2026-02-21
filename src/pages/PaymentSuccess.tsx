@@ -26,7 +26,7 @@ import {
   Key,
   AlertCircle
 } from 'lucide-react';
-import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanType } from '@/lib/plans';
 
 const planIcons: Record<PlanType, React.ElementType> = {
   simulator: Calculator,
@@ -305,7 +305,7 @@ export default function PaymentSuccess() {
 
   // Subscription payment success view (original code)
   const currentPlan = subscription.plan as PlanType | null;
-  const planData = currentPlan ? STRIPE_PLANS[currentPlan] : null;
+  const planData = currentPlan ? PLANS[currentPlan] : null;
   const PlanIcon = currentPlan ? planIcons[currentPlan] : Crown;
   const steps = currentPlan ? nextSteps[currentPlan] : [];
 

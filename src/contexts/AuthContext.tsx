@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
-import { PlanType } from '@/lib/stripe';
+import { PlanType } from '@/lib/plans';
 import { isQAUser, getQAFlags, QAFlags } from '@/lib/qaMode';
 import { logAuditEvent } from '@/hooks/useAuditLog';
 
