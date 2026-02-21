@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/contexts/AuthContext';
@@ -203,40 +202,28 @@ export function PublicSidebar() {
       </Button>
 
       {/* Mobile Overlay */}
-      <AnimatePresence>
-        {isMobileOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            onClick={() => setIsMobileOpen(false)}
-            className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          />
-        )}
-      </AnimatePresence>
+      {isMobileOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 z-40 md:hidden backdrop-blur-sm"
+          onClick={() => setIsMobileOpen(false)}
+        />
+      )}
 
       {/* Mobile Sidebar */}
-      <AnimatePresence>
-        {isMobileOpen && (
-          <motion.aside
-            initial={{ x: -280 }}
-            animate={{ x: 0 }}
-            exit={{ x: -280 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed left-0 top-0 bottom-0 w-[280px] bg-card border-r border-border z-50 md:hidden shadow-xl"
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setIsMobileOpen(false)}
-              className="absolute top-4 right-4"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-            <SidebarContent />
-          </motion.aside>
-        )}
-      </AnimatePresence>
+      <div className={cn(
+        "fixed left-0 top-0 bottom-0 w-[280px] bg-card border-r border-border z-50 md:hidden shadow-xl transition-transform duration-300 ease-out",
+        isMobileOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setIsMobileOpen(false)}
+          className="absolute top-4 right-4 z-10"
+        >
+          <X className="w-5 h-5" />
+        </Button>
+        <SidebarContent />
+      </div>
 
       {/* Desktop Sidebar */}
       <aside className={cn(
