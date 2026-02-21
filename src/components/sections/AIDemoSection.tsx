@@ -406,7 +406,7 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                   <div className="p-1.5 md:p-2 bg-gradient-to-br from-accent to-orange-500 rounded-lg md:rounded-xl">
                     <Crown className="h-4 w-4 md:h-5 md:w-5 text-white" />
                   </div>
-                  <h3 className="font-bold text-white text-base md:text-lg">AtentAI Premium</h3>
+                  <h3 className="font-bold text-white text-base md:text-lg">AtentAI</h3>
                 </div>
 
                 <p className="text-slate-300 text-xs md:text-sm mb-3 md:mb-4">
