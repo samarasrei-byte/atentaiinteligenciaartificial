@@ -777,13 +777,13 @@ const BIContabilidadeLanding = () => {
       {/* Removed duplicate BIPricingSection - now appears after hero */}
 
       {/* Final CTA */}
-      <section className="py-32 relative overflow-hidden">
+      <section className="py-16 sm:py-32 relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-indigo-950 to-violet-950" />
         
         {/* Animated Background */}
-        <div className="absolute inset-0">
-          <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-indigo-500/20 rounded-full blur-[120px] animate-pulse" />
-          <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-violet-500/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute top-1/4 left-1/4 w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-indigo-500/20 rounded-full blur-[120px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-[250px] sm:w-[400px] h-[250px] sm:h-[400px] bg-violet-500/20 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
         </div>
 
         <div className="container mx-auto px-4 relative z-10">
@@ -808,10 +808,10 @@ const BIContabilidadeLanding = () => {
             <Button 
               onClick={handleCTA}
               size="lg"
-              className="bg-white text-indigo-900 hover:bg-indigo-100 font-bold px-8 sm:px-12 py-6 sm:py-8 text-base sm:text-xl rounded-2xl shadow-2xl shadow-black/30 hover:shadow-black/50 transition-all hover:scale-105 group max-w-full"
+              className="bg-white text-indigo-900 hover:bg-indigo-100 font-bold px-8 sm:px-12 py-6 sm:py-8 text-base sm:text-xl rounded-2xl shadow-2xl shadow-black/30 hover:shadow-black/50 transition-all hover:scale-105 group w-full sm:w-auto"
             >
               <Sparkles className="h-5 w-5 sm:h-6 sm:w-6 mr-2 sm:mr-3 flex-shrink-0 group-hover:rotate-12 transition-transform" />
-              <span className="truncate">Solicitar análise</span>
+              <span className="whitespace-nowrap">Solicitar análise</span>
               <ArrowRight className="h-5 w-5 sm:h-6 sm:w-6 ml-2 sm:ml-3 flex-shrink-0 group-hover:translate-x-1 transition-transform" />
             </Button>
 
