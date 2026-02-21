@@ -139,7 +139,7 @@ export const LandingAIAgent: React.FC = () => {
           </Button>
 
           <p className="text-[10px] text-muted-foreground text-center mt-3">
-            A partir de <span className="font-bold text-foreground">R$ 39/mês</span> • 7 dias de garantia
+            A partir de <span className="font-bold text-foreground">R$ 39,99/mês</span> • 7 dias de garantia
           </p>
         </CardContent>
       </Card>
