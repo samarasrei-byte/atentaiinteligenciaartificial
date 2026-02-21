@@ -60,12 +60,12 @@ export function useAutoOpenChat() {
         if (creditRepair) {
           console.log('[AutoOpenChat] Found active Limpa Nome request:', creditRepair.id);
           toast({
-            title: 'Solicitação em andamento',
-            description: 'Você tem uma solicitação Limpa Nome. Abrindo chat...',
+            title: 'Solicitação Limpa Nome em andamento',
+            description: 'Acesse seu chat pelo menu "Minhas Solicitações".',
           });
           setHasChecked(true);
           setIsChecking(false);
-          navigate(`/chat/guilherme?servico=limpanome&request=${creditRepair.id}`);
+          // Don't navigate away from the panel - user stays on their dashboard
           return;
         }
 
@@ -87,11 +87,11 @@ export function useAutoOpenChat() {
           console.log('[AutoOpenChat] Found active Fiscal Analysis request:', fiscalAnalysis.id);
           toast({
             title: 'Análise Fiscal em andamento',
-            description: 'Você tem uma análise fiscal ativa. Abrindo chat...',
+            description: 'Acesse seu chat pelo menu "Minhas Solicitações".',
           });
           setHasChecked(true);
           setIsChecking(false);
-          navigate(`/chat/guilherme?servico=analise-fiscal&request=${fiscalAnalysis.id}`);
+          // Don't navigate away from the panel
           return;
         }
 
@@ -113,11 +113,11 @@ export function useAutoOpenChat() {
           console.log('[AutoOpenChat] Found active Company Opening request:', companyOpening.id);
           toast({
             title: 'Abertura de Empresa em andamento',
-            description: 'Você tem uma abertura de empresa em análise. Abrindo chat...',
+            description: 'Acesse seu chat pelo menu "Minhas Solicitações".',
           });
           setHasChecked(true);
           setIsChecking(false);
-          navigate(`/chat/guilherme?servico=abertura-empresa&request=${companyOpening.id}`);
+          // Don't navigate away from the panel
           return;
         }
 
@@ -139,11 +139,11 @@ export function useAutoOpenChat() {
           console.log('[AutoOpenChat] Found active IR request:', irRequest.id);
           toast({
             title: 'Declaração IR em andamento',
-            description: 'Você tem uma solicitação de IR ativa. Abrindo chat...',
+            description: 'Acesse seu chat pelo menu "Minhas Solicitações".',
           });
           setHasChecked(true);
           setIsChecking(false);
-          navigate(`/chat/cesar?servico=bi-contabilidade&request=${irRequest.id}`);
+          // Don't navigate away from the panel
           return;
         }
 
