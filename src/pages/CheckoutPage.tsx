@@ -714,35 +714,6 @@ export default function CheckoutPage() {
                     Após o pagamento, sua conta será criada automaticamente e você receberá as instruções por e-mail.
                   </p>
 
-                  {/* TEST: Simulate Payment Button */}
-                  {isTestEnvironment && (
-                    <div className="mt-4 pt-4 border-t border-dashed border-slate-200">
-                      <p className="text-[10px] text-center text-orange-500 font-semibold mb-2">
-                        ⚠️ MODO TESTE — Apenas no ambiente de desenvolvimento
-                      </p>
-                      <Button
-                        type="button"
-                        onClick={handleSimulatePayment}
-                        disabled={isSimulating}
-                        variant="outline"
-                        className="w-full h-12 border-orange-300 text-orange-600 hover:bg-orange-50 font-semibold"
-                      >
-                        {isSimulating ? (
-                          <>
-                            <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                            Simulando aprovação...
-                          </>
-                        ) : (
-                          <>
-                            🧪 Simular Aprovação (Teste)
-                          </>
-                        )}
-                      </Button>
-                      <p className="text-[10px] text-center text-slate-400 mt-1">
-                        Cria conta + serviço + redireciona ao chat sem pagamento real
-                      </p>
-                    </div>
-                  )}
                 </form>
               </CardContent>
             </Card>
