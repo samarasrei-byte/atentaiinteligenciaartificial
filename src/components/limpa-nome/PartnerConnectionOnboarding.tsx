@@ -190,17 +190,17 @@ export function PartnerConnectionOnboarding({ isOpen, onClose, selectedPlan }: P
                     
                     {/* Highlighted human guarantee card */}
                     <div className="relative group">
-                      <div className="absolute inset-0 bg-gradient-to-r from-rose-500/20 to-pink-500/20 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
-                      <div className="relative p-4 rounded-2xl bg-gradient-to-r from-rose-500/10 to-pink-500/10 border-2 border-rose-500/40">
+                      <div className="absolute inset-0 bg-gradient-to-r from-rose-600/30 to-pink-600/30 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 transition-opacity" />
+                      <div className="relative p-4 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-rose-500/40">
                         <div className="flex items-center gap-4">
                           <div className="p-3 rounded-xl bg-rose-500/20">
                             <Heart className="h-6 w-6 text-rose-400" />
                           </div>
                           <div className="flex-1">
-                            <p className="text-lg font-bold text-white tracking-wide">
+                            <p className="text-lg font-bold text-rose-400 tracking-wide">
                               ATENDIMENTO HUMANO GARANTIDO
                             </p>
-                            <p className="text-rose-200 text-sm font-medium">
+                            <p className="text-white text-sm font-medium">
                               Nada é automático – parceiros reais
                             </p>
                           </div>
