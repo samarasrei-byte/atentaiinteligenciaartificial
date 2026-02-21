@@ -371,7 +371,7 @@ const EmpresaPanel = () => {
           .from('companies')
           .select('*')
           .eq('user_id', user!.id)
-          .single();
+          .maybeSingle();
         
         if (companyData) {
           setCompany(companyData);
@@ -389,7 +389,7 @@ const EmpresaPanel = () => {
         .select('*')
         .eq('user_id', user!.id)
         .eq('status', 'active')
-        .single();
+        .maybeSingle();
       
       setSubscription(subData);
 
