@@ -40,6 +40,86 @@ serve(async (req) => {
     const body = await req.json();
     log("Webhook received", { type: body.type, action: body.action });
 
+    // Handle subscription (preapproval) notifications
+    if (body.type === 'subscription_preapproval' || body.type === 'subscription_authorized_payment') {
+      const preapprovalId = body.data?.id;
+      if (!preapprovalId) {
+        log("No preapproval ID in webhook");
+        return new Response(JSON.stringify({ received: true }), { headers: corsHeaders, status: 200 });
+      }
+
+      const mpToken = Deno.env.get("MERCADOPAGO_ACCESS_TOKEN");
+      if (!mpToken) throw new Error("MERCADOPAGO_ACCESS_TOKEN not configured");
+
+      // Fetch preapproval details
+      const preapprovalRes = await fetch(`https://api.mercadopago.com/preapproval/${preapprovalId}`, {
+        headers: { "Authorization": `Bearer ${mpToken}` },
+      });
+
+      if (preapprovalRes.ok) {
+        const preapproval = await preapprovalRes.json();
+        log("Preapproval fetched", { id: preapproval.id, status: preapproval.status });
+
+        // Map MP status to our status
+        const statusMap: Record<string, string> = {
+          'authorized': 'active',
+          'paused': 'paused',
+          'cancelled': 'cancelled',
+          'pending': 'pending',
+        };
+
+        const newStatus = statusMap[preapproval.status] || 'pending';
+
+        // Update subscription in database
+        const { data: updated } = await supabaseAdmin
+          .from('subscriptions')
+          .update({
+            status: newStatus,
+            current_period_end: preapproval.next_payment_date || undefined,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('mp_subscription_id', preapprovalId)
+          .select()
+          .single();
+
+        if (updated) {
+          log("Subscription updated via webhook", { userId: updated.user_id, status: newStatus });
+
+          // If subscription renewed, extend period
+          if (body.type === 'subscription_authorized_payment' && preapproval.status === 'authorized') {
+            const newEnd = new Date();
+            newEnd.setMonth(newEnd.getMonth() + 1);
+            await supabaseAdmin
+              .from('subscriptions')
+              .update({
+                status: 'active',
+                current_period_start: new Date().toISOString(),
+                current_period_end: newEnd.toISOString(),
+              })
+              .eq('mp_subscription_id', preapprovalId);
+            log("Subscription period extended", { newEnd: newEnd.toISOString() });
+
+            // Record revenue
+            await supabaseAdmin.from('financial_revenues').insert({
+              amount_cents: updated.price_cents,
+              revenue_type: 'subscription',
+              service_slug: updated.plan_type || 'subscription',
+              source: 'mercadopago',
+              revenue_date: new Date().toISOString().split('T')[0],
+              user_id: updated.user_id,
+              notes: `MP Subscription renewal #${preapprovalId}`,
+            });
+            log("Renewal revenue recorded");
+          }
+        }
+      }
+
+      return new Response(JSON.stringify({ received: true, processed: true }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 200,
+      });
+    }
+
     // Only process payment notifications
     if (body.type !== 'payment') {
       return new Response(JSON.stringify({ received: true }), {

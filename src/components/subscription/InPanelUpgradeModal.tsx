@@ -16,6 +16,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { PLANS, SUBSCRIBER_DISCOUNTS, formatPrice, PlanType, ServiceType } from '@/lib/plans';
 import { EmbeddedCheckoutForm } from './EmbeddedCheckoutForm';
+import { SubscriptionCheckoutForm } from './SubscriptionCheckoutForm';
 import { toast } from 'sonner';
 
 type UpgradeType = 'subscription' | 'service';
@@ -365,20 +366,29 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
               </div>
             </>
           ) : (
-            /* Embedded Checkout Form */
             <div className="pt-2">
-              <EmbeddedCheckoutForm
-                amount={displayPrice}
-                serviceType={serviceConfig?.type || planConfig?.type || 'unknown'}
-                serviceName={config.name}
-                onSuccess={handlePaymentSuccess}
-                onCancel={() => setCheckoutMode('preview')}
-                metadata={{
-                  upgrade_type: upgradeType,
-                  service_key: serviceKey,
-                  plan_type: planType,
-                }}
-              />
+              {isSubscriptionMode && planConfig ? (
+                <SubscriptionCheckoutForm
+                  planType={planConfig.type}
+                  planName={planConfig.name}
+                  amountCents={displayPrice}
+                  onSuccess={handlePaymentSuccess}
+                  onCancel={() => setCheckoutMode('preview')}
+                />
+              ) : (
+                <EmbeddedCheckoutForm
+                  amount={displayPrice}
+                  serviceType={serviceConfig?.type || planConfig?.type || 'unknown'}
+                  serviceName={config.name}
+                  onSuccess={handlePaymentSuccess}
+                  onCancel={() => setCheckoutMode('preview')}
+                  metadata={{
+                    upgrade_type: upgradeType,
+                    service_key: serviceKey,
+                    plan_type: planType,
+                  }}
+                />
+              )}
             </div>
           )}
         </div>
