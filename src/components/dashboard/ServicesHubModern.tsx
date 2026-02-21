@@ -265,7 +265,7 @@ export const ServicesHubModern: React.FC = () => {
           return;
         }
 
-        navigate('/bi-contabilidade'); // fora do painel
+        navigate('/modulo-fiscal/onboarding'); // fora do painel
       },
       badge: 'Sem Custo Inicial',
     },

@@ -92,11 +92,11 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
     openCheckout({
       amountCents: price,
       serviceName: `Limpa Nome ${planId === 'pf' ? 'CPF' : 'CNPJ'}`,
-      serviceType: `limpa-nome-${planId}`,
+      serviceType: `credit_repair_${planId}`,
       description: `Regularização ${planId === 'pf' ? 'CPF' : 'CNPJ'}`,
       gradient: 'from-rose-500 to-pink-600',
-      metadata: { service_key: `limpa-nome-${planId}` },
-      onSuccess: () => navigate('/painel'),
+      metadata: { service_key: `credit_repair_${planId}` },
+      onSuccess: () => navigate('/dashboard'),
     });
   };
 
