@@ -81,8 +81,8 @@ export const SERVICE_PRICES = {
 
   // Contador Premium Plus - Subscription
   CONTADOR_PREMIUM: {
-    cents: 19700,
-    formatted: 'R$ 197,00',
+    cents: 19899,
+    formatted: 'R$ 198,99',
     interval: 'month',
     serviceKey: 'contador_premium',
     subscriberDiscount: 0,

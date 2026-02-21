@@ -16,12 +16,18 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'credit_repair_pj': { chatType: 'guilherme', specialist: 'Guilherme' },
   'credit_repair': { chatType: 'guilherme', specialist: 'Guilherme' },
   'contador_premium': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'abertura_empresa': { chatType: 'guilherme', specialist: 'Guilherme' },
   'analise_fiscal': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'clarity': { chatType: 'cesar', specialist: 'César' },
-  'control': { chatType: 'cesar', specialist: 'César' },
   'ir_simples': { chatType: 'cesar', specialist: 'César' },
   'ir_completo': { chatType: 'cesar', specialist: 'César' },
+  'certificate': { chatType: 'cesar', specialist: 'César' },
+  'clarity': { chatType: 'cesar', specialist: 'César' },
+  'control': { chatType: 'cesar', specialist: 'César' },
   'bi_contabilidade': { chatType: 'cesar', specialist: 'César' },
+  // Platform subscriptions - no specialist chat needed
+  'simulator': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'autonomo': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'premium': { chatType: 'guilherme', specialist: 'Guilherme' },
 };
 
 // Service → welcome message
@@ -40,6 +46,13 @@ function getWelcomeMessage(serviceType: string, serviceName: string, userName: s
     'contador_premium': `Pagamento confirmado ✅\nSua assinatura **Contador Premium Plus** já está ativa.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com seu contador responsável.\n\nEstou à disposição para qualquer dúvida contábil, fiscal ou tributária. Como posso ajudar? 🤝`,
     'clarity': `Pagamento confirmado ✅\nSeu plano **Atentai Clarity** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista de BI financeiro.\n\nVamos iniciar seu onboarding financeiro:\n📊 Qual o segmento da sua empresa?\n💰 Faturamento mensal aproximado?\n🎯 Quais métricas são mais importantes para você?\n\nVamos transformar seus dados em decisões! 📈`,
     'control': `Pagamento confirmado ✅\nSeu plano **Atentai Control** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista de controle financeiro avançado.\n\nVamos iniciar o diagnóstico empresarial:\n🏢 Razão social e CNPJ\n📊 Número de funcionários e faturamento\n🎯 Principais desafios financeiros\n\nJuntos vamos ter controle total! 🚀`,
+    'ir_simples': `Pagamento confirmado ✅\nSeu serviço **Declaração IR Simples** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara iniciarmos sua declaração, preciso de:\n📄 Informe de rendimentos\n📝 Documentos pessoais (CPF, comprovante de endereço)\n\nVamos cuidar do seu IR! 🤝`,
+    'ir_completo': `Pagamento confirmado ✅\nSeu serviço **Declaração IR Completo** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara iniciarmos sua declaração, preciso de:\n📄 Informes de rendimentos e investimentos\n📝 Documentos pessoais\n🏠 Comprovantes de bens e direitos\n\nVamos cuidar do seu IR! 🤝`,
+    'certificate': `Pagamento confirmado ✅\nSeu serviço **Emissão de Certidão** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara emitirmos sua certidão, preciso de:\n📄 CPF ou CNPJ\n📝 Tipo de certidão desejada\n\nVamos providenciar! 🤝`,
+    'abertura_empresa': `Pagamento confirmado ✅\nSeu serviço **Abertura de Empresa** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara iniciarmos o processo, preciso de:\n📄 Documentos pessoais\n📝 Atividade desejada e nome fantasia\n🏢 Endereço comercial\n\nVamos abrir sua empresa! 🚀`,
+    'simulator': `Pagamento confirmado ✅\nSua assinatura **Simulador Tributário** já está ativa.\n\nOlá, ${firstName}! 👋\nAcesse o simulador no menu principal para comparar regimes tributários.\n\nQualquer dúvida, estou à disposição! 🤝`,
+    'autonomo': `Pagamento confirmado ✅\nSua assinatura **Plano Autônomo** já está ativa.\n\nOlá, ${firstName}! 👋\nAcesse seu dashboard financeiro no painel do autônomo.\n\nQualquer dúvida, estou à disposição! 🤝`,
+    'premium': `Pagamento confirmado ✅\nSua assinatura **AtentAI Premium** já está ativa.\n\nOlá, ${firstName}! 👋\nTodos os recursos premium estão liberados.\n\nQualquer dúvida, estou à disposição! 🤝`,
   };
 
   return messages[serviceType] || `Pagamento confirmado ✅\nSeu serviço **${serviceName}** já está ativo.\n\nEste é seu canal direto com o especialista responsável.\nEstamos à disposição para ajudar! 🤝`;
@@ -215,12 +228,15 @@ serve(async (req) => {
         }).select('id').single();
         log("Credit repair request created", { requestId: newReq?.id });
       }
-    } else if (serviceType === 'contador_premium' || serviceType === 'clarity' || serviceType === 'control') {
-      // Create/update subscription
+    } else if (['contador_premium', 'clarity', 'control', 'simulator', 'autonomo', 'premium'].includes(serviceType)) {
+      // Create/update subscription for ALL subscription-based plans
       const planMap: Record<string, { planType: string; priceCents: number }> = {
-        'contador_premium': { planType: 'contador_premium', priceCents: 19700 },
+        'contador_premium': { planType: 'contador_premium', priceCents: 19899 },
         'clarity': { planType: 'clarity', priceCents: 149700 },
         'control': { planType: 'control', priceCents: 349700 },
+        'simulator': { planType: 'simulator', priceCents: 3999 },
+        'autonomo': { planType: 'autonomo', priceCents: 6500 },
+        'premium': { planType: 'premium', priceCents: 9800 },
       };
       const plan = planMap[serviceType];
       
@@ -237,6 +253,22 @@ serve(async (req) => {
       }, { onConflict: 'user_id' });
 
       log("Subscription created/updated", { planType: plan.planType });
+    } else if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
+      // IR services - create a record for tracking
+      log("IR service paid", { serviceType, userId });
+    } else if (serviceType === 'certificate') {
+      // Certificate services - create a record for tracking
+      log("Certificate service paid", { serviceType, userId });
+    } else if (serviceType === 'abertura_empresa') {
+      // Company opening - update payment status if requestId exists
+      if (requestId) {
+        await supabaseAdmin.from('company_opening_requests').update({
+          payment_status: 'paid',
+          status_updated_at: new Date().toISOString(),
+        }).eq('id', requestId);
+        log("Company opening request updated", { requestId });
+      }
+      log("Company opening service paid", { serviceType, userId });
     }
 
     // 4. Fetch CPF if available (for Limpa Nome, already captured in checkout)
