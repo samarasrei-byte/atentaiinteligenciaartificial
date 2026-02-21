@@ -680,7 +680,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
                     </span>
                   </div>
                   <p className="text-xs text-white/60 mt-2">
-                    Pagamento seguro via Stripe
+                    Pagamento seguro via Mercado Pago
                   </p>
                 </div>
 
@@ -688,7 +688,7 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
                 <div className="flex items-start gap-2 text-xs text-white/50 bg-slate-800/50 p-3 rounded-lg">
                   <Shield className="h-4 w-4 shrink-0 mt-0.5" />
                   <p>
-                    Seus dados estão protegidos. Você será redirecionado para o ambiente seguro do Stripe para finalizar o pagamento. 
+                    Seus dados estão protegidos. O pagamento é processado de forma segura via Mercado Pago. 
                     Após a confirmação, você receberá um e-mail com acesso à sua conta.
                   </p>
                 </div>
