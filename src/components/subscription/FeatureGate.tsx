@@ -4,7 +4,7 @@ import { Lock, Crown, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { InPanelUpgradeModal } from './InPanelUpgradeModal';
-import { PlanType } from '@/lib/stripe';
+import { PlanType } from '@/lib/plans';
 
 interface FeatureGateProps {
   children: React.ReactNode;

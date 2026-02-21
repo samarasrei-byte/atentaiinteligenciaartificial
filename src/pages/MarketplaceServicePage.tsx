@@ -17,7 +17,7 @@ import {
   Check, ArrowRight, ArrowLeft, Shield, User, Scale, Briefcase, 
   Store, Loader2, CreditCard, Sparkles
 } from 'lucide-react';
-import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
+import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
 import { MaskedInput } from '@/components/ui/masked-input';
 import { 
   getChatUrl, 

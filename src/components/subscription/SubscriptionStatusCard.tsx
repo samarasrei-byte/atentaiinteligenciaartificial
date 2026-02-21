@@ -15,7 +15,7 @@ import {
   Calendar,
   Shield
 } from 'lucide-react';
-import { BI_PLANS, STRIPE_PLANS, BIPlanType, PlanType } from '@/lib/stripe';
+import { BI_PLANS, PLANS, BIPlanType, PlanType } from '@/lib/plans';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
@@ -31,7 +31,7 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
   // Determine if it's a BI plan or platform plan
   const currentPlanKey = subscription.plan;
   const isBIPlan = currentPlanKey && (currentPlanKey as string) in BI_PLANS;
-  const isPlatformPlan = currentPlanKey && currentPlanKey in STRIPE_PLANS;
+  const isPlatformPlan = currentPlanKey && currentPlanKey in PLANS;
 
   // Get current BI plan if applicable
   const currentBIPlanKey = isBIPlan ? (currentPlanKey as BIPlanType) : null;

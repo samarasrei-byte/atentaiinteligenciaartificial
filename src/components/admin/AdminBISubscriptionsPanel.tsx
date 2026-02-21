@@ -24,7 +24,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow, format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { BI_PLANS, BIPlanType } from '@/lib/stripe';
+import { BI_PLANS, BIPlanType } from '@/lib/plans';
 import { formatCurrency } from '@/lib/formatCurrency';
 
 interface BISubscription {

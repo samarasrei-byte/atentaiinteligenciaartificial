@@ -18,7 +18,7 @@ import {
   Shield
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { STRIPE_PLANS, formatPrice } from '@/lib/stripe';
+import { PLANS, formatPrice } from '@/lib/plans';
 
 const PlanoSimulador = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const PlanoSimulador = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const plan = STRIPE_PLANS.simulator;
+  const plan = PLANS.simulator;
   const isCurrentPlan = subscription.plan === 'simulator';
 
   const handleSubscribe = async () => {

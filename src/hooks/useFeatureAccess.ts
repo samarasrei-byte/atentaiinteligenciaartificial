@@ -1,5 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext';
-import { PlanType, AI_LIMITS } from '@/lib/stripe';
+import { PlanType, AI_LIMITS } from '@/lib/plans';
 
 type Feature = 
   | 'simulator'

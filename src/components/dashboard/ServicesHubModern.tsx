@@ -27,7 +27,7 @@ import {
   Brain,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
-import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/stripe';
+import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
 
 interface ServiceCardProps {
   title: string;

@@ -14,7 +14,7 @@ import {
   Sparkles, ArrowRight, Brain, Scale, Building2, Crown, X
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { STRIPE_PLANS, SUBSCRIBER_DISCOUNTS, formatPrice, PlanType, ServiceType } from '@/lib/stripe';
+import { PLANS, SUBSCRIBER_DISCOUNTS, formatPrice, PlanType, ServiceType } from '@/lib/plans';
 import { EmbeddedCheckoutForm } from './EmbeddedCheckoutForm';
 import { toast } from 'sonner';
 
@@ -121,37 +121,37 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
 const PLAN_CONFIGS: Record<PlanType, PlanConfig> = {
   simulator: {
     type: 'simulator',
-    name: STRIPE_PLANS.simulator.name,
-    description: STRIPE_PLANS.simulator.description,
-    priceCents: STRIPE_PLANS.simulator.price,
-    features: [...STRIPE_PLANS.simulator.features],
+    name: PLANS.simulator.name,
+    description: PLANS.simulator.description,
+    priceCents: PLANS.simulator.price,
+    features: [...PLANS.simulator.features],
     icon: Zap,
     gradient: 'from-blue-500 to-cyan-500',
   },
   autonomo: {
     type: 'autonomo',
-    name: STRIPE_PLANS.autonomo.name,
-    description: STRIPE_PLANS.autonomo.description,
-    priceCents: STRIPE_PLANS.autonomo.price,
-    features: [...STRIPE_PLANS.autonomo.features],
+    name: PLANS.autonomo.name,
+    description: PLANS.autonomo.description,
+    priceCents: PLANS.autonomo.price,
+    features: [...PLANS.autonomo.features],
     icon: Brain,
     gradient: 'from-green-500 to-emerald-500',
   },
   premium: {
     type: 'premium',
-    name: STRIPE_PLANS.premium.name,
-    description: STRIPE_PLANS.premium.description,
-    priceCents: STRIPE_PLANS.premium.price,
-    features: [...STRIPE_PLANS.premium.features],
+    name: PLANS.premium.name,
+    description: PLANS.premium.description,
+    priceCents: PLANS.premium.price,
+    features: [...PLANS.premium.features],
     icon: Star,
     gradient: 'from-primary to-primary/70',
   },
   contador: {
     type: 'contador',
-    name: STRIPE_PLANS.contador.name,
-    description: STRIPE_PLANS.contador.description,
-    priceCents: STRIPE_PLANS.contador.price,
-    features: [...STRIPE_PLANS.contador.features],
+    name: PLANS.contador.name,
+    description: PLANS.contador.description,
+    priceCents: PLANS.contador.price,
+    features: [...PLANS.contador.features],
     icon: Crown,
     gradient: 'from-accent to-orange-500',
   },

@@ -24,7 +24,7 @@ import {
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanType } from '@/lib/plans';
 import { InPanelUpgradeModal } from './InPanelUpgradeModal';
 import { SubscriptionHistoryCard } from './SubscriptionHistoryCard';
 
@@ -93,7 +93,7 @@ export const SubscriptionManagement: React.FC = () => {
 
   const getPlanDetails = () => {
     if (!currentPlan) return null;
-    return STRIPE_PLANS[currentPlan];
+    return PLANS[currentPlan];
   };
 
   const planDetails = getPlanDetails();
@@ -287,7 +287,7 @@ export const SubscriptionManagement: React.FC = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {(['simulator', 'autonomo', 'premium', 'contador'] as PlanType[]).map((plan) => {
-              const planInfo = STRIPE_PLANS[plan];
+              const planInfo = PLANS[plan];
               const isCurrentPlan = currentPlan === plan;
               
               return (

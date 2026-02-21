@@ -19,7 +19,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { ServicePricePreview } from '@/components/pricing/ServicePricePreview';
-import { SUBSCRIBER_DISCOUNTS } from '@/lib/stripe';
+import { SUBSCRIBER_DISCOUNTS } from '@/lib/plans';
 
 const CERTIFICATE_TYPES = [
   { 
@@ -219,7 +219,7 @@ const CertificateRequestForm: React.FC<CertificateRequestFormProps> = ({ onSucce
             <div>
               <p className="font-medium text-foreground">Pagamento Seguro</p>
               <p className="text-sm text-muted-foreground">
-                Processado via Stripe. Seus dados financeiros são protegidos com criptografia de ponta a ponta.
+                Processado via Mercado Pago. Seus dados financeiros são protegidos com criptografia de ponta a ponta.
               </p>
             </div>
           </div>

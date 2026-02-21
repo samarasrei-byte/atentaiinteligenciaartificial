@@ -246,7 +246,7 @@ export function GuestCheckoutForm({
           </Button>
 
           <p className="text-xs text-center text-muted-foreground">
-            Ao clicar em Pagar, você será redirecionado para o checkout seguro do Stripe.
+            Ao clicar em Pagar, você será redirecionado para o checkout seguro do Mercado Pago.
           </p>
         </form>
       </CardContent>

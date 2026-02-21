@@ -30,7 +30,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
-import { formatPrice } from '@/lib/stripe';
+import { formatPrice } from '@/lib/plans';
 import { 
   FileText, 
   FileSpreadsheet, 

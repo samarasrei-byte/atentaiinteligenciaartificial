@@ -13,7 +13,7 @@ import {
   Check,
   Lock
 } from 'lucide-react';
-import { BI_PLANS, BIPlanType } from '@/lib/stripe';
+import { BI_PLANS, BIPlanType } from '@/lib/plans';
 
 interface BIAccessCardProps {
   variant?: 'full' | 'compact' | 'minimal';

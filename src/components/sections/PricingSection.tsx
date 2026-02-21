@@ -17,7 +17,7 @@ import {
   Clock
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { STRIPE_PLANS, formatPrice, PlanType } from '@/lib/stripe';
+import { PLANS, formatPrice, PlanType } from '@/lib/plans';
 
 export function PricingSection() {
   const navigate = useNavigate();
@@ -48,10 +48,10 @@ export function PricingSection() {
     setIsLoading(planKey);
     
     openCheckout({
-      amountCents: STRIPE_PLANS[planKey].price,
-      serviceName: STRIPE_PLANS[planKey].name,
+      amountCents: PLANS[planKey].price,
+      serviceName: PLANS[planKey].name,
       serviceType: planKey,
-      description: STRIPE_PLANS[planKey].description,
+      description: PLANS[planKey].description,
       gradient: planKey === 'simulator' ? 'from-blue-500 to-cyan-500' : 
                 planKey === 'autonomo' ? 'from-green-500 to-emerald-500' :
                 planKey === 'premium' ? 'from-primary to-primary/70' : 'from-accent to-orange-500',
@@ -79,7 +79,7 @@ export function PricingSection() {
   };
 
   const getGradient = (key: PlanType) => {
-    const plan = STRIPE_PLANS[key];
+    const plan = PLANS[key];
     return plan.color || 'from-primary to-primary/70';
   };
 
@@ -100,14 +100,14 @@ export function PricingSection() {
           {subscription.subscribed && subscription.plan && (
             <div className="mt-4 md:mt-6 inline-flex items-center gap-2 bg-primary/10 text-primary px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm">
               <Crown className="h-4 w-4 md:h-5 md:w-5" />
-              <span>Plano <strong>{STRIPE_PLANS[subscription.plan as PlanType]?.name}</strong></span>
+              <span>Plano <strong>{PLANS[subscription.plan as PlanType]?.name}</strong></span>
             </div>
           )}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
           {orderedPlans.map((key) => {
-            const plan = STRIPE_PLANS[key];
+            const plan = PLANS[key];
             const isCurrentPlan = subscription.plan === key;
             const isPlanPopular = 'popular' in plan && plan.popular;
             const isHighlight = 'highlight' in plan && plan.highlight;

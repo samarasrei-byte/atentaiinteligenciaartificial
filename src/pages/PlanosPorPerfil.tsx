@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
-import { STRIPE_PLANS, formatPrice } from '@/lib/stripe';
+import { PLANS, formatPrice } from '@/lib/plans';
 import { 
   ArrowLeft, 
   Building2, 
@@ -341,7 +341,7 @@ const PlanosPorPerfil = () => {
                   {/* Plans Grid */}
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     {profile.plans.map((planItem, index) => {
-                      const plan = STRIPE_PLANS[planItem.planKey];
+                      const plan = PLANS[planItem.planKey];
                       
                       return (
                         <Card 

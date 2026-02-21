@@ -18,7 +18,7 @@ import {
   Infinity
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { STRIPE_PLANS, formatPrice, AI_LIMITS } from '@/lib/stripe';
+import { PLANS, formatPrice, AI_LIMITS } from '@/lib/plans';
 
 const PlanoAtenteAi = () => {
   const navigate = useNavigate();
@@ -27,7 +27,7 @@ const PlanoAtenteAi = () => {
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
 
-  const plan = STRIPE_PLANS.premium;
+  const plan = PLANS.premium;
   const isCurrentPlan = subscription.plan === 'premium';
 
   const handleSubscribe = async () => {

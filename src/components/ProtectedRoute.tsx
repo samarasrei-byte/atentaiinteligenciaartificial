@@ -1,6 +1,6 @@
 import { useAuth } from '@/contexts/AuthContext';
 import { useFeatureAccess } from '@/hooks/useFeatureAccess';
-import { PlanType, STRIPE_PLANS } from '@/lib/stripe';
+import { PlanType, PLANS } from '@/lib/plans';
 import { Navigate, useLocation } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -42,7 +42,7 @@ export function ProtectedRoute({
 
   // Check plan access
   if (requiredPlan && !hasPlan(requiredPlan)) {
-    const plan = STRIPE_PLANS[requiredPlan];
+    const plan = PLANS[requiredPlan];
     
     return (
       <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -56,7 +56,7 @@ export function ProtectedRoute({
               Esta funcionalidade requer o plano {plan.name} ou superior.
               {currentPlan && (
                 <span className="block mt-2 text-muted-foreground">
-                  Seu plano atual: <strong className="text-foreground">{STRIPE_PLANS[currentPlan].name}</strong>
+                  Seu plano atual: <strong className="text-foreground">{PLANS[currentPlan].name}</strong>
                 </span>
               )}
             </CardDescription>

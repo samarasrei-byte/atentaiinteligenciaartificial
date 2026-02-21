@@ -10,7 +10,7 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { SUBSCRIBER_DISCOUNTS, ServiceType, formatPrice, PLATFORM_COMMISSION } from '@/lib/stripe';
+import { SUBSCRIBER_DISCOUNTS, ServiceType, formatPrice, PLATFORM_COMMISSION } from '@/lib/plans';
 
 interface ServicePricePreviewProps {
   serviceType: ServiceType;

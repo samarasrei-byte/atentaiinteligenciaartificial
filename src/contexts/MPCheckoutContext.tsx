@@ -10,7 +10,7 @@ import { X } from 'lucide-react';
 import { MPTransparentCheckout } from '@/components/payments/MPTransparentCheckout';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import { formatPrice } from '@/lib/stripe';
+import { formatPrice } from '@/lib/plans';
 import { GuestEmailCapture } from '@/components/payments/GuestEmailCapture';
 import { supabase } from '@/integrations/supabase/client';
 import { useNavigate } from 'react-router-dom';

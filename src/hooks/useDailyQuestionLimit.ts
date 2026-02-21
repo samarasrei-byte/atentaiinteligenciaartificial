@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
-import { AI_LIMITS, DAILY_QUESTION_LIMIT, PREMIUM_DAILY_LIMIT, CONTADOR_DAILY_LIMIT } from '@/lib/stripe';
+import { AI_LIMITS, DAILY_QUESTION_LIMIT, PREMIUM_DAILY_LIMIT, CONTADOR_DAILY_LIMIT } from '@/lib/plans';
 
 export function useDailyQuestionLimit() {
   const { user, subscription } = useAuth();

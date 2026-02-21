@@ -22,7 +22,7 @@ import {
   Bell
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { formatPrice, STRIPE_PLANS } from '@/lib/stripe';
+import { formatPrice, PLANS } from '@/lib/plans';
 import { ProfileSkeleton } from '@/components/ui/skeleton-loaders';
 import { NotificationSettings } from '@/components/pwa/NotificationSettings';
 
@@ -326,7 +326,7 @@ const Profile = () => {
     );
   }
 
-  const currentPlan = subscription.plan ? STRIPE_PLANS[subscription.plan] : null;
+  const currentPlan = subscription.plan ? PLANS[subscription.plan] : null;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-teal-900 p-4">

@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { STRIPE_PLANS } from '@/lib/stripe';
+import { PLANS } from '@/lib/plans';
 
 export interface AdminReportData {
   stats: {
@@ -118,13 +118,13 @@ export function exportAdminReportToExcel(data: AdminReportData): void {
     [''],
     ['DISTRIBUIÇÃO DE PLANOS'],
     ['Plano', 'Quantidade', 'Receita Mensal'],
-    ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price)],
-    ['Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * STRIPE_PLANS.premium.price)],
-    ['Contador', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)],
+    ['Simulador', data.stats.simulatorPlanCount, formatCurrency(data.stats.simulatorPlanCount * PLANS.simulator.price)],
+    ['Premium', data.stats.premiumPlanCount, formatCurrency(data.stats.premiumPlanCount * PLANS.premium.price)],
+    ['Contador', data.stats.contadorPlanCount, formatCurrency(data.stats.contadorPlanCount * PLANS.contador.price)],
     ['Total Assinaturas', data.stats.totalSubscriptions, formatCurrency(
-      (data.stats.simulatorPlanCount * STRIPE_PLANS.simulator.price) + 
-      (data.stats.premiumPlanCount * STRIPE_PLANS.premium.price) + 
-      (data.stats.contadorPlanCount * STRIPE_PLANS.contador.price)
+      (data.stats.simulatorPlanCount * PLANS.simulator.price) + 
+      (data.stats.premiumPlanCount * PLANS.premium.price) + 
+      (data.stats.contadorPlanCount * PLANS.contador.price)
     )],
     [''],
     ['ASSINATURAS'],

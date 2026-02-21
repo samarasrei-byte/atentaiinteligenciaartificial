@@ -25,7 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
-import { STRIPE_PLANS } from "@/lib/stripe";
+import { PLANS } from "@/lib/plans";
 import { useNavigate } from "react-router-dom";
 
 interface LegalUpdate {

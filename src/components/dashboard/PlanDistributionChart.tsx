@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
-import { STRIPE_PLANS, formatPrice } from '@/lib/stripe';
+import { PLANS, formatPrice } from '@/lib/plans';
 
 interface PlanData {
   name: string;
@@ -39,27 +39,27 @@ export function PlanDistributionChart({
 
   const data: PlanData[] = [
     { 
-      name: STRIPE_PLANS.simulator.name, 
+      name: PLANS.simulator.name, 
       value: actualSimulator, 
-      revenue: actualSimulator * STRIPE_PLANS.simulator.price,
+      revenue: actualSimulator * PLANS.simulator.price,
       color: 'hsl(var(--info))' 
     },
     { 
-      name: STRIPE_PLANS.autonomo.name, 
+      name: PLANS.autonomo.name, 
       value: actualAutonomo, 
-      revenue: actualAutonomo * STRIPE_PLANS.autonomo.price,
+      revenue: actualAutonomo * PLANS.autonomo.price,
       color: 'hsl(142 76% 36%)' 
     },
     { 
-      name: STRIPE_PLANS.premium.name, 
+      name: PLANS.premium.name, 
       value: actualPremium, 
-      revenue: actualPremium * STRIPE_PLANS.premium.price,
+      revenue: actualPremium * PLANS.premium.price,
       color: 'hsl(var(--primary))' 
     },
     { 
-      name: STRIPE_PLANS.contador.name, 
+      name: PLANS.contador.name, 
       value: actualContador, 
-      revenue: actualContador * STRIPE_PLANS.contador.price,
+      revenue: actualContador * PLANS.contador.price,
       color: 'hsl(var(--accent))' 
     },
   ].filter(d => d.value > 0);
