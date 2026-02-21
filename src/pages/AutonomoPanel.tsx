@@ -123,7 +123,7 @@ type PanelSection =
   | 'support' 
   | 'profile';
 const AutonomoPanel: React.FC = () => {
-  const { user, signOut, profile: authProfile, loading: authLoading, hasRole } = useAuth();
+  const { user, signOut, profile: authProfile, loading: authLoading, hasRole, subscription: authSubscription } = useAuth();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
@@ -324,7 +324,9 @@ const AutonomoPanel: React.FC = () => {
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">Plano</p>
-                <p className="text-xl font-bold text-foreground">Master</p>
+                <p className="text-xl font-bold text-foreground">
+                  {authSubscription?.plan ? authSubscription.plan.charAt(0).toUpperCase() + authSubscription.plan.slice(1) : 'Gratuito'}
+                </p>
               </div>
             </div>
           </CardContent>
