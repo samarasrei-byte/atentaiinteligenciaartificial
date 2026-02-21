@@ -511,27 +511,6 @@ const LimpaNomePage = () => {
                         </div>
                       </div>
 
-                      {/* Affiliate Coupon Input */}
-                      <div className="space-y-2">
-                        <Label className="flex items-center gap-2">
-                          <Tag className="h-4 w-4 text-primary" />
-                          Cupom de Desconto
-                        </Label>
-                        <AffiliateCouponInput
-                          serviceType={selectedPlan === 'pf' ? 'credit_repair_pf' : 'credit_repair_pj'}
-                          onCouponApplied={setAppliedCoupon}
-                          onCouponRemoved={() => setAppliedCoupon(null)}
-                          appliedCoupon={appliedCoupon}
-                        />
-                        {appliedCoupon && (
-                          <div className="p-3 rounded-lg bg-success/10 border border-success/20">
-                            <div className="flex items-center justify-between">
-                              <span className="text-sm text-success font-medium">Desconto do cupom:</span>
-                              <span className="text-success font-bold">-{formatCurrency(couponDiscount)}</span>
-                            </div>
-                          </div>
-                        )}
-                      </div>
 
                       <Button 
                         type="submit" 
