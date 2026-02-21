@@ -71,6 +71,7 @@ interface Company {
 }
 
 import { PowerAICalculator } from '@/components/ai/PowerAICalculator';
+import { FeatureGate } from '@/components/subscription/FeatureGate';
 import { ProfessionalChat } from '@/components/chat/ProfessionalChat';
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 import { EconomyCalculator } from '@/components/calculator/EconomyCalculator';
@@ -521,7 +522,11 @@ const EmpresaPanel = () => {
   const renderContent = () => {
     switch (activeTab) {
       case 'ai-chat':
-        return <EmbeddedAIAgent />;
+        return (
+          <FeatureGate featureName="Chat com IA" featureDescription="Faça perguntas tributárias e receba respostas inteligentes com nossa IA avançada.">
+            <EmbeddedAIAgent />
+          </FeatureGate>
+        );
       case 'chat-contador':
         return <EmbeddedChatContador />;
       case 'chat-fiscal':
@@ -548,97 +553,109 @@ const EmpresaPanel = () => {
         );
       case 'pf-pj-decision':
         return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-foreground">Decisão Automática: PF ou PJ</h2>
-              <HelpTooltip 
-                title={featureHelp.pfPjDecision.title}
-                content={featureHelp.pfPjDecision.content}
-              />
+          <FeatureGate featureName="Decisão PF ou PJ" featureDescription="Descubra qual estrutura tributária resulta em menor carga fiscal para você.">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground">Decisão Automática: PF ou PJ</h2>
+                <HelpTooltip 
+                  title={featureHelp.pfPjDecision.title}
+                  content={featureHelp.pfPjDecision.content}
+                />
+              </div>
+              <p className="text-muted-foreground">Descubra qual estrutura tributária resulta em menor carga para você</p>
+              <div className="max-w-2xl">
+                <PFPJDecision />
+              </div>
             </div>
-            <p className="text-muted-foreground">Descubra qual estrutura tributária resulta em menor carga para você</p>
-            <div className="max-w-2xl">
-              <PFPJDecision />
-            </div>
-          </div>
+          </FeatureGate>
         );
       case 'autonomos':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                🤖 IA para Profissionais Autônomos
-              </h2>
-              <p className="text-muted-foreground">
-                Descubra o melhor regime tributário para sua profissão em poucos cliques
-              </p>
+          <FeatureGate featureName="Simulador para Autônomos" featureDescription="Descubra o melhor regime tributário para sua profissão.">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  🤖 IA para Profissionais Autônomos
+                </h2>
+                <p className="text-muted-foreground">
+                  Descubra o melhor regime tributário para sua profissão em poucos cliques
+                </p>
+              </div>
+              <AutonomoSimulator />
+              <AutonomoSimulationHistory />
             </div>
-            <AutonomoSimulator />
-            <AutonomoSimulationHistory />
-          </div>
+          </FeatureGate>
         );
       case 'subscription':
       case 'assinatura':
         return <UnifiedSettingsPage />;
       case 'economia':
         return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-foreground">Economize com a Reforma</h2>
-              <HelpTooltip 
-                title={featureHelp.economyCalculator.title}
-                content={featureHelp.economyCalculator.content}
-              />
+          <FeatureGate featureName="Calculadora de Economia" featureDescription="Veja automaticamente quanto você pode economizar com a Reforma Tributária.">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground">Economize com a Reforma</h2>
+                <HelpTooltip 
+                  title={featureHelp.economyCalculator.title}
+                  content={featureHelp.economyCalculator.content}
+                />
+              </div>
+              <p className="text-muted-foreground">Veja automaticamente quanto você pode economizar em um único clique</p>
+              <div className="max-w-2xl">
+                <EconomyCalculator />
+              </div>
             </div>
-            <p className="text-muted-foreground">Veja automaticamente quanto você pode economizar em um único clique</p>
-            <div className="max-w-2xl">
-              <EconomyCalculator />
-            </div>
-          </div>
+          </FeatureGate>
         );
       case 'history':
         return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-foreground">Histórico de Simulações</h2>
-              <HelpTooltip 
-                title={featureHelp.history.title}
-                content={featureHelp.history.content}
-              />
+          <FeatureGate featureName="Histórico de Simulações" featureDescription="Acompanhe a evolução das suas decisões tributárias ao longo do tempo.">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground">Histórico de Simulações</h2>
+                <HelpTooltip 
+                  title={featureHelp.history.title}
+                  content={featureHelp.history.content}
+                />
+              </div>
+              <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
+              <SimulationHistory />
             </div>
-            <p className="text-muted-foreground">Acompanhe a evolução das suas decisões tributárias</p>
-            <SimulationHistory />
-          </div>
+          </FeatureGate>
         );
       case 'metrics':
         return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-foreground">Métricas de Economia</h2>
-              <HelpTooltip 
-                title={featureHelp.metrics.title}
-                content={featureHelp.metrics.content}
-              />
+          <FeatureGate featureName="Métricas de Economia" featureDescription="Acompanhe sua economia tributária com gráficos e indicadores.">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground">Métricas de Economia</h2>
+                <HelpTooltip 
+                  title={featureHelp.metrics.title}
+                  content={featureHelp.metrics.content}
+                />
+              </div>
+              <p className="text-muted-foreground">Acompanhe sua economia tributária ao longo do tempo</p>
+              <SavingsMetricsDashboard />
             </div>
-            <p className="text-muted-foreground">Acompanhe sua economia tributária ao longo do tempo</p>
-            <SavingsMetricsDashboard />
-          </div>
+          </FeatureGate>
         );
       case 'autopilot':
         return (
-          <div className="space-y-6">
-            <div className="flex items-center gap-2">
-              <h2 className="text-2xl font-bold text-foreground">Piloto Automático Tributário</h2>
-              <HelpTooltip 
-                title={featureHelp.autopilot.title}
-                content={featureHelp.autopilot.content}
-              />
+          <FeatureGate featureName="Piloto Automático Tributário" featureDescription="Otimização contínua e automática da sua estratégia tributária." requiredPlan="premium">
+            <div className="space-y-6">
+              <div className="flex items-center gap-2">
+                <h2 className="text-2xl font-bold text-foreground">Piloto Automático Tributário</h2>
+                <HelpTooltip 
+                  title={featureHelp.autopilot.title}
+                  content={featureHelp.autopilot.content}
+                />
+              </div>
+              <p className="text-muted-foreground">Otimização contínua da sua estratégia tributária</p>
+              <div className="max-w-3xl">
+                <TaxAutopilot />
+              </div>
             </div>
-            <p className="text-muted-foreground">Otimização contínua da sua estratégia tributária</p>
-            <div className="max-w-3xl">
-              <TaxAutopilot />
-            </div>
-          </div>
+          </FeatureGate>
         );
       case 'support':
         return (
@@ -668,13 +685,19 @@ const EmpresaPanel = () => {
         return <ReformaRadar variant="empresa" />;
       case 'transicao':
         return (
-          <div className="space-y-6">
-            <TaxTransitionSimulator embedded />
-          </div>
+          <FeatureGate featureName="Simulador de Transição" featureDescription="Simule o impacto da transição tributária na sua empresa.">
+            <div className="space-y-6">
+              <TaxTransitionSimulator embedded />
+            </div>
+          </FeatureGate>
         );
       case 'simulacao-completa':
       case 'comparar-regimes':
-        return <EmbeddedRegimeComparator />;
+        return (
+          <FeatureGate featureName="Comparador de Regimes" featureDescription="Compare regimes tributários lado a lado com simulação completa.">
+            <EmbeddedRegimeComparator />
+          </FeatureGate>
+        );
       case 'timeline':
         return <EmbeddedTimelineReforma variant="empresa" />;
       case 'settings':

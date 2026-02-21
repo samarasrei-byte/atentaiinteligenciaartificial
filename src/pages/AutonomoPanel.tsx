@@ -55,6 +55,7 @@ import { PROFESSIONAL_CATEGORIES } from '@/lib/autonomosData';
 // Components
 import { AutonomoSimulator } from '@/components/autonomos/AutonomoSimulator';
 import { AutonomoSimulationHistory } from '@/components/history/AutonomoSimulationHistory';
+import { FeatureGate } from '@/components/subscription/FeatureGate';
 import { AutonomoAICalculator } from '@/components/ai/AutonomoAICalculator';
 import { EmbeddedContadoresList } from '@/components/contadores/EmbeddedContadoresList';
 import { SupportTicketList } from '@/components/support/SupportTicketList';
@@ -475,43 +476,49 @@ const AutonomoPanel: React.FC = () => {
         return renderDashboard();
       case 'simulator':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
-                🤖 Simulador IA
-              </h2>
-              <p className="text-muted-foreground">
-                Descubra o melhor regime tributário para sua profissão
-              </p>
+          <FeatureGate featureName="Simulador IA" featureDescription="Descubra o melhor regime tributário para sua profissão com inteligência artificial.">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground flex items-center gap-2">
+                  🤖 Simulador IA
+                </h2>
+                <p className="text-muted-foreground">
+                  Descubra o melhor regime tributário para sua profissão
+                </p>
+              </div>
+              <AutonomoSimulator />
             </div>
-            <AutonomoSimulator />
-          </div>
+          </FeatureGate>
         );
       case 'history':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Histórico de Simulações</h2>
-              <p className="text-muted-foreground">
-                Todas as suas simulações e análises anteriores
-              </p>
+          <FeatureGate featureName="Histórico de Simulações" featureDescription="Veja todas as suas simulações e análises anteriores.">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Histórico de Simulações</h2>
+                <p className="text-muted-foreground">
+                  Todas as suas simulações e análises anteriores
+                </p>
+              </div>
+              <AutonomoSimulationHistory />
             </div>
-            <AutonomoSimulationHistory />
-          </div>
+          </FeatureGate>
         );
       case 'ai-chat':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Chat IA para Autônomos</h2>
-              <p className="text-muted-foreground">
-                Calcule INSS, compare PF vs MEI vs ME e tire dúvidas tributárias
-              </p>
+          <FeatureGate featureName="Chat IA para Autônomos" featureDescription="Calcule INSS, compare PF vs MEI vs ME e tire dúvidas tributárias com IA.">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Chat IA para Autônomos</h2>
+                <p className="text-muted-foreground">
+                  Calcule INSS, compare PF vs MEI vs ME e tire dúvidas tributárias
+                </p>
+              </div>
+              <div className="h-[600px]">
+                <AutonomoAICalculator />
+              </div>
             </div>
-            <div className="h-[600px]">
-              <AutonomoAICalculator />
-            </div>
-          </div>
+          </FeatureGate>
         );
       case 'contadores':
         return (
@@ -539,27 +546,31 @@ const AutonomoPanel: React.FC = () => {
         );
       case 'financeiro':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Dashboard Financeiro</h2>
-              <p className="text-muted-foreground">
-                Acompanhe sua evolução de receita, impostos e economia
-              </p>
+          <FeatureGate featureName="Dashboard Financeiro" featureDescription="Acompanhe receita, impostos e economia com gráficos detalhados." requiredPlan="autonomo">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Dashboard Financeiro</h2>
+                <p className="text-muted-foreground">
+                  Acompanhe sua evolução de receita, impostos e economia
+                </p>
+              </div>
+              <AutonomoFinancialDashboard />
             </div>
-            <AutonomoFinancialDashboard />
-          </div>
+          </FeatureGate>
         );
       case 'metas':
         return (
-          <div className="space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold text-foreground">Metas Financeiras</h2>
-              <p className="text-muted-foreground">
-                Defina e acompanhe suas metas de faturamento, economia e redução de impostos
-              </p>
+          <FeatureGate featureName="Metas Financeiras" featureDescription="Defina e acompanhe metas de faturamento e redução de impostos." requiredPlan="autonomo">
+            <div className="space-y-6">
+              <div>
+                <h2 className="text-2xl font-bold text-foreground">Metas Financeiras</h2>
+                <p className="text-muted-foreground">
+                  Defina e acompanhe suas metas de faturamento, economia e redução de impostos
+                </p>
+              </div>
+              <AutonomoGoals />
             </div>
-            <AutonomoGoals />
-          </div>
+          </FeatureGate>
         );
       case 'abertura-empresa':
         return (
@@ -624,13 +635,19 @@ const AutonomoPanel: React.FC = () => {
         return <ReformaRadar variant="autonomo" />;
       case 'transicao':
         return (
-          <div className="space-y-6">
-            <TaxTransitionSimulator embedded />
-          </div>
+          <FeatureGate featureName="Simulador de Transição" featureDescription="Simule o impacto da transição tributária no seu negócio.">
+            <div className="space-y-6">
+              <TaxTransitionSimulator embedded />
+            </div>
+          </FeatureGate>
         );
       case 'simulacao-completa':
       case 'comparar-regimes':
-        return <EmbeddedRegimeComparator />;
+        return (
+          <FeatureGate featureName="Comparador de Regimes" featureDescription="Compare regimes tributários lado a lado com simulação completa.">
+            <EmbeddedRegimeComparator />
+          </FeatureGate>
+        );
       case 'timeline':
         return <EmbeddedTimelineReforma variant="autonomo" />;
       case 'settings':
