@@ -433,52 +433,6 @@ export const ServicesHubModern: React.FC = () => {
         ))}
       </motion.div>
 
-      {/* CTA for non-subscribers - Premium Design */}
-      {!isSubscribed && (
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
-          <div className="relative rounded-3xl overflow-hidden">
-            {/* Animated background */}
-            <div className="absolute inset-0 bg-gradient-to-br from-primary via-accent to-emerald-500 opacity-90" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent" />
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_var(--tw-gradient-stops))] from-black/20 via-transparent to-transparent" />
-            
-            {/* Content */}
-            <div className="relative py-10 px-8">
-              <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
-                <div className="flex items-center gap-6">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-white/30 blur-xl" />
-                    <div className="relative p-5 rounded-3xl bg-white/20 backdrop-blur-sm border border-white/30">
-                      <CreditCard className="h-10 w-10 text-white" />
-                    </div>
-                  </div>
-                  <div className="text-white">
-                    <h3 className="text-2xl lg:text-3xl font-black mb-2">
-                      Economize até 30% em todos os serviços
-                    </h3>
-                    <p className="text-white/80 text-lg">
-                      Assine o AtentAI Premium e desbloqueie descontos exclusivos em toda plataforma
-                    </p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => navigate('/pricing')}
-                  size="lg"
-                  className="bg-white text-primary hover:bg-white/90 shadow-2xl shadow-black/20 px-10 h-14 text-lg font-bold rounded-2xl group whitespace-nowrap"
-                >
-                  <Crown className="h-6 w-6 mr-3" />
-                  Ver Planos Premium
-                  <ArrowRight className="h-6 w-6 ml-3 group-hover:translate-x-1 transition-transform" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
     </div>
   );
 };
