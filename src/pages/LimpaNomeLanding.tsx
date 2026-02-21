@@ -660,7 +660,7 @@ export default function LimpaNomeLanding() {
       </section>
 
       {/* Final CTA */}
-      <section className="py-20 sm:py-28">
+      <section className="py-20 pb-28 sm:py-28 sm:pb-28">
         <div className="container max-w-3xl mx-auto px-4 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
