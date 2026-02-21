@@ -246,7 +246,7 @@ const Simulator = () => {
                   <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
                     <SelectValue placeholder="Selecione o setor" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
+                    <SelectContent className="bg-slate-800 border-slate-700 z-[100]">
                     {sectors.map((s) => (
                       <SelectItem key={s.value} value={s.value}>{s.label}</SelectItem>
                     ))}
@@ -260,7 +260,7 @@ const Simulator = () => {
                   <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
                     <SelectValue placeholder="Selecione o regime" />
                   </SelectTrigger>
-                  <SelectContent className="bg-slate-800 border-slate-700">
+                  <SelectContent className="bg-slate-800 border-slate-700 z-[100]">
                     {companyTypes.map((c) => (
                       <SelectItem key={c.value} value={c.value}>{c.label}</SelectItem>
                     ))}
@@ -278,7 +278,7 @@ const Simulator = () => {
                     <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
                       <SelectValue placeholder="Selecione o estado (opcional)" />
                     </SelectTrigger>
-                    <SelectContent className="bg-slate-800 border-slate-700 max-h-60">
+                    <SelectContent className="bg-slate-800 border-slate-700 max-h-60 z-[100]">
                       <SelectItem value="">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
                       {brazilianStates.map((s) => (
                         <SelectItem key={s.value} value={s.value}>
