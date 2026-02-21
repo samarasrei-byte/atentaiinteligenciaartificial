@@ -122,15 +122,15 @@ const TrialOnboarding = () => {
     setIsLoading(true);
     
     try {
-      const priceId = selectedType === 'contador' 
-        ? PLANS.contador.priceId 
+      const planType = selectedType === 'contador' 
+        ? 'contador' 
         : selectedType === 'autonomo'
-          ? PLANS.autonomo.priceId
-          : PLANS.premium.priceId;
+          ? 'autonomo'
+          : 'premium';
 
       const { data, error } = await supabase.functions.invoke('create-trial-checkout', {
         body: {
-          priceId,
+          planType,
           email,
           fullName,
           userType: selectedType,

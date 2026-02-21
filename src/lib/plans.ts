@@ -29,9 +29,7 @@
 export const PLANS = {
   simulator: {
     name: 'Simulador Tributário',
-    priceId: 'price_1SheKg3MU3lG84GwQwYaxFfN',
-    productId: 'prod_TeyH8gtLUj9Llu',
-    price: 3999, // cents (R$ 39,99) - Valor atualizado
+    price: 3999, // cents (R$ 39,99)
     description: 'Acesso completo ao simulador tributário',
     tagline: 'Essencial',
     features: [
@@ -45,8 +43,6 @@ export const PLANS = {
   },
   autonomo: {
     name: 'Plano Autônomo',
-    priceId: 'price_autonomo_monthly',
-    productId: 'prod_autonomo',
     price: 6500, // cents (R$ 65,00)
     description: 'Para profissionais autônomos',
     tagline: 'Popular',
@@ -63,8 +59,6 @@ export const PLANS = {
   },
   premium: {
     name: 'AtentAI Premium',
-    priceId: 'price_premium_monthly',
-    productId: 'prod_premium',
     price: 9800, // cents (R$ 98,00)
     description: 'Recursos completos para empresas',
     tagline: 'Completo',
@@ -80,8 +74,6 @@ export const PLANS = {
   },
   contador: {
     name: 'Contador Premium Plus',
-    priceId: 'price_contador_monthly',
-    productId: 'prod_contador',
     price: 19899, // cents (R$ 198,99)
     description: 'Para contadores e escritórios',
     tagline: 'Profissional',
@@ -109,8 +101,6 @@ export type PlanType = keyof typeof PLANS;
 export const BI_PLANS = {
   clarity: {
     name: 'Atentai Clarity',
-    priceId: 'price_1Sx9Le3MU3lG84GwAqYap5Vo',
-    productId: 'prod_TuzKrFXULbKyM1',
     price: 149700, // cents (R$ 1.497,00)
     description: 'Clareza financeira e entendimento dos números',
     tagline: 'Entrada',
@@ -127,8 +117,6 @@ export const BI_PLANS = {
   },
   control: {
     name: 'Atentai Control',
-    priceId: 'price_1Sx9MB3MU3lG84GwUugVLZuM',
-    productId: 'prod_TuzKy78iDO1HUZ',
     price: 349700, // cents (R$ 3.497,00)
     description: 'Controle, previsão e suporte à decisão',
     tagline: 'Principal',
@@ -147,12 +135,10 @@ export const BI_PLANS = {
   },
   performance: {
     name: 'Atentai Performance',
-    priceId: 'price_1Sx9N93MU3lG84Gw5CBdQAK5',
-    productId: 'prod_TuzL0T7u9Oqeuj',
     price: 800000, // cents (R$ 8.000,00) - base price, actual is "sob consulta"
     description: 'Performance, crescimento e estratégia empresarial',
     tagline: 'Premium',
-    customPricing: true, // Indicates "sob consulta"
+    customPricing: true,
     features: [
       'Tudo do Control +',
       'P&L por área, produto ou unidade',
@@ -321,39 +307,23 @@ export function getContadorEarnings(amount: number): number {
   return amount - getPlatformCommission(amount);
 }
 
-export function getPlanByPriceId(priceId: string): PlanType | null {
-  for (const [key, plan] of Object.entries(PLANS)) {
-    if (plan.priceId === priceId) {
-      return key as PlanType;
-    }
-  }
+/** @deprecated Stripe removed - these functions are no-ops */
+export function getPlanByPriceId(_priceId: string): PlanType | null {
   return null;
 }
 
-export function getPlanByProductId(productId: string): PlanType | null {
-  for (const [key, plan] of Object.entries(PLANS)) {
-    if (plan.productId === productId) {
-      return key as PlanType;
-    }
-  }
+/** @deprecated Stripe removed */
+export function getPlanByProductId(_productId: string): PlanType | null {
   return null;
 }
 
-export function getBIPlanByPriceId(priceId: string): BIPlanType | null {
-  for (const [key, plan] of Object.entries(BI_PLANS)) {
-    if (plan.priceId === priceId) {
-      return key as BIPlanType;
-    }
-  }
+/** @deprecated Stripe removed */
+export function getBIPlanByPriceId(_priceId: string): BIPlanType | null {
   return null;
 }
 
-export function getBIPlanByProductId(productId: string): BIPlanType | null {
-  for (const [key, plan] of Object.entries(BI_PLANS)) {
-    if (plan.productId === productId) {
-      return key as BIPlanType;
-    }
-  }
+/** @deprecated Stripe removed */
+export function getBIPlanByProductId(_productId: string): BIPlanType | null {
   return null;
 }
 

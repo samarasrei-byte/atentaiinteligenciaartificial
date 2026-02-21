@@ -251,9 +251,9 @@ export const AdminSubscriptionsPanel: React.FC<AdminSubscriptionsPanelProps> = (
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {currentPlans.map((plan) => (
+          {currentPlans.map((plan, index) => (
             <PlanCard
-              key={plan.priceId}
+              key={plan.name + index}
               name={plan.name}
               price={plan.price}
               description={plan.description}
@@ -262,8 +262,8 @@ export const AdminSubscriptionsPanel: React.FC<AdminSubscriptionsPanelProps> = (
               gradient={plan.gradient}
               isPopular={'popular' in plan ? (plan as any).popular : false}
               isHighlight={'highlight' in plan ? (plan as any).highlight : false}
-              priceId={plan.priceId}
-              productId={plan.productId}
+              priceId={plan.name}
+              productId={plan.name}
             />
           ))}
         </div>
