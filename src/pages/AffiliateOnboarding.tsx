@@ -610,7 +610,7 @@ export default function AffiliateOnboarding() {
               </h2>
             </motion.div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 max-w-5xl mx-auto">
               {[
                 { value: 2800000, prefix: 'R$ ', suffix: '', label: 'Comissões pagas', icon: Coins, color: 'emerald' },
                 { value: 285, prefix: '', suffix: '+', label: 'Parceiros ativos', icon: Users, color: 'cyan' },
@@ -624,9 +624,9 @@ export default function AffiliateOnboarding() {
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.1 }}
                 >
-                  <GlassCard className="text-center py-8" glow={i === 0}>
-                    <stat.icon className={`w-8 h-8 mx-auto mb-4 text-${stat.color}-400`} />
-                    <p className={`text-3xl md:text-4xl font-black text-${stat.color}-400`}>
+                  <GlassCard className="text-center py-6 sm:py-8 h-full" glow={i === 0}>
+                    <stat.icon className={`w-7 h-7 sm:w-8 sm:h-8 mx-auto mb-3 sm:mb-4 text-${stat.color}-400`} />
+                    <p className={`text-2xl sm:text-3xl md:text-4xl font-black text-${stat.color}-400`}>
                       <AnimatedCounter 
                         end={stat.value} 
                         prefix={stat.prefix} 
