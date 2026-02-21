@@ -433,15 +433,8 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                 {/* Price Section - Compact on mobile */}
                 <div className="space-y-2 md:space-y-3">
                   <div className="bg-white/5 rounded-lg md:rounded-xl p-3 md:p-4 text-center border border-white/10">
-                    <div className="flex items-center justify-center gap-1.5 md:gap-2 mb-0.5 md:mb-1">
-                      <Percent className="h-3 w-3 md:h-4 md:w-4 text-red-400" />
-                      <span className="text-red-400 text-[10px] md:text-xs font-medium line-through">R$ 79/mês</span>
-                    </div>
                     <p className="text-2xl md:text-3xl font-bold text-white">
-                      R$ 39<span className="text-sm md:text-base font-normal text-slate-400">/mês</span>
-                    </p>
-                    <p className="text-emerald-400 text-[10px] md:text-xs font-medium mt-0.5 md:mt-1">
-                      Economize 50% - Oferta Limitada!
+                      R$ 39<span className="text-sm md:text-base font-normal text-slate-400">,99/mês</span>
                     </p>
                   </div>
 
@@ -449,21 +442,21 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                     className="w-full bg-gradient-to-r from-accent via-orange-500 to-accent hover:from-accent/90 hover:via-orange-400 hover:to-accent/90 text-white font-semibold h-10 md:h-12 text-sm md:text-base group shadow-lg shadow-accent/25"
                     onClick={() => {
                       if (!user) {
-                        toast.error('Faça login para assinar o plano Premium.');
+                        toast.error('Faça login para assinar o plano.');
                         navigate('/auth');
                         return;
                       }
                       openCheckout({
-                        amountCents: 9800,
-                        serviceName: 'AtentAI Premium',
-                        serviceType: 'premium',
-                        description: 'Acesso completo com IA ilimitada',
+                        amountCents: 3999,
+                        serviceName: 'AtentAI Simulador',
+                        serviceType: 'simulator',
+                        description: 'Acesso completo ao simulador tributário',
                         gradient: 'from-accent to-orange-500',
-                        metadata: { service_key: 'premium' },
+                        metadata: { service_key: 'simulator' },
                         allowedMethods: ['card'],
                         isRecurring: true,
                         onSuccess: () => {
-                          toast.success('Assinatura Premium ativada!');
+                          toast.success('Assinatura ativada!');
                           navigate('/painel');
                         },
                       });
