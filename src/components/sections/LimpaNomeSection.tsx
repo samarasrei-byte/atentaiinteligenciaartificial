@@ -194,7 +194,7 @@ export function LimpaNomeSection() {
                     allowedMethods: ['pix', 'card'],
                     isRecurring: false,
                     requireGuestInfo: !user, // Show guest form if not logged in
-                    onSuccess: () => navigate('/painel'),
+                    onSuccess: () => navigate('/dashboard'),
                   });
                 };
                 
