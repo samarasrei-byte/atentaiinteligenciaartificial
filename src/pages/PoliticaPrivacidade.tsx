@@ -86,7 +86,7 @@ export default function PoliticaPrivacidade() {
               <h2 className="text-xl font-semibold mb-4">5. Compartilhamento de Dados</h2>
               <p className="text-muted-foreground mb-4">Seus dados podem ser compartilhados com:</p>
               <ul className="list-disc pl-6 text-muted-foreground space-y-2">
-                <li><strong>Stripe:</strong> Para processamento de pagamentos</li>
+                <li><strong>Mercado Pago:</strong> Para processamento de pagamentos</li>
                 <li><strong>Contadores parceiros:</strong> Apenas quando você solicitar uma consultoria</li>
                 <li><strong>Provedores de infraestrutura:</strong> Para hospedagem e armazenamento seguro</li>
                 <li><strong>Autoridades competentes:</strong> Quando exigido por lei</li>

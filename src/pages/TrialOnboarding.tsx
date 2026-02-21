@@ -705,7 +705,7 @@ const TrialOnboarding = () => {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.5 }}
               >
-                Você será redirecionado para nossa página de pagamento segura (Stripe)
+                Pagamento seguro via Mercado Pago
               </motion.p>
             </motion.div>
           )}

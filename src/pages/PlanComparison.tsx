@@ -350,7 +350,7 @@ const PlanComparison = () => {
               <CardContent className="pt-6">
                 <h3 className="font-semibold text-white mb-2">O pagamento é seguro?</h3>
                 <p className="text-sm text-white/60">
-                  100% seguro. Utilizamos a Stripe, líder mundial em pagamentos online, com criptografia de ponta.
+                  100% seguro. Utilizamos o Mercado Pago, líder em pagamentos online no Brasil, com criptografia de ponta.
                 </p>
               </CardContent>
             </Card>
