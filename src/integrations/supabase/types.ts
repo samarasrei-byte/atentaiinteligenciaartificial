@@ -2391,6 +2391,7 @@ export type Database = {
           current_period_end: string | null
           current_period_start: string | null
           id: string
+          mp_subscription_id: string | null
           plan_type: string
           price_cents: number
           status: Database["public"]["Enums"]["subscription_status"]
@@ -2404,6 +2405,7 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          mp_subscription_id?: string | null
           plan_type?: string
           price_cents?: number
           status?: Database["public"]["Enums"]["subscription_status"]
@@ -2417,6 +2419,7 @@ export type Database = {
           current_period_end?: string | null
           current_period_start?: string | null
           id?: string
+          mp_subscription_id?: string | null
           plan_type?: string
           price_cents?: number
           status?: Database["public"]["Enums"]["subscription_status"]
