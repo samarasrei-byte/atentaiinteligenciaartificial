@@ -377,25 +377,6 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
               />
             </div>
 
-            {/* Affiliate Coupon Input */}
-            <div className="p-4 bg-muted/50 rounded-lg border border-border">
-              <div className="flex items-center gap-2 mb-3">
-                <Tag className="h-4 w-4 text-primary" />
-                <span className="text-sm font-medium">Tem um cupom de desconto?</span>
-              </div>
-              <AffiliateCouponInput
-                serviceType="ir"
-                onCouponApplied={setAppliedCoupon}
-                onCouponRemoved={() => setAppliedCoupon(null)}
-                appliedCoupon={appliedCoupon}
-              />
-              {appliedCoupon && (
-                <div className="mt-2 flex items-center gap-2 text-sm text-success">
-                  <Sparkles className="h-4 w-4" />
-                  <span>Cupom <strong>{appliedCoupon.code}</strong> aplicado: -{formatPrice(couponDiscountCents)}</span>
-                </div>
-              )}
-            </div>
 
             {!isSubscriber && !appliedCoupon && (
               <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">

@@ -638,19 +638,6 @@ const GuestCompanyOpeningForm: React.FC<GuestCompanyOpeningFormProps> = ({ onBac
                   </div>
                 </div>
 
-                {/* Affiliate Coupon Input */}
-                <div className="space-y-2">
-                  <Label className="flex items-center gap-2 text-white/80">
-                    <Tag className="h-4 w-4 text-primary" />
-                    Cupom de Desconto
-                  </Label>
-                  <AffiliateCouponInput
-                    serviceType="company_opening"
-                    onCouponApplied={setAppliedCoupon}
-                    onCouponRemoved={() => setAppliedCoupon(null)}
-                    appliedCoupon={appliedCoupon}
-                  />
-                </div>
 
                 {/* Price */}
                 <div className="p-4 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/30">
