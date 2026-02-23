@@ -66,56 +66,63 @@ export const CesarChatHub: React.FC = () => {
   
   return (
     <div className="h-full flex flex-col">
-      {/* Header - Identidade Visual César */}
-      <div className="shrink-0 px-6 py-4 bg-gradient-to-r from-violet-600 to-indigo-600 border-b border-violet-700">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/20">
-              <span className="text-xl font-bold text-white">C</span>
+      {/* Header - Identidade Visual César - Responsive */}
+      <div className="shrink-0 px-3 sm:px-6 py-3 sm:py-4 bg-gradient-to-r from-violet-600 to-indigo-600 border-b border-violet-700">
+        <div className="flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/20 shrink-0">
+              <span className="text-base sm:text-xl font-bold text-white">C</span>
             </div>
-            <div>
-              <h1 className="text-xl font-bold text-white flex items-center gap-2">
-                Chat – César
-                <span className="relative flex h-2.5 w-2.5">
+            <div className="min-w-0">
+              <h1 className="text-base sm:text-xl font-bold text-white flex items-center gap-2">
+                <span className="truncate">Chat – César</span>
+                <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white" />
+                  <span className="relative inline-flex rounded-full h-full w-full bg-white" />
                 </span>
               </h1>
-              <p className="text-violet-100 text-sm">BI & Contabilidade • Comunicação com Clientes</p>
+              <p className="text-violet-100 text-xs sm:text-sm truncate">BI & Contabilidade • Comunicação com Clientes</p>
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            {/* WhatsApp Business Status */}
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20">
+          <div className="flex items-center gap-1.5 sm:gap-3 shrink-0">
+            {/* WhatsApp Business Status - hidden on small screens */}
+            <div className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20">
               <WhatsAppBusinessIcon connected={isWhatsAppConnected} className="h-5 w-5" />
               <span className="text-sm text-white font-medium">WhatsApp Business</span>
               <span className={`h-2 w-2 rounded-full ${isWhatsAppConnected ? 'bg-green-400 animate-pulse' : 'bg-gray-400'}`} />
             </div>
             
-            <Badge variant="outline" className="bg-white/10 text-white border-white/20 gap-2">
-              <BarChart3 className="h-3.5 w-3.5" />
-              BI Completo
+            {/* Compact WhatsApp icon on medium screens */}
+            <div className="hidden md:flex lg:hidden items-center px-2 py-1.5 rounded-full bg-white/10 border border-white/20">
+              <WhatsAppBusinessIcon connected={isWhatsAppConnected} className="h-5 w-5" />
+            </div>
+            
+            <Badge variant="outline" className="hidden sm:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <BarChart3 className="h-3 w-3" />
+              <span className="hidden md:inline">BI Completo</span>
+              <span className="md:hidden">BI</span>
             </Badge>
-            <Badge variant="outline" className="bg-white/10 text-white border-white/20 gap-2">
-              <FileText className="h-3.5 w-3.5" />
-              Contabilidade
+            <Badge variant="outline" className="hidden sm:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <FileText className="h-3 w-3" />
+              <span className="hidden md:inline">Contabilidade</span>
+              <span className="md:hidden">Cont</span>
             </Badge>
           </div>
         </div>
         
-        {/* Quick Stats - Real Data */}
-        <div className="flex items-center gap-6 mt-4 text-violet-100 text-sm">
-          <div className="flex items-center gap-2">
-            <MessageCircle className="h-4 w-4" />
-            <span>{stats.biClients} clientes BI</span>
+        {/* Quick Stats - Real Data - responsive */}
+        <div className="flex items-center gap-3 sm:gap-6 mt-2 sm:mt-4 text-violet-100 text-xs sm:text-sm overflow-x-auto">
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.biClients} <span className="hidden sm:inline">clientes</span> BI</span>
           </div>
-          <div className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span>Docs contábeis</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Activity className="h-4 w-4" />
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Activity className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span>{stats.activeReports} assinantes</span>
           </div>
         </div>
