@@ -187,6 +187,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(session?.user ?? null);
         
         if (session?.user) {
+          // CRITICAL: Set loading=true BEFORE deferring fetchUserData
+          // Without this, downstream components (Auth.tsx, DashboardRouter) see
+          // user=set + loading=false + roles=[] and route incorrectly (e.g. admin → /empresa)
+          setLoading(true);
+          
           // CRITICAL: Defer fetchUserData to avoid deadlock with signInWithPassword
           // The SDK awaits onAuthStateChange callbacks, so we must not make async
           // database calls synchronously here - use setTimeout to break the chain
