@@ -176,10 +176,11 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
   onSuccess,
 }) => {
   const navigate = useNavigate();
-  const { subscription, user, session } = useAuth();
+  const { subscription, user, session, checkSubscription } = useAuth();
   const [checkoutMode, setCheckoutMode] = useState<CheckoutMode>('preview');
   const [lastClickTime, setLastClickTime] = useState(0);
   const [isNavigating, setIsNavigating] = useState(false);
+
 
   const serviceConfig = serviceKey ? SERVICE_CONFIGS[serviceKey] : null;
   const planConfig = planType ? PLAN_CONFIGS[planType] : null;
@@ -264,8 +265,10 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
     setCheckoutMode('payment');
   };
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     setCheckoutMode('preview');
+    // Always refresh subscription state after any payment
+    await checkSubscription();
     onSuccess?.();
     onClose();
   };
