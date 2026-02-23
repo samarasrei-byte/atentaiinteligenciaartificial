@@ -136,7 +136,12 @@ export function AdminClientChat() {
   const receivedAttachments = messages.filter(m => m.attachment_url && m.sender_id !== user?.id);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesEndRef.current?.parentElement;
+    if (container) {
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+      });
+    }
   };
 
   useEffect(() => {
@@ -154,11 +159,13 @@ export function AdminClientChat() {
         supabase
           .from('credit_repair_requests')
           .select('id, full_name, email, phone, status, created_at, user_id, debt_amount_cents, cpf')
-          .order('created_at', { ascending: false }),
+          .order('created_at', { ascending: false })
+          .limit(100),
         supabase
           .from('fiscal_analysis_requests')
           .select('id, full_name, email, phone, status, created_at, user_id, identified_value_cents, cnpj, cpf, notes')
           .order('created_at', { ascending: false })
+          .limit(100)
       ]);
 
       const limpaNome: ClientRequest[] = (limpaNomeRes.data || []).map(r => ({
