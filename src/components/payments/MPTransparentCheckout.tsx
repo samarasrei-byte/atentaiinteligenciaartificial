@@ -95,7 +95,7 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
   useEffect(() => {
     if (warmupDoneRef.current) return;
     warmupDoneRef.current = true;
-    const url = (import.meta.env.VITE_SUPABASE_URL || 'https://wtiexyrawenxckctbwzn.supabase.co') + '/functions/v1/create-mp-payment';
+    const url = import.meta.env.VITE_SUPABASE_URL + '/functions/v1/create-mp-payment';
     fetch(url, { method: 'OPTIONS' }).catch(() => {});
     console.log('[PIX] Pre-warming edge function');
   }, []);
@@ -212,8 +212,8 @@ export const MPTransparentCheckout: React.FC<MPTransparentCheckoutProps> = ({
         ...extraBody,
       };
 
-      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || 'https://wtiexyrawenxckctbwzn.supabase.co';
-      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0aWV4eXJhd2VueGNrY3Rid3puIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzNTMzMTksImV4cCI6MjA4MTkyOTMxOX0.487e8ymS3oOol5AKlnPb-eCau7Jjr5i48OpE9WV5GjY';
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
       const endpoint = `${supabaseUrl}/functions/v1/create-mp-payment`;
 
       console.log('[PIX] Calling', endpoint, 'attempt:', retryCount + 1);
