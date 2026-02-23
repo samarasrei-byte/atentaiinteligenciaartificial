@@ -96,6 +96,8 @@ export const LimpaNomePromoCard: React.FC<LimpaNomePromoCardProps> = ({
       description: `Regularização ${planId === 'pf' ? 'CPF' : 'CNPJ'}`,
       gradient: 'from-rose-500 to-pink-600',
       metadata: { service_key: `credit_repair_${planId}` },
+      allowedMethods: ['pix', 'card'],
+      isRecurring: false,
       onSuccess: () => navigate('/dashboard'),
     });
   };
