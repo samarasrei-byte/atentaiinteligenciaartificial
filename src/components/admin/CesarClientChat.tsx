@@ -28,7 +28,8 @@ import {
   CreditCard,
   AlertTriangle,
   Download,
-  Image
+  Image,
+  ArrowLeft
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -98,13 +99,19 @@ export function CesarClientChat() {
   const [isGeneratingPaymentLink, setIsGeneratingPaymentLink] = useState(false);
   const [customPaymentAmount, setCustomPaymentAmount] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
+  const [showClientList, setShowClientList] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Get attachments from messages for quick access
   const receivedAttachments = messages.filter(m => m.attachment_url && m.sender_id !== user?.id);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const container = messagesEndRef.current?.parentElement;
+    if (container) {
+      requestAnimationFrame(() => {
+        container.scrollTop = container.scrollHeight;
+      });
+    }
   };
 
   useEffect(() => {
@@ -122,7 +129,8 @@ export function CesarClientChat() {
       const { data: biRequests } = await supabase
         .from('fiscal_analysis_requests')
         .select('id, full_name, email, phone, status, created_at, user_id, cnpj, notes, identified_value_cents')
-        .order('created_at', { ascending: false });
+        .order('created_at', { ascending: false })
+        .limit(100);
 
       // Filter only BI requests (notes starts with [BI])
       const biOnly = (biRequests || []).filter(r => 
@@ -432,9 +440,9 @@ César`);
   }
 
   return (
-    <div className="h-[calc(100vh-160px)] min-h-[600px] flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+    <div className="h-full flex flex-col bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
       {/* Header Fixo */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200 bg-white shrink-0">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 border-b border-slate-200 bg-white shrink-0">
         <div className="flex items-center gap-3">
           <div className="p-2 rounded-lg bg-violet-600">
             <MessageCircle className="h-5 w-5 text-white" />
@@ -453,8 +461,12 @@ César`);
       {/* Container Principal */}
       <div className="flex-1 flex min-h-0">
         
-        {/* Lista de Clientes */}
-        <div className="w-80 shrink-0 flex flex-col border-r border-slate-200 bg-white">
+        {/* Lista de Clientes - Responsive */}
+        <div className={cn(
+          "flex flex-col border-r border-slate-200 bg-white",
+          "w-full md:w-72 lg:w-80 md:shrink-0",
+          showClientList ? "flex" : "hidden md:flex"
+        )}>
           {/* Busca */}
           <div className="p-3 space-y-2 border-b border-slate-100 bg-slate-50/50 shrink-0">
             <div className="relative">
@@ -488,7 +500,10 @@ César`);
                   return (
                     <button
                       key={client.id}
-                      onClick={() => setSelectedClient(client)}
+                      onClick={() => {
+                        setSelectedClient(client);
+                        if (window.innerWidth < 768) setShowClientList(false);
+                      }}
                       className={cn(
                         "w-full px-3 py-3 text-left transition-all",
                         isSelected ? theme.light : "hover:bg-slate-50"
@@ -533,19 +548,32 @@ César`);
           </div>
         </div>
 
-        {/* Área do Chat */}
+        {/* Área do Chat - Responsive */}
+        <div className={cn(
+          "flex-1 flex flex-col min-w-0 bg-white",
+          !showClientList ? "flex" : "hidden md:flex"
+        )}>
         {selectedClient ? (
-          <div className="flex-1 flex flex-col min-w-0 bg-white">
+          <>
             {/* Header do Cliente */}
-            <div className={cn("px-4 py-3 border-b border-slate-200 shrink-0", theme.primary)}>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-10 h-10 rounded-full flex items-center justify-center font-medium text-sm text-white bg-white/20 shrink-0">
+            <div className={cn("px-2 sm:px-4 py-2 sm:py-3 border-b border-slate-200 shrink-0", theme.primary)}>
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+                  {/* Back button - mobile only */}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => { setShowClientList(true); setSelectedClient(null); }}
+                    className="md:hidden shrink-0 text-white hover:bg-white/10 h-8 w-8"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                  </Button>
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center font-medium text-xs sm:text-sm text-white bg-white/20 shrink-0">
                     {getInitials(selectedClient.full_name)}
                   </div>
                   <div className="min-w-0">
-                    <h3 className="font-semibold text-white truncate">{selectedClient.full_name}</h3>
-                    <p className="text-xs text-white/80">{selectedClient.email}</p>
+                    <h3 className="font-semibold text-white text-sm sm:text-base truncate">{selectedClient.full_name}</h3>
+                    <p className="text-[10px] sm:text-xs text-white/80 truncate">{selectedClient.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -930,7 +958,7 @@ César`);
                 </p>
               )}
             </form>
-          </div>
+          </>
         ) : (
           <div className="flex-1 flex items-center justify-center bg-slate-50/50">
             <div className="text-center">
@@ -942,6 +970,7 @@ César`);
             </div>
           </div>
         )}
+        </div>
       </div>
     </div>
   );
