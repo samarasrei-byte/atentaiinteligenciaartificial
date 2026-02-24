@@ -330,7 +330,7 @@ export default function CheckoutPage() {
         // Note: MPCheckoutContext already does setSession + navigate(redirectPath)
         // so we only need a fallback if no redirectPath is set
         if (!processResult?.redirectPath) {
-          navigate('/painel');
+          navigate('/dashboard');
         }
       },
     });

@@ -457,7 +457,7 @@ Toque em um dos botões abaixo ou digite sua pergunta! 💬`,
                         isRecurring: true,
                         onSuccess: () => {
                           toast.success('Assinatura ativada!');
-                          navigate('/painel');
+                          navigate('/dashboard');
                         },
                       });
                     }}

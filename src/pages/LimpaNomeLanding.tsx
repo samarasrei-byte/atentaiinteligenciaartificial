@@ -71,7 +71,7 @@ export default function LimpaNomeLanding() {
       allowedMethods: ['pix', 'card'],
       isRecurring: false,
       onSuccess: () => {
-        navigate('/painel');
+        navigate('/dashboard');
       },
     });
   };
