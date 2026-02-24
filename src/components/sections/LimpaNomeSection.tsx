@@ -467,7 +467,7 @@ export function LimpaNomeSection() {
                         description: currentPlan.description,
                         gradient: `${currentPlan.gradientFrom} ${currentPlan.gradientTo}`,
                         metadata: { service_key: `limpa-nome-${selectedPlan}` },
-                        onSuccess: () => navigate('/painel'),
+                        onSuccess: () => navigate('/dashboard'),
                       });
                     }}
                     className={`w-full h-16 text-lg font-semibold group transition-all duration-300 bg-gradient-to-r ${currentPlan.gradientFrom} ${currentPlan.gradientTo} hover:opacity-90 shadow-lg border-0`}
