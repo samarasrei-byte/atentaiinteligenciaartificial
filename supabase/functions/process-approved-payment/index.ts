@@ -85,38 +85,82 @@ async function sendWelcomeEmail(email: string, fullName: string, tempPassword: s
     const { error } = await resend.emails.send({
       from: "AtentAI <noreply@atentai.com.br>",
       to: [email],
-      subject: `✅ Pagamento confirmado - ${serviceName} | AtentAI`,
+      subject: `🎉 Bem-vindo à AtentAI, ${firstName}! Seu ${serviceName} está ativo`,
       html: `
         <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; color: #e2e8f0; border-radius: 16px; overflow: hidden;">
-          <div style="background: linear-gradient(135deg, #10b981, #06b6d4); padding: 32px 24px; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 24px;">✅ Pagamento Confirmado!</h1>
-            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px;">${serviceName}</p>
+          
+          <!-- Header com marca forte -->
+          <div style="background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #10b981 100%); padding: 40px 24px; text-align: center;">
+            <div style="font-size: 32px; font-weight: 800; color: white; letter-spacing: -0.5px; margin-bottom: 4px;">🧠 AtentAI</div>
+            <p style="color: #5eead4; font-size: 13px; margin: 0; letter-spacing: 2px; text-transform: uppercase;">Inteligência Artificial Contábil</p>
           </div>
-          <div style="padding: 32px 24px;">
-            <p style="font-size: 16px; margin: 0 0 16px;">Olá, <strong>${firstName}</strong>! 👋</p>
-            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 24px;">
-              Seu pagamento foi processado com sucesso e sua conta foi criada automaticamente. 
-              O especialista <strong>${specialist}</strong> já está aguardando você no chat para iniciar o atendimento.
+
+          <!-- Badge de confirmação -->
+          <div style="text-align: center; margin-top: -20px;">
+            <span style="display: inline-block; background: #10b981; color: white; font-weight: bold; font-size: 14px; padding: 10px 28px; border-radius: 24px; box-shadow: 0 4px 14px rgba(16,185,129,0.4);">
+              ✅ PAGAMENTO CONFIRMADO
+            </span>
+          </div>
+
+          <div style="padding: 32px 28px;">
+            <h2 style="font-size: 22px; margin: 0 0 6px; color: white;">Olá, ${firstName}! 👋</h2>
+            <p style="font-size: 15px; line-height: 1.7; color: #94a3b8; margin: 0 0 24px;">
+              Parabéns pela melhor decisão que você poderia tomar. Seu serviço <strong style="color: #5eead4;">${serviceName}</strong> já está 100% ativo e o especialista <strong style="color: white;">${specialist}</strong> está aguardando você no chat para começar agora mesmo.
             </p>
+
+            <!-- O que acontece agora -->
+            <div style="background: linear-gradient(135deg, #064e3b, #0f766e); border-radius: 12px; padding: 20px; margin: 0 0 24px;">
+              <p style="font-size: 14px; font-weight: 700; color: #5eead4; margin: 0 0 12px;">🚀 O que acontece agora?</p>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 14px; color: #d1fae5;">1️⃣</td>
+                  <td style="padding: 6px 8px; font-size: 14px; color: #d1fae5;">Acesse sua conta com os dados abaixo</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 14px; color: #d1fae5;">2️⃣</td>
+                  <td style="padding: 6px 8px; font-size: 14px; color: #d1fae5;">Converse diretamente com <strong>${specialist}</strong> no chat</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 14px; color: #d1fae5;">3️⃣</td>
+                  <td style="padding: 6px 8px; font-size: 14px; color: #d1fae5;">Envie seus documentos e acompanhe tudo em tempo real</td>
+                </tr>
+              </table>
+            </div>
             
+            <!-- Credenciais -->
             <div style="background: #1e293b; border-radius: 12px; padding: 20px; margin: 0 0 24px; border: 1px solid #334155;">
-              <p style="font-size: 13px; color: #94a3b8; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 1px;">Seus dados de acesso</p>
-              <p style="font-size: 14px; margin: 0 0 8px;"><strong>E-mail:</strong> ${email}</p>
-              <p style="font-size: 14px; margin: 0;"><strong>Senha temporária:</strong> <code style="background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 13px;">${tempPassword}</code></p>
+              <p style="font-size: 12px; color: #64748b; margin: 0 0 14px; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 600;">🔐 Seus dados de acesso</p>
+              <table style="width: 100%; border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 6px 0; font-size: 14px; color: #94a3b8; width: 120px;">E-mail:</td>
+                  <td style="padding: 6px 0; font-size: 14px; color: white; font-weight: 600;">${email}</td>
+                </tr>
+                <tr>
+                  <td style="padding: 6px 0; font-size: 14px; color: #94a3b8;">Senha:</td>
+                  <td style="padding: 6px 0;">
+                    <code style="background: #334155; padding: 4px 12px; border-radius: 6px; font-size: 14px; color: #5eead4; font-weight: 600; letter-spacing: 0.5px;">${tempPassword}</code>
+                  </td>
+                </tr>
+              </table>
             </div>
 
-            <div style="text-align: center; margin: 0 0 24px;">
-              <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #10b981, #06b6d4); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+            <!-- CTA -->
+            <div style="text-align: center; margin: 0 0 28px;">
+              <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #10b981, #06b6d4); color: white; text-decoration: none; padding: 16px 48px; border-radius: 12px; font-weight: 800; font-size: 17px; box-shadow: 0 6px 20px rgba(16,185,129,0.35); letter-spacing: 0.3px;">
                 Acessar minha conta →
               </a>
             </div>
 
-            <p style="font-size: 12px; color: #64748b; text-align: center; margin: 0;">
-              Recomendamos alterar sua senha após o primeiro acesso em Configurações.
+            <p style="font-size: 12px; color: #475569; text-align: center; margin: 0; line-height: 1.6;">
+              Após o primeiro acesso, recomendamos alterar sua senha em Configurações.<br>
+              Se não foi você que realizou esta compra, ignore este e-mail.
             </p>
           </div>
-          <div style="background: #1e293b; padding: 16px 24px; text-align: center; border-top: 1px solid #334155;">
-            <p style="font-size: 12px; color: #64748b; margin: 0;">© 2026 AtentAI • São Paulo, SP</p>
+
+          <!-- Footer -->
+          <div style="background: #0c1222; padding: 20px 24px; text-align: center; border-top: 1px solid #1e293b;">
+            <p style="font-size: 11px; color: #475569; margin: 0 0 4px;">AtentAI — Inteligência Artificial Contábil</p>
+            <p style="font-size: 11px; color: #334155; margin: 0;">© 2026 AtentAI • São Paulo, SP • contato@atentai.com.br</p>
           </div>
         </div>
       `,
