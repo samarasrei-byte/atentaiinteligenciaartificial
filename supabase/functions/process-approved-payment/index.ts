@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { Resend } from "https://esm.sh/resend@2.0.0";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,6 +67,69 @@ function generatePassword(): string {
     password += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return password;
+}
+
+// Send welcome email with credentials to new users
+async function sendWelcomeEmail(email: string, fullName: string, tempPassword: string, serviceName: string, specialist: string): Promise<void> {
+  const resendApiKey = Deno.env.get("RESEND_API_KEY");
+  if (!resendApiKey) {
+    log("RESEND_API_KEY not configured - skipping welcome email");
+    return;
+  }
+
+  const resend = new Resend(resendApiKey);
+  const firstName = fullName.split(' ')[0] || 'Cliente';
+  const loginUrl = 'https://atentaiinteligenciaartificial.lovable.app/login';
+
+  try {
+    const { error } = await resend.emails.send({
+      from: "AtentAI <noreply@atentai.com.br>",
+      to: [email],
+      subject: `✅ Pagamento confirmado - ${serviceName} | AtentAI`,
+      html: `
+        <div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0f172a; color: #e2e8f0; border-radius: 16px; overflow: hidden;">
+          <div style="background: linear-gradient(135deg, #10b981, #06b6d4); padding: 32px 24px; text-align: center;">
+            <h1 style="color: white; margin: 0; font-size: 24px;">✅ Pagamento Confirmado!</h1>
+            <p style="color: rgba(255,255,255,0.9); margin: 8px 0 0; font-size: 14px;">${serviceName}</p>
+          </div>
+          <div style="padding: 32px 24px;">
+            <p style="font-size: 16px; margin: 0 0 16px;">Olá, <strong>${firstName}</strong>! 👋</p>
+            <p style="font-size: 14px; line-height: 1.6; margin: 0 0 24px;">
+              Seu pagamento foi processado com sucesso e sua conta foi criada automaticamente. 
+              O especialista <strong>${specialist}</strong> já está aguardando você no chat para iniciar o atendimento.
+            </p>
+            
+            <div style="background: #1e293b; border-radius: 12px; padding: 20px; margin: 0 0 24px; border: 1px solid #334155;">
+              <p style="font-size: 13px; color: #94a3b8; margin: 0 0 12px; text-transform: uppercase; letter-spacing: 1px;">Seus dados de acesso</p>
+              <p style="font-size: 14px; margin: 0 0 8px;"><strong>E-mail:</strong> ${email}</p>
+              <p style="font-size: 14px; margin: 0;"><strong>Senha temporária:</strong> <code style="background: #334155; padding: 2px 8px; border-radius: 4px; font-size: 13px;">${tempPassword}</code></p>
+            </div>
+
+            <div style="text-align: center; margin: 0 0 24px;">
+              <a href="${loginUrl}" style="display: inline-block; background: linear-gradient(135deg, #10b981, #06b6d4); color: white; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: bold; font-size: 16px;">
+                Acessar minha conta →
+              </a>
+            </div>
+
+            <p style="font-size: 12px; color: #64748b; text-align: center; margin: 0;">
+              Recomendamos alterar sua senha após o primeiro acesso em Configurações.
+            </p>
+          </div>
+          <div style="background: #1e293b; padding: 16px 24px; text-align: center; border-top: 1px solid #334155;">
+            <p style="font-size: 12px; color: #64748b; margin: 0;">© 2026 AtentAI • São Paulo, SP</p>
+          </div>
+        </div>
+      `,
+    });
+
+    if (error) {
+      log("Welcome email send error (non-blocking)", { error: JSON.stringify(error) });
+    } else {
+      log("Welcome email sent successfully", { to: email.substring(0, 3) + '***' });
+    }
+  } catch (err) {
+    log("Welcome email exception (non-blocking)", { error: String(err) });
+  }
 }
 
 serve(async (req) => {
@@ -185,17 +249,14 @@ serve(async (req) => {
       }, { onConflict: 'user_id,role' });
       log("Role 'user' assigned to new user");
 
-      // Send password reset email so user can set their own password later
-      const siteUrl = Deno.env.get("SUPABASE_URL")?.replace('.supabase.co', '') || '';
-      const { error: resetError } = await supabaseAdmin.auth.admin.generateLink({
-        type: 'recovery',
-        email: email.toLowerCase(),
-      });
-      if (resetError) {
-        log("Password reset email failed (non-blocking)", { error: resetError.message });
-      } else {
-        log("Password reset link generated for new user");
-      }
+      // Send welcome email with credentials via Resend
+      await sendWelcomeEmail(
+        email.toLowerCase(),
+        fullName || 'Cliente',
+        tempPassword,
+        serviceName || serviceType,
+        SERVICE_SPECIALIST[serviceType]?.specialist || 'Guilherme'
+      );
 
       return newUser.user.id;
     }
