@@ -2990,6 +2990,7 @@ export type Database = {
         | "autonomo"
         | "affiliate"
         | "equipe_guilherme"
+        | "equipe_cesar"
       company_sector:
         | "comercio"
         | "servicos"
@@ -3153,6 +3154,7 @@ export const Constants = {
         "autonomo",
         "affiliate",
         "equipe_guilherme",
+        "equipe_cesar",
       ],
       company_sector: [
         "comercio",
