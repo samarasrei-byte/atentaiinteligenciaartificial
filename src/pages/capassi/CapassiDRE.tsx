@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { supabase } from '@/integrations/supabase/client';
-import { FileText, Download } from 'lucide-react';
+import { FileText, Download, TrendingUp, TrendingDown, Percent, Calendar } from 'lucide-react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
 
 const fmt = (v: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v / 100);
@@ -11,99 +13,205 @@ export default function CapassiDRE() {
   const [revenue, setRevenue] = useState(0);
   const [costs, setCosts] = useState(0);
   const [costsByType, setCostsByType] = useState<Record<string, number>>({});
+  const [revenueByService, setRevenueByService] = useState<Record<string, number>>({});
+  const [period, setPeriod] = useState('all');
 
   useEffect(() => {
     const fetch = async () => {
-      const { data: rev } = await supabase.from('financial_revenues').select('amount_cents');
-      const { data: cost } = await supabase.from('financial_costs').select('amount_cents, cost_type');
+      const { data: rev } = await supabase.from('financial_revenues').select('amount_cents, service_slug');
+      const { data: cost } = await supabase.from('financial_costs').select('amount_cents, cost_type, category');
       setRevenue((rev || []).reduce((s, r) => s + (r.amount_cents || 0), 0));
       const total = (cost || []).reduce((s, c) => s + (c.amount_cents || 0), 0);
       setCosts(total);
+
       const byType: Record<string, number> = {};
       (cost || []).forEach(c => {
-        byType[c.cost_type || 'outros'] = (byType[c.cost_type || 'outros'] || 0) + (c.amount_cents || 0);
+        const key = c.category || c.cost_type || 'outros';
+        byType[key] = (byType[key] || 0) + (c.amount_cents || 0);
       });
       setCostsByType(byType);
+
+      const byService: Record<string, number> = {};
+      (rev || []).forEach(r => {
+        const key = r.service_slug || 'outros';
+        byService[key] = (byService[key] || 0) + (r.amount_cents || 0);
+      });
+      setRevenueByService(byService);
     };
     fetch();
-  }, []);
+  }, [period]);
 
   const net = revenue - costs;
   const margin = revenue > 0 ? ((net / revenue) * 100).toFixed(1) : '0';
+  const costRatio = revenue > 0 ? ((costs / revenue) * 100).toFixed(1) : '0';
+
+  const COLORS = ['#55FFAA', '#33DDFF', '#7C5CFC', '#FFB84D', '#FF6B6B', '#00CC77'];
+  const costPieData = Object.entries(costsByType).map(([name, value], i) => ({
+    name, value, color: COLORS[i % COLORS.length]
+  }));
 
   const exportPDF = () => {
-    // Simple text-based PDF export using jsPDF
     import('jspdf').then(({ default: jsPDF }) => {
       const doc = new jsPDF();
-      doc.setFontSize(18);
-      doc.text('DRE — Capassi Finance', 20, 20);
-      doc.setFontSize(12);
-      doc.text(`Receita Bruta: ${fmt(revenue)}`, 20, 40);
-      let y = 55;
-      Object.entries(costsByType).forEach(([type, amount]) => {
-        doc.text(`(-) ${type}: ${fmt(amount)}`, 25, y);
-        y += 10;
+      doc.setFontSize(20);
+      doc.text('DRE — Capassi Finance Suite', 20, 20);
+      doc.setFontSize(11);
+      doc.text(`Gerado em: ${new Date().toLocaleString('pt-BR')}`, 20, 30);
+      doc.setFontSize(13);
+      doc.text(`Receita Bruta: ${fmt(revenue)}`, 20, 48);
+      let y = 63;
+      doc.setFontSize(11);
+      Object.entries(revenueByService).forEach(([slug, amount]) => {
+        doc.text(`  • ${slug}: ${fmt(amount)}`, 25, y);
+        y += 8;
       });
-      doc.text(`Total Custos: ${fmt(costs)}`, 20, y + 5);
-      doc.setFontSize(14);
-      doc.text(`Lucro Líquido: ${fmt(net)} (${margin}%)`, 20, y + 20);
+      y += 5;
+      doc.setFontSize(13);
+      doc.text('Deduções e Custos:', 20, y);
+      y += 12;
+      doc.setFontSize(11);
+      Object.entries(costsByType).forEach(([type, amount]) => {
+        doc.text(`  (-) ${type}: ${fmt(amount)}`, 25, y);
+        y += 8;
+      });
+      y += 5;
+      doc.setFontSize(13);
+      doc.text(`Total Custos: ${fmt(costs)}`, 20, y);
+      y += 12;
+      doc.setFontSize(15);
+      doc.text(`LUCRO LÍQUIDO: ${fmt(net)} (${margin}%)`, 20, y);
       doc.save('capassi-dre.pdf');
     });
   };
 
   const rows = [
-    { label: 'Receita Bruta', value: revenue, bold: true, color: 'text-[#55FFAA]' },
-    ...Object.entries(costsByType).map(([type, amount]) => ({
-      label: `(-) ${type.charAt(0).toUpperCase() + type.slice(1)}`,
-      value: -amount,
-      bold: false,
-      color: 'text-red-400',
+    { label: 'RECEITA BRUTA', value: revenue, bold: true, color: 'text-[#55FFAA]', section: true },
+    ...Object.entries(revenueByService).map(([slug, amount]) => ({
+      label: `  ${slug.replace(/-/g, ' ')}`, value: amount, bold: false, color: 'text-[#55FFAA]/60', section: false
     })),
-    { label: 'Total de Deduções', value: -costs, bold: true, color: 'text-red-400' },
-    { label: 'Lucro Líquido', value: net, bold: true, color: net >= 0 ? 'text-[#55FFAA]' : 'text-red-400' },
+    { label: '', value: 0, bold: false, color: '', section: false },
+    { label: 'CUSTOS E DEDUÇÕES', value: -costs, bold: true, color: 'text-red-400', section: true },
+    ...Object.entries(costsByType).map(([type, amount]) => ({
+      label: `  (-) ${type.charAt(0).toUpperCase() + type.slice(1)}`, value: -amount, bold: false, color: 'text-red-400/60', section: false
+    })),
+    { label: '', value: 0, bold: false, color: '', section: false },
+    { label: 'LUCRO LÍQUIDO', value: net, bold: true, color: net >= 0 ? 'text-[#55FFAA]' : 'text-red-400', section: true },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 className="text-xl font-semibold text-white">DRE</h2>
-          <p className="text-sm text-white/40">Demonstrativo de Resultado do Exercício</p>
+          <h2 className="text-xl md:text-2xl font-bold text-white">DRE</h2>
+          <p className="text-sm text-white/30">Demonstrativo de Resultado do Exercício</p>
         </div>
-        <Button variant="outline" size="sm" onClick={exportPDF} className="border-[#372938] text-white/60 hover:text-white bg-transparent">
-          <Download className="h-4 w-4 mr-2" /> Exportar PDF
-        </Button>
+        <div className="flex gap-2">
+          <Select value={period} onValueChange={setPeriod}>
+            <SelectTrigger className="w-[140px] bg-white/[0.03] border-white/10 text-white/70 h-9 text-xs">
+              <Calendar className="h-3.5 w-3.5 mr-2" />
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todo período</SelectItem>
+              <SelectItem value="month">Este mês</SelectItem>
+              <SelectItem value="quarter">Trimestre</SelectItem>
+              <SelectItem value="year">Este ano</SelectItem>
+            </SelectContent>
+          </Select>
+          <Button variant="outline" size="sm" onClick={exportPDF} className="border-white/10 text-white/50 hover:text-white bg-transparent hover:bg-white/5">
+            <Download className="h-3.5 w-3.5 mr-2" /> PDF
+          </Button>
+        </div>
       </div>
 
-      <Card className="bg-[#0B0F1A] border-[#372938]">
-        <CardHeader>
-          <CardTitle className="text-base text-white flex items-center gap-2">
-            <FileText className="h-5 w-5 text-[#55FFAA]" />
-            DRE Consolidado
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-1">
-            {rows.map((row, i) => (
-              <div
-                key={i}
-                className={`flex justify-between py-3 px-4 rounded ${row.bold ? 'bg-white/[0.03]' : ''}`}
-                style={i < rows.length - 1 ? { borderBottom: '1px solid #372938' } : {}}
-              >
-                <span className={`text-sm ${row.bold ? 'font-semibold text-white' : 'text-white/60'}`}>
-                  {row.label}
-                </span>
-                <span className={`text-sm font-mono ${row.bold ? 'font-bold' : 'font-medium'} ${row.color}`}>
-                  {fmt(Math.abs(row.value))}
-                </span>
-              </div>
-            ))}
+      {/* KPI Row */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {[
+          { label: 'Receita', value: fmt(revenue), icon: TrendingUp, color: '#55FFAA' },
+          { label: 'Custos', value: fmt(costs), icon: TrendingDown, color: '#ef4444' },
+          { label: 'Margem', value: `${margin}%`, icon: Percent, color: '#7C5CFC' },
+          { label: 'Custo/Receita', value: `${costRatio}%`, icon: FileText, color: '#FFB84D' },
+        ].map(k => (
+          <div key={k.label} className="flex items-center gap-3 px-4 py-3 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+            <div className="p-2 rounded-lg" style={{ backgroundColor: `${k.color}10` }}>
+              <k.icon className="h-4 w-4" style={{ color: k.color }} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-white">{k.value}</p>
+              <p className="text-[10px] text-white/30 uppercase tracking-wider">{k.label}</p>
+            </div>
           </div>
-          <div className="mt-4 text-right">
-            <span className="text-xs text-white/30">Margem líquida: {margin}%</span>
-          </div>
-        </CardContent>
-      </Card>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        {/* DRE Table */}
+        <Card className="lg:col-span-2 bg-white/[0.02] border-white/[0.06]">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm text-white/80 flex items-center gap-2">
+              <FileText className="h-4 w-4 text-[#55FFAA]" />
+              DRE Consolidado
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-0">
+              {rows.filter(r => r.label || r.section).map((row, i) => {
+                if (!row.label) return <div key={i} className="h-3" />;
+                return (
+                  <div
+                    key={i}
+                    className={`flex justify-between py-3 px-4 rounded-lg ${row.section ? 'bg-white/[0.02]' : ''}`}
+                    style={row.section ? { borderBottom: '1px solid rgba(255,255,255,0.04)' } : {}}
+                  >
+                    <span className={`text-sm ${row.bold ? 'font-bold text-white' : 'text-white/50'}`}>
+                      {row.label}
+                    </span>
+                    <span className={`text-sm font-mono ${row.bold ? 'font-bold' : 'font-medium'} ${row.color}`}>
+                      {row.value !== 0 ? fmt(Math.abs(row.value)) : ''}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Cost Breakdown Pie */}
+        <Card className="bg-white/[0.02] border-white/[0.06]">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-sm text-white/80">Composição de Custos</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {costPieData.length > 0 ? (
+              <>
+                <div className="h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={costPieData} cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3} dataKey="value" stroke="none">
+                        {costPieData.map((e, i) => <Cell key={i} fill={e.color} />)}
+                      </Pie>
+                      <Tooltip formatter={(v: number) => fmt(v)} contentStyle={{ backgroundColor: '#0d1117', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 12, color: '#fff', fontSize: 12 }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                <div className="space-y-1.5 mt-2">
+                  {costPieData.map(c => (
+                    <div key={c.name} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: c.color }} />
+                        <span className="text-white/50 capitalize">{c.name}</span>
+                      </div>
+                      <span className="text-white/70 font-mono">{fmt(c.value)}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              <div className="py-12 text-center text-white/30 text-sm">Sem dados de custos</div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
