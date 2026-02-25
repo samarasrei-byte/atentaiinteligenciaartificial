@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Helmet } from "react-helmet-async";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useRef, useEffect, useMemo } from "react";
 import {
   Zap, Shield, BarChart3, Clock, Users, Brain,
@@ -51,8 +51,6 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
 export default function SalesPresentation() {
   const { slug } = useParams<{ slug: string }>();
   const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: containerRef });
-  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
 
   const { data: pres, isLoading } = useQuery({
     queryKey: ["presentation", slug],
@@ -117,9 +115,9 @@ export default function SalesPresentation() {
         {/* ===== HERO ===== */}
         {s.hero && (
           <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-            <motion.div
+            <div
               className="absolute inset-0 z-0"
-              style={{ y: bgY, background: "var(--gradient-hero)" }}
+              style={{ background: "var(--gradient-hero)" }}
             />
             <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_30%_20%,hsl(175_65%_35%/0.15),transparent_50%)]" />
             <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_70%_80%,hsl(45_95%_55%/0.08),transparent_50%)]" />
