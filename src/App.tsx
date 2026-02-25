@@ -99,6 +99,16 @@ import LimpaNomeDataCollection from "./pages/LimpaNomeDataCollection";
 import CheckoutPage from "./pages/CheckoutPage";
 import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
 import LimpaNomeColaborador from "./pages/LimpaNomeColaborador";
+import { CapassiGuard } from "./components/capassi/CapassiGuard";
+import { CapassiLayout } from "./components/capassi/CapassiLayout";
+import CapassiDashboard from "./pages/capassi/CapassiDashboard";
+import CapassiTransactions from "./pages/capassi/CapassiTransactions";
+import CapassiClients from "./pages/capassi/CapassiClients";
+import CapassiAlerts from "./pages/capassi/CapassiAlerts";
+import CapassiDRE from "./pages/capassi/CapassiDRE";
+import CapassiCashflow from "./pages/capassi/CapassiCashflow";
+import CapassiChat from "./pages/capassi/CapassiChat";
+import CapassiAudit from "./pages/capassi/CapassiAudit";
 
 const queryClient = new QueryClient();
 
@@ -327,6 +337,22 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
+              {/* Capassi Panel - Exclusive for César */}
+              <Route path="/capassi" element={
+                <CapassiGuard>
+                  <CapassiLayout />
+                </CapassiGuard>
+              }>
+                <Route index element={<CapassiDashboard />} />
+                <Route path="transactions" element={<CapassiTransactions />} />
+                <Route path="clients" element={<CapassiClients />} />
+                <Route path="alerts" element={<CapassiAlerts />} />
+                <Route path="dre" element={<CapassiDRE />} />
+                <Route path="cashflow" element={<CapassiCashflow />} />
+                <Route path="chat" element={<CapassiChat />} />
+                <Route path="audit" element={<CapassiAudit />} />
+              </Route>
+
               <Route path="*" element={<NotFound />} />
               </Routes>
             </AnimatedRoutes>
