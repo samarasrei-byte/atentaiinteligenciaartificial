@@ -14,104 +14,129 @@ import { AnimatedRoutes } from "@/components/layout/AnimatedRoutes";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { BottomNavigation } from "@/components/pwa/BottomNavigation";
 import QaModeIndicator from "@/components/qa/QaModeIndicator";
-import Index from "./pages/Index";
-import Auth from "./pages/Auth";
-import DashboardRouter from "./pages/DashboardRouter";
-import ProfileSelector from "./pages/ProfileSelector";
-import EmpresaPanel from "./pages/EmpresaPanel";
-import AutonomoPanel from "./pages/AutonomoPanel";
-import ContadorPanel from "./pages/ContadorPanel";
-import AdminPanel from "./pages/AdminPanel";
-import AdminReports from "./pages/AdminReports";
-import AdminLoginNew from "./pages/AdminLoginNew";
-import Profile from "./pages/Profile";
-import Simulator from "./pages/Simulator";
-import TransitionSimulator from "./pages/TransitionSimulator";
-import Contadores from "./pages/Contadores";
-import ContadoresPublic from "./pages/ContadoresPublic";
-import Pricing from "./pages/Pricing";
-import AIChat from "./pages/AIChat";
-import FAQ from "./pages/FAQ";
-import NotFound from "./pages/NotFound";
-import PoliticaPrivacidade from "./pages/PoliticaPrivacidade";
-import TermosDeUso from "./pages/TermosDeUso";
-import PaymentSuccess from "./pages/PaymentSuccess";
-import ConsultationHistory from "./pages/ConsultationHistory";
-import ConsultationChatPage from "./pages/ConsultationChatPage";
-import AberturaEmpresa from "./pages/AberturaEmpresa";
-import AutonomoOnboarding from "./pages/AutonomoOnboarding";
-import ContadorOnboarding from "./pages/ContadorOnboarding";
-import LocacaoSimulator from "./pages/LocacaoSimulator";
-import RegimeComparator from "./pages/RegimeComparator";
-import LimpaNomePage from "./pages/LimpaNomePage";
-import LimpaNomeStatusPage from "./pages/LimpaNomeStatusPage";
-import CertificatesPage from "./pages/CertificatesPage";
-import IRPage from "./pages/IRPage";
-import QADashboard from "./pages/QADashboard";
-import ServicosPage from "./pages/ServicosPage";
-import FiscalDocumentsPage from "./pages/FiscalDocumentsPage";
-import FiscalSuccessPage from "./pages/FiscalSuccessPage";
-import ModuloFiscal from "./pages/ModuloFiscal";
-import TimelineReforma from "./pages/TimelineReforma";
-import TransicaoTributaria from "./pages/TransicaoTributaria";
-import FerramentasLC214 from "./pages/FerramentasLC214";
-import PlanoSimulador from "./pages/PlanoSimulador";
-import PlanoAutonomo from "./pages/PlanoAutonomo";
-import PlanoAtenteAi from "./pages/PlanoAtenteAi";
-import PlanosPorPerfil from "./pages/PlanosPorPerfil";
-import PlanComparison from "./pages/PlanComparison";
-import RoleManagement from "./pages/RoleManagement";
-import MetricsDashboard from "./pages/MetricsDashboard";
-import InvestorPresentation from "./pages/InvestorPresentation";
-import TrialOnboarding from "./pages/TrialOnboarding";
-import TrialSuccess from "./pages/TrialSuccess";
-import WelcomePage from "./pages/WelcomePage";
-import UserTypeSelection from "./pages/UserTypeSelection";
-import AffiliatePanel from "./pages/AffiliatePanel";
-import AffiliateLanding from "./pages/AffiliateLanding";
-import AffiliateLandingPremium from "./pages/AffiliateLandingPremium";
-import AffiliateFiscalLanding from "./pages/AffiliateFiscalLanding";
-import AffiliateLimpaNomeLanding from "./pages/AffiliateLimpaNomeLanding";
-import AffiliateOnboarding from "./pages/AffiliateOnboarding";
-import AffiliateOnboardingFlow from "./pages/AffiliateOnboardingFlow";
-import AffiliateOfferPage from "./pages/AffiliateOfferPage";
-import PartnerInvite from "./pages/PartnerInvite";
-import PublicOnboarding from "./pages/PublicOnboarding";
-// MinhasSolicitacoesPage removed - functionality integrated into dashboard panels
-import UserPanelBI from "./pages/UserPanelBI";
-import LimpaNomeOnboarding from "./pages/LimpaNomeOnboarding";
-import LimpaNomeLanding from "./pages/LimpaNomeLanding";
-import ModuloFiscalLanding from "./pages/ModuloFiscalLanding";
-import FiscalAnalysisOnboarding from "./pages/FiscalAnalysisOnboarding";
-import TestLogin from "./pages/TestLogin";
-import PartnerGuilhermePage from "./pages/PartnerGuilhermePage";
-import PartnerGuilhermePanel from "./pages/PartnerGuilhermePanel";
-import MarketplaceServicePage from "./pages/MarketplaceServicePage";
-import SobrePage from "./pages/SobrePage";
-import SuportePage from "./pages/SuportePage";
-import BIContabilidadeLanding from "./pages/BIContabilidadeLanding";
-import BIContabilidadeOnboarding from "./pages/BIContabilidadeOnboarding";
-import CesarBILanding from "./pages/CesarBILanding";
-import ChatGuilherme from "./pages/ChatGuilherme";
-import ChatCesar from "./pages/ChatCesar";
-import LimpaNomePaymentSuccess from "./pages/LimpaNomePaymentSuccess";
-import LimpaNomeDataCollection from "./pages/LimpaNomeDataCollection";
-import CheckoutPage from "./pages/CheckoutPage";
-import CheckoutSuccessPage from "./pages/CheckoutSuccessPage";
-import LimpaNomeColaborador from "./pages/LimpaNomeColaborador";
-import { CapassiGuard } from "./components/capassi/CapassiGuard";
-import { CapassiLayout } from "./components/capassi/CapassiLayout";
-import CapassiDashboard from "./pages/capassi/CapassiDashboard";
-import CapassiTransactions from "./pages/capassi/CapassiTransactions";
-import CapassiClients from "./pages/capassi/CapassiClients";
-import CapassiAlerts from "./pages/capassi/CapassiAlerts";
-import CapassiDRE from "./pages/capassi/CapassiDRE";
-import CapassiCashflow from "./pages/capassi/CapassiCashflow";
-import CapassiChat from "./pages/capassi/CapassiChat";
-import CapassiAudit from "./pages/capassi/CapassiAudit";
-import CapassiMetrics from "./pages/capassi/CapassiMetrics";
+import { lazy, Suspense } from "react";
 
-const queryClient = new QueryClient();
+// Only eagerly load the landing page — everything else is lazy
+import Index from "./pages/Index";
+
+// Global loading fallback
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="flex flex-col items-center gap-4">
+      <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+      <p className="text-muted-foreground text-sm animate-pulse">Carregando...</p>
+    </div>
+  </div>
+);
+
+// Lazy load ALL other pages
+const Auth = lazy(() => import("./pages/Auth"));
+const DashboardRouter = lazy(() => import("./pages/DashboardRouter"));
+const ProfileSelector = lazy(() => import("./pages/ProfileSelector"));
+const EmpresaPanel = lazy(() => import("./pages/EmpresaPanel"));
+const AutonomoPanel = lazy(() => import("./pages/AutonomoPanel"));
+const ContadorPanel = lazy(() => import("./pages/ContadorPanel"));
+const AdminPanel = lazy(() => import("./pages/AdminPanel"));
+const AdminReports = lazy(() => import("./pages/AdminReports"));
+const AdminLoginNew = lazy(() => import("./pages/AdminLoginNew"));
+const Profile = lazy(() => import("./pages/Profile"));
+const Simulator = lazy(() => import("./pages/Simulator"));
+const TransitionSimulator = lazy(() => import("./pages/TransitionSimulator"));
+const Contadores = lazy(() => import("./pages/Contadores"));
+const ContadoresPublic = lazy(() => import("./pages/ContadoresPublic"));
+const Pricing = lazy(() => import("./pages/Pricing"));
+const AIChat = lazy(() => import("./pages/AIChat"));
+const FAQ = lazy(() => import("./pages/FAQ"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
+const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
+const PaymentSuccess = lazy(() => import("./pages/PaymentSuccess"));
+const ConsultationHistory = lazy(() => import("./pages/ConsultationHistory"));
+const ConsultationChatPage = lazy(() => import("./pages/ConsultationChatPage"));
+const AberturaEmpresa = lazy(() => import("./pages/AberturaEmpresa"));
+const AutonomoOnboarding = lazy(() => import("./pages/AutonomoOnboarding"));
+const ContadorOnboarding = lazy(() => import("./pages/ContadorOnboarding"));
+const LocacaoSimulator = lazy(() => import("./pages/LocacaoSimulator"));
+const RegimeComparator = lazy(() => import("./pages/RegimeComparator"));
+const LimpaNomePage = lazy(() => import("./pages/LimpaNomePage"));
+const LimpaNomeStatusPage = lazy(() => import("./pages/LimpaNomeStatusPage"));
+const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
+const IRPage = lazy(() => import("./pages/IRPage"));
+const QADashboard = lazy(() => import("./pages/QADashboard"));
+const ServicosPage = lazy(() => import("./pages/ServicosPage"));
+const FiscalDocumentsPage = lazy(() => import("./pages/FiscalDocumentsPage"));
+const FiscalSuccessPage = lazy(() => import("./pages/FiscalSuccessPage"));
+const ModuloFiscal = lazy(() => import("./pages/ModuloFiscal"));
+const TimelineReforma = lazy(() => import("./pages/TimelineReforma"));
+const TransicaoTributaria = lazy(() => import("./pages/TransicaoTributaria"));
+const FerramentasLC214 = lazy(() => import("./pages/FerramentasLC214"));
+const PlanoSimulador = lazy(() => import("./pages/PlanoSimulador"));
+const PlanoAutonomo = lazy(() => import("./pages/PlanoAutonomo"));
+const PlanoAtenteAi = lazy(() => import("./pages/PlanoAtenteAi"));
+const PlanosPorPerfil = lazy(() => import("./pages/PlanosPorPerfil"));
+const PlanComparison = lazy(() => import("./pages/PlanComparison"));
+const RoleManagement = lazy(() => import("./pages/RoleManagement"));
+const MetricsDashboard = lazy(() => import("./pages/MetricsDashboard"));
+const InvestorPresentation = lazy(() => import("./pages/InvestorPresentation"));
+const TrialOnboarding = lazy(() => import("./pages/TrialOnboarding"));
+const TrialSuccess = lazy(() => import("./pages/TrialSuccess"));
+const WelcomePage = lazy(() => import("./pages/WelcomePage"));
+const UserTypeSelection = lazy(() => import("./pages/UserTypeSelection"));
+const AffiliatePanel = lazy(() => import("./pages/AffiliatePanel"));
+const AffiliateLanding = lazy(() => import("./pages/AffiliateLanding"));
+const AffiliateLandingPremium = lazy(() => import("./pages/AffiliateLandingPremium"));
+const AffiliateFiscalLanding = lazy(() => import("./pages/AffiliateFiscalLanding"));
+const AffiliateLimpaNomeLanding = lazy(() => import("./pages/AffiliateLimpaNomeLanding"));
+const AffiliateOnboarding = lazy(() => import("./pages/AffiliateOnboarding"));
+const AffiliateOnboardingFlow = lazy(() => import("./pages/AffiliateOnboardingFlow"));
+const AffiliateOfferPage = lazy(() => import("./pages/AffiliateOfferPage"));
+const PartnerInvite = lazy(() => import("./pages/PartnerInvite"));
+const PublicOnboarding = lazy(() => import("./pages/PublicOnboarding"));
+const UserPanelBI = lazy(() => import("./pages/UserPanelBI"));
+const LimpaNomeOnboarding = lazy(() => import("./pages/LimpaNomeOnboarding"));
+const LimpaNomeLanding = lazy(() => import("./pages/LimpaNomeLanding"));
+const ModuloFiscalLanding = lazy(() => import("./pages/ModuloFiscalLanding"));
+const FiscalAnalysisOnboarding = lazy(() => import("./pages/FiscalAnalysisOnboarding"));
+const TestLogin = lazy(() => import("./pages/TestLogin"));
+const PartnerGuilhermePage = lazy(() => import("./pages/PartnerGuilhermePage"));
+const PartnerGuilhermePanel = lazy(() => import("./pages/PartnerGuilhermePanel"));
+const MarketplaceServicePage = lazy(() => import("./pages/MarketplaceServicePage"));
+const SobrePage = lazy(() => import("./pages/SobrePage"));
+const SuportePage = lazy(() => import("./pages/SuportePage"));
+const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
+const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
+const CesarBILanding = lazy(() => import("./pages/CesarBILanding"));
+const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
+const ChatCesar = lazy(() => import("./pages/ChatCesar"));
+const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
+const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
+const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
+const CheckoutSuccessPage = lazy(() => import("./pages/CheckoutSuccessPage"));
+const LimpaNomeColaborador = lazy(() => import("./pages/LimpaNomeColaborador"));
+
+// Capassi - lazy loaded
+const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
+const CapassiLayoutLazy = lazy(() => import("./components/capassi/CapassiLayout").then(m => ({ default: m.CapassiLayout })));
+const CapassiDashboard = lazy(() => import("./pages/capassi/CapassiDashboard"));
+const CapassiTransactions = lazy(() => import("./pages/capassi/CapassiTransactions"));
+const CapassiClients = lazy(() => import("./pages/capassi/CapassiClients"));
+const CapassiAlerts = lazy(() => import("./pages/capassi/CapassiAlerts"));
+const CapassiDRE = lazy(() => import("./pages/capassi/CapassiDRE"));
+const CapassiCashflow = lazy(() => import("./pages/capassi/CapassiCashflow"));
+const CapassiChat = lazy(() => import("./pages/capassi/CapassiChat"));
+const CapassiAudit = lazy(() => import("./pages/capassi/CapassiAudit"));
+const CapassiMetrics = lazy(() => import("./pages/capassi/CapassiMetrics"));
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000, // 5 min cache
+      gcTime: 10 * 60 * 1000, // 10 min gc
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
   <HelmetProvider>
@@ -126,6 +151,7 @@ const App = () => (
           <OfflineIndicator />
           <div className="pb-20 md:pb-0 min-h-screen">
             <AnimatedRoutes>
+              <Suspense fallback={<PageLoader />}>
               <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<Auth />} />
@@ -202,7 +228,6 @@ const App = () => (
                   <LimpaNomeStatusPage />
                 </ProtectedRoute>
               } />
-              {/* Redirect old minhas-solicitacoes route to dashboard */}
               <Route path="/minhas-solicitacoes" element={
                 <ProtectedRoute>
                   <DashboardRouter />
@@ -213,7 +238,6 @@ const App = () => (
                   <UserPanelBI />
                 </ProtectedRoute>
               } />
-              {/* Protected routes - require authentication */}
               <Route path="/bem-vindo" element={
                 <ProtectedRoute>
                   <WelcomePage />
@@ -239,15 +263,11 @@ const App = () => (
                   <Profile />
                 </ProtectedRoute>
               } />
-              
-              {/* Simulator plan features */}
               <Route path="/simulator" element={
                 <ProtectedRoute requiredPlan="simulator">
                   <Simulator />
                 </ProtectedRoute>
               } />
-              
-              {/* Premium plan features */}
               <Route path="/ai-chat" element={
                 <ProtectedRoute requiredPlan="premium">
                   <AIChat />
@@ -268,8 +288,6 @@ const App = () => (
                   <Contadores />
                 </ProtectedRoute>
               } />
-              
-              {/* Role-based protected routes */}
               <Route path="/autonomo" element={
                 <RoleProtectedRoute requiredRole="autonomo">
                   <AutonomoPanel />
@@ -325,8 +343,6 @@ const App = () => (
                   <ConsultationHistory />
                 </ProtectedRoute>
               } />
-              
-              {/* Unified Chat Routes - Final destination for all services */}
               <Route path="/chat/guilherme" element={
                 <ProtectedRoute>
                   <ChatGuilherme />
@@ -340,9 +356,9 @@ const App = () => (
               
               {/* Capassi Panel - Exclusive for César */}
               <Route path="/capassi" element={
-                <CapassiGuard>
-                  <CapassiLayout />
-                </CapassiGuard>
+                <CapassiGuardLazy>
+                  <CapassiLayoutLazy />
+                </CapassiGuardLazy>
               }>
                 <Route index element={<CapassiDashboard />} />
                 <Route path="transactions" element={<CapassiTransactions />} />
@@ -357,6 +373,7 @@ const App = () => (
 
               <Route path="*" element={<NotFound />} />
               </Routes>
+              </Suspense>
             </AnimatedRoutes>
           </div>
           <BottomNavigation />
