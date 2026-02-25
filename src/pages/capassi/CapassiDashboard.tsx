@@ -38,12 +38,23 @@ export default function CapassiDashboard() {
   const [alertCount, setAlertCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
+  const getDateFrom = (p: string): string | null => {
+    const now = new Date();
+    if (p === '7d') { now.setDate(now.getDate() - 7); return now.toISOString().split('T')[0]; }
+    if (p === '30d') { now.setDate(now.getDate() - 30); return now.toISOString().split('T')[0]; }
+    if (p === '90d') { now.setDate(now.getDate() - 90); return now.toISOString().split('T')[0]; }
+    return null; // 'all'
+  };
+
   const fetchData = async () => {
     if (!currentOrg) return;
     setLoading(true);
 
+    const dateFrom = getDateFrom(period);
+
     let txQuery = supabase.from('capassi_transactions' as any).select('*').eq('organization_id', currentOrg.id);
     if (currentCompany) txQuery = txQuery.eq('company_id', currentCompany.id);
+    if (dateFrom) txQuery = txQuery.gte('date', dateFrom);
 
     let clientQuery = supabase.from('capassi_clients' as any).select('*', { count: 'exact', head: true }).eq('organization_id', currentOrg.id);
     if (currentCompany) clientQuery = clientQuery.eq('company_id', currentCompany.id);
