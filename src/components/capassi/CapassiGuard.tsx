@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const ALLOWED_EMAIL = 'cesas@atentai.com.br';
+const ALLOWED_EMAIL = 'cesar@atentai.com.br';
 
 interface CapassiGuardProps {
   children: React.ReactNode;
