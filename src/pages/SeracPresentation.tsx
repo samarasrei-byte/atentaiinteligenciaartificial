@@ -1,13 +1,16 @@
 import { Helmet } from "react-helmet-async";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect } from "react";
 import {
-  Zap, Shield, BarChart3, Clock, Users, Brain,
+  Zap, Shield, BarChart3, Users, Brain,
   CheckCircle2, ArrowRight, Sparkles, Bot, Target,
   TrendingUp, FileText, MessageCircle, AlertTriangle,
   Layers, Rocket, Globe, ChevronDown, Eye, Search,
-  PieChart, Activity, LineChart
+  Activity
 } from "lucide-react";
+import heroBg from "@/assets/serac-hero-bg.jpg";
+import buildingBg from "@/assets/serac-building.jpg";
+import brazilMapBg from "@/assets/serac-brazil-map.jpg";
 
 /* ── Animations ── */
 const fadeUp = {
@@ -24,6 +27,26 @@ const scaleIn = {
 };
 const stagger = { visible: { transition: { staggerChildren: 0.15 } } };
 const staggerFast = { visible: { transition: { staggerChildren: 0.08 } } };
+
+/* ── Parallax Image Background ── */
+function ParallaxBg({ src, speed = 0.3, overlay = "bg-black/60" }: { src: string; speed?: number; overlay?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [`-${speed * 100}px`, `${speed * 100}px`]);
+
+  return (
+    <div ref={ref} className="absolute inset-0 overflow-hidden">
+      <motion.img
+        src={src}
+        alt=""
+        className="absolute inset-0 w-full h-[130%] object-cover -top-[15%]"
+        style={{ y }}
+        loading="lazy"
+      />
+      <div className={`absolute inset-0 ${overlay}`} />
+    </div>
+  );
+}
 
 /* ── CountUp ── */
 function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
@@ -46,7 +69,7 @@ function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
   return <span ref={ref}>0{suffix}</span>;
 }
 
-/* ── Particle effect (CSS-only) ── */
+/* ── Particle effect ── */
 function ParticleField() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -78,16 +101,6 @@ function GlassCard({ children, className = "" }: { children: React.ReactNode; cl
   );
 }
 
-/* ── Glow Text ── */
-function GlowText({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return (
-    <span className={`relative ${className}`}>
-      <span className="absolute inset-0 blur-2xl opacity-40 bg-gradient-to-r from-primary to-info" />
-      <span className="relative">{children}</span>
-    </span>
-  );
-}
-
 export default function SeracPresentation() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll();
@@ -97,8 +110,8 @@ export default function SeracPresentation() {
   return (
     <>
       <Helmet>
-        <title>SERAC + ATETAI | A Nova Era da Contabilidade Inteligente</title>
-        <meta name="description" content="Apresentação exclusiva: SERAC + ATETAI - Inteligência Artificial Estratégica para Contadores" />
+        <title>SERAC + ATENTAI | A Nova Era da Contabilidade Inteligente</title>
+        <meta name="description" content="Apresentação exclusiva: SERAC + ATENTAI - Inteligência Artificial Estratégica para Contadores" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
@@ -109,19 +122,15 @@ export default function SeracPresentation() {
           className="relative min-h-screen flex items-center justify-center overflow-hidden"
           style={{ opacity: heroOpacity, scale: heroScale }}
         >
-          {/* Background layers */}
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,hsl(220_50%_15%),transparent_60%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_80%_20%,hsl(175_40%_12%),transparent_50%)]" />
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_80%,hsl(240_40%_10%),transparent_50%)]" />
+          <ParallaxBg src={heroBg} speed={0.4} overlay="bg-black/70" />
           
           {/* Grid lines */}
           <div className="absolute inset-0 opacity-[0.03]"
             style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "80px 80px" }}
           />
-          
           <ParticleField />
           
-          {/* Digital lines animation */}
+          {/* Digital lines */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             {Array.from({ length: 6 }).map((_, i) => (
               <div key={i} className="absolute h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
@@ -168,9 +177,10 @@ export default function SeracPresentation() {
             </motion.p>
 
             <motion.div variants={scaleIn} className="inline-block">
+              <img src="/logo-atentai.png" alt="AtentAI" className="h-16 sm:h-20 lg:h-24 mx-auto mb-2 drop-shadow-[0_0_40px_hsl(175_60%_40%/0.5)]" />
               <div className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight bg-gradient-to-r from-primary via-info to-primary bg-clip-text text-transparent"
                 style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.4))" }}>
-                ATETAI
+                ATENTAI
               </div>
             </motion.div>
 
@@ -182,7 +192,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ SLIDE 2 — QUEM É O SERAC ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,hsl(220_50%_12%),transparent_60%)]" />
+          <ParallaxBg src={buildingBg} speed={0.25} overlay="bg-black/80" />
           
           <motion.div className="relative z-10 max-w-5xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="text-center mb-16">
@@ -258,20 +268,20 @@ export default function SeracPresentation() {
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE 4 — SURGE A ATETAI ═══════ */}
+        {/* ═══════ SLIDE 4 — SURGE A ATENTAI ═══════ */}
         <section className="relative py-32 lg:py-48 px-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,hsl(175_40%_15%),transparent_60%)]" />
           <ParticleField />
           
           <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={scaleIn}>
-              <Bot className="w-16 h-16 text-primary mx-auto mb-6 opacity-60" />
+              <img src="/logo-atentai.png" alt="AtentAI" className="h-20 sm:h-24 lg:h-32 mx-auto mb-6 drop-shadow-[0_0_60px_hsl(175_60%_40%/0.5)]" />
             </motion.div>
             <motion.h2 variants={scaleIn}
               className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tight bg-gradient-to-r from-primary via-info to-primary bg-clip-text text-transparent mb-6"
               style={{ filter: "drop-shadow(0 0 60px hsl(175 60% 40% / 0.3))" }}
             >
-              ATETAI
+              ATENTAI
             </motion.h2>
             <motion.p variants={fadeUp} className="text-xl sm:text-2xl text-white/50 tracking-wide mb-10">
               Inteligência Artificial Estratégica para Contadores
@@ -279,7 +289,7 @@ export default function SeracPresentation() {
             <motion.div variants={fadeUp}>
               <GlassCard className="inline-block px-8 py-5">
                 <p className="text-lg text-white/70">
-                  A ATETAI não substitui o SERAC. <br />
+                  A ATENTAI não substitui o SERAC. <br />
                   <span className="text-primary font-semibold">Ela potencializa.</span>
                 </p>
               </GlassCard>
@@ -287,14 +297,14 @@ export default function SeracPresentation() {
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE 5 — O QUE A ATETAI TRAZ ═══════ */}
+        {/* ═══════ SLIDE 5 — O QUE A ATENTAI TRAZ ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_30%,hsl(220_50%_10%),transparent_50%)]" />
           
           <motion.div className="relative z-10 max-w-6xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="text-center mb-20">
               <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Capacidades</span>
-              <h2 className="text-4xl lg:text-6xl font-bold mt-4">O que a ATETAI traz para o SERAC</h2>
+              <h2 className="text-4xl lg:text-6xl font-bold mt-4">O que a ATENTAI traz para o SERAC</h2>
             </motion.div>
 
             <div className="grid md:grid-cols-2 gap-8">
@@ -398,7 +408,7 @@ export default function SeracPresentation() {
 
             <motion.div variants={fadeUp}>
               <GlassCard className="p-8 lg:p-12">
-                <p className="text-white/40 text-sm uppercase tracking-widest mb-8">ATETAI entrega diariamente:</p>
+                <p className="text-white/40 text-sm uppercase tracking-widest mb-8">ATENTAI entrega diariamente:</p>
                 <div className="grid sm:grid-cols-2 gap-4">
                   {[
                     { icon: FileText, t: "Resumo executivo" },
@@ -423,7 +433,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ SLIDE 8 — POSICIONAMENTO ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,hsl(175_40%_12%),transparent_60%)]" />
+          <ParallaxBg src={brazilMapBg} speed={0.2} overlay="bg-black/70" />
           
           <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp}>
@@ -432,7 +442,7 @@ export default function SeracPresentation() {
             <motion.h2 variants={fadeUp} className="text-4xl lg:text-5xl font-bold mb-8">
               SERAC já é referência.
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-white/40 text-xl mb-6">Com ATETAI, torna-se:</motion.p>
+            <motion.p variants={fadeUp} className="text-white/40 text-xl mb-6">Com ATENTAI, torna-se:</motion.p>
             <motion.h3 variants={scaleIn} className="text-3xl lg:text-5xl font-black bg-gradient-to-r from-primary via-info to-accent bg-clip-text text-transparent"
               style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
               Pioneiro em Inteligência Artificial Contábil.
@@ -452,16 +462,19 @@ export default function SeracPresentation() {
           </div>
 
           <motion.div className="relative z-10 text-center" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-            <motion.div variants={scaleIn} className="flex items-center justify-center gap-4 sm:gap-8 mb-10">
-              <span className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-white"
-                style={{ textShadow: "0 0 60px hsl(0 0% 100% / 0.1)" }}>
-                SERAC
-              </span>
-              <span className="text-3xl sm:text-4xl lg:text-5xl font-light text-primary/40">+</span>
-              <span className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight bg-gradient-to-r from-primary to-info bg-clip-text text-transparent"
-                style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
-                ATETAI
-              </span>
+            <motion.div variants={scaleIn} className="flex flex-col items-center gap-6 mb-10">
+              <img src="/logo-atentai.png" alt="AtentAI" className="h-16 sm:h-20 drop-shadow-[0_0_40px_hsl(175_60%_40%/0.5)]" />
+              <div className="flex items-center gap-4 sm:gap-8">
+                <span className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-white"
+                  style={{ textShadow: "0 0 60px hsl(0 0% 100% / 0.1)" }}>
+                  SERAC
+                </span>
+                <span className="text-3xl sm:text-4xl lg:text-5xl font-light text-primary/40">+</span>
+                <span className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight bg-gradient-to-r from-primary to-info bg-clip-text text-transparent"
+                  style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
+                  ATENTAI
+                </span>
+              </div>
             </motion.div>
 
             <motion.h2 variants={fadeUp} className="text-2xl lg:text-3xl font-bold text-white/80 mb-12">
@@ -491,7 +504,7 @@ export default function SeracPresentation() {
 
         {/* Footer */}
         <footer className="py-8 px-6 text-center border-t border-white/[0.05]">
-          <p className="text-white/20 text-sm">© {new Date().getFullYear()} SERAC + ATETAI · Inteligência Artificial para Contadores</p>
+          <p className="text-white/20 text-sm">© {new Date().getFullYear()} SERAC + ATENTAI · Inteligência Artificial para Contadores</p>
         </footer>
       </div>
     </>
