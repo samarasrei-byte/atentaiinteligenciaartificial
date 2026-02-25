@@ -15,15 +15,25 @@ export default function CapassiDRE() {
   const [transactions, setTransactions] = useState<any[]>([]);
   const [period, setPeriod] = useState('all');
 
+  const getDateFrom = (p: string): string | null => {
+    const now = new Date();
+    if (p === '7d') { now.setDate(now.getDate() - 7); return now.toISOString().split('T')[0]; }
+    if (p === '30d') { now.setDate(now.getDate() - 30); return now.toISOString().split('T')[0]; }
+    if (p === '90d') { now.setDate(now.getDate() - 90); return now.toISOString().split('T')[0]; }
+    return null;
+  };
+
   useEffect(() => {
     if (!currentOrg) return;
-    const fetch = async () => {
+    const fetchData = async () => {
+      const dateFrom = getDateFrom(period);
       let query = supabase.from('capassi_transactions' as any).select('*').eq('organization_id', currentOrg.id);
       if (currentCompany) query = query.eq('company_id', currentCompany.id);
+      if (dateFrom) query = query.gte('date', dateFrom);
       const { data } = await query;
       setTransactions((data || []) as any[]);
     };
-    fetch();
+    fetchData();
   }, [currentOrg?.id, currentCompany?.id, period]);
 
   const rev = transactions.filter((t: any) => t.type === 'receita');
