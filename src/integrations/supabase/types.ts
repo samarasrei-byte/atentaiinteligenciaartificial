@@ -2793,6 +2793,66 @@ export type Database = {
         }
         Relationships: []
       }
+      sales_presentations: {
+        Row: {
+          client_name: string
+          created_at: string
+          created_by: string
+          cta_calendar_link: string | null
+          cta_whatsapp: string | null
+          headline: string
+          id: string
+          is_active: boolean
+          metrics: Json
+          roi_data: Json
+          sections_config: Json
+          segment: string
+          slug: string
+          subheadline: string
+          testimonials: Json
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          client_name: string
+          created_at?: string
+          created_by: string
+          cta_calendar_link?: string | null
+          cta_whatsapp?: string | null
+          headline?: string
+          id?: string
+          is_active?: boolean
+          metrics?: Json
+          roi_data?: Json
+          sections_config?: Json
+          segment?: string
+          slug: string
+          subheadline?: string
+          testimonials?: Json
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          client_name?: string
+          created_at?: string
+          created_by?: string
+          cta_calendar_link?: string | null
+          cta_whatsapp?: string | null
+          headline?: string
+          id?: string
+          is_active?: boolean
+          metrics?: Json
+          roi_data?: Json
+          sections_config?: Json
+          segment?: string
+          slug?: string
+          subheadline?: string
+          testimonials?: Json
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: []
+      }
       service_notifications: {
         Row: {
           created_at: string
