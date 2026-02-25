@@ -858,6 +858,73 @@ export type Database = {
           },
         ]
       }
+      capassi_chat_messages: {
+        Row: {
+          attachment_name: string | null
+          attachment_type: string | null
+          attachment_url: string | null
+          client_id: string
+          company_id: string
+          content: string
+          created_at: string
+          id: string
+          organization_id: string
+          read_at: string | null
+          sender_id: string
+          sender_type: string
+        }
+        Insert: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          client_id: string
+          company_id: string
+          content: string
+          created_at?: string
+          id?: string
+          organization_id: string
+          read_at?: string | null
+          sender_id: string
+          sender_type?: string
+        }
+        Update: {
+          attachment_name?: string | null
+          attachment_type?: string | null
+          attachment_url?: string | null
+          client_id?: string
+          company_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          organization_id?: string
+          read_at?: string | null
+          sender_id?: string
+          sender_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_chat_messages_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_chat_messages_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_chat_messages_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       capassi_clients: {
         Row: {
           city: string | null
