@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Outlet, useLocation, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { CapassiProvider } from '@/contexts/CapassiContext';
+import { CapassiOrgSelector } from '@/components/capassi/CapassiOrgSelector';
 import {
   LayoutDashboard,
   ArrowLeftRight,
@@ -70,6 +72,7 @@ export function CapassiLayout() {
   const currentPage = navItems.find(i => isActive(i.path));
 
   return (
+    <CapassiProvider>
     <div className="min-h-screen flex w-full" style={{ backgroundColor: '#0B0F1A' }}>
       {/* Mobile Overlay */}
       {mobileOpen && (
@@ -105,6 +108,19 @@ export function CapassiLayout() {
           >
             {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </Button>
+        </div>
+
+        {/* Org/Company Selector */}
+        <div className="px-3 py-3" style={{ borderBottom: '1px solid #1a1f2e' }}>
+          {sidebarOpen ? (
+            <CapassiOrgSelector />
+          ) : (
+            <div className="flex justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[#55FFAA]/10 flex items-center justify-center">
+                <span className="text-[10px] font-bold text-[#55FFAA]">ORG</span>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Navigation */}
@@ -234,5 +250,6 @@ export function CapassiLayout() {
         </div>
       </main>
     </div>
+    </CapassiProvider>
   );
 }
