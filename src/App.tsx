@@ -115,6 +115,7 @@ const CheckoutSuccessPage = lazy(() => import("./pages/CheckoutSuccessPage"));
 const LimpaNomeColaborador = lazy(() => import("./pages/LimpaNomeColaborador"));
 const SalesPresentation = lazy(() => import("./pages/SalesPresentation"));
 const AdminPresentations = lazy(() => import("./pages/AdminPresentations"));
+const SeracPresentation = lazy(() => import("./pages/SeracPresentation"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
@@ -204,6 +205,7 @@ const App = () => (
               <Route path="/bi-contabilidade/onboarding" element={<BIContabilidadeOnboarding />} />
               <Route path="/bi-contabilidade/cesar" element={<CesarBILanding />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
+              <Route path="/apresentacao/serac" element={<SeracPresentation />} />
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
