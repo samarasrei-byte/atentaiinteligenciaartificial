@@ -750,6 +750,434 @@ export type Database = {
         }
         Relationships: []
       }
+      capassi_audit_logs: {
+        Row: {
+          action: string
+          company_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          ip_address: string | null
+          new_data: Json | null
+          old_data: Json | null
+          organization_id: string
+          user_id: string
+        }
+        Insert: {
+          action: string
+          company_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          organization_id: string
+          user_id: string
+        }
+        Update: {
+          action?: string
+          company_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          ip_address?: string | null
+          new_data?: Json | null
+          old_data?: Json | null
+          organization_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_audit_logs_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_audit_logs_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capassi_budget_goals: {
+        Row: {
+          budget_amount_cents: number
+          category: Database["public"]["Enums"]["capassi_transaction_category"]
+          company_id: string
+          created_at: string
+          id: string
+          month: string
+          organization_id: string
+          revenue_goal_cents: number | null
+          updated_at: string
+        }
+        Insert: {
+          budget_amount_cents?: number
+          category: Database["public"]["Enums"]["capassi_transaction_category"]
+          company_id: string
+          created_at?: string
+          id?: string
+          month: string
+          organization_id: string
+          revenue_goal_cents?: number | null
+          updated_at?: string
+        }
+        Update: {
+          budget_amount_cents?: number
+          category?: Database["public"]["Enums"]["capassi_transaction_category"]
+          company_id?: string
+          created_at?: string
+          id?: string
+          month?: string
+          organization_id?: string
+          revenue_goal_cents?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_budget_goals_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_budget_goals_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capassi_clients: {
+        Row: {
+          city: string | null
+          company_id: string
+          created_at: string
+          document: string | null
+          email: string | null
+          id: string
+          name: string
+          notes: string | null
+          organization_id: string
+          phone: string | null
+          segment: Database["public"]["Enums"]["capassi_client_segment"] | null
+          state: string | null
+          status: Database["public"]["Enums"]["capassi_client_status"]
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          company_id: string
+          created_at?: string
+          document?: string | null
+          email?: string | null
+          id?: string
+          name: string
+          notes?: string | null
+          organization_id: string
+          phone?: string | null
+          segment?: Database["public"]["Enums"]["capassi_client_segment"] | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["capassi_client_status"]
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          company_id?: string
+          created_at?: string
+          document?: string | null
+          email?: string | null
+          id?: string
+          name?: string
+          notes?: string | null
+          organization_id?: string
+          phone?: string | null
+          segment?: Database["public"]["Enums"]["capassi_client_segment"] | null
+          state?: string | null
+          status?: Database["public"]["Enums"]["capassi_client_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_clients_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_clients_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capassi_companies: {
+        Row: {
+          city: string | null
+          cnpj: string
+          created_at: string
+          id: string
+          name: string
+          organization_id: string
+          segment: string | null
+          state: Database["public"]["Enums"]["capassi_br_state"] | null
+          type: Database["public"]["Enums"]["capassi_company_type"]
+          updated_at: string
+        }
+        Insert: {
+          city?: string | null
+          cnpj: string
+          created_at?: string
+          id?: string
+          name: string
+          organization_id: string
+          segment?: string | null
+          state?: Database["public"]["Enums"]["capassi_br_state"] | null
+          type?: Database["public"]["Enums"]["capassi_company_type"]
+          updated_at?: string
+        }
+        Update: {
+          city?: string | null
+          cnpj?: string
+          created_at?: string
+          id?: string
+          name?: string
+          organization_id?: string
+          segment?: string | null
+          state?: Database["public"]["Enums"]["capassi_br_state"] | null
+          type?: Database["public"]["Enums"]["capassi_company_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_companies_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capassi_financial_alerts: {
+        Row: {
+          action_required: boolean
+          category: Database["public"]["Enums"]["capassi_alert_category"]
+          company_id: string
+          created_at: string
+          id: string
+          is_read: boolean
+          message: string
+          organization_id: string
+          related_amount_cents: number | null
+          severity: Database["public"]["Enums"]["capassi_alert_severity"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          action_required?: boolean
+          category: Database["public"]["Enums"]["capassi_alert_category"]
+          company_id: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message: string
+          organization_id: string
+          related_amount_cents?: number | null
+          severity: Database["public"]["Enums"]["capassi_alert_severity"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          action_required?: boolean
+          category?: Database["public"]["Enums"]["capassi_alert_category"]
+          company_id?: string
+          created_at?: string
+          id?: string
+          is_read?: boolean
+          message?: string
+          organization_id?: string
+          related_amount_cents?: number | null
+          severity?: Database["public"]["Enums"]["capassi_alert_severity"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_financial_alerts_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_financial_alerts_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capassi_memberships: {
+        Row: {
+          company_id: string | null
+          created_at: string
+          id: string
+          organization_id: string
+          role: Database["public"]["Enums"]["capassi_membership_role"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          organization_id: string
+          role?: Database["public"]["Enums"]["capassi_membership_role"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string | null
+          created_at?: string
+          id?: string
+          organization_id?: string
+          role?: Database["public"]["Enums"]["capassi_membership_role"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_memberships_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_memberships_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      capassi_organizations: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          type: Database["public"]["Enums"]["capassi_org_type"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          type?: Database["public"]["Enums"]["capassi_org_type"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          type?: Database["public"]["Enums"]["capassi_org_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      capassi_transactions: {
+        Row: {
+          amount_cents: number
+          category: Database["public"]["Enums"]["capassi_transaction_category"]
+          client_supplier: string | null
+          company_id: string
+          created_at: string
+          date: string
+          description: string
+          id: string
+          notes: string | null
+          organization_id: string
+          payment_method:
+            | Database["public"]["Enums"]["capassi_payment_method"]
+            | null
+          recurrence: Database["public"]["Enums"]["capassi_recurrence"]
+          status: Database["public"]["Enums"]["capassi_transaction_status"]
+          type: Database["public"]["Enums"]["capassi_transaction_type"]
+          updated_at: string
+        }
+        Insert: {
+          amount_cents?: number
+          category: Database["public"]["Enums"]["capassi_transaction_category"]
+          client_supplier?: string | null
+          company_id: string
+          created_at?: string
+          date?: string
+          description: string
+          id?: string
+          notes?: string | null
+          organization_id: string
+          payment_method?:
+            | Database["public"]["Enums"]["capassi_payment_method"]
+            | null
+          recurrence?: Database["public"]["Enums"]["capassi_recurrence"]
+          status?: Database["public"]["Enums"]["capassi_transaction_status"]
+          type: Database["public"]["Enums"]["capassi_transaction_type"]
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          category?: Database["public"]["Enums"]["capassi_transaction_category"]
+          client_supplier?: string | null
+          company_id?: string
+          created_at?: string
+          date?: string
+          description?: string
+          id?: string
+          notes?: string | null
+          organization_id?: string
+          payment_method?:
+            | Database["public"]["Enums"]["capassi_payment_method"]
+            | null
+          recurrence?: Database["public"]["Enums"]["capassi_recurrence"]
+          status?: Database["public"]["Enums"]["capassi_transaction_status"]
+          type?: Database["public"]["Enums"]["capassi_transaction_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "capassi_transactions_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "capassi_transactions_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "capassi_organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       certificate_requests: {
         Row: {
           amount_cents: number
@@ -2957,7 +3385,12 @@ export type Database = {
         Returns: Json
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      get_capassi_org_ids: { Args: { _user_id: string }; Returns: string[] }
       get_daily_question_count: { Args: { p_user_id: string }; Returns: number }
+      has_capassi_master_access: {
+        Args: { _user_id: string }
+        Returns: boolean
+      }
       has_guilherme_access: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
@@ -2969,6 +3402,10 @@ export type Database = {
       increment_daily_questions: {
         Args: { p_user_id: string }
         Returns: number
+      }
+      is_capassi_member: {
+        Args: { _org_id: string; _user_id: string }
+        Returns: boolean
       }
       is_equipe_guilherme: { Args: { _user_id: string }; Returns: boolean }
       is_valid_contador_assignment: {
@@ -2991,6 +3428,84 @@ export type Database = {
         | "affiliate"
         | "equipe_guilherme"
         | "equipe_cesar"
+      capassi_alert_category:
+        | "fluxo_caixa"
+        | "inadimplencia"
+        | "margem"
+        | "orcamento"
+        | "liquidez"
+        | "endividamento"
+      capassi_alert_severity: "critico" | "alto" | "medio" | "baixo"
+      capassi_br_state:
+        | "AC"
+        | "AL"
+        | "AP"
+        | "AM"
+        | "BA"
+        | "CE"
+        | "DF"
+        | "ES"
+        | "GO"
+        | "MA"
+        | "MT"
+        | "MS"
+        | "MG"
+        | "PA"
+        | "PB"
+        | "PR"
+        | "PE"
+        | "PI"
+        | "RJ"
+        | "RN"
+        | "RS"
+        | "RO"
+        | "RR"
+        | "SC"
+        | "SP"
+        | "SE"
+        | "TO"
+      capassi_client_segment:
+        | "tecnologia"
+        | "varejo"
+        | "servicos"
+        | "industria"
+        | "saude"
+        | "educacao"
+        | "financeiro"
+        | "construcao"
+        | "agronegocio"
+        | "outros"
+      capassi_client_status: "ativo" | "inativo"
+      capassi_company_type: "matriz" | "filial"
+      capassi_membership_role:
+        | "super_admin"
+        | "org_admin"
+        | "branch_admin"
+        | "viewer"
+      capassi_org_type: "single" | "franchise" | "matriz"
+      capassi_payment_method:
+        | "pix"
+        | "boleto"
+        | "cartao_credito"
+        | "cartao_debito"
+        | "transferencia"
+        | "dinheiro"
+      capassi_recurrence: "unico" | "mensal" | "trimestral" | "anual"
+      capassi_transaction_category:
+        | "vendas"
+        | "servicos"
+        | "recorrente"
+        | "outros_receita"
+        | "pessoal"
+        | "marketing"
+        | "tecnologia"
+        | "infraestrutura"
+        | "impostos"
+        | "financeiro"
+        | "administrativo"
+        | "outros_despesa"
+      capassi_transaction_status: "pago" | "pendente" | "atrasado" | "cancelado"
+      capassi_transaction_type: "receita" | "despesa"
       company_sector:
         | "comercio"
         | "servicos"
@@ -3156,6 +3671,90 @@ export const Constants = {
         "equipe_guilherme",
         "equipe_cesar",
       ],
+      capassi_alert_category: [
+        "fluxo_caixa",
+        "inadimplencia",
+        "margem",
+        "orcamento",
+        "liquidez",
+        "endividamento",
+      ],
+      capassi_alert_severity: ["critico", "alto", "medio", "baixo"],
+      capassi_br_state: [
+        "AC",
+        "AL",
+        "AP",
+        "AM",
+        "BA",
+        "CE",
+        "DF",
+        "ES",
+        "GO",
+        "MA",
+        "MT",
+        "MS",
+        "MG",
+        "PA",
+        "PB",
+        "PR",
+        "PE",
+        "PI",
+        "RJ",
+        "RN",
+        "RS",
+        "RO",
+        "RR",
+        "SC",
+        "SP",
+        "SE",
+        "TO",
+      ],
+      capassi_client_segment: [
+        "tecnologia",
+        "varejo",
+        "servicos",
+        "industria",
+        "saude",
+        "educacao",
+        "financeiro",
+        "construcao",
+        "agronegocio",
+        "outros",
+      ],
+      capassi_client_status: ["ativo", "inativo"],
+      capassi_company_type: ["matriz", "filial"],
+      capassi_membership_role: [
+        "super_admin",
+        "org_admin",
+        "branch_admin",
+        "viewer",
+      ],
+      capassi_org_type: ["single", "franchise", "matriz"],
+      capassi_payment_method: [
+        "pix",
+        "boleto",
+        "cartao_credito",
+        "cartao_debito",
+        "transferencia",
+        "dinheiro",
+      ],
+      capassi_recurrence: ["unico", "mensal", "trimestral", "anual"],
+      capassi_transaction_category: [
+        "vendas",
+        "servicos",
+        "recorrente",
+        "outros_receita",
+        "pessoal",
+        "marketing",
+        "tecnologia",
+        "infraestrutura",
+        "impostos",
+        "financeiro",
+        "administrativo",
+        "outros_despesa",
+      ],
+      capassi_transaction_status: ["pago", "pendente", "atrasado", "cancelado"],
+      capassi_transaction_type: ["receita", "despesa"],
       company_sector: [
         "comercio",
         "servicos",
