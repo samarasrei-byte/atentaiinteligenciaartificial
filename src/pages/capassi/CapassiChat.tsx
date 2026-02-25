@@ -199,9 +199,121 @@ export default function CapassiChat() {
       toast({ title: 'Erro ao enviar mensagem', variant: 'destructive' });
     } else {
       setNewMessage('');
+      // Refetch messages immediately for instant UI update
+      const { data: freshMsgs } = await supabase
+        .from('capassi_chat_messages' as any)
+        .select('*')
+        .eq('client_id', selectedClient.id)
+        .order('created_at', { ascending: true });
+      setMessages((freshMsgs || []) as unknown as ChatMessage[]);
     }
 
     setIsSending(false);
+  };
+
+  const isDREFile = (fileName: string) => {
+    const lower = fileName.toLowerCase();
+    return lower.includes('dre') || lower.includes('demonstra') || lower.includes('resultado');
+  };
+
+  const triggerDREAnalysis = async (fileUrl: string, fileName: string) => {
+    if (!currentOrg || !selectedClient) return;
+    try {
+      // Create dre_analyses record
+      const { data: analysis, error: createErr } = await supabase
+        .from('dre_analyses' as any)
+        .insert({
+          uploaded_by: user!.id,
+          file_name: fileName,
+          file_path: fileUrl,
+          client_name: selectedClient.name,
+          period_label: new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+          status: 'processing',
+        })
+        .select('id')
+        .single();
+
+      if (createErr || !analysis) throw createErr;
+
+      // Send system message about analysis
+      await supabase.from('capassi_chat_messages' as any).insert({
+        organization_id: currentOrg.id,
+        company_id: currentCompany!.id,
+        client_id: selectedClient.id,
+        sender_id: user!.id,
+        sender_type: 'system',
+        content: `🤖 Análise de DRE iniciada automaticamente para "${fileName}".\nAguarde os resultados...`,
+      });
+
+      // Fetch file content for analysis
+      const fileResp = await fetch(fileUrl);
+      const fileBlob = await fileResp.blob();
+      const fileText = await fileBlob.text();
+
+      // Call analyze-dre edge function
+      const { data: result, error: fnErr } = await supabase.functions.invoke('analyze-dre', {
+        body: {
+          analysisId: (analysis as any).id,
+          documentText: fileText.substring(0, 50000),
+          clientName: selectedClient.name,
+          periodLabel: new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' }),
+        },
+      });
+
+      if (fnErr) throw fnErr;
+
+      const analysisData = result?.analysis;
+      const summaryText = analysisData?.summary || 'Análise concluída.';
+      const kpis = analysisData?.kpis || {};
+      const recommendations = analysisData?.recommendations || '';
+
+      // Format KPIs
+      const fmtBRL = (v: number) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v / 100);
+      let kpiLines = '';
+      if (kpis.receita_bruta_cents) kpiLines += `📊 Receita Bruta: ${fmtBRL(kpis.receita_bruta_cents)}\n`;
+      if (kpis.lucro_bruto_cents) kpiLines += `💰 Lucro Bruto: ${fmtBRL(kpis.lucro_bruto_cents)}\n`;
+      if (kpis.lucro_liquido_cents) kpiLines += `✅ Lucro Líquido: ${fmtBRL(kpis.lucro_liquido_cents)}\n`;
+      if (kpis.margem_bruta_percent) kpiLines += `📈 Margem Bruta: ${kpis.margem_bruta_percent}%\n`;
+      if (kpis.margem_liquida_percent) kpiLines += `📉 Margem Líquida: ${kpis.margem_liquida_percent}%\n`;
+      if (kpis.ebitda_cents) kpiLines += `🏦 EBITDA: ${fmtBRL(kpis.ebitda_cents)}\n`;
+
+      const resultMessage = `📋 *Análise de DRE Concluída* — ${fileName}\n\n` +
+        `${summaryText}\n\n` +
+        (kpiLines ? `━━━ KPIs Financeiros ━━━\n${kpiLines}\n` : '') +
+        (recommendations ? `━━━ Recomendações ━━━\n${recommendations}\n` : '') +
+        `\n🤖 Análise gerada por IA — César BI+`;
+
+      await supabase.from('capassi_chat_messages' as any).insert({
+        organization_id: currentOrg.id,
+        company_id: currentCompany!.id,
+        client_id: selectedClient.id,
+        sender_id: user!.id,
+        sender_type: 'system',
+        content: resultMessage,
+      });
+
+      // Refetch messages
+      const { data: freshMsgs } = await supabase
+        .from('capassi_chat_messages' as any)
+        .select('*')
+        .eq('client_id', selectedClient.id)
+        .order('created_at', { ascending: true });
+      setMessages((freshMsgs || []) as unknown as ChatMessage[]);
+
+      toast({ title: '✅ Análise de DRE concluída!' });
+    } catch (error) {
+      console.error('DRE analysis error:', error);
+      // Send error system message
+      await supabase.from('capassi_chat_messages' as any).insert({
+        organization_id: currentOrg!.id,
+        company_id: currentCompany!.id,
+        client_id: selectedClient!.id,
+        sender_id: user!.id,
+        sender_type: 'system',
+        content: `❌ Erro na análise automática do DRE. Tente novamente pelo módulo DRE.`,
+      });
+      toast({ title: 'Erro na análise de DRE', variant: 'destructive' });
+    }
   };
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -242,7 +354,20 @@ export default function CapassiChat() {
         attachment_type: file.type,
       });
 
+      // Refetch messages immediately
+      const { data: freshMsgs } = await supabase
+        .from('capassi_chat_messages' as any)
+        .select('*')
+        .eq('client_id', selectedClient.id)
+        .order('created_at', { ascending: true });
+      setMessages((freshMsgs || []) as unknown as ChatMessage[]);
+
       toast({ title: 'Documento enviado!' });
+
+      // Auto-trigger DRE analysis if file looks like a DRE
+      if (isDREFile(file.name)) {
+        triggerDREAnalysis(signedData.signedUrl, file.name);
+      }
     } catch (error) {
       console.error('Upload error:', error);
       toast({ title: 'Erro no upload', variant: 'destructive' });
@@ -542,6 +667,26 @@ export default function CapassiChat() {
                   <>
                     {messages.map((msg) => {
                       const isAdmin = msg.sender_type === 'admin';
+                      const isSystem = msg.sender_type === 'system';
+
+                      if (isSystem) {
+                        return (
+                          <motion.div
+                            key={msg.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="flex justify-center"
+                          >
+                            <div className="max-w-[85%] rounded-xl px-4 py-3 bg-gradient-to-r from-amber-50 to-violet-50 border border-amber-200/50 shadow-sm">
+                              <p className="text-sm text-slate-700 whitespace-pre-wrap">{msg.content}</p>
+                              <span className="text-[10px] text-slate-400 mt-1 block text-right">
+                                {new Date(msg.created_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                              </span>
+                            </div>
+                          </motion.div>
+                        );
+                      }
+
                       return (
                         <motion.div
                           key={msg.id}
@@ -559,7 +704,7 @@ export default function CapassiChat() {
 
                             {msg.attachment_url && (
                               <div className={cn(
-                                "mt-2 p-2 rounded-lg flex items-center gap-2",
+                                "mt-2 p-2 rounded-lg",
                                 isAdmin ? "bg-white/10" : "bg-slate-50 border border-slate-100"
                               )}>
                                 {msg.attachment_type?.startsWith('image/') ? (
@@ -583,6 +728,19 @@ export default function CapassiChat() {
                                     <Paperclip className="h-3.5 w-3.5" />
                                     <span className="truncate max-w-[150px]">{msg.attachment_name || 'Documento'}</span>
                                   </a>
+                                )}
+                                {/* Manual DRE analysis button for received docs */}
+                                {!isAdmin && msg.attachment_url && !msg.attachment_type?.startsWith('image/') && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    size="sm"
+                                    className="mt-2 text-xs gap-1.5 border-violet-200 text-violet-700 hover:bg-violet-50 w-full"
+                                    onClick={() => triggerDREAnalysis(msg.attachment_url!, msg.attachment_name || 'Documento')}
+                                  >
+                                    <BarChart3 className="h-3.5 w-3.5" />
+                                    Analisar DRE
+                                  </Button>
                                 )}
                               </div>
                             )}

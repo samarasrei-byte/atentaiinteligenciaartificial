@@ -39,7 +39,7 @@ serve(async (req) => {
       .select("role")
       .eq("user_id", user.id);
 
-    const hasAccess = roles?.some(r => r.role === "admin" || r.role === "contador");
+    const hasAccess = roles?.some(r => ["admin", "contador", "equipe_cesar"].includes(r.role));
     if (!hasAccess) {
       return new Response(JSON.stringify({ error: "Acesso negado. Apenas admin/contador." }), {
         status: 403,
