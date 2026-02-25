@@ -109,6 +109,7 @@ import CapassiDRE from "./pages/capassi/CapassiDRE";
 import CapassiCashflow from "./pages/capassi/CapassiCashflow";
 import CapassiChat from "./pages/capassi/CapassiChat";
 import CapassiAudit from "./pages/capassi/CapassiAudit";
+import CapassiMetrics from "./pages/capassi/CapassiMetrics";
 
 const queryClient = new QueryClient();
 
@@ -351,6 +352,7 @@ const App = () => (
                 <Route path="cashflow" element={<CapassiCashflow />} />
                 <Route path="chat" element={<CapassiChat />} />
                 <Route path="audit" element={<CapassiAudit />} />
+                <Route path="metrics" element={<CapassiMetrics />} />
               </Route>
 
               <Route path="*" element={<NotFound />} />
