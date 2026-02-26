@@ -55,12 +55,6 @@ export default function LimpaNomeLanding() {
 
   // Open MP checkout modal with PIX + Card
   const openLimpaNomeCheckout = (plan: 'pf' | 'pj') => {
-    // Guest users → redirect to guest checkout page
-    if (!user) {
-      navigate(`/checkout/limpa-nome-${plan}`);
-      return;
-    }
-
     const config = plan === 'pf' 
       ? { amountCents: 82450, serviceName: 'Limpa Nome Pessoa Física', serviceType: 'credit_repair_pf', gradient: 'from-blue-500 to-cyan-500' }
       : { amountCents: 128000, serviceName: 'Limpa Nome Empresa (CNPJ)', serviceType: 'credit_repair_pj', gradient: 'from-emerald-500 to-teal-500' };
@@ -70,6 +64,7 @@ export default function LimpaNomeLanding() {
       description: 'Regularização de restrições com análise humana especializada',
       allowedMethods: ['pix', 'card'],
       isRecurring: false,
+      requireGuestInfo: !user,
       onSuccess: () => {
         navigate('/dashboard');
       },
