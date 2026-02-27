@@ -1,310 +1,424 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useState, useEffect, useRef } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
 import {
-  Users, TrendingUp, DollarSign, Bot, Megaphone,
-  ArrowUpRight, ArrowDownRight, Building2, Scale, Landmark,
+  Users, TrendingUp, DollarSign, Bot,
+  ArrowUpRight, Building2, Scale, Landmark,
   Target, FileSignature, BrainCircuit,
-  Activity, Flame
+  Activity, MessageCircle, Video, Send,
+  Sparkles, BarChart3, PieChart, Zap
 } from 'lucide-react';
 import {
   ResponsiveContainer, AreaChart, Area, XAxis, YAxis,
-  CartesianGrid, Tooltip, Legend
+  CartesianGrid, Tooltip
 } from 'recharts';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /* ── KPIs ── */
 const kpis = [
-  { label: 'Leads Captados', value: '1.284', icon: Users, change: '+18%', up: true },
-  { label: 'Score Médio', value: '78.4', icon: Target, change: '+3.2', up: true },
-  { label: 'Receita Projetada', value: 'R$ 4.2M', icon: DollarSign, change: '+22%', up: true },
-  { label: 'ROI Plataforma', value: '340%', icon: TrendingUp, change: '+45%', up: true },
-  { label: 'Economia Tributária', value: 'R$ 1.8M', icon: Scale, change: '+R$ 320K', up: true },
-  { label: 'Contratos Pipeline', value: '67', icon: FileSignature, change: '+12', up: true },
+  { label: 'Leads Captados', value: '1.284', icon: Users, change: '+18%' },
+  { label: 'Score Médio', value: '78.4', icon: Target, change: '+3.2' },
+  { label: 'Receita Projetada', value: 'R$ 4.2M', icon: DollarSign, change: '+22%' },
+  { label: 'ROI Plataforma', value: '340%', icon: TrendingUp, change: '+45%' },
 ];
 
-/* ── Leads por Canal ── */
-const leadsByChannel = [
-  { canal: 'Empresas', leads: 624, qualified: 412, meetings: 89, contracts: 34, icon: Building2 },
-  { canal: 'Contadores', leads: 387, qualified: 264, meetings: 52, contracts: 21, icon: Users },
-  { canal: 'Cartórios', leads: 273, qualified: 198, meetings: 41, contracts: 12, icon: Landmark },
-];
-
-/* ── Pipeline ── */
-const pipelineStages = [
-  { stage: 'Prospecção', count: 342, value: 'R$ 1.2M', pct: 100 },
-  { stage: 'Qualificação', count: 218, value: 'R$ 890K', pct: 64 },
-  { stage: 'Proposta', count: 89, value: 'R$ 520K', pct: 26 },
-  { stage: 'Negociação', count: 45, value: 'R$ 380K', pct: 13 },
-  { stage: 'Fechamento', count: 23, value: 'R$ 210K', pct: 7 },
-];
-
-/* ── Campanhas Ativas ── */
-const activeCampaigns = [
-  { name: 'Reforma 2026 – Empresas SP', source: 'G8 Prospect', leads: 156, conversion: 12.4, status: 'active' },
-  { name: 'Cartórios – Região Sul', source: 'AtentAI', leads: 89, conversion: 8.7, status: 'active' },
-  { name: 'Contadores – Mentoria SERAC', source: 'G8 Prospect', leads: 234, conversion: 15.2, status: 'active' },
-  { name: 'Infoprodutores – Nacional', source: 'AtentAI', leads: 67, conversion: 9.1, status: 'paused' },
-];
-
-/* ── Performance Agentes ── */
-const agentPerformance = [
-  { agent: 'SDR Tributário', accuracy: 94, leadsProcessed: 1847, status: 'online' },
-  { agent: 'Diagnóstico IA', accuracy: 97, leadsProcessed: 1203, status: 'online' },
-  { agent: 'Esp. Cartórios', accuracy: 92, leadsProcessed: 456, status: 'online' },
-  { agent: 'Customer Success', accuracy: 89, leadsProcessed: 923, status: 'online' },
-  { agent: 'Compliance IA', accuracy: 96, leadsProcessed: 678, status: 'online' },
-  { agent: 'Diretor IA', accuracy: 98, leadsProcessed: 2134, status: 'online' },
-];
-
-/* ── Previsão 12 Meses ── */
-const forecast12m = [
+/* ── Previsão ── */
+const forecast = [
   { mes: 'Mar', receita: 320, leads: 180 }, { mes: 'Abr', receita: 380, leads: 210 },
   { mes: 'Mai', receita: 420, leads: 240 }, { mes: 'Jun', receita: 510, leads: 290 },
   { mes: 'Jul', receita: 580, leads: 330 }, { mes: 'Ago', receita: 650, leads: 370 },
   { mes: 'Set', receita: 720, leads: 410 }, { mes: 'Out', receita: 810, leads: 460 },
   { mes: 'Nov', receita: 890, leads: 510 }, { mes: 'Dez', receita: 980, leads: 560 },
-  { mes: 'Jan', receita: 1050, leads: 610 }, { mes: 'Fev', receita: 1150, leads: 670 },
 ];
 
-/* ── Reforma 2026 ── */
-const reformaIndicators = [
-  { label: 'Clientes impactados', value: '189', pct: 76 },
-  { label: 'Simulações realizadas', value: '1.247', pct: 88 },
-  { label: 'Economia identificada', value: 'R$ 2.4M', pct: 65 },
-  { label: 'Migrações planejadas', value: '34', pct: 42 },
+/* ── Pipeline ── */
+const pipeline = [
+  { stage: 'Prospecção', count: 342, pct: 100 },
+  { stage: 'Qualificação', count: 218, pct: 64 },
+  { stage: 'Proposta', count: 89, pct: 26 },
+  { stage: 'Fechamento', count: 23, pct: 7 },
+];
+
+/* ── Agentes ── */
+const agents = [
+  { name: 'Sofia — SDR Tributário', role: 'Prospecção inteligente', accuracy: 94, processed: 1847, status: 'online' },
+  { name: 'Lucas — Diagnóstico IA', role: 'Análise fiscal automatizada', accuracy: 97, processed: 1203, status: 'online' },
+  { name: 'Ana — Customer Success', role: 'Retenção e relacionamento', accuracy: 89, processed: 923, status: 'online' },
+  { name: 'Rafael — Diretor IA', role: 'Supervisão estratégica', accuracy: 98, processed: 2134, status: 'online' },
+];
+
+/* ── Chat do Assistente ── */
+const assistantMessages = [
+  { id: 1, role: 'assistant', text: 'Bom dia! Sou a Sofia, sua assistente de inteligência fiscal da SERAC. 🤖' },
+  { id: 2, role: 'assistant', text: 'Identifiquei 12 leads com alto potencial de conversão hoje. O setor de Comércio está com taxa 2x maior que a média.' },
+  { id: 3, role: 'assistant', text: '📊 KPIs atualizados: Economia tributária identificada subiu para R$ 1.8M (+18% mês anterior). Recomendo priorizar reuniões com clientes do Simples Nacional.' },
+  { id: 4, role: 'assistant', text: '🎯 Reunião agendada: Amanhã 14h — Diagnóstico Tributário com 3 leads qualificados do setor de Serviços. Lucas (Diagnóstico IA) já preparou o material.' },
+];
+
+/* ── Canais ── */
+const channels = [
+  { name: 'Empresas', leads: 624, icon: Building2, conversion: 12.4 },
+  { name: 'Contadores', leads: 387, icon: Users, conversion: 15.2 },
+  { name: 'Cartórios', leads: 273, icon: Landmark, conversion: 8.7 },
+];
+
+/* ── Reuniões ── */
+const meetings = [
+  { title: 'Diagnóstico Tributário — Tech Solutions', time: '14:00', agents: ['Sofia', 'Lucas'], type: 'Análise Fiscal' },
+  { title: 'Onboarding — Cartório Vila Nova', time: '16:00', agents: ['Ana', 'Rafael'], type: 'Integração' },
+  { title: 'Review Semanal — Pipeline Q1', time: '10:00 (amanhã)', agents: ['Rafael', 'Sofia', 'Lucas'], type: 'Estratégia' },
 ];
 
 export default function SeracDashboard() {
+  const [chatInput, setChatInput] = useState('');
+  const [visibleMessages, setVisibleMessages] = useState<typeof assistantMessages>([]);
+  const chatEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i < assistantMessages.length) {
+        setVisibleMessages(prev => [...prev, assistantMessages[i]]);
+        i++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 1200);
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [visibleMessages]);
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 max-w-[1400px] mx-auto">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-center justify-between"
+      >
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Dashboard Executivo</h2>
-          <p className="text-sm text-muted-foreground mt-1">Visão estratégica consolidada · Atualizado em tempo real</p>
+          <h2 className="text-2xl font-bold text-foreground tracking-tight">Visão Geral</h2>
+          <p className="text-sm text-muted-foreground mt-0.5">Inteligência em tempo real · Powered by IA</p>
         </div>
-        <Badge variant="outline" className="bg-success/10 text-success border-success/30 gap-1.5">
+        <Badge className="serac-badge gap-1.5 px-3 py-1.5">
           <Activity className="h-3 w-3" /> Live
         </Badge>
-      </div>
+      </motion.div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
-        {kpis.map((kpi) => (
-          <Card key={kpi.label} className="border-border hover:shadow-md transition-shadow">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between mb-2">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <kpi.icon className="h-4 w-4 text-primary" />
+      {/* KPIs — Minimalista */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {kpis.map((kpi, i) => (
+          <motion.div
+            key={kpi.label}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+          >
+            <Card className="serac-card group hover:serac-card-hover transition-all duration-300">
+              <CardContent className="p-5">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="p-2.5 rounded-xl serac-icon-bg">
+                    <kpi.icon className="h-4 w-4 serac-icon" />
+                  </div>
+                  <div className="flex items-center gap-1 text-emerald-400">
+                    <ArrowUpRight className="h-3 w-3" />
+                    <span className="text-xs font-semibold">{kpi.change}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-0.5">
-                  {kpi.up ? <ArrowUpRight className="h-3 w-3 text-success" /> : <ArrowDownRight className="h-3 w-3 text-destructive" />}
-                  <span className="text-[10px] font-semibold text-success">{kpi.change}</span>
-                </div>
-              </div>
-              <p className="text-xl font-bold text-foreground">{kpi.value}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5 uppercase tracking-wider">{kpi.label}</p>
-            </CardContent>
-          </Card>
+                <p className="text-2xl font-bold text-foreground tracking-tight">{kpi.value}</p>
+                <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wider">{kpi.label}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
 
-      {/* Leads por Canal + Pipeline */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Leads por Canal */}
-        <Card className="border-border">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Target className="h-4 w-4 text-primary" /> Leads por Canal de Prospecção
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {leadsByChannel.map((ch) => (
-              <div key={ch.canal} className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1.5 rounded-md bg-primary/10">
-                      <ch.icon className="h-3.5 w-3.5 text-primary" />
-                    </div>
-                    <span className="text-sm font-medium text-foreground">{ch.canal}</span>
-                  </div>
-                  <span className="text-lg font-bold text-primary">{ch.leads}</span>
+      {/* Assistente IA + Gráfico de Previsão */}
+      <div className="grid grid-cols-1 lg:grid-cols-5 gap-4">
+        {/* Assistente Sofia — Chat */}
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.3 }}
+          className="lg:col-span-2"
+        >
+          <Card className="serac-card h-full flex flex-col">
+            <div className="p-4 border-b border-border flex items-center gap-3">
+              <div className="relative">
+                <div className="w-10 h-10 rounded-full serac-gradient flex items-center justify-center">
+                  <Bot className="h-5 w-5 text-white" />
                 </div>
-                <div className="grid grid-cols-3 gap-2 text-[10px]">
-                  {[
-                    { label: 'Qualificados', value: ch.qualified },
-                    { label: 'Reuniões', value: ch.meetings },
-                    { label: 'Contratos', value: ch.contracts },
-                  ].map(m => (
-                    <div key={m.label} className="bg-muted rounded-md p-1.5 text-center">
-                      <p className="font-bold text-foreground">{m.value}</p>
-                      <p className="text-muted-foreground">{m.label}</p>
-                    </div>
-                  ))}
-                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-emerald-400 border-2 border-card" />
               </div>
-            ))}
-          </CardContent>
-        </Card>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Sofia — Assistente IA SERAC</p>
+                <p className="text-[10px] text-muted-foreground">Inteligência fiscal personalizada</p>
+              </div>
+              <Sparkles className="h-4 w-4 serac-icon animate-pulse" />
+            </div>
 
-        {/* Pipeline de Contratos */}
-        <Card className="border-border">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <FileSignature className="h-4 w-4 text-info" /> Pipeline de Contratos
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {pipelineStages.map((s, i) => (
-              <div key={s.stage} className="space-y-1">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-medium text-foreground">{s.stage}</span>
+            <div className="flex-1 p-4 space-y-3 overflow-y-auto max-h-[320px] min-h-[260px]">
+              <AnimatePresence>
+                {visibleMessages.map((msg) => (
+                  <motion.div
+                    key={msg.id}
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    className="flex gap-2"
+                  >
+                    <div className="w-6 h-6 rounded-full serac-gradient flex items-center justify-center shrink-0 mt-0.5">
+                      <Bot className="h-3 w-3 text-white" />
+                    </div>
+                    <div className="serac-chat-bubble rounded-xl rounded-tl-sm px-3 py-2 text-xs leading-relaxed text-foreground max-w-[85%]">
+                      {msg.text}
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <div ref={chatEndRef} />
+            </div>
+
+            <div className="p-3 border-t border-border">
+              <div className="flex items-center gap-2">
+                <input
+                  value={chatInput}
+                  onChange={(e) => setChatInput(e.target.value)}
+                  placeholder="Pergunte à Sofia..."
+                  className="flex-1 bg-muted/50 rounded-lg px-3 py-2 text-xs text-foreground placeholder:text-muted-foreground outline-none focus:ring-1 focus:ring-[hsl(var(--serac-primary,217_91%_60%))]"
+                />
+                <button className="p-2 rounded-lg serac-gradient text-white hover:opacity-90 transition-opacity">
+                  <Send className="h-3.5 w-3.5" />
+                </button>
+              </div>
+            </div>
+          </Card>
+        </motion.div>
+
+        {/* Gráfico de Previsão */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: 0.4 }}
+          className="lg:col-span-3"
+        >
+          <Card className="serac-card h-full">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BarChart3 className="h-4 w-4 serac-icon" />
+                <p className="text-sm font-semibold text-foreground">Projeção de Crescimento</p>
+              </div>
+              <div className="flex items-center gap-3 text-[10px]">
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[hsl(217,91%,60%)]" /> Receita</span>
+                <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-emerald-400" /> Leads</span>
+              </div>
+            </div>
+            <CardContent className="p-4">
+              <div className="h-[300px]">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={forecast}>
+                    <defs>
+                      <linearGradient id="seracReceita" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="hsl(217,91%,60%)" stopOpacity={0.2} />
+                        <stop offset="95%" stopColor="hsl(217,91%,60%)" stopOpacity={0} />
+                      </linearGradient>
+                      <linearGradient id="seracLeads" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#34D399" stopOpacity={0.15} />
+                        <stop offset="95%" stopColor="#34D399" stopOpacity={0} />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="mes" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                    <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: 12,
+                        border: '1px solid hsl(var(--border))',
+                        fontSize: 12,
+                        background: 'hsl(var(--card))',
+                        color: 'hsl(var(--foreground))'
+                      }}
+                    />
+                    <Area type="monotone" dataKey="receita" stroke="hsl(217,91%,60%)" strokeWidth={2} fill="url(#seracReceita)" />
+                    <Area type="monotone" dataKey="leads" stroke="#34D399" strokeWidth={2} fill="url(#seracLeads)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Agentes IA + Reuniões */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Equipe de Agentes IA */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+          <Card className="serac-card">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <BrainCircuit className="h-4 w-4 serac-icon" />
+                <p className="text-sm font-semibold text-foreground">Equipe de Agentes IA</p>
+              </div>
+              <Badge className="serac-badge text-[10px]">4 online</Badge>
+            </div>
+            <CardContent className="p-4 space-y-2">
+              {agents.map((a) => (
+                <div key={a.name} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors group">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div className="relative">
+                      <div className="w-9 h-9 rounded-full serac-gradient flex items-center justify-center">
+                        <BrainCircuit className="h-4 w-4 text-white" />
+                      </div>
+                      <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-emerald-400 border-2 border-card" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-xs font-semibold text-foreground truncate">{a.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{a.role}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-4 shrink-0 text-[10px]">
+                    <div className="text-center">
+                      <p className="font-bold text-emerald-400">{a.accuracy}%</p>
+                      <p className="text-muted-foreground">Acurácia</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="font-bold text-foreground">{a.processed.toLocaleString('pt-BR')}</p>
+                      <p className="text-muted-foreground">Processados</p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Reuniões com Agentes + Diretores */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
+          <Card className="serac-card">
+            <div className="p-4 border-b border-border flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Video className="h-4 w-4 serac-icon" />
+                <p className="text-sm font-semibold text-foreground">Reuniões — Agentes IA + Diretores</p>
+              </div>
+              <Badge variant="outline" className="text-[10px] border-border">{meetings.length} agendadas</Badge>
+            </div>
+            <CardContent className="p-4 space-y-3">
+              {meetings.map((m, i) => (
+                <div key={m.title} className="p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors space-y-2">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <p className="text-xs font-semibold text-foreground">{m.title}</p>
+                      <p className="text-[10px] text-muted-foreground mt-0.5">{m.time}</p>
+                    </div>
+                    <Badge className="serac-badge-subtle text-[9px]">{m.type}</Badge>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-[10px] text-muted-foreground">Agentes:</span>
+                    {m.agents.map(a => (
+                      <span key={a} className="text-[10px] serac-agent-tag px-2 py-0.5 rounded-full">{a}</span>
+                    ))}
+                    <span className="text-[10px] serac-agent-tag px-2 py-0.5 rounded-full">+ Diretor</span>
+                  </div>
+                </div>
+              ))}
+              <div className="pt-2 flex items-center gap-2 text-[10px] text-muted-foreground">
+                <Zap className="h-3 w-3 serac-icon" />
+                <span>Os agentes preparam análises automaticamente antes de cada reunião</span>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Pipeline + Canais */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Pipeline */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
+          <Card className="serac-card">
+            <div className="p-4 border-b border-border flex items-center gap-2">
+              <FileSignature className="h-4 w-4 serac-icon" />
+              <p className="text-sm font-semibold text-foreground">Pipeline de Contratos</p>
+            </div>
+            <CardContent className="p-4 space-y-3">
+              {pipeline.map((s, i) => (
+                <div key={s.stage} className="space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-medium text-foreground">{s.stage}</span>
+                    <span className="font-bold text-foreground">{s.count} leads</span>
+                  </div>
+                  <div className="h-2 bg-muted rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${s.pct}%` }}
+                      transition={{ delay: 0.8 + i * 0.15, duration: 0.6 }}
+                      className="h-full rounded-full serac-gradient"
+                      style={{ opacity: 1 - i * 0.2 }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Canais de Prospecção */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
+          <Card className="serac-card">
+            <div className="p-4 border-b border-border flex items-center gap-2">
+              <PieChart className="h-4 w-4 serac-icon" />
+              <p className="text-sm font-semibold text-foreground">Canais de Prospecção</p>
+            </div>
+            <CardContent className="p-4 space-y-3">
+              {channels.map((ch) => (
+                <div key={ch.name} className="flex items-center justify-between p-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center gap-3">
-                    <span className="text-muted-foreground">{s.count} leads</span>
-                    <span className="font-bold text-foreground">{s.value}</span>
+                    <div className="p-2 rounded-lg serac-icon-bg">
+                      <ch.icon className="h-4 w-4 serac-icon" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">{ch.name}</p>
+                      <p className="text-[10px] text-muted-foreground">{ch.conversion}% conversão</p>
+                    </div>
                   </div>
+                  <p className="text-lg font-bold serac-icon">{ch.leads}</p>
                 </div>
-                <div className="h-2 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full rounded-full transition-all duration-500 bg-primary"
-                    style={{ width: `${s.pct}%`, opacity: 1 - i * 0.15 }}
-                  />
+              ))}
+            </CardContent>
+          </Card>
+        </motion.div>
+      </div>
+
+      {/* Reforma 2026 */}
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
+        <Card className="serac-card">
+          <div className="p-4 border-b border-border flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Scale className="h-4 w-4 serac-icon" />
+              <p className="text-sm font-semibold text-foreground">Reforma Tributária 2026 — Impacto SERAC</p>
+            </div>
+            <Badge className="serac-badge text-[10px]">IBS + CBS Jan/2027</Badge>
+          </div>
+          <CardContent className="p-4">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+              {[
+                { label: 'Clientes impactados', value: '189', pct: 76 },
+                { label: 'Simulações realizadas', value: '1.247', pct: 88 },
+                { label: 'Economia identificada', value: 'R$ 2.4M', pct: 65 },
+                { label: 'Migrações planejadas', value: '34', pct: 42 },
+              ].map((ind) => (
+                <div key={ind.label} className="space-y-2">
+                  <p className="text-xl font-bold text-foreground">{ind.value}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-wider">{ind.label}</p>
+                  <Progress value={ind.pct} className="h-1.5 serac-progress" />
                 </div>
-              </div>
-            ))}
-            <div className="pt-2 border-t border-border flex items-center justify-between">
-              <span className="text-xs text-muted-foreground">Valor total no pipeline</span>
-              <span className="text-lg font-bold text-foreground">R$ 3.2M</span>
+              ))}
             </div>
           </CardContent>
         </Card>
-      </div>
-
-      {/* Campanhas Ativas + Performance Agentes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Campanhas Ativas */}
-        <Card className="border-border">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Megaphone className="h-4 w-4 text-accent" /> Campanhas Ativas
-              <Badge variant="outline" className="ml-auto text-[10px]">{activeCampaigns.filter(c => c.status === 'active').length} ativas</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {activeCampaigns.map((c) => (
-              <div key={c.name} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/50 hover:bg-muted transition-colors">
-                <div className="min-w-0">
-                  <p className="text-xs font-medium text-foreground truncate">{c.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{c.source}</p>
-                </div>
-                <div className="flex items-center gap-3 shrink-0">
-                  <div className="text-right">
-                    <p className="text-xs font-bold text-foreground">{c.leads} leads</p>
-                    <p className="text-[10px] text-success">{c.conversion}% conv.</p>
-                  </div>
-                  <div className={`w-2 h-2 rounded-full ${c.status === 'active' ? 'bg-success' : 'bg-accent'}`} />
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        {/* Performance dos Agentes IA */}
-        <Card className="border-border">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Bot className="h-4 w-4 text-info" /> Performance dos Agentes IA
-              <Badge className="ml-auto bg-success/10 text-success text-[10px]">24/7 Online</Badge>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            {agentPerformance.map((a) => (
-              <div key={a.agent} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <div className="flex items-center gap-2 min-w-0">
-                  <div className="relative">
-                    <BrainCircuit className="h-4 w-4 text-info" />
-                    <div className="absolute -bottom-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-success border border-card" />
-                  </div>
-                  <span className="text-xs font-medium text-foreground truncate">{a.agent}</span>
-                </div>
-                <div className="flex items-center gap-4 shrink-0 text-[10px]">
-                  <div className="text-center">
-                    <p className="font-bold text-success">{a.accuracy}%</p>
-                    <p className="text-muted-foreground">Acurácia</p>
-                  </div>
-                  <div className="text-center">
-                    <p className="font-bold text-foreground">{a.leadsProcessed.toLocaleString('pt-BR')}</p>
-                    <p className="text-muted-foreground">Processados</p>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Previsão 12 Meses + Reforma 2026 */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        {/* Previsão */}
-        <Card className="border-border lg:col-span-2">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-success" /> Previsão de Crescimento – 12 Meses
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="h-[280px]">
-              <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={forecast12m}>
-                  <defs>
-                    <linearGradient id="receitaGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
-                    </linearGradient>
-                    <linearGradient id="leadsGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.15} />
-                      <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                  <XAxis dataKey="mes" tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                  <YAxis tick={{ fontSize: 11, fill: 'hsl(var(--muted-foreground))' }} />
-                  <Tooltip contentStyle={{ borderRadius: 12, border: '1px solid hsl(var(--border))', fontSize: 12, background: 'hsl(var(--card))' }} />
-                  <Legend verticalAlign="top" height={36} formatter={(v) => v === 'receita' ? 'Receita (R$ K)' : 'Leads'} />
-                  <Area type="monotone" dataKey="receita" stroke="hsl(var(--primary))" strokeWidth={2} fill="url(#receitaGrad)" />
-                  <Area type="monotone" dataKey="leads" stroke="hsl(var(--success))" strokeWidth={2} fill="url(#leadsGrad)" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Indicadores Reforma 2026 */}
-        <Card className="border-border">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
-              <Scale className="h-4 w-4 text-accent" /> Reforma 2026
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {reformaIndicators.map((ind) => (
-              <div key={ind.label} className="space-y-1.5">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="text-muted-foreground">{ind.label}</span>
-                  <span className="font-bold text-foreground">{ind.value}</span>
-                </div>
-                <Progress value={ind.pct} className="h-1.5" />
-              </div>
-            ))}
-            <div className="pt-2 mt-2 border-t border-border">
-              <div className="flex items-center gap-2 text-xs text-accent-foreground">
-                <Flame className="h-3.5 w-3.5" />
-                <span className="font-medium">IBS + CBS em vigor Jan/2027</span>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      </motion.div>
     </div>
   );
 }
