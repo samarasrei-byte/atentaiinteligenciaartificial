@@ -282,19 +282,19 @@ export default function SeracPresentation() {
             <Card className="p-8">
               <p className="text-slate-400 text-sm uppercase tracking-widest mb-8">Prospecção mensal estruturada</p>
               <div className="space-y-5">
-                <FunnelStep value="2.000" label="Contadores impactados por mês" width="w-full" index={0} />
-                <FunnelStep value="10%" label="Taxa média de resposta → 200 respostas" width="w-[85%]" index={1} />
-                <FunnelStep value="30%" label="Conversão para reunião → 60 reuniões" width="w-[65%]" index={2} />
-                <FunnelStep value="20%" label="Taxa de fechamento → 12 contratos" width="w-[45%]" index={3} />
+                <FunnelStep value="5.000" label="Contadores impactados por mês" width="w-full" index={0} />
+                <FunnelStep value="10%" label="Taxa média de resposta → 500 respostas" width="w-[85%]" index={1} />
+                <FunnelStep value="30%" label="Conversão para reunião → 150 reuniões" width="w-[65%]" index={2} />
+                <FunnelStep value="20%" label="Taxa de fechamento → 30 contratos" width="w-[45%]" index={3} />
               </div>
             </Card>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-4">
             {[
-              { value: "12", label: "Novos contratos por mês", sub: "Ticket médio: R$ 2.500" },
-              { value: "R$ 30k", label: "Receita adicional/mês", sub: "A partir do primeiro mês" },
-              { value: "R$ 180k", label: "Acumulados em 6 meses", sub: "Crescimento composto" },
+              { value: "30", label: "Novos contratos por mês", sub: "Ticket médio: R$ 2.500" },
+              { value: "R$ 75k", label: "Receita adicional/mês", sub: "A partir do primeiro mês" },
+              { value: "R$ 450k", label: "Acumulados em 6 meses", sub: "Crescimento composto" },
             ].map((r, i) => (
               <motion.div key={i} variants={scaleIn}>
                 <Card className="p-6 text-center">
