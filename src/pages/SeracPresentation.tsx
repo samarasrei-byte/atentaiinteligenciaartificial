@@ -7,9 +7,7 @@ import {
   TrendingUp, Target, Zap, Building2, Scale,
   DollarSign, Calendar, Phone, Layers
 } from "lucide-react";
-import heroBg from "@/assets/serac-hero-bg.jpg";
-import buildingBg from "@/assets/serac-building.jpg";
-import brazilMapBg from "@/assets/serac-brazil-map.jpg";
+// Background images replaced with CSS gradients
 
 /* ── Animations ── */
 const fadeUp = {
@@ -27,14 +25,11 @@ const scaleIn = {
 const stagger = { visible: { transition: { staggerChildren: 0.15 } } };
 const staggerFast = { visible: { transition: { staggerChildren: 0.08 } } };
 
-/* ── Parallax Image Background ── */
-function ParallaxBg({ src, speed = 0.3, overlay = "bg-black/60" }: { src: string; speed?: number; overlay?: string }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
-  const y = useTransform(scrollYProgress, [0, 1], [`-${speed * 100}px`, `${speed * 100}px`]);
+/* ── Parallax Gradient Background ── */
+function ParallaxBg({ gradient = "radial-gradient(ellipse at 50% 50%, hsl(175 40% 12%), hsl(220 45% 6%))", overlay = "bg-black/60" }: { gradient?: string; overlay?: string; src?: string; speed?: number }) {
   return (
-    <div ref={ref} className="absolute inset-0 overflow-hidden">
-      <motion.img src={src} alt="" className="absolute inset-0 w-full h-[130%] object-cover -top-[15%]" style={{ y }} loading="lazy" />
+    <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0" style={{ background: gradient }} />
       <div className={`absolute inset-0 ${overlay}`} />
     </div>
   );
@@ -109,7 +104,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ HERO — ABERTURA ═══════ */}
         <motion.section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ opacity: heroOpacity, scale: heroScale }}>
-          <ParallaxBg src={heroBg} speed={0.4} overlay="bg-black/70" />
+          <ParallaxBg gradient="radial-gradient(ellipse at 30% 40%, hsl(175 50% 15%), hsl(220 45% 6%))" overlay="bg-black/50" />
           <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
 
           <motion.div className="relative z-10 max-w-5xl mx-auto px-6 text-center" initial="hidden" animate="visible" variants={stagger}>
@@ -131,7 +126,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ SLIDE 1 — OPORTUNIDADE DE MERCADO ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <ParallaxBg src={brazilMapBg} speed={0.2} overlay="bg-black/80" />
+          <ParallaxBg gradient="radial-gradient(ellipse at 60% 30%, hsl(200 40% 12%), hsl(220 45% 6%))" overlay="bg-black/70" />
 
           <motion.div className="relative z-10 max-w-5xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="text-center mb-16">
@@ -221,7 +216,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ SLIDE 3 — DIFERENCIAL ESTRATÉGICO ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <ParallaxBg src={buildingBg} speed={0.25} overlay="bg-black/80" />
+          <ParallaxBg gradient="radial-gradient(ellipse at 40% 60%, hsl(175 35% 10%), hsl(220 45% 6%))" overlay="bg-black/70" />
 
           <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold mb-4">
@@ -401,7 +396,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ SLIDE 7 — POSICIONAMENTO FINAL ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <ParallaxBg src={brazilMapBg} speed={0.2} overlay="bg-black/75" />
+          <ParallaxBg gradient="radial-gradient(ellipse at 50% 50%, hsl(175 40% 12%), hsl(220 45% 6%))" overlay="bg-black/60" />
 
           <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp}>
