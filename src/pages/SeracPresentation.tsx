@@ -1,5 +1,5 @@
 import { Helmet } from "react-helmet-async";
-import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
 import { SeracAgentsOrchestration } from "@/components/serac/SeracAgentsOrchestration";
 import { SeracAgentSimulation } from "@/components/serac/SeracAgentSimulation";
 import { useRef, useEffect, useState } from "react";
@@ -9,7 +9,8 @@ import {
   TrendingUp, Target, Zap, Building2, Scale,
   DollarSign, Calendar, Layers, Sparkles,
   Rocket, Globe, Code2, Cpu, Eye,
-  LineChart, Bot, Lightbulb, FileText
+  LineChart, Bot, Lightbulb, FileText,
+  MessageCircle, HelpCircle, CheckCircle2
 } from "lucide-react";
 import seracHeroBg from "@/assets/serac-hero-bg.jpg";
 import seracAiBrain from "@/assets/serac-ai-brain.jpg";
@@ -254,6 +255,36 @@ function GlowingStat({ value, label, sub, delay = 0 }: { value: number; label: s
   );
 }
 
+/* ── FAQ Item ── */
+function FAQItem({ question, answer, index }: { question: string; answer: string; index: number }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <motion.div variants={fadeUp}>
+      <GlassCard className={`p-6 cursor-pointer transition-all duration-300 ${open ? "border-cyan-500/30" : ""}`}>
+        <button onClick={() => setOpen(!open)} className="w-full text-left flex items-start gap-4">
+          <div className="w-8 h-8 rounded-lg bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+            <span className="text-cyan-400 font-bold text-xs">P{index}</span>
+          </div>
+          <div className="flex-1">
+            <p className="text-white font-bold text-sm leading-relaxed">{question}</p>
+            {open && (
+              <motion.p
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="text-slate-400 text-sm mt-3 leading-relaxed"
+              >
+                {answer}
+              </motion.p>
+            )}
+          </div>
+          <ChevronDown className={`w-5 h-5 text-cyan-500/50 transition-transform flex-shrink-0 ${open ? "rotate-180" : ""}`} />
+        </button>
+      </GlassCard>
+    </motion.div>
+  );
+}
+
 export default function SeracPresentation() {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
@@ -265,25 +296,21 @@ export default function SeracPresentation() {
   return (
     <>
       <Helmet>
-        <title>SERAC Intelligence Platform | White Label powered by Atentai</title>
-        <meta name="description" content="Apresentação institucional: SERAC Intelligence Platform — White Label estratégico powered by Atentai com Máquina de Prospecção Nacional de Contadores" />
+        <title>SERAC Intelligence Platform | Proposta Comercial powered by AtentAI</title>
+        <meta name="description" content="Proposta comercial estratégica: Departamento de Agentes de Prospecção exclusivo para SERAC — powered by AtentAI, G8 Prospect & Clauthor" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
       <div className="min-h-screen bg-slate-950 text-slate-200 overflow-x-hidden font-sans">
 
-        {/* ═══════ HERO with Parallax + Image ═══════ */}
+        {/* ═══════ HERO ═══════ */}
         <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
-          {/* Hero background image with parallax */}
           <motion.div style={{ scale: heroImgScale }} className="absolute inset-0">
             <img src={seracHeroBg} alt="" className="w-full h-full object-cover opacity-40" />
             <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950" />
           </motion.div>
-          {/* Animated grid */}
           <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(hsl(185 60% 50% / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(185 60% 50% / 0.3) 1px, transparent 0)", backgroundSize: "60px 60px" }} />
-          {/* Floating particles */}
           <FloatingParticles count={40} />
-          {/* Glow orbs parallax */}
           <motion.div style={{ y: heroY }} className="absolute inset-0">
             <div className="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] rounded-full bg-cyan-500/8 blur-[150px]" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/8 blur-[120px]" />
@@ -293,28 +320,29 @@ export default function SeracPresentation() {
           <motion.div style={{ y: heroY, opacity: heroOpacity, scale: heroScale }} className="relative z-10 max-w-5xl mx-auto px-6 text-center">
             <motion.div initial="hidden" animate="visible" variants={stagger}>
               <motion.div variants={fadeUp}>
-                <Badge>White Label Estratégico</Badge>
+                <Badge>Proposta Comercial Exclusiva</Badge>
               </motion.div>
               <motion.h1 variants={fadeUp} className="text-6xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-white mb-4" style={{ textShadow: "0 0 80px hsl(185 80% 50% / 0.15)" }}>
                 SERAC
               </motion.h1>
               <motion.p variants={fadeUp} className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent mb-4">
-                Intelligence Platform
+                Departamento de Prospecção com IA
               </motion.p>
-              <motion.p variants={fadeUp} className="text-lg text-slate-400 mb-4 max-w-2xl mx-auto">
-                Máquina de Prospecção Nacional: Empresas, Contadores & Cartórios
+              <motion.p variants={fadeUp} className="text-lg text-slate-400 mb-4 max-w-3xl mx-auto">
+                Criação de um departamento de agentes de prospecção dedicado e exclusivo para o SERAC, integrando <strong className="text-cyan-400">AtentAI</strong>, <strong className="text-violet-400">G8 Prospect</strong> e <strong className="text-emerald-400">Clauthor</strong>
               </motion.p>
-              
+
               {/* Live counter strip */}
               <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-8 mt-8 mb-6">
                 {[
                   { value: 21000000, suffix: "+", label: "Empresas no Brasil" },
                   { value: 13800, suffix: "+", label: "Cartórios" },
                   { value: 520000, suffix: "+", label: "Contadores" },
+                  { value: 5000, suffix: "/mês", label: "Impactos Qualificados" },
                 ].map((s, i) => (
                   <div key={i} className="text-center">
                     <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      <AnimatedCounter value={s.value} prefix={"" } suffix={s.suffix || ""} duration={2.5} />
+                      <AnimatedCounter value={s.value} prefix="" suffix={s.suffix || ""} duration={2.5} />
                     </div>
                     <p className="text-slate-500 text-xs mt-1 uppercase tracking-wider font-semibold">{s.label}</p>
                   </div>
@@ -322,11 +350,11 @@ export default function SeracPresentation() {
               </motion.div>
 
               <motion.p variants={fadeIn} className="text-sm text-slate-600 tracking-[0.3em] uppercase font-medium">
-                Powered by Atentai
+                Powered by AtentAI · G8 Prospect · Clauthor
               </motion.p>
               <motion.div variants={fadeIn} className="mt-14 flex justify-center gap-4">
                 <GlassButton variant="primary">
-                  <Rocket className="w-4 h-4" /> Explorar Plataforma
+                  <Rocket className="w-4 h-4" /> Ver Proposta Completa
                 </GlassButton>
                 <GlassButton>
                   <Eye className="w-4 h-4" /> Ver Demo
@@ -339,165 +367,15 @@ export default function SeracPresentation() {
           </motion.div>
         </section>
 
-        {/* ═══════ STARTUPS ECOSYSTEM ═══════ */}
-        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.2}>
-          <FloatingParticles count={15} />
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <Badge>Ecossistema</Badge>
-            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              3 Startups. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">1 Visão.</span>
-            </h2>
-            <p className="text-slate-500 text-lg mt-4 max-w-2xl mx-auto">Tecnologia de ponta unida para transformar o mercado contábil brasileiro</p>
-          </motion.div>
-
-          <div className="grid md:grid-cols-3 gap-6">
-            <StartupCard
-              name="AtentAI"
-              description="Startup de tecnologia fiscal e inteligência artificial. Foco principal: prospecção ativa de empresas e contadores para a base SERAC. Motor de IA com análise preditiva, automação tributária e inteligência fiscal que alimenta toda a plataforma."
-              icon={Brain}
-              tags={["Tecnologia Fiscal", "Prospecção", "IA"]}
-              gradient="bg-cyan-500"
-            />
-            <StartupCard
-              name="G8 Prospect"
-              description="Startup especializada em prospecção e geração de leads qualificados B2B. Máquina de aquisição de clientes com pipeline de vendas automatizado, responsável por trazer empresas e contadores para o ecossistema SERAC."
-              icon={Target}
-              tags={["Prospecção", "Leads B2B", "Growth"]}
-              gradient="bg-violet-500"
-            />
-            <StartupCard
-              name="Clauthor"
-              description="Startup de agentes de inteligência artificial especializados por área. Desenvolve e opera agentes de IA para compliance, fiscal, jurídico, atendimento e automação de processos — cada área com seu agente dedicado."
-              icon={Bot}
-              tags={["Agentes IA", "Multi-área", "Automação"]}
-              gradient="bg-emerald-500"
-            />
-          </div>
-        </ParallaxSection>
-
-        {/* ═══════ PARCERIA EXCLUSIVA — COMO FUNCIONA ═══════ */}
-        <ParallaxSection className="bg-slate-900/30 border-t border-white/[0.03]" speed={0.3}>
-          <FloatingParticles count={20} />
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <Badge>Parceria Exclusiva</Badge>
-            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              AtentAI Prospecta. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">SERAC Atende com Exclusividade.</span>
-            </h2>
-            <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
-              A AtentAI é a máquina de prospecção que traz <strong className="text-slate-300">empresas, contadores e cartórios</strong> para a base da SERAC. 
-              A SERAC, com seus <strong className="text-slate-300">+250 colaboradores e +2.500 clientes</strong>, fica com a <strong className="text-cyan-400">contabilidade exclusiva</strong> de todas as empresas prospectadas. 
-              Contadores e cartórios entram para o <strong className="text-slate-300">clube de mentorias e capacitação</strong>.
-            </p>
-          </motion.div>
-
-          {/* Flow visual */}
-          <motion.div variants={fadeUp} className="mb-14">
-            <GlassCard glow className="p-10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px]" />
-              <div className="absolute bottom-0 right-0 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px]" />
-              <div className="relative z-10">
-                <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10 text-center">Como funciona a parceria</p>
-                <div className="grid md:grid-cols-3 gap-8 items-center">
-                  {/* Step 1 */}
-                  <motion.div variants={slideLeft} className="text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-5">
-                      <Target className="w-10 h-10 text-cyan-400" />
-                    </div>
-                    <h3 className="text-white font-bold text-lg mb-2">AtentAI Prospecta</h3>
-                    <p className="text-slate-500 text-sm">Prospecção ativa de <strong className="text-cyan-400">empresas, escritórios contábeis, contadores e cartórios</strong> em todo o Brasil com IA e automação</p>
-                  </motion.div>
-                  {/* Arrow */}
-                  <motion.div variants={scaleIn} className="hidden md:flex justify-center">
-                    <div className="flex items-center gap-2">
-                      <div className="w-24 h-px bg-gradient-to-r from-cyan-500/50 to-violet-500/50" />
-                      <ArrowRight className="w-6 h-6 text-cyan-400" />
-                      <div className="w-24 h-px bg-gradient-to-r from-violet-500/50 to-emerald-500/50" />
-                    </div>
-                  </motion.div>
-                  {/* Step 2 */}
-                  <motion.div variants={slideRight} className="text-center">
-                    <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-5">
-                      <Building2 className="w-10 h-10 text-emerald-400" />
-                    </div>
-                    <h3 className="text-white font-bold text-lg mb-2">SERAC Atende</h3>
-                    <p className="text-slate-500 text-sm">+250 profissionais fazem a <strong className="text-emerald-400">contabilidade exclusiva</strong> de todas as empresas captadas. Contadores e cartórios entram no <strong className="text-emerald-400">clube de mentorias</strong></p>
-                  </motion.div>
-                </div>
-              </div>
-            </GlassCard>
-          </motion.div>
-
-          {/* Quem ganha o quê */}
-          <motion.div variants={fadeUp} className="mb-10">
-            <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-6 text-center">Modelo ganha-ganha-ganha</p>
-          </motion.div>
-          <div className="grid md:grid-cols-3 gap-6">
-            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
-              <GlassCard accent className="p-8 h-full">
-                <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
-                  <Brain className="w-7 h-7 text-cyan-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">AtentAI ganha</h3>
-                <ul className="space-y-2 text-slate-400 text-sm">
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Setup estratégico</strong> pela implantação da plataforma</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Mensalidade fixa</strong> pela manutenção + prospecção contínua</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">10% sobre novos contratos</strong> — comissão sobre empresas prospectadas para a SERAC</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Plano mensal por contador</strong> — cada contador ativo na base paga mensalidade</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Clube & Mentorias</strong> — receita adicional com contadores e cartórios na capacitação</span></li>
-                </ul>
-              </GlassCard>
-            </motion.div>
-            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
-              <GlassCard accent className="p-8 h-full">
-                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
-                  <Building2 className="w-7 h-7 text-emerald-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">SERAC ganha</h3>
-                <ul className="space-y-2 text-slate-400 text-sm">
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Contabilidade exclusiva</strong> — todas as empresas prospectadas vão para a SERAC</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Clube de Mentorias</strong> — contadores e cartórios na rede de capacitação SERAC</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Plataforma white label</strong> com a marca SERAC posicionada nacionalmente</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Receita escalável</strong> — fatura contabilidade de todas as empresas captadas sem custo comercial</span></li>
-                </ul>
-              </GlassCard>
-            </motion.div>
-            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
-              <GlassCard accent className="p-8 h-full">
-                <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
-                  <Users className="w-7 h-7 text-violet-400" />
-                </div>
-                <h3 className="text-xl font-bold text-white mb-3">Empresas ganham</h3>
-                <ul className="space-y-2 text-slate-400 text-sm">
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Contabilidade de excelência</strong> — atendidas pela SERAC com +250 profissionais</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Economia tributária real</strong> — diagnóstico com IA identifica sobrepagamentos</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Preparação para 2026</strong> — prontas para IBS + CBS antes dos concorrentes</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Suporte completo</strong> — contábil, fiscal, jurídico e consultivo</span></li>
-                </ul>
-              </GlassCard>
-            </motion.div>
-          </div>
-
-          {/* Highlight */}
-          <motion.div variants={scaleIn} className="mt-14">
-            <GlassCard accent glow className="p-10 text-center">
-              <p className="text-xl text-slate-300 leading-relaxed">
-                A AtentAI prospecta <span className="text-cyan-400 font-bold">empresas, contadores, escritórios e cartórios</span>.<br />
-                A SERAC fica com a <span className="text-emerald-400 font-bold">contabilidade exclusiva</span> das empresas. Contadores e cartórios entram no <span className="text-violet-400 font-bold">clube de mentorias</span>. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">Comissão de apenas 10%.</span>
-              </p>
-            </GlassCard>
-          </motion.div>
-        </ParallaxSection>
-
-        {/* ═══════ QUEM SOMOS — with AI Brain Image ═══════ */}
-        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.4}>
+        {/* ═══════ QUEM É O SERAC ═══════ */}
+        <ParallaxSection className="bg-slate-900/30 border-t border-white/[0.03]" speed={0.4}>
           <motion.div variants={fadeUp} className="text-center mb-6">
-            <Badge>Quem Somos</Badge>
+            <Badge>O SERAC</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              O SERAC é <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">referência nacional</span>
+              Referência <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">nacional em contabilidade</span>
             </h2>
           </motion.div>
 
-          {/* Real SERAC images */}
           <motion.div variants={fadeUp} className="grid sm:grid-cols-2 gap-6 my-12">
             <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-[0_0_40px_hsl(185_80%_50%/0.1)] group">
               <img src={seracBuilding} alt="Sede SERAC" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" />
@@ -512,39 +390,42 @@ export default function SeracPresentation() {
               <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
               <div className="absolute bottom-4 left-4">
                 <p className="text-white font-bold text-sm">Operação SERAC</p>
-                <p className="text-slate-400 text-xs">+200 profissionais</p>
+                <p className="text-slate-400 text-xs">+300 profissionais</p>
               </div>
             </div>
           </motion.div>
 
-          {/* Area tags */}
+          <motion.div variants={fadeUp} className="mb-12">
+            <GlassCard glow className="p-10 text-center">
+              <p className="text-xl text-slate-300 leading-relaxed">
+                O SERAC é um escritório de contabilidade de <span className="text-cyan-400 font-bold">referência nacional</span>, com uma equipe robusta de mais de <span className="text-white font-bold">300 colaboradores</span>, atendendo a mais de <span className="text-white font-bold">3.500 clientes</span>. Sua atuação abrange as áreas <span className="text-emerald-400 font-bold">contábil, fiscal, jurídica e de tecnologia</span>.
+              </p>
+            </GlassCard>
+          </motion.div>
+
           <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto mb-14">
             {["Contábil", "Fiscal", "Consultiva", "Jurídica", "Tecnologia"].map((area, i) => (
               <motion.div key={i} variants={fadeUp}>
-                <div className={`rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl py-5 px-6 text-center hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-300 cursor-pointer ${i === 4 ? "sm:col-span-1" : ""}`}>
+                <div className="rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl py-5 px-6 text-center hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-300 cursor-pointer">
                   <span className="text-slate-300 font-bold text-lg">{area}</span>
                 </div>
               </motion.div>
             ))}
           </div>
 
-          {/* Diferenciais */}
-          <motion.div variants={fadeUp} className="text-center mb-8">
-            <span className="text-slate-600 text-xs font-bold tracking-[0.3em] uppercase">Diferenciais</span>
-          </motion.div>
-          <div className="grid sm:grid-cols-2 gap-5">
+          <div className="grid sm:grid-cols-4 gap-5">
             {[
-              { icon: Sparkles, t: "Modernização", d: "Tecnologia de ponta para escritórios contábeis" },
-              { icon: Shield, t: "Metodologia Preventiva", d: "Compliance proativo e gestão de riscos" },
-              { icon: Users, t: "Capital Humano", d: "Equipe especializada em transformação digital" },
-              { icon: Target, t: "Resultados Mensuráveis", d: "KPIs claros e ROI comprovado" },
+              { icon: Users, t: "300+", d: "Colaboradores" },
+              { icon: Building2, t: "3.500+", d: "Clientes ativos" },
+              { icon: Shield, t: "Compliance", d: "Metodologia preventiva" },
+              { icon: Target, t: "Nacional", d: "Atuação em todo o Brasil" },
             ].map((d, i) => (
               <motion.div key={i} variants={fadeUp} whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
-                <GlassCard className="p-7 h-full">
-                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
+                <GlassCard className="p-7 text-center h-full">
+                  <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-4">
                     <d.icon className="w-6 h-6 text-cyan-400" />
                   </div>
-                  <h3 className="text-lg font-bold text-white mb-2">{d.t}</h3>
+                  <h3 className="text-2xl font-black text-white mb-1">{d.t}</h3>
                   <p className="text-slate-500 text-sm">{d.d}</p>
                 </GlassCard>
               </motion.div>
@@ -552,7 +433,323 @@ export default function SeracPresentation() {
           </div>
         </ParallaxSection>
 
-        {/* ═══════ PORTFÓLIO DE SERVIÇOS SERAC ═══════ */}
+        {/* ═══════ ECOSSISTEMA DE 3 STARTUPS ═══════ */}
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.2}>
+          <FloatingParticles count={15} />
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <Badge>Ecossistema</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              3 Startups. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">1 Departamento de Prospecção.</span>
+            </h2>
+            <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">A integração das três startups cria uma solução robusta e inovadora para aquisição de clientes qualificados</p>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-6">
+            <StartupCard
+              name="AtentAI"
+              description="Plataforma de Inteligência Fiscal e máquina de prospecção white label. Fornece o marketplace e a plataforma tecnológica que canaliza empresas, contadores e cartórios para a base do SERAC. O SERAC terá exclusividade total no marketplace."
+              icon={Brain}
+              tags={["Plataforma", "Marketplace", "Exclusividade"]}
+              gradient="bg-cyan-500"
+            />
+            <StartupCard
+              name="G8 Prospect"
+              description="Ecossistema de inovação que reúne 8 startups disruptivas. Oferece acesso a uma vasta base de leads qualificados — C-Levels, diretores e decisores estratégicos. Atua como hub que potencializa a sinergia entre as tecnologias."
+              icon={Target}
+              tags={["Leads B2B", "C-Levels", "8 Startups"]}
+              gradient="bg-violet-500"
+            />
+            <StartupCard
+              name="Clauthor"
+              description="Plataforma de 'AI Employees' — agentes de IA que automatizam prospecção, atendimento, gestão financeira e compliance. Trabalham 24/7, sem interrupções, com economia significativa de custos operacionais. Orquestrados em squads coordenados."
+              icon={Bot}
+              tags={["AI Employees", "24/7", "Squads IA"]}
+              gradient="bg-emerald-500"
+            />
+          </div>
+
+          <motion.div variants={fadeUp} className="mt-10">
+            <GlassCard accent glow className="p-8 text-center">
+              <p className="text-xl text-slate-300 leading-relaxed">
+                Cada startup desempenha um papel crucial: <span className="text-cyan-400 font-bold">AtentAI</span> fornece plataforma e marketplace · <span className="text-violet-400 font-bold">G8 Prospect</span> oferece ecossistema e leads · <span className="text-emerald-400 font-bold">Clauthor</span> provê agentes de IA que escalam a prospecção
+              </p>
+            </GlassCard>
+          </motion.div>
+        </ParallaxSection>
+
+        {/* ═══════ PROPOSTA COMERCIAL ═══════ */}
+        <ParallaxSection className="bg-slate-900/30 border-t border-white/[0.03]" speed={0.3}>
+          <FloatingParticles count={20} />
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <Badge>Proposta Comercial</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              Departamento de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Agentes de Prospecção</span>
+            </h2>
+            <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
+              Implementação e operação de um departamento dedicado de agentes de IA para prospecção exclusiva do SERAC
+            </p>
+          </motion.div>
+
+          {/* Pricing cards */}
+          <div className="grid md:grid-cols-2 gap-6 mb-10">
+            <motion.div variants={slideLeft}>
+              <GlassCard className="p-10 h-full relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-cyan-500/5 rounded-full blur-[80px]" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-6">
+                    <DollarSign className="w-7 h-7 text-cyan-400" />
+                  </div>
+                  <p className="text-slate-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">Investimento Inicial (Setup)</p>
+                  <h3 className="text-5xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-4">R$ 45.000</h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Valor único — cobre a customização e integração profunda dos agentes de IA da <span className="text-emerald-400 font-bold">Clauthor</span> com a plataforma <span className="text-cyan-400 font-bold">AtentAI</span>, adaptando-os às necessidades específicas do SERAC.
+                  </p>
+                </div>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div variants={slideRight}>
+              <GlassCard accent glow className="p-10 h-full relative overflow-hidden">
+                <div className="absolute -top-20 -left-20 w-40 h-40 bg-emerald-500/5 rounded-full blur-[80px]" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-6">
+                    <TrendingUp className="w-7 h-7 text-emerald-400" />
+                  </div>
+                  <p className="text-slate-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">Mensalidade</p>
+                  <h3 className="text-5xl font-black text-emerald-400 mb-4">R$ 35.000<span className="text-2xl text-slate-500">/mês</span></h3>
+                  <p className="text-slate-400 text-sm leading-relaxed">
+                    Operação contínua da máquina de prospecção — manutenção dos agentes de IA, gestão das campanhas e geração de <span className="text-white font-bold">5.000 impactos qualificados por mês</span>.
+                  </p>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </div>
+
+          {/* Key terms */}
+          <div className="grid sm:grid-cols-3 gap-5 mb-10">
+            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
+              <GlassCard className="p-6 text-center h-full">
+                <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
+                <h4 className="text-white font-bold mb-2">Exclusividade Total</h4>
+                <p className="text-slate-500 text-xs">O SERAC será o único parceiro ofertante no marketplace AtentAI. Todos os leads são direcionados exclusivamente para o SERAC.</p>
+              </GlassCard>
+            </motion.div>
+            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
+              <GlassCard className="p-6 text-center h-full">
+                <TrendingUp className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
+                <h4 className="text-white font-bold mb-2">Comissionamento</h4>
+                <p className="text-slate-500 text-xs">Comissão sobre os serviços prestados pelo SERAC a clientes prospectados, alinhando interesses em um modelo de crescimento mútuo.</p>
+              </GlassCard>
+            </motion.div>
+            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
+              <GlassCard className="p-6 text-center h-full">
+                <Bot className="w-8 h-8 text-violet-400 mx-auto mb-3" />
+                <h4 className="text-white font-bold mb-2">Agentes IA 24/7</h4>
+                <p className="text-slate-500 text-xs">AI Employees da Clauthor trabalhando sem interrupções, com prospecção automatizada, inteligente e escalável.</p>
+              </GlassCard>
+            </motion.div>
+          </div>
+
+          {/* Volume breakdown */}
+          <motion.div variants={fadeUp}>
+            <GlassCard glow className="p-10">
+              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-8 text-center">Volume de Impacto Mensal</p>
+              <div className="grid sm:grid-cols-3 gap-6">
+                {[
+                  { value: 2000, icon: Users, label: "Contadores", desc: "Para eventos, mentorias e programas de capacitação do SERAC", color: "cyan" },
+                  { value: 2000, icon: Building2, label: "Empresas", desc: "Para serviços contábeis — contabilidade exclusiva SERAC", color: "emerald" },
+                  { value: 1000, icon: Scale, label: "Cartórios", desc: "Para serviços especializados do SERAC", color: "violet" },
+                ].map((item, i) => (
+                  <motion.div key={i} whileHover={{ scale: 1.05 }} className="text-center p-6 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <item.icon className={`w-10 h-10 text-${item.color}-400 mx-auto mb-3`} />
+                    <div className={`text-4xl font-black bg-gradient-to-r from-${item.color}-400 to-blue-400 bg-clip-text text-transparent mb-2`}>
+                      <AnimatedCounter value={item.value} suffix="/mês" duration={2} />
+                    </div>
+                    <p className="text-white font-bold text-sm mb-1">{item.label}</p>
+                    <p className="text-slate-500 text-xs">{item.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="mt-8 text-center">
+                <p className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  = 5.000 impactos qualificados/mês
+                </p>
+              </div>
+            </GlassCard>
+          </motion.div>
+        </ParallaxSection>
+
+        {/* ═══════ PARCERIA EXCLUSIVA — COMO FUNCIONA ═══════ */}
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.3}>
+          <FloatingParticles count={20} />
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <Badge>Modelo de Parceria</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              AtentAI Prospecta. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">SERAC Atende com Exclusividade.</span>
+            </h2>
+            <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
+              A AtentAI se torna uma <strong className="text-slate-300">extensão do departamento de vendas do SERAC</strong>, com funil de leads pré-qualificados e dedicados. Não haverá concorrência interna.
+            </p>
+          </motion.div>
+
+          {/* Flow visual */}
+          <motion.div variants={fadeUp} className="mb-14">
+            <GlassCard glow className="p-10 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px]" />
+              <div className="absolute bottom-0 right-0 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px]" />
+              <div className="relative z-10">
+                <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10 text-center">Escopo da Prospecção</p>
+                <div className="grid md:grid-cols-3 gap-8 items-center">
+                  <motion.div variants={slideLeft} className="text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-5">
+                      <Target className="w-10 h-10 text-cyan-400" />
+                    </div>
+                    <h3 className="text-white font-bold text-lg mb-2">Prospecção com IA</h3>
+                    <p className="text-slate-500 text-sm">AtentAI + G8 Prospect + Clauthor prospectam <strong className="text-cyan-400">empresas, contadores e cartórios</strong> com abordagem multicanal e inteligente</p>
+                  </motion.div>
+                  <motion.div variants={scaleIn} className="hidden md:flex justify-center">
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 h-px bg-gradient-to-r from-cyan-500/50 to-violet-500/50" />
+                      <ArrowRight className="w-6 h-6 text-cyan-400" />
+                      <div className="w-24 h-px bg-gradient-to-r from-violet-500/50 to-emerald-500/50" />
+                    </div>
+                  </motion.div>
+                  <motion.div variants={slideRight} className="text-center">
+                    <div className="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-5">
+                      <Building2 className="w-10 h-10 text-emerald-400" />
+                    </div>
+                    <h3 className="text-white font-bold text-lg mb-2">SERAC Atende</h3>
+                    <p className="text-slate-500 text-sm">+300 profissionais fazem a <strong className="text-emerald-400">contabilidade exclusiva</strong>. Contadores e cartórios entram no <strong className="text-emerald-400">clube de mentorias</strong></p>
+                  </motion.div>
+                </div>
+              </div>
+            </GlassCard>
+          </motion.div>
+
+          {/* Ganha-ganha */}
+          <motion.div variants={fadeUp} className="mb-10">
+            <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-6 text-center">Modelo ganha-ganha-ganha</p>
+          </motion.div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
+              <GlassCard accent className="p-8 h-full">
+                <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
+                  <Brain className="w-7 h-7 text-cyan-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">AtentAI ganha</h3>
+                <ul className="space-y-2 text-slate-400 text-sm">
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Setup R$ 45k</strong> pela implantação</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">R$ 35k/mês</strong> pela operação contínua</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Comissão sobre contratos</strong> fechados via prospecção</span></li>
+                </ul>
+              </GlassCard>
+            </motion.div>
+            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
+              <GlassCard accent className="p-8 h-full">
+                <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
+                  <Building2 className="w-7 h-7 text-emerald-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">SERAC ganha</h3>
+                <ul className="space-y-2 text-slate-400 text-sm">
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Exclusividade total</strong> no marketplace AtentAI</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">5.000 leads/mês</strong> sem custo comercial interno</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Clube de mentorias</strong> com contadores e cartórios</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Receita escalável</strong> sem custo de aquisição</span></li>
+                </ul>
+              </GlassCard>
+            </motion.div>
+            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
+              <GlassCard accent className="p-8 h-full">
+                <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
+                  <Users className="w-7 h-7 text-violet-400" />
+                </div>
+                <h3 className="text-xl font-bold text-white mb-3">Clientes ganham</h3>
+                <ul className="space-y-2 text-slate-400 text-sm">
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Contabilidade de excelência</strong> — SERAC com +300 profissionais</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Economia tributária</strong> com diagnóstico por IA</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Preparação para 2026</strong> — IBS + CBS</span></li>
+                </ul>
+              </GlassCard>
+            </motion.div>
+          </div>
+        </ParallaxSection>
+
+        {/* ═══════ JUSTIFICATIVA FINANCEIRA ═══════ */}
+        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.25}>
+          <FloatingParticles count={15} />
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <Badge>Análise de Valor</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              Por que este investimento <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">vale a pena</span>
+            </h2>
+          </motion.div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-12">
+            <motion.div variants={slideLeft}>
+              <GlassCard className="p-8 h-full">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                  <DollarSign className="w-6 h-6 text-cyan-400" /> Comparativo de Mercado
+                </h3>
+                <div className="space-y-4">
+                  <div className="p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">Mercado (White Label)</p>
+                    <p className="text-slate-400 text-sm">Setup: <span className="text-white font-bold">R$ 120k – R$ 180k</span></p>
+                    <p className="text-slate-400 text-sm">Mensalidade: <span className="text-white font-bold">R$ 25k – R$ 60k</span></p>
+                  </div>
+                  <div className="p-4 rounded-xl bg-cyan-500/5 border border-cyan-500/20">
+                    <p className="text-cyan-400 text-xs uppercase tracking-wider mb-1 font-bold">Nossa Proposta</p>
+                    <p className="text-slate-300 text-sm">Setup: <span className="text-cyan-400 font-bold">R$ 45.000</span> (75% abaixo do teto)</p>
+                    <p className="text-slate-300 text-sm">Mensalidade: <span className="text-cyan-400 font-bold">R$ 35.000</span> (dentro da faixa)</p>
+                  </div>
+                </div>
+                <p className="text-slate-500 text-xs mt-4 leading-relaxed">
+                  Custo-benefício superior: exclusividade + integração de 3 tecnologias + 5.000 impactos/mês inclusos
+                </p>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div variants={slideRight}>
+              <GlassCard className="p-8 h-full">
+                <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-3">
+                  <TrendingUp className="w-6 h-6 text-emerald-400" /> ROI Projetado
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-3 border-b border-white/[0.06]">
+                    <span className="text-slate-400 text-sm">Novos contratos/mês</span>
+                    <span className="text-white font-bold">36</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-white/[0.06]">
+                    <span className="text-slate-400 text-sm">Ticket médio</span>
+                    <span className="text-white font-bold">R$ 2.500</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-white/[0.06]">
+                    <span className="text-slate-400 text-sm">Receita adicional/mês</span>
+                    <span className="text-emerald-400 font-bold">R$ 90.000</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3">
+                    <span className="text-slate-400 text-sm">Investimento mensal</span>
+                    <span className="text-cyan-400 font-bold">R$ 35.000</span>
+                  </div>
+                  <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                    <p className="text-slate-500 text-xs uppercase tracking-wider mb-1">ROI líquido mensal</p>
+                    <p className="text-3xl font-black text-emerald-400">R$ 55.000+</p>
+                    <p className="text-emerald-400/60 text-xs mt-1">2.5x de retorno sobre investimento</p>
+                  </div>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </div>
+
+          <motion.div variants={fadeUp}>
+            <GlassCard accent glow className="p-8 text-center">
+              <p className="text-xl text-slate-300 leading-relaxed">
+                O SERAC não está pagando por prospecção. Está pagando por uma <span className="text-cyan-400 font-bold">máquina de aquisição de clientes exclusiva e otimizada por IA</span> que seria <span className="text-white font-bold">muito mais cara e complexa de construir internamente</span>.
+              </p>
+            </GlassCard>
+          </motion.div>
+        </ParallaxSection>
+
+        {/* ═══════ PORTFÓLIO DE SERVIÇOS ═══════ */}
         <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.3}>
           <FloatingParticles count={15} />
           <motion.div variants={fadeUp} className="text-center mb-16">
@@ -561,20 +758,20 @@ export default function SeracPresentation() {
               Serviços que a SERAC <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">já domina</span>
             </h2>
             <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
-              Todos esses serviços entrarão no marketplace da plataforma — cada um deles é uma oportunidade de prospecção e receita recorrente
+              Nossa prospecção vai além dos serviços listados no AtentAI — o objetivo é trazer clientes para o SERAC para todos os serviços contábeis
             </p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
             {[
               { icon: Building2, name: "Contabilidade para Empresas", desc: "Orientação, planejamento tributário e compliance completo para empresas de todos os portes", tags: ["MEI", "ME", "EPP", "Lucro Real"] },
-              { icon: Scale, name: "Serviços para Cartórios", desc: "Contabilidade especializada para serventias extrajudiciais — nicho com 13.800+ unidades no Brasil", tags: ["Cartórios", "Nicho", "R$ 28B"] },
+              { icon: Scale, name: "Serviços para Cartórios", desc: "Contabilidade especializada para serventias extrajudiciais — nicho com 13.800+ unidades", tags: ["Cartórios", "Nicho", "R$ 28B"] },
               { icon: Cpu, name: "Contabilidade para Infoprodutores", desc: "Gestão fiscal sob medida para criadores de conteúdo, cursos online e produtos digitais", tags: ["Digital", "PLR", "E-commerce"] },
-              { icon: Code2, name: "Contabilidade para Games", desc: "Contabilidade especializada para estúdios de games, desenvolvedores e empresas de entretenimento digital", tags: ["Games", "Tech", "Startups"] },
-              { icon: FileText, name: "Imposto de Renda", desc: "Declaração de IR Simples e Completo para pessoas físicas e jurídicas com otimização fiscal", tags: ["IRPF", "IRPJ", "Restituição"] },
-              { icon: Shield, name: "Marcas e Patentes", desc: "Registro de marcas, patentes e propriedade intelectual junto ao INPI com acompanhamento completo", tags: ["INPI", "Marca", "Patente"] },
-              { icon: Globe, name: "Certificado Digital", desc: "Emissão de certificados digitais e-CPF, e-CNPJ, NF-e para empresas e profissionais", tags: ["e-CPF", "e-CNPJ", "NF-e"] },
-              { icon: Lightbulb, name: "Consultoria Empresarial", desc: "Consultoria estratégica, planejamento financeiro e reestruturação de processos empresariais", tags: ["Estratégia", "Gestão", "Crescimento"] },
+              { icon: Code2, name: "Contabilidade para Games", desc: "Especializada para estúdios de games e empresas de entretenimento digital", tags: ["Games", "Tech", "Startups"] },
+              { icon: FileText, name: "Imposto de Renda", desc: "Declaração de IR Simples e Completo com otimização fiscal para PF e PJ", tags: ["IRPF", "IRPJ", "Restituição"] },
+              { icon: Shield, name: "Marcas e Patentes", desc: "Registro junto ao INPI com acompanhamento completo", tags: ["INPI", "Marca", "Patente"] },
+              { icon: Globe, name: "Certificado Digital", desc: "Emissão de certificados e-CPF, e-CNPJ, NF-e para empresas e profissionais", tags: ["e-CPF", "e-CNPJ", "NF-e"] },
+              { icon: Lightbulb, name: "Consultoria Empresarial", desc: "Consultoria estratégica, planejamento financeiro e reestruturação", tags: ["Estratégia", "Gestão", "Crescimento"] },
             ].map((service, i) => (
               <motion.div key={i} variants={scaleIn} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
                 <GlassCard className="p-6 h-full relative overflow-hidden group cursor-pointer">
@@ -595,207 +792,19 @@ export default function SeracPresentation() {
               </motion.div>
             ))}
           </div>
-
-          <motion.div variants={fadeUp}>
-            <GlassCard accent glow className="p-8 text-center">
-              <p className="text-xl text-slate-300 leading-relaxed">
-                Cada serviço é um <span className="text-cyan-400 font-bold">canal de prospecção</span> — a AtentAI traz o cliente, a SERAC entrega o serviço.{" "}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">Marketplace sob consulta para todos os serviços.</span>
-              </p>
-            </GlassCard>
-          </motion.div>
         </ParallaxSection>
 
-        {/* ═══════ OPORTUNIDADE DE MERCADO — with animated numbers ═══════ */}
-        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]">
-          <FloatingParticles count={20} />
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <Badge>Oportunidade</Badge>
-            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              Reforma Tributária<br />
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">2026</span>
-            </h2>
-          </motion.div>
-
-          <div className="grid sm:grid-cols-2 gap-6 mb-12">
-            {[
-              { icon: Users, value: 520000, prefix: "+", label: "Profissionais contábeis no Brasil" },
-              { icon: Building2, value: 90000, prefix: "+", label: "Organizações contábeis ativas" },
-            ].map((s, i) => (
-              <motion.div key={i} variants={scaleIn} whileHover={{ scale: 1.03 }}>
-                <GlassCard glow className="p-10 text-center relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent" />
-                  <div className="relative z-10">
-                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-5">
-                      <s.icon className="w-8 h-8 text-cyan-400" />
-                    </div>
-                    <div className="text-5xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">
-                      <AnimatedCounter value={s.value} prefix={s.prefix} duration={2} />
-                    </div>
-                    <p className="text-slate-500">{s.label}</p>
-                  </div>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div variants={fadeUp}>
-            <GlassCard className="p-8">
-              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-6">Reforma Tributária 2026 exige reposicionamento estratégico</p>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {[
-                  { icon: Brain, t: "Inteligência fiscal" },
-                  { icon: BarChart3, t: "Simulação de impacto" },
-                  { icon: Shield, t: "Compliance automatizado" },
-                  { icon: Scale, t: "Suporte jurídico estruturado" },
-                ].map((item, i) => (
-                  <motion.div key={i} whileHover={{ x: 5 }} className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm hover:bg-white/[0.06] transition-colors">
-                    <item.icon className="w-5 h-5 text-cyan-400 flex-shrink-0" />
-                    <span className="text-slate-300 font-medium">{item.t}</span>
-                  </motion.div>
-                ))}
-              </div>
-            </GlassCard>
-          </motion.div>
-
-          <motion.div variants={fadeUp} className="mt-14 text-center">
-            <p className="text-3xl lg:text-4xl font-black text-white">
-              Quem liderar agora <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">domina o mercado.</span>
-            </p>
-          </motion.div>
-        </ParallaxSection>
-
-        {/* ═══════ A SOLUÇÃO — with Dashboard Image ═══════ */}
-        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.3}>
-          <motion.div variants={scaleIn} className="text-center mb-8">
-            <Badge>A Solução</Badge>
-            <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-white mt-3" style={{ textShadow: "0 0 60px hsl(185 80% 50% / 0.1)" }}>SERAC</h2>
-            <p className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent mt-2">Intelligence Platform</p>
-          </motion.div>
-          
-          {/* Dashboard preview image */}
-          <motion.div variants={scaleIn} className="my-12 relative">
-            <div className="relative rounded-2xl overflow-hidden border border-cyan-500/20 shadow-[0_0_80px_hsl(185_80%_50%/0.15)]">
-              <img src={seracDashboard} alt="Dashboard" className="w-full h-auto" />
-              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
-            </div>
-            {/* Floating metrics over image */}
-            <motion.div 
-              className="absolute top-4 right-4 sm:top-8 sm:right-8"
-              animate={{ y: [0, -8, 0] }}
-              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <GlassCard className="px-4 py-3">
-                <div className="text-cyan-400 font-black text-lg">
-                  <AnimatedCounter value={97} suffix="%" duration={1.5} />
-                </div>
-                <p className="text-slate-500 text-[10px]">Precisão IA</p>
-              </GlassCard>
-            </motion.div>
-            <motion.div 
-              className="absolute bottom-12 left-4 sm:bottom-16 sm:left-8"
-              animate={{ y: [0, -6, 0] }}
-              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-            >
-              <GlassCard className="px-4 py-3">
-                <div className="text-emerald-400 font-black text-lg">
-                  <AnimatedCounter value={340} suffix="+" duration={1.5} />
-                </div>
-                <p className="text-slate-500 text-[10px]">Diagnósticos/mês</p>
-              </GlassCard>
-            </motion.div>
-          </motion.div>
-
-          <motion.p variants={fadeUp} className="text-slate-500 text-lg mb-12 max-w-2xl mx-auto text-center">
-            Plataforma white label exclusiva da SERAC
-          </motion.p>
-
-          <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-            {[
-              { icon: Brain, t: "Inteligência Fiscal com IA" },
-              { icon: BarChart3, t: "Simulador da Reforma Tributária 2026" },
-              { icon: Bot, t: "Agentes de IA para compliance" },
-              { icon: Target, t: "Prospecção ativa de contadores" },
-              { icon: Scale, t: "Suporte jurídico integrado" },
-              { icon: Layers, t: "Dashboard executivo estratégico" },
-            ].map((f, i) => (
-              <motion.div key={i} variants={fadeUp} whileHover={{ y: -5, scale: 1.02 }}>
-                <GlassCard className="p-6 flex items-center gap-4 h-full">
-                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="w-6 h-6 text-cyan-400" />
-                  </div>
-                  <span className="text-slate-300 font-semibold">{f.t}</span>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <motion.p variants={fadeIn} className="text-slate-600 text-sm tracking-[0.3em] uppercase text-center mt-10 font-medium">Powered by Atentai</motion.p>
-        </ParallaxSection>
-
-        {/* ═══════ DIFERENCIAL ESTRATÉGICO ═══════ */}
-        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.35}>
-          <FloatingParticles count={15} />
-          <motion.div variants={fadeUp} className="text-center mb-5">
-            <Badge>Diferencial</Badge>
-          </motion.div>
-          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-white text-center mb-3">
-            Não é Software.
-          </motion.h2>
-          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-center mb-14">
-            É <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Infraestrutura de Crescimento.</span>
-          </motion.h2>
-
-          <div className="grid sm:grid-cols-2 gap-6 mb-16">
-            {[
-              { icon: Zap, t: "Tecnologia", d: "IA aplicada à gestão contábil" },
-              { icon: Shield, t: "Autoridade técnica", d: "Posicionamento nacional" },
-              { icon: Users, t: "Aquisição previsível", d: "Pipeline estruturado de contadores" },
-              { icon: TrendingUp, t: "Receita escalável", d: "Crescimento sustentável e recorrente" },
-            ].map((d, i) => (
-              <motion.div key={i} variants={i % 2 === 0 ? slideLeft : slideRight} whileHover={{ y: -5 }}>
-                <GlassCard className="p-8 h-full">
-                  <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
-                    <d.icon className="w-7 h-7 text-cyan-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">{d.t}</h3>
-                  <p className="text-slate-500">{d.d}</p>
-                </GlassCard>
-              </motion.div>
-            ))}
-          </div>
-
-          <motion.div variants={fadeUp}>
-            <GlassCard accent glow className="p-10 text-center">
-              <p className="text-xl text-slate-300 leading-relaxed">
-                SERAC deixa de ser apenas escritório contábil e passa a ser{" "}
-                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">plataforma nacional de inteligência fiscal.</span>
-              </p>
-            </GlassCard>
-          </motion.div>
-
-          {/* Agents Orchestration */}
-          <motion.div variants={fadeUp} className="mt-14">
-            <SeracAgentsOrchestration />
-          </motion.div>
-
-          {/* Agent Simulation with Tabs */}
-          <motion.div variants={fadeUp} className="mt-14">
-            <SeracAgentSimulation />
-          </motion.div>
-        </ParallaxSection>
-
-        {/* ═══════ MÁQUINA DE PROSPECÇÃO ═══════ */}
+        {/* ═══════ MÁQUINA DE PROSPECÇÃO (FUNIL) ═══════ */}
         <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.25}>
           <FloatingParticles count={20} />
           <motion.div variants={fadeUp} className="text-center mb-16">
-            <Badge>Prospecção Incluída</Badge>
+            <Badge>Funil de Prospecção</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              Aquisição Ativa de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Empresas, Contadores & Cartórios</span>
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">5.000 impactos/mês</span> gerando contratos
             </h2>
           </motion.div>
 
-          {/* Dados de Cartórios do Brasil */}
+          {/* Cartórios highlight */}
           <motion.div variants={fadeUp} className="mb-12">
             <GlassCard glow className="p-10 relative overflow-hidden">
               <div className="absolute top-0 right-0 w-60 h-60 bg-violet-500/5 rounded-full blur-[80px]" />
@@ -825,89 +834,153 @@ export default function SeracPresentation() {
                     </motion.div>
                   ))}
                 </div>
-                <p className="text-slate-500 text-sm leading-relaxed">
-                  Vamos prospectar <span className="text-cyan-400 font-bold">1.000 cartórios por mês</span> em todo o Brasil, 
-                  com abordagem consultiva e diagnóstico tributário personalizado para cada serventia. 
-                  Com base no faturamento médio de R$ 2M/ano por cartório, a economia média identificada é de <span className="text-emerald-400 font-bold">R$ 74.000/ano</span>.
-                </p>
               </div>
             </GlassCard>
           </motion.div>
 
+          {/* Funnel */}
           <motion.div variants={fadeUp} className="mb-12">
             <GlassCard className="p-10">
-              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10">Prospecção mensal estruturada</p>
+              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10">Prospecção mensal estruturada — 5.000 impactos</p>
               <div className="space-y-5">
-                <FunnelStep value="10.000" label="Empresas + 5.000 contadores/escritórios + 1.000 cartórios impactados por mês" width="w-full" index={0} />
-                <FunnelStep value="10%" label="Taxa média de resposta → 600 respostas" width="w-[85%]" index={1} />
-                <FunnelStep value="30%" label="Conversão para reunião → 180 reuniões" width="w-[65%]" index={2} />
-                <FunnelStep value="20%" label="Taxa de fechamento → 36 contratos" width="w-[45%]" index={3} />
+                <FunnelStep value="5.000" label="2.000 empresas + 2.000 contadores + 1.000 cartórios impactados/mês" width="w-full" index={0} />
+                <FunnelStep value="10%" label="Taxa média de resposta → 500 respostas" width="w-[85%]" index={1} />
+                <FunnelStep value="30%" label="Conversão para reunião → 150 reuniões" width="w-[65%]" index={2} />
+                <FunnelStep value="20%" label="Taxa de fechamento → 30 novos contratos" width="w-[45%]" index={3} />
               </div>
             </GlassCard>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-5">
-            <GlowingStat value={36} label="Novos contratos/mês" sub="Contadores + Cartórios" />
-            <GlowingStat value={90} label="Receita adicional/mês" sub="R$ 90k — Ticket médio: R$ 2.500" />
-            <GlowingStat value={540} label="Acumulados em 6 meses" sub="R$ 540k — Crescimento composto" />
+            <GlowingStat value={30} label="Novos contratos/mês" sub="Empresas + Contadores + Cartórios" />
+            <GlowingStat value={75} label="Receita adicional/mês" sub="R$ 75k — Ticket médio: R$ 2.500" />
+            <GlowingStat value={450} label="Acumulados em 6 meses" sub="R$ 450k — Crescimento composto" />
           </div>
         </ParallaxSection>
 
-        {/* ═══════ MODELO FINANCEIRO ═══════ */}
-        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]">
-          <motion.div variants={fadeUp} className="text-center mb-16">
-            <Badge>Investimento</Badge>
-            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">Como a AtentAI Monetiza</h2>
+        {/* ═══════ DEFESA ESTRATÉGICA — CEO ═══════ */}
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.35}>
+          <FloatingParticles count={15} />
+          <motion.div variants={fadeUp} className="text-center mb-5">
+            <Badge>Perspectiva do CEO</Badge>
           </motion.div>
+          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-white text-center mb-14">
+            Defesa <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Estratégica</span>
+          </motion.h2>
 
-          <div className="grid md:grid-cols-3 gap-6 mb-10">
-            <motion.div variants={slideLeft}>
-              <GlassCard className="p-8 h-full">
-                <div className="w-10 h-10 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
-                  <DollarSign className="w-5 h-5 text-cyan-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-6">1. Setup Estratégico</h3>
-                <p className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">R$ 120k – R$ 180k</p>
-                <p className="text-slate-500 text-sm">Implantação da plataforma white label, configuração de agentes IA e integração completa</p>
-              </GlassCard>
-            </motion.div>
-
-            <motion.div variants={fadeUp}>
-              <GlassCard accent className="p-8 h-full">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
-                  <TrendingUp className="w-5 h-5 text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-6">2. Mensalidade Fixa</h3>
-                <p className="text-3xl font-black text-emerald-400 mb-3">R$ 25k – R$ 60k/mês</p>
-                <p className="text-slate-500 text-sm">Manutenção da plataforma + máquina de prospecção ativa de empresas e contadores para a SERAC</p>
-              </GlassCard>
-            </motion.div>
-
-            <motion.div variants={slideRight}>
-              <GlassCard glow className="p-8 h-full">
-                <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
-                  <Users className="w-5 h-5 text-violet-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-6">3. Plano Mensal por Contador</h3>
-                <p className="text-3xl font-black text-violet-400 mb-3">R$ 199 – R$ 499/mês</p>
-                <p className="text-slate-500 text-sm">Cada contador ativo na base paga um plano mensal pela plataforma AtentAI — receita recorrente escalável</p>
-              </GlassCard>
-            </motion.div>
-          </div>
-
-          <motion.div variants={fadeUp}>
-            <GlassCard accent glow className="p-8 text-center">
-              <p className="text-slate-500 text-xs font-bold tracking-[0.2em] uppercase mb-4">Receita adicional de performance</p>
-              <p className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">10% sobre novos contratos fechados</p>
-              <p className="text-slate-500 text-sm">A AtentAI ganha 10% sobre cada empresa que entra para a contabilidade exclusiva da SERAC + receita do clube de mentorias para contadores e cartórios</p>
+          <motion.div variants={fadeUp} className="max-w-4xl mx-auto">
+            <GlassCard glow className="p-10 md:p-14 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px]" />
+              <div className="absolute bottom-0 right-0 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px]" />
+              <div className="relative z-10 space-y-6 text-slate-300 leading-relaxed">
+                <p className="text-slate-500 text-xs font-bold tracking-[0.3em] uppercase">Carta do CEO</p>
+                <p className="text-lg">
+                  Prezados SERAC,
+                </p>
+                <p>
+                  Esta proposta não é um <span className="text-slate-500">custo operacional</span>. É um <span className="text-cyan-400 font-bold">investimento em uma máquina de crescimento</span> que posicionará o SERAC na vanguarda do mercado.
+                </p>
+                <p>
+                  <span className="text-white font-bold">"Por que pagar por prospecção se já temos a AtentAI?"</span> — Estamos oferecendo a <span className="text-emerald-400 font-bold">exclusividade total</span> do SERAC no marketplace da AtentAI. Todos os leads qualificados serão direcionados <span className="text-white font-bold">exclusivamente</span> para vocês. Isso transforma a AtentAI em uma extensão do seu próprio departamento de vendas.
+                </p>
+                <p>
+                  O setup de <span className="text-cyan-400 font-bold">R$ 45.000</span> é a engenharia por trás da máquina — está <span className="text-white font-bold">abaixo da média de mercado</span> para implementações de plataformas white label de prospecção.
+                </p>
+                <p>
+                  O modelo de <span className="text-violet-400 font-bold">comissionamento</span> é a prova da nossa confiança: <span className="text-white font-bold">nós só ganhamos mais se vocês ganharem mais</span>. É um modelo de parceria de crescimento, onde o risco é compartilhado e o sucesso é mútuo.
+                </p>
+                <p className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                  Essa é a oportunidade de dominar o mercado de contabilidade — posicionando o SERAC como a plataforma nacional de referência para a Reforma Tributária de 2026.
+                </p>
+              </div>
             </GlassCard>
           </motion.div>
+        </ParallaxSection>
 
-          <motion.div variants={fadeUp} className="text-center mt-8">
-            <GlassButton variant="default">
-              <Calendar className="w-4 h-4 text-cyan-400" />
-              Contrato mínimo: <strong className="text-white">12 meses</strong>
-            </GlassButton>
+        {/* ═══════ PLATAFORMA & AGENTES ═══════ */}
+        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.25}>
+          <motion.div variants={fadeUp} className="text-center mb-8">
+            <Badge>Tecnologia</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              SERAC Intelligence <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Platform</span>
+            </h2>
+          </motion.div>
+
+          <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-4 mb-8">
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <GlassCard className="px-4 py-3">
+                <div className="text-cyan-400 font-black text-lg">
+                  <AnimatedCounter value={520000} suffix="+" duration={2} />
+                </div>
+                <p className="text-slate-500 text-[10px]">Contadores no Brasil</p>
+              </GlassCard>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <GlassCard className="px-4 py-3">
+                <div className="text-violet-400 font-black text-lg">
+                  <AnimatedCounter value={5000} suffix="/mês" duration={1.5} />
+                </div>
+                <p className="text-slate-500 text-[10px]">Impactos qualificados</p>
+              </GlassCard>
+            </motion.div>
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <GlassCard className="px-4 py-3">
+                <div className="text-emerald-400 font-black text-lg">
+                  <AnimatedCounter value={300} suffix="+" duration={1.5} />
+                </div>
+                <p className="text-slate-500 text-[10px]">Profissionais SERAC</p>
+              </GlassCard>
+            </motion.div>
+          </motion.div>
+
+          <motion.p variants={fadeUp} className="text-slate-500 text-lg mb-12 max-w-2xl mx-auto text-center">
+            Plataforma white label exclusiva da SERAC
+          </motion.p>
+
+          <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+            {[
+              { icon: Brain, t: "Inteligência Fiscal com IA" },
+              { icon: BarChart3, t: "Simulador da Reforma Tributária 2026" },
+              { icon: Bot, t: "Agentes de IA para compliance" },
+              { icon: Target, t: "Prospecção ativa de contadores" },
+              { icon: Scale, t: "Suporte jurídico integrado" },
+              { icon: Layers, t: "Dashboard executivo estratégico" },
+            ].map((f, i) => (
+              <motion.div key={i} variants={fadeUp} whileHover={{ y: -5, scale: 1.02 }}>
+                <GlassCard className="p-6 flex items-center gap-4 h-full">
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="w-6 h-6 text-cyan-400" />
+                  </div>
+                  <span className="text-slate-300 font-semibold">{f.t}</span>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.p variants={fadeIn} className="text-slate-600 text-sm tracking-[0.3em] uppercase text-center mt-10 font-medium">Powered by AtentAI</motion.p>
+        </ParallaxSection>
+
+        {/* ═══════ AGENTES IA ═══════ */}
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.35}>
+          <FloatingParticles count={15} />
+          <motion.div variants={fadeUp} className="text-center mb-5">
+            <Badge>Agentes de IA</Badge>
+          </motion.div>
+          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-white text-center mb-3">
+            Não é Software.
+          </motion.h2>
+          <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black text-center mb-14">
+            É <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Infraestrutura de Crescimento.</span>
+          </motion.h2>
+
+          {/* Agents Orchestration */}
+          <motion.div variants={fadeUp} className="mb-14">
+            <SeracAgentsOrchestration />
+          </motion.div>
+
+          {/* Agent Simulation */}
+          <motion.div variants={fadeUp}>
+            <SeracAgentSimulation />
           </motion.div>
         </ParallaxSection>
 
@@ -921,8 +994,8 @@ export default function SeracPresentation() {
 
           <div className="grid sm:grid-cols-3 gap-5 mb-8">
             {[
-              { value: 12, label: "Novos contratos/mês" },
-              { value: 144, label: "Total de contratos/ano" },
+              { value: 30, label: "Novos contratos/mês" },
+              { value: 360, label: "Total de contratos/ano" },
               { value: 2500, label: "Ticket médio (R$)" },
             ].map((s, i) => (
               <motion.div key={i} variants={scaleIn} whileHover={{ scale: 1.05 }}>
@@ -946,17 +1019,67 @@ export default function SeracPresentation() {
             <GlassCard accent glow className="inline-block px-12 py-8 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/10 to-cyan-500/5" />
               <div className="relative z-10">
-                <p className="text-sm text-slate-500 tracking-[0.3em] uppercase font-bold mb-3">Receita potencial anual</p>
+                <p className="text-sm text-slate-500 tracking-[0.3em] uppercase font-bold mb-3">Receita potencial anual (SERAC)</p>
                 <p className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" style={{ textShadow: "0 0 40px hsl(185 80% 50% / 0.2)" }}>
-                  R$ <AnimatedCounter value={4320000} duration={3} />
+                  R$ <AnimatedCounter value={900000} duration={3} />
                 </p>
+                <p className="text-slate-500 text-xs mt-2">30 contratos/mês × R$ 2.500 × 12 meses</p>
               </div>
             </GlassCard>
           </motion.div>
         </ParallaxSection>
 
+        {/* ═══════ FAQ ═══════ */}
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.2}>
+          <FloatingParticles count={10} />
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <Badge>FAQ</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              Perguntas <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Frequentes</span>
+            </h2>
+          </motion.div>
+
+          <div className="max-w-4xl mx-auto space-y-4">
+            <FAQItem
+              index={1}
+              question="Por que o valor da proposta é de R$ 35.000 mensais e um setup de R$ 45.000?"
+              answer="O valor reflete a exclusividade total que o SERAC terá no marketplace da AtentAI, garantindo que todos os leads sejam direcionados apenas para vocês. O setup cobre a customização e integração profunda dos agentes de IA da Clauthor, otimizando a prospecção para os segmentos específicos. Este investimento é crucial para construir uma máquina de crescimento dedicada e eficiente — e está abaixo da média de mercado (R$ 120k-180k de setup)."
+            />
+            <FAQItem
+              index={2}
+              question="Qual a garantia de que os leads serão de qualidade?"
+              answer="Nossa metodologia utiliza agentes de IA da Clauthor, treinados para identificar e qualificar leads com alta precisão. A prospecção é segmentada para empresas, contadores e cartórios, garantindo relevância. Nosso modelo de comissionamento também nos incentiva a entregar leads de alta qualidade — nosso sucesso está diretamente ligado ao seu."
+            />
+            <FAQItem
+              index={3}
+              question="Como a exclusividade no marketplace do AtentAI funciona na prática?"
+              answer="Para os leads que geramos buscando serviços contábeis, o SERAC será o único parceiro ofertante. Isso elimina a concorrência e posiciona o SERAC como a solução preferencial, maximizando as chances de conversão. A AtentAI se torna uma extensão do departamento de vendas do SERAC."
+            />
+            <FAQItem
+              index={4}
+              question="Vocês prospectarão mesmo que os serviços do SERAC não estejam no AtentAI?"
+              answer="Sim. Nossa prospecção vai além dos serviços listados no AtentAI. O objetivo é trazer clientes para o SERAC, independentemente de seus serviços estarem ou não formalmente listados no marketplace. A ideia é que o SERAC seja o parceiro exclusivo para todos os serviços contábeis."
+            />
+            <FAQItem
+              index={5}
+              question="Como vocês garantem que o investimento valerá a pena?"
+              answer="A projeção é de 30 novos contratos/mês com ticket médio de R$ 2.500, gerando R$ 75.000+ em receita adicional mensal — contra um investimento de R$ 35.000. O setup é um investimento único na infraestrutura, e a mensalidade garante a operação contínua de uma máquina de aquisição que seria muito mais cara de construir internamente."
+            />
+            <FAQItem
+              index={6}
+              question="Qual o papel de cada startup nessa proposta?"
+              answer="Cada startup é crucial: AtentAI fornece a plataforma e o marketplace; G8 Prospect oferece o ecossistema de inovação e acesso a uma vasta base de leads qualificados (C-Levels, diretores, decisores); e Clauthor provê os agentes de IA que otimizam e escalam a prospecção 24/7. Juntas, formam uma solução completa."
+            />
+            <FAQItem
+              index={7}
+              question='"Vamos pagar para trazer leads para nossa própria plataforma e ainda vamos ganhar?"'
+              answer="Sim, e com grande vantagem. Vocês não estão pagando apenas para trazer leads. Estão pagando para ter uma máquina de aquisição de clientes exclusiva e otimizada por IA, que garante que o SERAC seja o único beneficiário desses leads. É um atalho para o crescimento, eliminando a necessidade de construir um departamento de prospecção interno com a mesma escala."
+            />
+          </div>
+        </ParallaxSection>
+
         {/* ═══════ POSICIONAMENTO FINAL ═══════ */}
-        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.4}>
+        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.4}>
           <motion.div variants={fadeUp} className="text-center mb-5">
             <Badge>Posicionamento</Badge>
           </motion.div>
@@ -966,7 +1089,7 @@ export default function SeracPresentation() {
 
           <motion.div variants={fadeUp} className="max-w-3xl mx-auto text-center space-y-8">
             <p className="text-2xl text-slate-300 leading-relaxed">
-              A SERAC não está adquirindo tecnologia.<br />
+              O SERAC não está adquirindo tecnologia.<br />
               <strong className="text-white">Está estruturando uma máquina de crescimento nacional.</strong>
             </p>
             <div className="w-20 h-px bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent mx-auto" />
@@ -978,7 +1101,7 @@ export default function SeracPresentation() {
         </ParallaxSection>
 
         {/* ═══════ CTA ═══════ */}
-        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.2}>
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.2}>
           <FloatingParticles count={25} />
           <motion.div variants={fadeUp} className="text-center mb-14">
             <Badge>Próximo Passo</Badge>
@@ -987,10 +1110,10 @@ export default function SeracPresentation() {
 
           <div className="max-w-2xl mx-auto space-y-4 mb-16">
             {[
-              { step: "01", t: "Aprovação do modelo" },
-              { step: "02", t: "Definição do formato de monetização" },
-              { step: "03", t: "Início da implementação" },
-              { step: "04", t: "Go-live estratégico" },
+              { step: "01", t: "Aprovação do modelo de parceria" },
+              { step: "02", t: "Pagamento do setup (R$ 45.000)" },
+              { step: "03", t: "Customização dos agentes de IA" },
+              { step: "04", t: "Go-live e início da prospecção" },
             ].map((s, i) => (
               <motion.div key={i} variants={fadeUp} whileHover={{ x: 10 }}>
                 <GlassCard className="p-6 flex items-center gap-5 cursor-pointer">
@@ -1014,7 +1137,7 @@ export default function SeracPresentation() {
         {/* Footer */}
         <footer className="py-12 px-6 border-t border-white/[0.04] text-center">
           <p className="text-slate-600 text-sm">
-            SERAC Intelligence Platform — <span className="text-slate-500">Powered by Atentai</span>
+            SERAC Intelligence Platform — <span className="text-slate-500">Powered by AtentAI · G8 Prospect · Clauthor</span>
           </p>
         </footer>
       </div>
