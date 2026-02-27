@@ -137,6 +137,7 @@ const SeracCRM = lazy(() => import("./pages/serac/SeracCRM"));
 const SeracAPIHub = lazy(() => import("./pages/serac/SeracAPIHub"));
 const SeracFolhaCartorio = lazy(() => import("./pages/serac/SeracFolhaCartorio"));
 const SeracMentorias = lazy(() => import("./pages/serac/SeracMentorias"));
+const SeracDefesasDoc = lazy(() => import("./pages/serac/SeracDefesasDoc"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
@@ -227,6 +228,7 @@ const App = () => (
               <Route path="/bi-contabilidade/cesar" element={<CesarBILanding />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
               <Route path="/apresentacao/serac" element={<SeracPresentation />} />
+              <Route path="/serac/defesas" element={<SeracDefesasDoc />} />
               <Route path="/apresentação/serac" element={<Navigate to="/apresentacao/serac" replace />} />
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
