@@ -360,33 +360,16 @@ export default function SeracMarketplace() {
         </div>
       </section>
 
-      {/* SaaS para Clientes SERAC */}
-      <section className="py-16 border-t border-border" style={{ background: 'linear-gradient(135deg, hsl(210 50% 15%) 0%, hsl(215 60% 22%) 50%, hsl(200 50% 18%) 100%)' }}>
-        <div className="max-w-5xl mx-auto px-4">
-          <div className="text-center mb-10">
-            <Badge className="bg-accent/20 text-accent border-accent/30 mb-4">EM BREVE</Badge>
-            <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">
-              Plataforma Completa para os <span className="text-accent">Clientes SERAC</span>
-            </h2>
-            <p className="text-white/70 max-w-2xl mx-auto">
-              Cada cliente da SERAC terá acesso a uma plataforma SaaS exclusiva com agentes de IA, prospecção automatizada, mentorias e muito mais — tudo integrado ao ecossistema SERAC.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {[
-              { icon: Zap, title: 'Agentes de IA Próprios', desc: 'Cada cliente terá seus próprios agentes para atendimento, qualificação e automação comercial 24/7.' },
-              { icon: Rocket, title: 'Prospecção Automatizada', desc: 'Motor de prospecção B2B integrado para que os clientes SERAC expandam sua própria carteira.' },
-              { icon: Sparkles, title: 'Mentorias & Capacitação', desc: 'Plataforma de mentorias e conteúdo exclusivo para evolução contínua dos clientes.' },
-            ].map((item, i) => (
-              <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
-                <div className="h-12 w-12 rounded-xl bg-accent/20 flex items-center justify-center mx-auto mb-4">
-                  <item.icon className="h-6 w-6 text-accent" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
-                <p className="text-sm text-white/60">{item.desc}</p>
-              </div>
-            ))}
-          </div>
+      {/* SaaS para Clientes SERAC - Em Breve */}
+      <section className="py-12 border-t border-border" style={{ background: 'linear-gradient(135deg, hsl(210 50% 15%) 0%, hsl(215 60% 22%) 50%, hsl(200 50% 18%) 100%)' }}>
+        <div className="max-w-4xl mx-auto px-4 text-center">
+          <Badge className="bg-accent/20 text-accent border-accent/30 mb-4">EM BREVE</Badge>
+          <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">
+            Plataforma Completa para os <span className="text-accent">Clientes SERAC</span>
+          </h2>
+          <p className="text-white/60 max-w-2xl mx-auto text-sm">
+            Em breve, cada cliente da SERAC terá acesso a uma plataforma SaaS exclusiva com agentes de IA próprios, prospecção automatizada, mentorias e muito mais — tudo integrado ao ecossistema SERAC.
+          </p>
         </div>
       </section>
 
