@@ -1,5 +1,6 @@
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
+import { SeracAgentsOrchestration } from "@/components/serac/SeracAgentsOrchestration";
 import {
   Shield, BarChart3, Users, Brain,
   CheckCircle2, ArrowRight, ChevronDown,
@@ -266,6 +267,11 @@ export default function SeracPresentation() {
                 <span className="text-emerald-700 font-bold">plataforma nacional de inteligência fiscal.</span>
               </p>
             </Card>
+          </motion.div>
+
+          {/* Agents Orchestration Card */}
+          <motion.div variants={fadeUp} className="mt-12">
+            <SeracAgentsOrchestration />
           </motion.div>
         </Section>
 

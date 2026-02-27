@@ -3,7 +3,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Bot, MessageSquare, FileSearch, ShieldCheck, Activity, Eye, BarChart3 } from 'lucide-react';
-
+import { SeracAgentsOrchestration } from '@/components/serac/SeracAgentsOrchestration';
 const agentes = [
   {
     nome: 'Agente de Atendimento Fiscal',
@@ -57,6 +57,9 @@ export default function SeracAgentesIA() {
         <h2 className="text-2xl font-bold text-[#1B3A5C]">Agentes de IA</h2>
         <p className="text-sm text-[#6B7280] mt-1">Assistentes inteligentes com supervisão humana</p>
       </div>
+
+      {/* Orchestration Card */}
+      <SeracAgentsOrchestration compact />
 
       {/* Agents */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
