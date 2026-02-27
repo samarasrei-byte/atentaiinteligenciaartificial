@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -156,7 +157,12 @@ export default function SeracMarketplace() {
                       ))}
                     </div>
                     {svc.status === 'available' && (
-                      <Button variant="ghost" size="sm" className="w-full mt-3 text-xs text-primary hover:text-primary hover:bg-primary/10 gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full mt-3 text-xs text-primary hover:text-primary hover:bg-primary/10 gap-1"
+                        onClick={() => toast.success(`Solicitação enviada para "${svc.name}"! Nossa equipe entrará em contato em breve.`)}
+                      >
                         Solicitar <ArrowRight className="h-3 w-3" />
                       </Button>
                     )}
