@@ -129,6 +129,8 @@ const SeracProspeccao = lazy(() => import("./pages/serac/SeracProspeccao"));
 const SeracJuridico = lazy(() => import("./pages/serac/SeracJuridico"));
 const SeracRelatorios = lazy(() => import("./pages/serac/SeracRelatorios"));
 const SeracConfiguracoes = lazy(() => import("./pages/serac/SeracConfiguracoes"));
+const SeracLogin = lazy(() => import("./pages/serac/SeracLogin"));
+const SeracProtectedRoute = lazy(() => import("./pages/serac/SeracProtectedRoute"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
@@ -396,17 +398,20 @@ const App = () => (
               </Route>
 
               {/* SERAC White Label Platform */}
-              <Route path="/serac" element={<SeracLayout />}>
-                <Route index element={<SeracDashboard />} />
-                <Route path="reforma-tributaria" element={<SeracReformaTributaria />} />
-                <Route path="inteligencia-fiscal" element={<SeracInteligenciaFiscal />} />
-                <Route path="clientes" element={<SeracClientes />} />
-                <Route path="compliance" element={<SeracCompliance />} />
-                <Route path="agentes-ia" element={<SeracAgentesIA />} />
-                <Route path="prospeccao" element={<SeracProspeccao />} />
-                <Route path="juridico" element={<SeracJuridico />} />
-                <Route path="relatorios" element={<SeracRelatorios />} />
-                <Route path="configuracoes" element={<SeracConfiguracoes />} />
+              <Route path="/serac/login" element={<SeracLogin />} />
+              <Route path="/serac" element={<SeracProtectedRoute />}>
+                <Route element={<SeracLayout />}>
+                  <Route index element={<SeracDashboard />} />
+                  <Route path="reforma-tributaria" element={<SeracReformaTributaria />} />
+                  <Route path="inteligencia-fiscal" element={<SeracInteligenciaFiscal />} />
+                  <Route path="clientes" element={<SeracClientes />} />
+                  <Route path="compliance" element={<SeracCompliance />} />
+                  <Route path="agentes-ia" element={<SeracAgentesIA />} />
+                  <Route path="prospeccao" element={<SeracProspeccao />} />
+                  <Route path="juridico" element={<SeracJuridico />} />
+                  <Route path="relatorios" element={<SeracRelatorios />} />
+                  <Route path="configuracoes" element={<SeracConfiguracoes />} />
+                </Route>
               </Route>
 
               <Route path="*" element={<NotFound />} />
