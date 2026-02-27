@@ -293,6 +293,110 @@ const sociosDefenses: DefenseItem[] = [
     icon: Briefcase,
     category: 'socios',
   },
+  {
+    id: 19,
+    question: 'O White Label funciona como? A SERAC paga e tem direito a quê?',
+    answer: 'O White Label dá à SERAC uma plataforma completa com a marca deles. Eles pagam a mensalidade (R$ 56k/mês) e têm direito a TUDO — marketplace, simuladores, agentes IA, dashboard. Porém, os leads que entram pela infraestrutura AtentAI (tráfego, G8, marketplace) têm ID rastreável. Só cobramos performance (10%) sobre esses. Os clientes que a SERAC já tem? Usam a plataforma de graça — é benefício do White Label.',
+    details: [
+      'SERAC paga mensalidade fixa → tem a plataforma inteira com marca deles',
+      'Clientes existentes da SERAC → usam de graça, sem cobrança extra',
+      'Leads novos via AtentAI → têm ID único, UTM, tag "atentai_origin"',
+      'Performance 10% → só sobre contratos de leads que vieram pela nossa infra',
+      'É justo: a SERAC paga pela ferramenta, nós ganhamos pelo que geramos',
+      'Modelo win-win: quanto mais a plataforma converte, mais os dois ganham',
+    ],
+    icon: Shield,
+    category: 'socios',
+  },
+  {
+    id: 20,
+    question: 'Por que você quer ganhar na G8, na Clauthor E ainda na AtentAI? Não é demais?',
+    answer: 'Não é "ganhar 3 vezes" — são 3 funções diferentes com custos diferentes. Eu coordeno o ecossistema inteiro. A AtentAI é a plataforma (R$ 30k), a G8 é prospecção (R$ 20k custo operacional real), a Clauthor é IA (R$ 6k). Eu ganho como integrador e gestor do ecossistema, não como intermediário.',
+    table: {
+      headers: ['Papel', 'O que faço', 'Justificativa'],
+      rows: [
+        ['AtentAI (hub)', 'Plataforma, marketplace, produto, relacionamento', 'É o core — sem isso não existe ecossistema'],
+        ['G8 (prospecção)', 'Campanhas ativas B2B, SDR, qualificação', 'Custo operacional real: equipe, ferramentas, ads'],
+        ['Clauthor (IA)', 'Agentes treinados, manutenção, evolução', 'Tecnologia americana com custo de desenvolvimento'],
+        ['Performance 10%', 'Split entre as 3 startups', 'AtentAI fica com 60% = 6% do contrato'],
+      ],
+    },
+    details: [
+      'Cada startup tem seu próprio custo operacional — não é lucro puro',
+      'Se eu montasse tudo sozinho, custaria R$ 190k+/mês em equipe',
+      'O cliente (SERAC) paga R$ 56k por algo que valeria R$ 190k — é barato pra eles',
+      'A margem real da AtentAI é sobre a plataforma (R$ 30k) + 6% de performance',
+      'Sem as outras startups, não temos capacidade de entrega — elas são essenciais',
+    ],
+    icon: DollarSign,
+    category: 'socios',
+  },
+  {
+    id: 21,
+    question: 'A porcentagem da AtentAI não é muito pequena?',
+    answer: 'A AtentAI fica com a maior fatia do ecossistema: R$ 30k fixo/mês + 60% da performance + 100% do setup. Com a SERAC só, o ARR é R$ 360k+/ano líquido para a AtentAI. E o modelo é replicável — próximo cliente (saúde, advocacia, etc.) entra com a mesma estrutura.',
+    table: {
+      headers: ['Receita AtentAI', 'Valor/mês', 'Valor/ano'],
+      rows: [
+        ['Mensalidade White Label', 'R$ 30.000', 'R$ 360.000'],
+        ['Performance (60% de 10%)', 'Variável (~R$ 6k-15k)', 'R$ 72k-180k'],
+        ['Setup (único)', '-', 'R$ 50.000'],
+        ['TOTAL AtentAI', 'R$ 36k-45k', 'R$ 482k-590k'],
+      ],
+    },
+    details: [
+      'R$ 482k-590k/ano só com a SERAC — primeiro cliente',
+      'Segundo cliente replica o modelo com margem ainda maior (infra já existe)',
+      'Terceiro cliente em diante é quase 100% margem sobre a mensalidade',
+      'Em 3 clientes: ARR de R$ 1.5M+ — valuation de R$ 7-15M com múltiplo de ecossistema',
+      'A porcentagem é "pequena" por contrato, mas o VOLUME é o que importa',
+    ],
+    icon: TrendingUp,
+    category: 'socios',
+  },
+  {
+    id: 22,
+    question: 'Por que não cobramos mais da SERAC?',
+    answer: 'Porque R$ 56k/mês já é o limite justo para uma primeira parceria. Se cobrarmos mais, eles fazem internamente ou buscam alternativa. O jogo é: entrar com preço competitivo, provar valor, depois escalar — seja com mais serviços, seja replicando pra outros clientes.',
+    details: [
+      'R$ 56k/mês < R$ 190k/mês (custo de fazer interno) — argumento forte',
+      'Preço competitivo na entrada → cria dependência tecnológica → retenção de longo prazo',
+      'Contrato de 12 meses = receita garantida de R$ 672k no mínimo',
+      'Performance (10%) é o upside — quanto mais a SERAC cresce, mais ganhamos',
+      'Depois de provar valor, renegociamos para cima no segundo ano',
+      'É melhor R$ 56k/mês certo do que R$ 100k/mês que não fecha',
+    ],
+    icon: Scale,
+    category: 'socios',
+  },
+  {
+    id: 23,
+    question: 'E se os sócios quiserem participação na G8 ou Clauthor?',
+    answer: 'A G8 e a Clauthor são empresas independentes com seus próprios sócios. Não faz sentido misturar cap tables. O que faz sentido é: a AtentAI lucra como hub, e os sócios da AtentAI participam desse lucro. É mais limpo, mais escalável e evita conflitos societários.',
+    details: [
+      'Cada startup tem seu cap table independente — misturar gera conflito',
+      'A AtentAI é a holding operacional — sócios ganham via AtentAI',
+      'Se quiserem investir na G8 ou Clauthor diretamente, é negociação separada',
+      'Modelo limpo: cada empresa cuida do seu, AtentAI coordena e lucra como hub',
+      'Analogia: o shopping (AtentAI) lucra com aluguel, não precisa ser sócio de cada loja',
+    ],
+    icon: Briefcase,
+    category: 'socios',
+  },
+  {
+    id: 24,
+    question: 'E se a SERAC quiser sair do contrato?',
+    answer: 'Contrato de 12 meses com multa proporcional. Mas o ponto real é: depois de 3-6 meses usando a plataforma, o custo de migração é alto demais. Os clientes estão no CRM, os agentes estão treinados, o funil está rodando. Sair significaria reconstruir tudo do zero.',
+    details: [
+      'Contrato de 12 meses com cláusula de rescisão proporcional',
+      'Lock-in tecnológico natural: dados, agentes treinados, integrações',
+      'Custo de migração estimado: R$ 200k+ e 6 meses de retrabalho',
+      'Performance alinhada garante que a SERAC quer ficar — estamos gerando resultado',
+      'Renovação automática com reajuste anual baseado em performance',
+    ],
+    icon: Lock,
+    category: 'socios',
+  },
 ];
 
 function DefenseCard({ item }: { item: DefenseItem }) {
@@ -398,11 +502,11 @@ export default function SeracDefesasDoc() {
             Guia de Defesas Estratégicas
           </h1>
           <p className="text-white/60 max-w-2xl mx-auto mb-6">
-            18 perguntas que a SERAC e seus sócios da AtentAI podem fazer — com respostas completas, tabelas e argumentos validados.
+            24 perguntas que a SERAC e seus sócios da AtentAI podem fazer — com respostas completas, tabelas e argumentos validados.
           </p>
           <div className="flex items-center justify-center gap-6 text-white/50 text-xs">
             <span className="flex items-center gap-1.5"><Shield className="h-3.5 w-3.5 text-accent" /> Uso interno</span>
-            <span className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-accent" /> 18 defesas</span>
+            <span className="flex items-center gap-1.5"><FileText className="h-3.5 w-3.5 text-accent" /> 24 defesas</span>
             <span className="flex items-center gap-1.5"><Lock className="h-3.5 w-3.5 text-accent" /> Confidencial</span>
           </div>
         </div>
@@ -412,9 +516,9 @@ export default function SeracDefesasDoc() {
       <section className="sticky top-0 z-20 bg-card/98 backdrop-blur-xl border-b border-border shadow-sm">
         <div className="max-w-4xl mx-auto px-4 py-3 flex items-center gap-3">
           {[
-            { id: 'all' as const, label: 'Todas (18)', icon: FileText },
+            { id: 'all' as const, label: 'Todas (24)', icon: FileText },
             { id: 'serac' as const, label: 'SERAC (12)', icon: Building2 },
-            { id: 'socios' as const, label: 'Sócios AtentAI (6)', icon: Users },
+            { id: 'socios' as const, label: 'Sócios AtentAI (12)', icon: Users },
           ].map(f => (
             <Button
               key={f.id}
@@ -456,7 +560,7 @@ export default function SeracDefesasDoc() {
                   <Users className="h-4 w-4 text-accent" />
                 </div>
                 <h2 className="text-lg font-bold text-foreground">Defesas para Sócios AtentAI</h2>
-                <Badge variant="outline" className="text-xs">6 defesas</Badge>
+                <Badge variant="outline" className="text-xs">12 defesas</Badge>
               </div>
               {sociosDefenses.map(item => (
                 <DefenseCard key={item.id} item={item} />
