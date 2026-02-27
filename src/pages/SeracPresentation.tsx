@@ -1,8 +1,8 @@
 import { Helmet } from "react-helmet-async";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion, useScroll, useTransform, useInView, useMotionValue, useSpring } from "framer-motion";
 import { SeracAgentsOrchestration } from "@/components/serac/SeracAgentsOrchestration";
 import { SeracAgentSimulation } from "@/components/serac/SeracAgentSimulation";
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 import {
   Shield, BarChart3, Users, Brain,
   ArrowRight, ChevronDown,
@@ -11,6 +11,68 @@ import {
   Rocket, Globe, Code2, Cpu, Eye,
   LineChart, Bot, Lightbulb
 } from "lucide-react";
+import seracHeroBg from "@/assets/serac-hero-bg.jpg";
+import seracAiBrain from "@/assets/serac-ai-brain.jpg";
+import seracDashboard from "@/assets/serac-dashboard.jpg";
+
+/* ── Animated Counter ── */
+function AnimatedCounter({ value, suffix = "", prefix = "", duration = 2 }: { value: number; suffix?: string; prefix?: string; duration?: number }) {
+  const ref = useRef<HTMLSpanElement>(null);
+  const isInView = useInView(ref, { once: true });
+  const [displayed, setDisplayed] = useState(0);
+
+  useEffect(() => {
+    if (!isInView) return;
+    let start = 0;
+    const end = value;
+    const step = end / (duration * 60);
+    const timer = setInterval(() => {
+      start += step;
+      if (start >= end) {
+        setDisplayed(end);
+        clearInterval(timer);
+      } else {
+        setDisplayed(Math.floor(start));
+      }
+    }, 1000 / 60);
+    return () => clearInterval(timer);
+  }, [isInView, value, duration]);
+
+  return (
+    <span ref={ref}>
+      {prefix}{displayed.toLocaleString("pt-BR")}{suffix}
+    </span>
+  );
+}
+
+/* ── Floating Particles ── */
+function FloatingParticles({ count = 30 }: { count?: number }) {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {Array.from({ length: count }).map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 rounded-full bg-cyan-400/30"
+          style={{
+            left: `${Math.random() * 100}%`,
+            top: `${Math.random() * 100}%`,
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.2, 0.8, 0.2],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 3 + Math.random() * 4,
+            repeat: Infinity,
+            delay: Math.random() * 3,
+            ease: "easeInOut",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 /* ── Animations ── */
 const fadeUp = {
@@ -150,7 +212,6 @@ function StartupCard({ name, description, icon: Icon, tags, gradient }: {
   return (
     <motion.div variants={scaleIn}>
       <GlassCard className="p-8 h-full relative overflow-hidden group cursor-pointer">
-        {/* Background glow */}
         <div className={`absolute -top-20 -right-20 w-40 h-40 rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition-opacity duration-700 ${gradient}`} />
         <div className="relative z-10">
           <div className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-6 border border-white/10 backdrop-blur-sm ${gradient} bg-opacity-20`}>
@@ -169,12 +230,35 @@ function StartupCard({ name, description, icon: Icon, tags, gradient }: {
   );
 }
 
+/* ── Glowing Number Card ── */
+function GlowingStat({ value, label, sub, delay = 0 }: { value: number; label: string; sub: string; delay?: number }) {
+  return (
+    <motion.div
+      variants={scaleIn}
+      whileHover={{ scale: 1.05, y: -5 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
+      <GlassCard glow className="p-7 text-center relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-cyan-500/5 to-transparent" />
+        <div className="relative z-10">
+          <div className="text-4xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">
+            <AnimatedCounter value={value} duration={2} />
+          </div>
+          <p className="text-slate-300 font-semibold mb-1">{label}</p>
+          <p className="text-slate-600 text-xs">{sub}</p>
+        </div>
+      </GlassCard>
+    </motion.div>
+  );
+}
+
 export default function SeracPresentation() {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress: heroScroll } = useScroll({ target: heroRef, offset: ["start start", "end start"] });
   const heroY = useTransform(heroScroll, [0, 1], [0, 200]);
   const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
   const heroScale = useTransform(heroScroll, [0, 0.6], [1, 0.9]);
+  const heroImgScale = useTransform(heroScroll, [0, 1], [1, 1.3]);
 
   return (
     <>
@@ -186,19 +270,23 @@ export default function SeracPresentation() {
 
       <div className="min-h-screen bg-slate-950 text-slate-200 overflow-x-hidden font-sans">
 
-        {/* ═══════ HERO with Parallax ═══════ */}
+        {/* ═══════ HERO with Parallax + Image ═══════ */}
         <section ref={heroRef} className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+          {/* Hero background image with parallax */}
+          <motion.div style={{ scale: heroImgScale }} className="absolute inset-0">
+            <img src={seracHeroBg} alt="" className="w-full h-full object-cover opacity-40" />
+            <div className="absolute inset-0 bg-gradient-to-b from-slate-950/60 via-slate-950/40 to-slate-950" />
+          </motion.div>
           {/* Animated grid */}
           <div className="absolute inset-0 opacity-[0.04]" style={{ backgroundImage: "linear-gradient(hsl(185 60% 50% / 0.3) 1px, transparent 1px), linear-gradient(90deg, hsl(185 60% 50% / 0.3) 1px, transparent 0)", backgroundSize: "60px 60px" }} />
+          {/* Floating particles */}
+          <FloatingParticles count={40} />
           {/* Glow orbs parallax */}
           <motion.div style={{ y: heroY }} className="absolute inset-0">
             <div className="absolute top-[-10%] right-[-10%] w-[800px] h-[800px] rounded-full bg-cyan-500/8 blur-[150px]" />
             <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] rounded-full bg-blue-600/8 blur-[120px]" />
             <div className="absolute top-[40%] left-[30%] w-[400px] h-[400px] rounded-full bg-violet-500/5 blur-[100px]" />
-            <div className="absolute bottom-[20%] right-[20%] w-[300px] h-[300px] rounded-full bg-emerald-500/5 blur-[80px]" />
           </motion.div>
-          {/* Noise texture */}
-          <div className="absolute inset-0 opacity-[0.015]" style={{ backgroundImage: "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")" }} />
 
           <motion.div style={{ y: heroY, opacity: heroOpacity, scale: heroScale }} className="relative z-10 max-w-5xl mx-auto px-6 text-center">
             <motion.div initial="hidden" animate="visible" variants={stagger}>
@@ -214,10 +302,27 @@ export default function SeracPresentation() {
               <motion.p variants={fadeUp} className="text-lg text-slate-400 mb-4 max-w-2xl mx-auto">
                 Com Máquina de Prospecção Nacional de Contadores
               </motion.p>
+              
+              {/* Live counter strip */}
+              <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-8 mt-8 mb-6">
+                {[
+                  { value: 13800, suffix: "+", label: "Cartórios" },
+                  { value: 520000, suffix: "+", label: "Contadores" },
+                  { value: 4320000, prefix: "R$ ", label: "Receita/ano" },
+                ].map((s, i) => (
+                  <div key={i} className="text-center">
+                    <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                      <AnimatedCounter value={s.value} prefix={s.prefix || ""} suffix={s.suffix || ""} duration={2.5} />
+                    </div>
+                    <p className="text-slate-500 text-xs mt-1 uppercase tracking-wider font-semibold">{s.label}</p>
+                  </div>
+                ))}
+              </motion.div>
+
               <motion.p variants={fadeIn} className="text-sm text-slate-600 tracking-[0.3em] uppercase font-medium">
                 Powered by Atentai
               </motion.p>
-              <motion.div variants={fadeIn} className="mt-20 flex justify-center gap-4">
+              <motion.div variants={fadeIn} className="mt-14 flex justify-center gap-4">
                 <GlassButton variant="primary">
                   <Rocket className="w-4 h-4" /> Explorar Plataforma
                 </GlassButton>
@@ -234,6 +339,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ STARTUPS ECOSYSTEM ═══════ */}
         <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.2}>
+          <FloatingParticles count={15} />
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Ecossistema</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
@@ -267,7 +373,7 @@ export default function SeracPresentation() {
           </div>
         </ParallaxSection>
 
-        {/* ═══════ QUEM SOMOS — Inspired by reference ═══════ */}
+        {/* ═══════ QUEM SOMOS — with AI Brain Image ═══════ */}
         <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.4}>
           <motion.div variants={fadeUp} className="text-center mb-6">
             <Badge>Quem Somos</Badge>
@@ -276,8 +382,17 @@ export default function SeracPresentation() {
             </h2>
           </motion.div>
 
-          {/* Area tags — glass style like reference */}
-          <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto mt-12 mb-14">
+          {/* AI Brain image with glow */}
+          <motion.div variants={scaleIn} className="flex justify-center my-12">
+            <div className="relative">
+              <img src={seracAiBrain} alt="AI Brain" className="w-64 h-64 rounded-3xl object-cover border border-cyan-500/20" />
+              <div className="absolute inset-0 rounded-3xl shadow-[0_0_60px_hsl(185_80%_50%/0.3)]" />
+              <div className="absolute -inset-2 rounded-3xl bg-gradient-to-b from-cyan-500/10 to-transparent blur-xl -z-10" />
+            </div>
+          </motion.div>
+
+          {/* Area tags */}
+          <div className="grid sm:grid-cols-2 gap-4 max-w-3xl mx-auto mb-14">
             {["Contábil", "Fiscal", "Consultiva", "Jurídica", "Tecnologia"].map((area, i) => (
               <motion.div key={i} variants={fadeUp}>
                 <div className={`rounded-2xl border border-white/[0.08] bg-white/[0.03] backdrop-blur-xl py-5 px-6 text-center hover:bg-white/[0.06] hover:border-white/[0.15] transition-all duration-300 cursor-pointer ${i === 4 ? "sm:col-span-1" : ""}`}>
@@ -298,7 +413,7 @@ export default function SeracPresentation() {
               { icon: Users, t: "Capital Humano", d: "Equipe especializada em transformação digital" },
               { icon: Target, t: "Resultados Mensuráveis", d: "KPIs claros e ROI comprovado" },
             ].map((d, i) => (
-              <motion.div key={i} variants={fadeUp}>
+              <motion.div key={i} variants={fadeUp} whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 300 }}>
                 <GlassCard className="p-7 h-full">
                   <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
                     <d.icon className="w-6 h-6 text-cyan-400" />
@@ -311,8 +426,9 @@ export default function SeracPresentation() {
           </div>
         </ParallaxSection>
 
-        {/* ═══════ OPORTUNIDADE DE MERCADO ═══════ */}
+        {/* ═══════ OPORTUNIDADE DE MERCADO — with animated numbers ═══════ */}
         <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]">
+          <FloatingParticles count={20} />
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Oportunidade</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
@@ -323,16 +439,21 @@ export default function SeracPresentation() {
 
           <div className="grid sm:grid-cols-2 gap-6 mb-12">
             {[
-              { icon: Users, value: "+520 mil", label: "Profissionais contábeis no Brasil" },
-              { icon: Building2, value: "+90 mil", label: "Organizações contábeis ativas" },
+              { icon: Users, value: 520000, prefix: "+", label: "Profissionais contábeis no Brasil" },
+              { icon: Building2, value: 90000, prefix: "+", label: "Organizações contábeis ativas" },
             ].map((s, i) => (
-              <motion.div key={i} variants={scaleIn}>
-                <GlassCard glow className="p-10 text-center">
-                  <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-5">
-                    <s.icon className="w-8 h-8 text-cyan-400" />
+              <motion.div key={i} variants={scaleIn} whileHover={{ scale: 1.03 }}>
+                <GlassCard glow className="p-10 text-center relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-transparent" />
+                  <div className="relative z-10">
+                    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-5">
+                      <s.icon className="w-8 h-8 text-cyan-400" />
+                    </div>
+                    <div className="text-5xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">
+                      <AnimatedCounter value={s.value} prefix={s.prefix} duration={2} />
+                    </div>
+                    <p className="text-slate-500">{s.label}</p>
                   </div>
-                  <div className="text-5xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">{s.value}</div>
-                  <p className="text-slate-500">{s.label}</p>
                 </GlassCard>
               </motion.div>
             ))}
@@ -348,10 +469,10 @@ export default function SeracPresentation() {
                   { icon: Shield, t: "Compliance automatizado" },
                   { icon: Scale, t: "Suporte jurídico estruturado" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm hover:bg-white/[0.06] transition-colors">
+                  <motion.div key={i} whileHover={{ x: 5 }} className="flex items-center gap-3 p-4 rounded-xl bg-white/[0.03] border border-white/[0.06] backdrop-blur-sm hover:bg-white/[0.06] transition-colors">
                     <item.icon className="w-5 h-5 text-cyan-400 flex-shrink-0" />
                     <span className="text-slate-300 font-medium">{item.t}</span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
             </GlassCard>
@@ -364,13 +485,47 @@ export default function SeracPresentation() {
           </motion.div>
         </ParallaxSection>
 
-        {/* ═══════ A SOLUÇÃO ═══════ */}
+        {/* ═══════ A SOLUÇÃO — with Dashboard Image ═══════ */}
         <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.3}>
           <motion.div variants={scaleIn} className="text-center mb-8">
             <Badge>A Solução</Badge>
             <h2 className="text-6xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-white mt-3" style={{ textShadow: "0 0 60px hsl(185 80% 50% / 0.1)" }}>SERAC</h2>
             <p className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent mt-2">Intelligence Platform</p>
           </motion.div>
+          
+          {/* Dashboard preview image */}
+          <motion.div variants={scaleIn} className="my-12 relative">
+            <div className="relative rounded-2xl overflow-hidden border border-cyan-500/20 shadow-[0_0_80px_hsl(185_80%_50%/0.15)]">
+              <img src={seracDashboard} alt="Dashboard" className="w-full h-auto" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-transparent to-transparent" />
+            </div>
+            {/* Floating metrics over image */}
+            <motion.div 
+              className="absolute top-4 right-4 sm:top-8 sm:right-8"
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+            >
+              <GlassCard className="px-4 py-3">
+                <div className="text-cyan-400 font-black text-lg">
+                  <AnimatedCounter value={97} suffix="%" duration={1.5} />
+                </div>
+                <p className="text-slate-500 text-[10px]">Precisão IA</p>
+              </GlassCard>
+            </motion.div>
+            <motion.div 
+              className="absolute bottom-12 left-4 sm:bottom-16 sm:left-8"
+              animate={{ y: [0, -6, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+            >
+              <GlassCard className="px-4 py-3">
+                <div className="text-emerald-400 font-black text-lg">
+                  <AnimatedCounter value={340} suffix="+" duration={1.5} />
+                </div>
+                <p className="text-slate-500 text-[10px]">Diagnósticos/mês</p>
+              </GlassCard>
+            </motion.div>
+          </motion.div>
+
           <motion.p variants={fadeUp} className="text-slate-500 text-lg mb-12 max-w-2xl mx-auto text-center">
             Plataforma white label exclusiva da SERAC
           </motion.p>
@@ -384,7 +539,7 @@ export default function SeracPresentation() {
               { icon: Scale, t: "Suporte jurídico integrado" },
               { icon: Layers, t: "Dashboard executivo estratégico" },
             ].map((f, i) => (
-              <motion.div key={i} variants={fadeUp}>
+              <motion.div key={i} variants={fadeUp} whileHover={{ y: -5, scale: 1.02 }}>
                 <GlassCard className="p-6 flex items-center gap-4 h-full">
                   <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
                     <f.icon className="w-6 h-6 text-cyan-400" />
@@ -400,6 +555,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ DIFERENCIAL ESTRATÉGICO ═══════ */}
         <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.35}>
+          <FloatingParticles count={15} />
           <motion.div variants={fadeUp} className="text-center mb-5">
             <Badge>Diferencial</Badge>
           </motion.div>
@@ -417,7 +573,7 @@ export default function SeracPresentation() {
               { icon: Users, t: "Aquisição previsível", d: "Pipeline estruturado de contadores" },
               { icon: TrendingUp, t: "Receita escalável", d: "Crescimento sustentável e recorrente" },
             ].map((d, i) => (
-              <motion.div key={i} variants={i % 2 === 0 ? slideLeft : slideRight}>
+              <motion.div key={i} variants={i % 2 === 0 ? slideLeft : slideRight} whileHover={{ y: -5 }}>
                 <GlassCard className="p-8 h-full">
                   <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
                     <d.icon className="w-7 h-7 text-cyan-400" />
@@ -451,6 +607,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ MÁQUINA DE PROSPECÇÃO ═══════ */}
         <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.25}>
+          <FloatingParticles count={20} />
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Prospecção Incluída</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
@@ -460,35 +617,40 @@ export default function SeracPresentation() {
 
           {/* Dados de Cartórios do Brasil */}
           <motion.div variants={fadeUp} className="mb-12">
-            <GlassCard glow className="p-10">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
-                  <Building2 className="w-5 h-5 text-violet-400" />
-                </div>
-                <div>
-                  <h3 className="text-white font-bold text-lg">Mercado de Cartórios no Brasil</h3>
-                  <p className="text-slate-500 text-xs">Oportunidade massiva e nichada</p>
-                </div>
-              </div>
-              <div className="grid sm:grid-cols-4 gap-4 mb-6">
-                {[
-                  { value: "13.800+", label: "Cartórios no Brasil", detail: "Serventias extrajudiciais ativas" },
-                  { value: "R$ 28B", label: "Faturamento anual do setor", detail: "Emolumentos + custas" },
-                  { value: "1.000", label: "Cartórios prospectados/mês", detail: "Nossa meta de prospecção" },
-                  { value: "73%", label: "Pagam impostos a mais", detail: "Oportunidade de economia" },
-                ].map((item, i) => (
-                  <div key={i} className="text-center p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <div className="text-2xl font-black bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent mb-1">{item.value}</div>
-                    <p className="text-slate-300 text-sm font-semibold">{item.label}</p>
-                    <p className="text-slate-600 text-[10px] mt-0.5">{item.detail}</p>
+            <GlassCard glow className="p-10 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-60 h-60 bg-violet-500/5 rounded-full blur-[80px]" />
+              <div className="relative z-10">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                    <Building2 className="w-5 h-5 text-violet-400" />
                   </div>
-                ))}
+                  <div>
+                    <h3 className="text-white font-bold text-lg">Mercado de Cartórios no Brasil</h3>
+                    <p className="text-slate-500 text-xs">Oportunidade massiva e nichada</p>
+                  </div>
+                </div>
+                <div className="grid sm:grid-cols-4 gap-4 mb-6">
+                  {[
+                    { value: 13800, suffix: "+", label: "Cartórios no Brasil", detail: "Serventias extrajudiciais ativas" },
+                    { value: 28, prefix: "R$ ", suffix: "B", label: "Faturamento anual", detail: "Emolumentos + custas" },
+                    { value: 1000, label: "Prospectados/mês", detail: "Nossa meta de prospecção" },
+                    { value: 73, suffix: "%", label: "Pagam impostos a mais", detail: "Oportunidade de economia" },
+                  ].map((item, i) => (
+                    <motion.div key={i} whileHover={{ scale: 1.05 }} className="text-center p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                      <div className="text-2xl font-black bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent mb-1">
+                        <AnimatedCounter value={item.value} prefix={item.prefix || ""} suffix={item.suffix || ""} duration={2} />
+                      </div>
+                      <p className="text-slate-300 text-sm font-semibold">{item.label}</p>
+                      <p className="text-slate-600 text-[10px] mt-0.5">{item.detail}</p>
+                    </motion.div>
+                  ))}
+                </div>
+                <p className="text-slate-500 text-sm leading-relaxed">
+                  Vamos prospectar <span className="text-cyan-400 font-bold">1.000 cartórios por mês</span> em todo o Brasil, 
+                  com abordagem consultiva e diagnóstico tributário personalizado para cada serventia. 
+                  Com base no faturamento médio de R$ 2M/ano por cartório, a economia média identificada é de <span className="text-emerald-400 font-bold">R$ 74.000/ano</span>.
+                </p>
               </div>
-              <p className="text-slate-500 text-sm leading-relaxed">
-                Vamos prospectar <span className="text-cyan-400 font-bold">1.000 cartórios por mês</span> em todo o Brasil, 
-                com abordagem consultiva e diagnóstico tributário personalizado para cada serventia. 
-                Com base no faturamento médio de R$ 2M/ano por cartório, a economia média identificada é de <span className="text-emerald-400 font-bold">R$ 74.000/ano</span>.
-              </p>
             </GlassCard>
           </motion.div>
 
@@ -505,19 +667,9 @@ export default function SeracPresentation() {
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-5">
-            {[
-              { value: "36", label: "Novos contratos/mês", sub: "Contadores + Cartórios" },
-              { value: "R$ 90k", label: "Receita adicional/mês", sub: "Ticket médio: R$ 2.500" },
-              { value: "R$ 540k", label: "Acumulados em 6 meses", sub: "Crescimento composto" },
-            ].map((r, i) => (
-              <motion.div key={i} variants={scaleIn}>
-                <GlassCard glow className="p-7 text-center">
-                  <div className="text-4xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-3">{r.value}</div>
-                  <p className="text-slate-300 font-semibold mb-1">{r.label}</p>
-                  <p className="text-slate-600 text-xs">{r.sub}</p>
-                </GlassCard>
-              </motion.div>
-            ))}
+            <GlowingStat value={36} label="Novos contratos/mês" sub="Contadores + Cartórios" />
+            <GlowingStat value={90} label="Receita adicional/mês" sub="R$ 90k — Ticket médio: R$ 2.500" />
+            <GlowingStat value={540} label="Acumulados em 6 meses" sub="R$ 540k — Crescimento composto" />
           </div>
         </ParallaxSection>
 
@@ -583,6 +735,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ PROJEÇÃO 12 MESES ═══════ */}
         <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.3}>
+          <FloatingParticles count={15} />
           <motion.div variants={fadeUp} className="text-center mb-8">
             <Badge>Projeção</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">Projeção de 12 Meses</h2>
@@ -590,13 +743,15 @@ export default function SeracPresentation() {
 
           <div className="grid sm:grid-cols-3 gap-5 mb-8">
             {[
-              { value: "12/mês", label: "Novos contratos" },
-              { value: "144/ano", label: "Total de contratos" },
-              { value: "R$ 2.500", label: "Ticket médio" },
+              { value: 12, label: "Novos contratos/mês" },
+              { value: 144, label: "Total de contratos/ano" },
+              { value: 2500, label: "Ticket médio (R$)" },
             ].map((s, i) => (
-              <motion.div key={i} variants={scaleIn}>
+              <motion.div key={i} variants={scaleIn} whileHover={{ scale: 1.05 }}>
                 <GlassCard className="p-6 text-center">
-                  <div className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">{s.value}</div>
+                  <div className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                    <AnimatedCounter value={s.value} duration={1.5} />
+                  </div>
                   <p className="text-slate-500 text-sm mt-2">{s.label}</p>
                 </GlassCard>
               </motion.div>
@@ -610,11 +765,14 @@ export default function SeracPresentation() {
           </motion.div>
 
           <motion.div variants={scaleIn} className="mt-10 text-center">
-            <GlassCard accent glow className="inline-block px-12 py-8">
-              <p className="text-sm text-slate-500 tracking-[0.3em] uppercase font-bold mb-3">Receita potencial anual</p>
-              <p className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" style={{ textShadow: "0 0 40px hsl(185 80% 50% / 0.2)" }}>
-                R$ 4.320.000
-              </p>
+            <GlassCard accent glow className="inline-block px-12 py-8 relative overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/5 via-blue-500/10 to-cyan-500/5" />
+              <div className="relative z-10">
+                <p className="text-sm text-slate-500 tracking-[0.3em] uppercase font-bold mb-3">Receita potencial anual</p>
+                <p className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent" style={{ textShadow: "0 0 40px hsl(185 80% 50% / 0.2)" }}>
+                  R$ <AnimatedCounter value={4320000} duration={3} />
+                </p>
+              </div>
             </GlassCard>
           </motion.div>
         </ParallaxSection>
@@ -643,6 +801,7 @@ export default function SeracPresentation() {
 
         {/* ═══════ CTA ═══════ */}
         <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.2}>
+          <FloatingParticles count={25} />
           <motion.div variants={fadeUp} className="text-center mb-14">
             <Badge>Próximo Passo</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">Próximo Passo</h2>
@@ -655,39 +814,30 @@ export default function SeracPresentation() {
               { step: "03", t: "Início da implementação" },
               { step: "04", t: "Go-live estratégico" },
             ].map((s, i) => (
-              <motion.div key={i} variants={fadeUp}>
+              <motion.div key={i} variants={fadeUp} whileHover={{ x: 10 }}>
                 <GlassCard className="p-6 flex items-center gap-5 cursor-pointer">
                   <div className="w-12 h-12 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
                     <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-black text-sm">{s.step}</span>
                   </div>
-                  <span className="text-white font-bold text-lg">{s.t}</span>
-                  <ArrowRight className="w-5 h-5 text-cyan-500/40 ml-auto group-hover:text-cyan-400 transition-colors" />
+                  <span className="text-white font-bold flex-1">{s.t}</span>
+                  <ArrowRight className="w-5 h-5 text-cyan-500/40" />
                 </GlassCard>
               </motion.div>
             ))}
           </div>
 
           <motion.div variants={scaleIn} className="text-center">
-            <GlassCard accent glow className="inline-block px-14 py-10">
-              <p className="text-3xl lg:text-4xl font-black text-white mb-3">
-                O momento é <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">agora.</span>
-              </p>
-              <p className="text-slate-500 font-medium">SERAC Intelligence Platform · Powered by Atentai</p>
-              <div className="flex justify-center gap-4 mt-8">
-                <GlassButton variant="primary">
-                  <Rocket className="w-4 h-4" /> Iniciar Parceria
-                </GlassButton>
-                <GlassButton>
-                  <Globe className="w-4 h-4" /> Agendar Reunião
-                </GlassButton>
-              </div>
-            </GlassCard>
+            <GlassButton variant="primary" className="text-lg px-10 py-5">
+              <Rocket className="w-5 h-5" /> Agendar Reunião Estratégica <ArrowRight className="w-5 h-5" />
+            </GlassButton>
           </motion.div>
         </ParallaxSection>
 
         {/* Footer */}
-        <footer className="py-10 px-6 text-center border-t border-white/[0.05] bg-slate-950">
-          <p className="text-slate-600 text-sm font-medium">© {new Date().getFullYear()} SERAC Intelligence Platform · Powered by Atentai</p>
+        <footer className="py-12 px-6 border-t border-white/[0.04] text-center">
+          <p className="text-slate-600 text-sm">
+            SERAC Intelligence Platform — <span className="text-slate-500">Powered by Atentai</span>
+          </p>
         </footer>
       </div>
     </>
