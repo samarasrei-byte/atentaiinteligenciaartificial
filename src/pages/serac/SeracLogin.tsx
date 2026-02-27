@@ -44,7 +44,7 @@ export default function SeracLogin() {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-screen bg-background flex items-center justify-center p-4" style={{ background: 'linear-gradient(135deg, hsl(220 40% 8%) 0%, hsl(225 35% 12%) 50%, hsl(217 30% 18%) 100%)' }}>
       <div className="w-full max-w-md">
         <div className="bg-card rounded-2xl shadow-lg border border-border p-8">
           {/* SERAC Logo */}
@@ -93,7 +93,7 @@ export default function SeracLogin() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full h-11 bg-primary text-primary-foreground rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:bg-primary/90 transition-colors disabled:opacity-50"
+              className="w-full h-11 serac-gradient text-white rounded-lg font-medium text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50"
             >
               {loading ? (
                 <div className="w-5 h-5 border-2 border-primary-foreground border-t-transparent rounded-full animate-spin" />

@@ -98,11 +98,11 @@ export default function SeracLayout() {
       )}>
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-border">
-          {!collapsed ? (
+        {!collapsed ? (
             <img src={seracLogo} alt="SERAC" className="h-8 object-contain" />
           ) : (
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-info flex items-center justify-center mx-auto">
-              <span className="text-primary-foreground font-bold text-sm">S</span>
+            <div className="w-8 h-8 rounded-lg serac-gradient flex items-center justify-center mx-auto">
+              <span className="text-white font-bold text-sm">S</span>
             </div>
           )}
           <button onClick={() => setCollapsed(!collapsed)} className="hidden lg:flex p-1 rounded hover:bg-muted text-muted-foreground">
@@ -133,7 +133,7 @@ export default function SeracLayout() {
                       className={cn(
                         "flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-all relative",
                         isActive
-                          ? "bg-primary text-primary-foreground shadow-sm"
+                          ? "serac-gradient text-white shadow-sm"
                           : "text-foreground/70 hover:bg-muted hover:text-foreground"
                       )}
                     >
@@ -228,7 +228,7 @@ export default function SeracLayout() {
                 <p className="text-sm font-semibold text-foreground">Admin SERAC</p>
                 <p className="text-[10px] text-muted-foreground">Administrador</p>
               </div>
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary to-info flex items-center justify-center text-primary-foreground font-bold text-sm">
+              <div className="w-9 h-9 rounded-full serac-gradient flex items-center justify-center text-white font-bold text-sm">
                 A
               </div>
             </div>
