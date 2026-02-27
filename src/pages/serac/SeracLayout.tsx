@@ -3,18 +3,21 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Scale, Brain, Users, ShieldCheck,
   Bot, Target, Gavel, FileText, Settings, Menu, X,
-  ChevronLeft
+  ChevronLeft, Megaphone, ShoppingBag
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import seracLogo from '@/assets/logo_serac.png';
 
 const navItems = [
   { label: 'Dashboard Executivo', icon: LayoutDashboard, path: '/serac' },
+  { label: 'Central de Campanhas', icon: Megaphone, path: '/serac/campanhas' },
+  { label: 'Marketplace', icon: ShoppingBag, path: '/serac/marketplace' },
+  { label: 'Prospecção Estratégica', icon: Target, path: '/serac/prospeccao' },
+  { label: 'Agentes de IA', icon: Bot, path: '/serac/agentes-ia' },
   { label: 'Reforma Tributária 2026', icon: Scale, path: '/serac/reforma-tributaria' },
   { label: 'Inteligência Fiscal', icon: Brain, path: '/serac/inteligencia-fiscal' },
   { label: 'Clientes 360°', icon: Users, path: '/serac/clientes' },
   { label: 'Compliance & Risco', icon: ShieldCheck, path: '/serac/compliance' },
-  { label: 'Agentes de IA', icon: Bot, path: '/serac/agentes-ia' },
-  { label: 'Prospecção Estratégica', icon: Target, path: '/serac/prospeccao' },
   { label: 'Jurídico Integrado', icon: Gavel, path: '/serac/juridico' },
   { label: 'Relatórios', icon: FileText, path: '/serac/relatorios' },
   { label: 'Configurações', icon: Settings, path: '/serac/configuracoes' },
@@ -40,19 +43,10 @@ export default function SeracLayout() {
       )}>
         {/* Logo */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-[#E5E7EB]">
-          {!collapsed && (
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1B3A5C] to-[#2563EB] flex items-center justify-center">
-                <span className="text-white font-bold text-sm">S</span>
-              </div>
-              <div>
-                <h1 className="text-[#1B3A5C] font-bold text-base leading-tight">SERAC</h1>
-                <p className="text-[10px] text-[#6B7280] leading-tight">Intelligence Platform</p>
-              </div>
-            </div>
-          )}
-          {collapsed && (
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1B3A5C] to-[#2563EB] flex items-center justify-center mx-auto">
+          {!collapsed ? (
+            <img src={seracLogo} alt="SERAC" className="h-8 object-contain" />
+          ) : (
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#1B6BC0] to-[#87CEEB] flex items-center justify-center mx-auto">
               <span className="text-white font-bold text-sm">S</span>
             </div>
           )}
@@ -78,7 +72,7 @@ export default function SeracLayout() {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all",
                   isActive
-                    ? "bg-[#1B3A5C] text-white shadow-sm"
+                    ? "bg-[#1B6BC0] text-white shadow-sm"
                     : "text-[#4B5563] hover:bg-[#F3F4F6] hover:text-[#1B3A5C]"
                 )}
               >
@@ -110,7 +104,7 @@ export default function SeracLayout() {
               <p className="text-sm font-semibold text-[#1B3A5C]">Admin SERAC</p>
               <p className="text-[10px] text-[#9CA3AF]">Administrador</p>
             </div>
-            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1B3A5C] to-[#2563EB] flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#1B6BC0] to-[#87CEEB] flex items-center justify-center text-white font-bold text-sm">
               A
             </div>
           </div>
