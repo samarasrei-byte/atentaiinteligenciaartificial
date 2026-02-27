@@ -302,12 +302,13 @@ export default function SeracPresentation() {
                 Intelligence Platform
               </motion.p>
               <motion.p variants={fadeUp} className="text-lg text-slate-400 mb-4 max-w-2xl mx-auto">
-                Com Máquina de Prospecção Nacional de Contadores
+                Máquina de Prospecção Nacional: Empresas, Contadores & Cartórios
               </motion.p>
               
               {/* Live counter strip */}
               <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-8 mt-8 mb-6">
                 {[
+                  { value: 21000000, suffix: "+", label: "Empresas no Brasil" },
                   { value: 13800, suffix: "+", label: "Cartórios" },
                   { value: 520000, suffix: "+", label: "Contadores" },
                   { value: 4320000, prefix: "R$ ", label: "Receita/ano" },
@@ -381,11 +382,12 @@ export default function SeracPresentation() {
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Parceria Exclusiva</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              AtentAI Prospecta. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">SERAC Atende.</span>
+              AtentAI Prospecta. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">SERAC Atende com Exclusividade.</span>
             </h2>
             <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
-              A AtentAI é a máquina de prospecção que traz <strong className="text-slate-300">empresas e contadores</strong> para a base da SERAC. 
-              A SERAC, com seus <strong className="text-slate-300">+250 colaboradores e +2.500 clientes</strong>, faz o que faz de melhor: contabilidade de excelência.
+              A AtentAI é a máquina de prospecção que traz <strong className="text-slate-300">empresas, contadores e cartórios</strong> para a base da SERAC. 
+              A SERAC, com seus <strong className="text-slate-300">+250 colaboradores e +2.500 clientes</strong>, fica com a <strong className="text-cyan-400">contabilidade exclusiva</strong> de todas as empresas prospectadas. 
+              Contadores e cartórios entram para o <strong className="text-slate-300">clube de mentorias e capacitação</strong>.
             </p>
           </motion.div>
 
@@ -403,7 +405,7 @@ export default function SeracPresentation() {
                       <Target className="w-10 h-10 text-cyan-400" />
                     </div>
                     <h3 className="text-white font-bold text-lg mb-2">AtentAI Prospecta</h3>
-                    <p className="text-slate-500 text-sm">Prospecção ativa de <strong className="text-cyan-400">empresas, contadores e cartórios</strong> em todo o Brasil com IA e automação</p>
+                    <p className="text-slate-500 text-sm">Prospecção ativa de <strong className="text-cyan-400">empresas, escritórios contábeis, contadores e cartórios</strong> em todo o Brasil com IA e automação</p>
                   </motion.div>
                   {/* Arrow */}
                   <motion.div variants={scaleIn} className="hidden md:flex justify-center">
@@ -419,7 +421,7 @@ export default function SeracPresentation() {
                       <Building2 className="w-10 h-10 text-emerald-400" />
                     </div>
                     <h3 className="text-white font-bold text-lg mb-2">SERAC Atende</h3>
-                    <p className="text-slate-500 text-sm">+250 profissionais fazem a <strong className="text-emerald-400">contabilidade, fiscal, jurídico e consultoria</strong> para os clientes captados</p>
+                    <p className="text-slate-500 text-sm">+250 profissionais fazem a <strong className="text-emerald-400">contabilidade exclusiva</strong> de todas as empresas captadas. Contadores e cartórios entram no <strong className="text-emerald-400">clube de mentorias</strong></p>
                   </motion.div>
                 </div>
               </div>
@@ -440,8 +442,9 @@ export default function SeracPresentation() {
                 <ul className="space-y-2 text-slate-400 text-sm">
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Setup estratégico</strong> pela implantação da plataforma</span></li>
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Mensalidade fixa</strong> pela manutenção + prospecção contínua</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">% sobre novos contratos</strong> — performance sobre empresas captadas</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">10% sobre novos contratos</strong> — comissão sobre empresas prospectadas para a SERAC</span></li>
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Plano mensal por contador</strong> — cada contador ativo na base paga mensalidade</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Clube & Mentorias</strong> — receita adicional com contadores e cartórios na capacitação</span></li>
                 </ul>
               </GlassCard>
             </motion.div>
@@ -452,10 +455,10 @@ export default function SeracPresentation() {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">SERAC ganha</h3>
                 <ul className="space-y-2 text-slate-400 text-sm">
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Fluxo constante de empresas</strong> — novos clientes todos os meses sem esforço comercial</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Contadores na base</strong> — rede de contadores parceiros gerando volume</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Contabilidade exclusiva</strong> — todas as empresas prospectadas vão para a SERAC</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Clube de Mentorias</strong> — contadores e cartórios na rede de capacitação SERAC</span></li>
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Plataforma white label</strong> com a marca SERAC posicionada nacionalmente</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Receita escalável</strong> — fatura contabilidade dos clientes captados</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Receita escalável</strong> — fatura contabilidade de todas as empresas captadas sem custo comercial</span></li>
                 </ul>
               </GlassCard>
             </motion.div>
@@ -479,8 +482,8 @@ export default function SeracPresentation() {
           <motion.div variants={scaleIn} className="mt-14">
             <GlassCard accent glow className="p-10 text-center">
               <p className="text-xl text-slate-300 leading-relaxed">
-                A AtentAI traz <span className="text-cyan-400 font-bold">empresas e contadores</span> para a base da SERAC.<br />
-                A SERAC faz a contabilidade. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">Todo mundo ganha.</span>
+                A AtentAI prospecta <span className="text-cyan-400 font-bold">empresas, contadores, escritórios e cartórios</span>.<br />
+                A SERAC fica com a <span className="text-emerald-400 font-bold">contabilidade exclusiva</span> das empresas. Contadores e cartórios entram no <span className="text-violet-400 font-bold">clube de mentorias</span>. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">Comissão de apenas 10%.</span>
               </p>
             </GlassCard>
           </motion.div>
@@ -789,7 +792,7 @@ export default function SeracPresentation() {
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Prospecção Incluída</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              Aquisição Ativa de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Contadores & Cartórios</span>
+              Aquisição Ativa de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Empresas, Contadores & Cartórios</span>
             </h2>
           </motion.div>
 
@@ -836,7 +839,7 @@ export default function SeracPresentation() {
             <GlassCard className="p-10">
               <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10">Prospecção mensal estruturada</p>
               <div className="space-y-5">
-                <FunnelStep value="5.000" label="Contadores + 1.000 cartórios impactados por mês" width="w-full" index={0} />
+                <FunnelStep value="10.000" label="Empresas + 5.000 contadores/escritórios + 1.000 cartórios impactados por mês" width="w-full" index={0} />
                 <FunnelStep value="10%" label="Taxa média de resposta → 600 respostas" width="w-[85%]" index={1} />
                 <FunnelStep value="30%" label="Conversão para reunião → 180 reuniões" width="w-[65%]" index={2} />
                 <FunnelStep value="20%" label="Taxa de fechamento → 36 contratos" width="w-[45%]" index={3} />
@@ -896,8 +899,8 @@ export default function SeracPresentation() {
           <motion.div variants={fadeUp}>
             <GlassCard accent glow className="p-8 text-center">
               <p className="text-slate-500 text-xs font-bold tracking-[0.2em] uppercase mb-4">Receita adicional de performance</p>
-              <p className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">10% a 20% sobre novos contratos fechados</p>
-              <p className="text-slate-500 text-sm">A AtentAI ganha uma % sobre cada empresa que entra para a base da SERAC através da prospecção</p>
+              <p className="text-2xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent mb-2">10% sobre novos contratos fechados</p>
+              <p className="text-slate-500 text-sm">A AtentAI ganha 10% sobre cada empresa que entra para a contabilidade exclusiva da SERAC + receita do clube de mentorias para contadores e cartórios</p>
             </GlassCard>
           </motion.div>
 
