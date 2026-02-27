@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { SeracAgentsOrchestration } from "@/components/serac/SeracAgentsOrchestration";
+import { SeracAgentSimulation } from "@/components/serac/SeracAgentSimulation";
 import { useRef } from "react";
 import {
   Shield, BarChart3, Users, Brain,
@@ -440,6 +441,11 @@ export default function SeracPresentation() {
           {/* Agents Orchestration */}
           <motion.div variants={fadeUp} className="mt-14">
             <SeracAgentsOrchestration />
+          </motion.div>
+
+          {/* Agent Simulation with Tabs */}
+          <motion.div variants={fadeUp} className="mt-14">
+            <SeracAgentSimulation />
           </motion.div>
         </ParallaxSection>
 
