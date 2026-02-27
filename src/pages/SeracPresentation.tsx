@@ -9,7 +9,7 @@ import {
   TrendingUp, Target, Zap, Building2, Scale,
   DollarSign, Calendar, Layers, Sparkles,
   Rocket, Globe, Code2, Cpu, Eye,
-  LineChart, Bot, Lightbulb
+  LineChart, Bot, Lightbulb, FileText
 } from "lucide-react";
 import seracHeroBg from "@/assets/serac-hero-bg.jpg";
 import seracAiBrain from "@/assets/serac-ai-brain.jpg";
@@ -548,6 +548,60 @@ export default function SeracPresentation() {
               </motion.div>
             ))}
           </div>
+        </ParallaxSection>
+
+        {/* ═══════ PORTFÓLIO DE SERVIÇOS SERAC ═══════ */}
+        <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.3}>
+          <FloatingParticles count={15} />
+          <motion.div variants={fadeUp} className="text-center mb-16">
+            <Badge>Portfólio Completo</Badge>
+            <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
+              Serviços que a SERAC <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">já domina</span>
+            </h2>
+            <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
+              Todos esses serviços entrarão no marketplace da plataforma — cada um deles é uma oportunidade de prospecção e receita recorrente
+            </p>
+          </motion.div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+            {[
+              { icon: Building2, name: "Contabilidade para Empresas", desc: "Orientação, planejamento tributário e compliance completo para empresas de todos os portes", tags: ["MEI", "ME", "EPP", "Lucro Real"] },
+              { icon: Scale, name: "Serviços para Cartórios", desc: "Contabilidade especializada para serventias extrajudiciais — nicho com 13.800+ unidades no Brasil", tags: ["Cartórios", "Nicho", "R$ 28B"] },
+              { icon: Cpu, name: "Contabilidade para Infoprodutores", desc: "Gestão fiscal sob medida para criadores de conteúdo, cursos online e produtos digitais", tags: ["Digital", "PLR", "E-commerce"] },
+              { icon: Code2, name: "Contabilidade para Games", desc: "Contabilidade especializada para estúdios de games, desenvolvedores e empresas de entretenimento digital", tags: ["Games", "Tech", "Startups"] },
+              { icon: FileText, name: "Imposto de Renda", desc: "Declaração de IR Simples e Completo para pessoas físicas e jurídicas com otimização fiscal", tags: ["IRPF", "IRPJ", "Restituição"] },
+              { icon: Shield, name: "Marcas e Patentes", desc: "Registro de marcas, patentes e propriedade intelectual junto ao INPI com acompanhamento completo", tags: ["INPI", "Marca", "Patente"] },
+              { icon: Globe, name: "Certificado Digital", desc: "Emissão de certificados digitais e-CPF, e-CNPJ, NF-e para empresas e profissionais", tags: ["e-CPF", "e-CNPJ", "NF-e"] },
+              { icon: Lightbulb, name: "Consultoria Empresarial", desc: "Consultoria estratégica, planejamento financeiro e reestruturação de processos empresariais", tags: ["Estratégia", "Gestão", "Crescimento"] },
+            ].map((service, i) => (
+              <motion.div key={i} variants={scaleIn} whileHover={{ y: -8, scale: 1.02 }} transition={{ type: "spring", stiffness: 300 }}>
+                <GlassCard className="p-6 h-full relative overflow-hidden group cursor-pointer">
+                  <div className="absolute -top-16 -right-16 w-32 h-32 rounded-full bg-cyan-500/5 blur-[60px] group-hover:bg-cyan-500/10 transition-all duration-700" />
+                  <div className="relative z-10">
+                    <div className="w-12 h-12 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-4 group-hover:bg-cyan-500/20 transition-colors">
+                      <service.icon className="w-6 h-6 text-cyan-400" />
+                    </div>
+                    <h3 className="text-white font-bold text-base mb-2">{service.name}</h3>
+                    <p className="text-slate-500 text-xs leading-relaxed mb-4">{service.desc}</p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {service.tags.map((tag, j) => (
+                        <span key={j} className="text-[9px] font-bold uppercase tracking-wider text-cyan-400/70 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded-full">{tag}</span>
+                      ))}
+                    </div>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            ))}
+          </div>
+
+          <motion.div variants={fadeUp}>
+            <GlassCard accent glow className="p-8 text-center">
+              <p className="text-xl text-slate-300 leading-relaxed">
+                Cada serviço é um <span className="text-cyan-400 font-bold">canal de prospecção</span> — a AtentAI traz o cliente, a SERAC entrega o serviço.{" "}
+                <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent font-bold">Marketplace sob consulta para todos os serviços.</span>
+              </p>
+            </GlassCard>
+          </motion.div>
         </ParallaxSection>
 
         {/* ═══════ OPORTUNIDADE DE MERCADO — with animated numbers ═══════ */}
