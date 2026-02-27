@@ -1,12 +1,11 @@
 import { Helmet } from "react-helmet-async";
 import { motion, useScroll, useTransform } from "framer-motion";
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import {
-  Zap, Shield, BarChart3, Users, Brain,
-  CheckCircle2, ArrowRight, Sparkles, Bot, Target,
-  TrendingUp, FileText, MessageCircle, AlertTriangle,
-  Layers, Rocket, Globe, ChevronDown, Eye, Search,
-  Activity
+  Shield, BarChart3, Users, Brain,
+  CheckCircle2, ArrowRight, Rocket, Globe, ChevronDown,
+  TrendingUp, Target, Zap, Building2, Scale,
+  DollarSign, Calendar, Phone, Layers
 } from "lucide-react";
 import heroBg from "@/assets/serac-hero-bg.jpg";
 import buildingBg from "@/assets/serac-building.jpg";
@@ -33,60 +32,10 @@ function ParallaxBg({ src, speed = 0.3, overlay = "bg-black/60" }: { src: string
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [`-${speed * 100}px`, `${speed * 100}px`]);
-
   return (
     <div ref={ref} className="absolute inset-0 overflow-hidden">
-      <motion.img
-        src={src}
-        alt=""
-        className="absolute inset-0 w-full h-[130%] object-cover -top-[15%]"
-        style={{ y }}
-        loading="lazy"
-      />
+      <motion.img src={src} alt="" className="absolute inset-0 w-full h-[130%] object-cover -top-[15%]" style={{ y }} loading="lazy" />
       <div className={`absolute inset-0 ${overlay}`} />
-    </div>
-  );
-}
-
-/* ── CountUp ── */
-function CountUp({ target, suffix = "" }: { target: number; suffix?: string }) {
-  const ref = useRef<HTMLSpanElement>(null);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let frame: number;
-    const dur = 2500;
-    const start = performance.now();
-    const animate = (now: number) => {
-      const p = Math.min((now - start) / dur, 1);
-      const ease = 1 - Math.pow(1 - p, 4);
-      el.textContent = Math.round(target * ease).toLocaleString("pt-BR") + suffix;
-      if (p < 1) frame = requestAnimationFrame(animate);
-    };
-    frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
-  }, [target, suffix]);
-  return <span ref={ref}>0{suffix}</span>;
-}
-
-/* ── Particle effect ── */
-function ParticleField() {
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {Array.from({ length: 40 }).map((_, i) => (
-        <div
-          key={i}
-          className="absolute rounded-full bg-primary/20"
-          style={{
-            width: `${Math.random() * 4 + 1}px`,
-            height: `${Math.random() * 4 + 1}px`,
-            left: `${Math.random() * 100}%`,
-            top: `${Math.random() * 100}%`,
-            animation: `float ${Math.random() * 6 + 4}s ease-in-out infinite`,
-            animationDelay: `${Math.random() * 4}s`,
-          }}
-        />
-      ))}
     </div>
   );
 }
@@ -101,88 +50,78 @@ function GlassCard({ children, className = "" }: { children: React.ReactNode; cl
   );
 }
 
+/* ── Funnel Step ── */
+function FunnelStep({ value, label, width }: { value: string; label: string; width: string }) {
+  return (
+    <motion.div variants={fadeUp} className="flex flex-col items-center">
+      <div className={`${width} bg-gradient-to-r from-primary/80 to-primary/40 rounded-lg py-4 text-center mb-2`}>
+        <span className="text-white font-bold text-lg">{value}</span>
+      </div>
+      <span className="text-white/50 text-sm text-center">{label}</span>
+    </motion.div>
+  );
+}
+
+/* ── Projection Chart (simple bar chart) ── */
+function ProjectionChart() {
+  const months = ["M1", "M2", "M3", "M4", "M5", "M6", "M7", "M8", "M9", "M10", "M11", "M12"];
+  const values = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330, 360];
+  const max = 360;
+  return (
+    <div className="flex items-end gap-2 h-48 mt-8">
+      {months.map((m, i) => (
+        <motion.div
+          key={m}
+          className="flex-1 flex flex-col items-center gap-1"
+          initial={{ scaleY: 0 }}
+          whileInView={{ scaleY: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: i * 0.08, duration: 0.5 }}
+          style={{ transformOrigin: "bottom" }}
+        >
+          <span className="text-xs text-primary font-semibold">R${values[i]}k</span>
+          <div
+            className="w-full rounded-t-md bg-gradient-to-t from-primary to-primary/60"
+            style={{ height: `${(values[i] / max) * 100}%` }}
+          />
+          <span className="text-xs text-white/40 mt-1">{m}</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
 export default function SeracPresentation() {
   const containerRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll();
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.08], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [0, 0.08], [1, 0.95]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.06], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 0.06], [1, 0.95]);
 
   return (
     <>
       <Helmet>
-        <title>SERAC + ATENTAI | A Nova Era da Contabilidade Inteligente</title>
-        <meta name="description" content="Apresentação exclusiva: SERAC + ATENTAI - Inteligência Artificial Estratégica para Contadores" />
+        <title>SERAC Intelligence Platform | White Label powered by Atentai</title>
+        <meta name="description" content="Apresentação institucional: SERAC Intelligence Platform — White Label estratégico powered by Atentai com Máquina de Prospecção Nacional de Contadores" />
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
       <div ref={containerRef} className="min-h-screen text-white overflow-x-hidden" style={{ background: "linear-gradient(180deg, hsl(220 45% 6%) 0%, hsl(220 40% 8%) 100%)" }}>
 
-        {/* ═══════ SLIDE 1 — HERO ═══════ */}
-        <motion.section
-          className="relative min-h-screen flex items-center justify-center overflow-hidden"
-          style={{ opacity: heroOpacity, scale: heroScale }}
-        >
+        {/* ═══════ HERO — ABERTURA ═══════ */}
+        <motion.section className="relative min-h-screen flex items-center justify-center overflow-hidden" style={{ opacity: heroOpacity, scale: heroScale }}>
           <ParallaxBg src={heroBg} speed={0.4} overlay="bg-black/70" />
-          
-          {/* Grid lines */}
-          <div className="absolute inset-0 opacity-[0.03]"
-            style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "80px 80px" }}
-          />
-          <ParticleField />
-          
-          {/* Digital lines */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="absolute h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent"
-                style={{
-                  width: `${Math.random() * 40 + 20}%`,
-                  top: `${Math.random() * 100}%`,
-                  left: `${Math.random() * 60}%`,
-                  animation: `shimmer ${Math.random() * 4 + 3}s linear infinite`,
-                  animationDelay: `${i * 0.8}s`,
-                }}
-              />
-            ))}
-          </div>
+          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)", backgroundSize: "80px 80px" }} />
 
-          <motion.div
-            className="relative z-10 max-w-5xl mx-auto px-6 text-center"
-            initial="hidden" animate="visible" variants={stagger}
-          >
-            <motion.div variants={fadeUp} className="mb-12">
-              <h1 className="text-6xl sm:text-7xl lg:text-9xl font-black tracking-tighter mb-4"
-                style={{ textShadow: "0 0 80px hsl(175 60% 40% / 0.3)" }}>
-                SERAC
-              </h1>
-              <p className="text-lg sm:text-xl text-white/50 tracking-[0.3em] uppercase font-light">
-                Referência Nacional em Contabilidade, Consultoria e Tecnologia
-              </p>
+          <motion.div className="relative z-10 max-w-5xl mx-auto px-6 text-center" initial="hidden" animate="visible" variants={stagger}>
+            <motion.div variants={fadeUp} className="mb-8">
+              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">White Label Estratégico</span>
             </motion.div>
-
-            <motion.div variants={fadeUp} className="flex flex-wrap justify-center gap-6 sm:gap-10 mb-16">
-              {[
-                { v: "3.500+", l: "Clientes" },
-                { v: "20+", l: "Estados" },
-                { v: "300+", l: "Colaboradores" },
-              ].map((m, i) => (
-                <div key={i} className="text-center">
-                  <div className="text-3xl sm:text-4xl font-bold text-primary" style={{ textShadow: "0 0 30px hsl(175 60% 40% / 0.4)" }}>{m.v}</div>
-                  <div className="text-sm text-white/40 mt-1">{m.l}</div>
-                </div>
-              ))}
-            </motion.div>
-
-            <motion.p variants={fadeUp} className="text-white/30 text-lg italic mb-6">
-              Agora, um novo capítulo começa.
-            </motion.p>
-
-            <motion.div variants={scaleIn} className="inline-block">
-              <img src="/logo-atentai.png" alt="AtentAI" className="h-16 sm:h-20 lg:h-24 mx-auto mb-2 drop-shadow-[0_0_40px_hsl(175_60%_40%/0.5)]" />
-              <div className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight bg-gradient-to-r from-primary via-info to-primary bg-clip-text text-transparent"
-                style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.4))" }}>
-                ATENTAI
-              </div>
-            </motion.div>
+            <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tighter mb-4" style={{ textShadow: "0 0 80px hsl(175 60% 40% / 0.3)" }}>
+              SERAC
+            </motion.h1>
+            <motion.p variants={fadeUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white/80 mb-2">Intelligence Platform</motion.p>
+            <motion.p variants={fadeUp} className="text-lg text-white/40 mb-4">Com Máquina de Prospecção Nacional de Contadores</motion.p>
+            <motion.p variants={fadeIn} className="text-sm text-white/25 tracking-widest uppercase">Powered by Atentai</motion.p>
 
             <motion.div variants={fadeIn} className="mt-20">
               <ChevronDown className="w-8 h-8 text-white/20 mx-auto animate-bounce" />
@@ -190,321 +129,376 @@ export default function SeracPresentation() {
           </motion.div>
         </motion.section>
 
-        {/* ═══════ SLIDE 2 — QUEM É O SERAC ═══════ */}
+        {/* ═══════ SLIDE 1 — OPORTUNIDADE DE MERCADO ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <ParallaxBg src={buildingBg} speed={0.25} overlay="bg-black/80" />
-          
+          <ParallaxBg src={brazilMapBg} speed={0.2} overlay="bg-black/80" />
+
           <motion.div className="relative z-10 max-w-5xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="text-center mb-16">
-              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Quem Somos</span>
-              <h2 className="text-4xl lg:text-6xl font-bold mt-4">O SERAC é referência nacional</h2>
+              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Oportunidade</span>
+              <h2 className="text-3xl lg:text-5xl font-bold mt-4">O Mercado Contábil Brasileiro<br />na Era da <span className="text-primary">Reforma Tributária</span></h2>
             </motion.div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-16">
-              {["Contábil", "Fiscal", "Consultiva", "Jurídica", "Tecnologia"].map((area, i) => (
-                <motion.div key={i} variants={fadeUp}>
-                  <GlassCard className="p-5 text-center hover:bg-white/[0.1] transition-colors duration-500">
-                    <span className="text-white/80 font-medium">{area}</span>
+            <div className="grid sm:grid-cols-2 gap-6 mb-12">
+              {[
+                { icon: Users, value: "+520 mil", label: "Profissionais contábeis no Brasil" },
+                { icon: Building2, value: "+90 mil", label: "Organizações contábeis ativas" },
+              ].map((s, i) => (
+                <motion.div key={i} variants={scaleIn}>
+                  <GlassCard className="p-8 text-center">
+                    <s.icon className="w-10 h-10 text-primary mx-auto mb-4" />
+                    <div className="text-4xl font-black text-primary mb-2">{s.value}</div>
+                    <p className="text-white/60">{s.label}</p>
                   </GlassCard>
                 </motion.div>
               ))}
             </div>
 
-            <motion.div variants={fadeUp} className="text-center mb-8">
-              <span className="text-white/40 text-sm tracking-widest uppercase">Diferenciais</span>
-            </motion.div>
-
-            <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" variants={staggerFast} initial="hidden" whileInView="visible" viewport={{ once: true }}>
-              {[
-                { icon: Sparkles, t: "Modernização" },
-                { icon: Shield, t: "Metodologia Preventiva" },
-                { icon: Users, t: "Atendimento Personalizado" },
-                { icon: Target, t: "Preço Competitivo" },
-                { icon: Rocket, t: "Clube de Benefícios" },
-              ].map((d, i) => (
-                <motion.div key={i} variants={fadeUp}>
-                  <GlassCard className="p-5 flex items-center gap-4 hover:border-primary/30 transition-colors duration-500">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <d.icon className="w-5 h-5 text-primary" />
+            <motion.div variants={fadeUp}>
+              <GlassCard className="p-8">
+                <p className="text-white/50 text-sm uppercase tracking-widest mb-6">Reforma Tributária 2026 exige reposicionamento estratégico</p>
+                <p className="text-white/60 mb-4">Escritórios precisarão de:</p>
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {[
+                    { icon: Brain, t: "Inteligência fiscal" },
+                    { icon: BarChart3, t: "Simulação de impacto" },
+                    { icon: Shield, t: "Compliance automatizado" },
+                    { icon: Scale, t: "Suporte jurídico estruturado" },
+                  ].map((item, i) => (
+                    <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.03]">
+                      <item.icon className="w-5 h-5 text-primary flex-shrink-0" />
+                      <span className="text-white/70">{item.t}</span>
                     </div>
-                    <span className="text-white/80 font-medium">{d.t}</span>
-                  </GlassCard>
-                </motion.div>
-              ))}
+                  ))}
+                </div>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="mt-12 text-center">
+              <p className="text-2xl lg:text-3xl font-bold">
+                Quem liderar agora <span className="bg-gradient-to-r from-primary via-primary to-accent bg-clip-text text-transparent">domina o mercado da Reforma.</span>
+              </p>
             </motion.div>
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE 3 — O FUTURO CHEGOU ═══════ */}
-        <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-transparent" />
-          
-          <motion.div className="relative z-10 max-w-3xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
-            <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-bold mb-8">
-              O mercado contábil <span className="text-primary">mudou.</span>
-            </motion.h2>
-            
-            <motion.p variants={fadeUp} className="text-white/40 text-lg mb-12">Empresas exigem:</motion.p>
-            
-            <div className="grid grid-cols-2 gap-4 mb-16">
-              {[
-                { icon: Zap, t: "Velocidade" },
-                { icon: Brain, t: "Inteligência" },
-                { icon: Activity, t: "Dados em tempo real" },
-                { icon: Target, t: "Estratégia" },
-              ].map((r, i) => (
-                <motion.div key={i} variants={fadeUp}>
-                  <GlassCard className="p-6 text-center">
-                    <r.icon className="w-8 h-8 text-primary mx-auto mb-3" />
-                    <span className="text-white/70 font-medium">{r.t}</span>
-                  </GlassCard>
-                </motion.div>
-              ))}
-            </div>
-
-            <motion.p variants={fadeUp} className="text-2xl lg:text-3xl font-semibold text-white/60">
-              Como transformar referência em <span className="text-accent font-bold">supremacia</span>?
-            </motion.p>
-          </motion.div>
-        </section>
-
-        {/* ═══════ SLIDE 4 — SURGE A ATENTAI ═══════ */}
+        {/* ═══════ SLIDE 2 — A SOLUÇÃO ═══════ */}
         <section className="relative py-32 lg:py-48 px-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,hsl(175_40%_15%),transparent_60%)]" />
-          <ParticleField />
-          
-          <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
-            <motion.div variants={scaleIn}>
-              <img src="/logo-atentai.png" alt="AtentAI" className="h-20 sm:h-24 lg:h-32 mx-auto mb-6 drop-shadow-[0_0_60px_hsl(175_60%_40%/0.5)]" />
+
+          <motion.div className="relative z-10 max-w-5xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
+            <motion.div variants={scaleIn} className="mb-6">
+              <h2 className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tight" style={{ textShadow: "0 0 60px hsl(175 60% 40% / 0.3)" }}>SERAC</h2>
+              <p className="text-2xl lg:text-3xl font-bold text-primary mt-2">Intelligence Platform</p>
             </motion.div>
-            <motion.h2 variants={scaleIn}
-              className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tight bg-gradient-to-r from-primary via-info to-primary bg-clip-text text-transparent mb-6"
-              style={{ filter: "drop-shadow(0 0 60px hsl(175 60% 40% / 0.3))" }}
-            >
-              ATENTAI
-            </motion.h2>
-            <motion.p variants={fadeUp} className="text-xl sm:text-2xl text-white/50 tracking-wide mb-10">
-              Inteligência Artificial Estratégica para Contadores
+            <motion.p variants={fadeUp} className="text-white/50 text-lg mb-12 max-w-2xl mx-auto">
+              Plataforma white label exclusiva da SERAC, com:
             </motion.p>
+
+            <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-12" variants={staggerFast} initial="hidden" whileInView="visible" viewport={{ once: true }}>
+              {[
+                { icon: Brain, t: "Inteligência Fiscal com IA" },
+                { icon: BarChart3, t: "Simulador da Reforma Tributária 2026" },
+                { icon: Shield, t: "Agentes de IA para atendimento e compliance" },
+                { icon: Target, t: "Prospecção ativa de contadores e escritórios" },
+                { icon: Scale, t: "Suporte jurídico integrado" },
+                { icon: Layers, t: "Dashboard executivo estratégico" },
+              ].map((f, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <GlassCard className="p-6 flex items-center gap-4 h-full hover:border-primary/30 transition-colors duration-500">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <f.icon className="w-6 h-6 text-primary" />
+                    </div>
+                    <span className="text-white/80 font-medium text-left">{f.t}</span>
+                  </GlassCard>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            <motion.p variants={fadeIn} className="text-white/25 text-sm tracking-widest uppercase">Powered by Atentai</motion.p>
+          </motion.div>
+        </section>
+
+        {/* ═══════ SLIDE 3 — DIFERENCIAL ESTRATÉGICO ═══════ */}
+        <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
+          <ParallaxBg src={buildingBg} speed={0.25} overlay="bg-black/80" />
+
+          <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
+            <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold mb-4">
+              Não é Software.
+            </motion.h2>
+            <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold mb-12">
+              É <span className="text-primary">Infraestrutura de Crescimento.</span>
+            </motion.h2>
+
+            <div className="grid sm:grid-cols-2 gap-4 mb-16">
+              {[
+                { icon: Zap, t: "Tecnologia", d: "IA aplicada à gestão contábil" },
+                { icon: Shield, t: "Autoridade técnica", d: "Posicionamento nacional" },
+                { icon: Users, t: "Aquisição previsível de contadores", d: "Pipeline estruturado" },
+                { icon: TrendingUp, t: "Receita recorrente escalável", d: "Crescimento sustentável" },
+              ].map((d, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <GlassCard className="p-6 text-left h-full">
+                    <d.icon className="w-8 h-8 text-primary mb-4" />
+                    <h3 className="text-lg font-bold text-white mb-2">{d.t}</h3>
+                    <p className="text-white/50 text-sm">{d.d}</p>
+                  </GlassCard>
+                </motion.div>
+              ))}
+            </div>
+
             <motion.div variants={fadeUp}>
-              <GlassCard className="inline-block px-8 py-5">
+              <GlassCard className="p-8 border-primary/20">
                 <p className="text-lg text-white/70">
-                  A ATENTAI não substitui o SERAC. <br />
-                  <span className="text-primary font-semibold">Ela potencializa.</span>
+                  SERAC deixa de ser apenas escritório contábil e passa a ser{" "}
+                  <span className="text-primary font-bold">plataforma nacional de inteligência fiscal.</span>
                 </p>
               </GlassCard>
             </motion.div>
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE 5 — O QUE A ATENTAI TRAZ ═══════ */}
-        <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_70%_30%,hsl(220_50%_10%),transparent_50%)]" />
-          
-          <motion.div className="relative z-10 max-w-6xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
-            <motion.div variants={fadeUp} className="text-center mb-20">
-              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Capacidades</span>
-              <h2 className="text-4xl lg:text-6xl font-bold mt-4">O que a ATENTAI traz para o SERAC</h2>
-            </motion.div>
-
-            <div className="grid md:grid-cols-2 gap-8">
-              {[
-                {
-                  icon: Search, num: "01", title: "Geração Inteligente de Leads",
-                  points: ["Identifica empresas com potencial tributário", "Detecta oportunidades de economia fiscal", "Gera diagnóstico automático", "Classifica leads por nível de oportunidade"],
-                },
-                {
-                  icon: BarChart3, num: "02", title: "Painel Executivo em Tempo Real",
-                  points: ["KPIs automáticos", "Margem por cliente", "Rentabilidade por segmento", "Risco fiscal", "Oportunidades de upsell"],
-                },
-                {
-                  icon: Layers, num: "03", title: "Automação Inteligente",
-                  points: ["Classificação automática de documentos", "Leitura inteligente de notas fiscais", "Alertas fiscais preventivos", "Workflow automatizado"],
-                  highlight: "Redução de custo operacional.",
-                },
-                {
-                  icon: MessageCircle, num: "04", title: "IA Consultiva para Clientes",
-                  points: ["Simulação tributária", "Diagnóstico fiscal automático", "Chat inteligente", "Projeção financeira"],
-                  highlight: "Mais valor percebido. Mais retenção.",
-                },
-              ].map((f, i) => (
-                <motion.div key={i} variants={fadeUp}>
-                  <GlassCard className="p-8 h-full hover:border-primary/20 transition-all duration-500 group">
-                    <div className="flex items-center gap-4 mb-6">
-                      <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                        <f.icon className="w-7 h-7 text-primary" />
-                      </div>
-                      <div>
-                        <span className="text-primary/40 text-xs font-mono">{f.num}</span>
-                        <h3 className="text-xl font-bold text-white">{f.title}</h3>
-                      </div>
-                    </div>
-                    <ul className="space-y-3 mb-4">
-                      {f.points.map((p, j) => (
-                        <li key={j} className="flex items-start gap-3 text-white/60">
-                          <CheckCircle2 className="w-4 h-4 text-primary/60 mt-0.5 flex-shrink-0" />
-                          <span className="text-sm">{p}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    {f.highlight && (
-                      <div className="mt-4 pt-4 border-t border-white/[0.06]">
-                        <p className="text-accent text-sm font-semibold">{f.highlight}</p>
-                      </div>
-                    )}
-                  </GlassCard>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </section>
-
-        {/* ═══════ SLIDE 6 — IMPACTO DIRETO ═══════ */}
+        {/* ═══════ SLIDE 4 — MÁQUINA DE PROSPECÇÃO ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,hsl(175_40%_10%),transparent_50%)]" />
-          
-          <motion.div className="relative z-10 max-w-5xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
-            <motion.div variants={fadeUp}>
-              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Resultados</span>
-              <h2 className="text-4xl lg:text-6xl font-bold mt-4 mb-16">Impacto Direto</h2>
+
+          <motion.div className="relative z-10 max-w-5xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
+            <motion.div variants={fadeUp} className="text-center mb-16">
+              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Prospecção Incluída</span>
+              <h2 className="text-3xl lg:text-5xl font-bold mt-4">Aquisição Ativa de <span className="text-primary">Contadores</span></h2>
             </motion.div>
 
-            <div className="grid grid-cols-2 lg:grid-cols-5 gap-6 mb-20">
+            <motion.div variants={fadeUp} className="mb-12">
+              <GlassCard className="p-8">
+                <p className="text-white/40 text-sm uppercase tracking-widest mb-8">Prospecção mensal estruturada</p>
+                <div className="space-y-4">
+                  <FunnelStep value="2.000" label="Contadores impactados por mês" width="w-full" />
+                  <FunnelStep value="10%" label="Taxa média de resposta → 200 respostas" width="w-[85%]" />
+                  <FunnelStep value="30%" label="Conversão para reunião → 60 reuniões" width="w-[65%]" />
+                  <FunnelStep value="20%" label="Taxa de fechamento → 12 contratos" width="w-[45%]" />
+                </div>
+              </GlassCard>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-3 gap-4">
               {[
-                { icon: Search, label: "Leads Qualificados", color: "text-primary" },
-                { icon: TrendingUp, label: "Margem", color: "text-accent" },
-                { icon: Rocket, label: "Produtividade", color: "text-info" },
-                { icon: Users, label: "Retenção", color: "text-success" },
-                { icon: Globe, label: "Autoridade", color: "text-primary" },
-              ].map((m, i) => (
+                { value: "12", label: "Novos contratos por mês", sub: "Ticket médio: R$ 2.500" },
+                { value: "R$ 30k", label: "Receita adicional/mês", sub: "A partir do primeiro mês" },
+                { value: "R$ 180k", label: "Acumulados em 6 meses", sub: "Crescimento composto" },
+              ].map((r, i) => (
                 <motion.div key={i} variants={scaleIn}>
-                  <GlassCard className="p-6 text-center hover:scale-105 transition-transform duration-500">
-                    <m.icon className={`w-8 h-8 ${m.color} mx-auto mb-3`} />
-                    <span className="text-white/60 text-sm font-medium">{m.label}</span>
-                    <div className="mt-2 h-1 rounded-full bg-gradient-to-r from-primary/0 via-primary/40 to-primary/0" />
+                  <GlassCard className="p-6 text-center">
+                    <div className="text-3xl font-black text-primary mb-2">{r.value}</div>
+                    <p className="text-white/70 font-medium mb-1">{r.label}</p>
+                    <p className="text-white/40 text-xs">{r.sub}</p>
                   </GlassCard>
                 </motion.div>
               ))}
             </div>
-
-            <motion.div variants={fadeUp}>
-              <p className="text-white/40 text-lg mb-4">SERAC passa a ser:</p>
-              <h3 className="text-3xl lg:text-5xl font-bold">
-                A Contabilidade <span className="bg-gradient-to-r from-primary via-info to-accent bg-clip-text text-transparent">Mais Inteligente</span> do Brasil.
-              </h3>
-            </motion.div>
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE 7 — MODO ESTRATÉGICO ═══════ */}
+        {/* ═══════ SLIDE 5 — MODELO FINANCEIRO ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/30 to-transparent" />
-          
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/40 to-transparent" />
+
           <motion.div className="relative z-10 max-w-4xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp} className="text-center mb-16">
-              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Para Sócios</span>
-              <h2 className="text-4xl lg:text-6xl font-bold mt-4">Modo Estratégico</h2>
+              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Investimento</span>
+              <h2 className="text-3xl lg:text-5xl font-bold mt-4">Estrutura de Investimento</h2>
             </motion.div>
 
-            <motion.div variants={fadeUp}>
-              <GlassCard className="p-8 lg:p-12">
-                <p className="text-white/40 text-sm uppercase tracking-widest mb-8">ATENTAI entrega diariamente:</p>
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {[
-                    { icon: FileText, t: "Resumo executivo" },
-                    { icon: AlertTriangle, t: "Alertas críticos" },
-                    { icon: TrendingUp, t: "Projeções de crescimento" },
-                    { icon: Eye, t: "Clientes com risco" },
-                    { icon: Target, t: "Oportunidades estratégicas" },
-                  ].map((item, i) => (
-                    <motion.div key={i} variants={fadeUp} className="flex items-center gap-4 p-4 rounded-xl bg-white/[0.03] hover:bg-white/[0.06] transition-colors">
-                      <item.icon className="w-5 h-5 text-primary flex-shrink-0" />
-                      <span className="text-white/70">{item.t}</span>
-                    </motion.div>
-                  ))}
-                </div>
-                <div className="mt-8 pt-6 border-t border-white/[0.06] text-center">
-                  <p className="text-accent font-semibold text-lg">Como um Chief AI Officer interno.</p>
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <motion.div variants={fadeUp}>
+                <GlassCard className="p-8 h-full">
+                  <h3 className="text-lg font-bold text-white mb-6">Modelo White Label + Prospecção</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-white/40 text-sm mb-1">Setup estratégico</p>
+                      <p className="text-2xl font-bold text-primary">R$ 120.000 a R$ 180.000</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-sm mb-1">Mensalidade</p>
+                      <p className="text-2xl font-bold text-primary">R$ 30.000 a R$ 60.000</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </motion.div>
+
+              <motion.div variants={fadeUp}>
+                <GlassCard className="p-8 h-full border-primary/20">
+                  <h3 className="text-lg font-bold text-white mb-6">Modelo Híbrido</h3>
+                  <div className="space-y-6">
+                    <div>
+                      <p className="text-white/40 text-sm mb-1">Mensalidade fixa</p>
+                      <p className="text-2xl font-bold text-primary">R$ 25.000</p>
+                    </div>
+                    <div>
+                      <p className="text-white/40 text-sm mb-1">Performance</p>
+                      <p className="text-2xl font-bold text-accent">10% a 20%</p>
+                      <p className="text-white/50 text-sm">sobre novos contratos fechados</p>
+                    </div>
+                  </div>
+                </GlassCard>
+              </motion.div>
+            </div>
+
+            <motion.div variants={fadeUp} className="text-center">
+              <GlassCard className="inline-block px-8 py-4">
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-primary" />
+                  <span className="text-white/70 font-medium">Contrato mínimo: <span className="text-primary font-bold">12 meses</span></span>
                 </div>
               </GlassCard>
             </motion.div>
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE 8 — POSICIONAMENTO ═══════ */}
+        {/* ═══════ SLIDE 6 — PROJEÇÃO 12 MESES ═══════ */}
         <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
-          <ParallaxBg src={brazilMapBg} speed={0.2} overlay="bg-black/70" />
-          
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,hsl(220_50%_10%),transparent_50%)]" />
+
+          <motion.div className="relative z-10 max-w-5xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
+            <motion.div variants={fadeUp} className="text-center mb-8">
+              <span className="text-primary/60 text-sm tracking-[0.4em] uppercase font-medium">Projeção</span>
+              <h2 className="text-3xl lg:text-5xl font-bold mt-4">Simulação de 12 Meses</h2>
+            </motion.div>
+
+            <div className="grid sm:grid-cols-3 gap-6 mb-8">
+              {[
+                { value: "12/mês", label: "Novos contratos", icon: Users },
+                { value: "144/ano", label: "Total de contratos", icon: TrendingUp },
+                { value: "R$ 2.500", label: "Ticket médio", icon: DollarSign },
+              ].map((s, i) => (
+                <motion.div key={i} variants={scaleIn}>
+                  <GlassCard className="p-6 text-center">
+                    <s.icon className="w-8 h-8 text-primary mx-auto mb-3" />
+                    <div className="text-2xl font-black text-white mb-1">{s.value}</div>
+                    <p className="text-white/50 text-sm">{s.label}</p>
+                  </GlassCard>
+                </motion.div>
+              ))}
+            </div>
+
+            <motion.div variants={fadeUp}>
+              <GlassCard className="p-8">
+                <p className="text-white/40 text-sm uppercase tracking-widest mb-2">Receita acumulada mês a mês (R$ mil)</p>
+                <ProjectionChart />
+              </GlassCard>
+            </motion.div>
+
+            <motion.div variants={scaleIn} className="mt-8 text-center">
+              <GlassCard className="inline-block px-10 py-6 border-primary/30">
+                <p className="text-white/50 text-sm mb-2">Receita potencial anual</p>
+                <p className="text-5xl lg:text-6xl font-black bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent" style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
+                  R$ 4.320.000
+                </p>
+              </GlassCard>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* ═══════ SLIDE 7 — POSICIONAMENTO FINAL ═══════ */}
+        <section className="relative py-32 lg:py-40 px-6 overflow-hidden">
+          <ParallaxBg src={brazilMapBg} speed={0.2} overlay="bg-black/75" />
+
           <motion.div className="relative z-10 max-w-4xl mx-auto text-center" initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={stagger}>
             <motion.div variants={fadeUp}>
               <Globe className="w-16 h-16 text-primary/40 mx-auto mb-8" />
             </motion.div>
-            <motion.h2 variants={fadeUp} className="text-4xl lg:text-5xl font-bold mb-8">
-              SERAC já é referência.
+            <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold mb-8">
+              SERAC como <span className="text-primary">Plataforma Nacional</span><br />da Reforma 2026
             </motion.h2>
-            <motion.p variants={fadeUp} className="text-white/40 text-xl mb-6">Com ATENTAI, torna-se:</motion.p>
-            <motion.h3 variants={scaleIn} className="text-3xl lg:text-5xl font-black bg-gradient-to-r from-primary via-info to-accent bg-clip-text text-transparent"
-              style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
-              Pioneiro em Inteligência Artificial Contábil.
-            </motion.h3>
+
+            <motion.div variants={fadeUp} className="space-y-6 mb-12">
+              <GlassCard className="p-8">
+                <p className="text-xl text-white/70 leading-relaxed">
+                  A SERAC não está adquirindo tecnologia.<br />
+                  <span className="text-primary font-bold text-2xl">Está estruturando uma máquina de crescimento nacional.</span>
+                </p>
+              </GlassCard>
+            </motion.div>
+
+            <motion.div variants={fadeUp}>
+              <p className="text-lg text-white/50 mb-4">A Reforma Tributária será o maior evento contábil da década.</p>
+              <p className="text-2xl lg:text-3xl font-bold">
+                Quem liderar agora se torna <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">referência definitiva.</span>
+              </p>
+            </motion.div>
           </motion.div>
         </section>
 
-        {/* ═══════ SLIDE FINAL — CTA ═══════ */}
+        {/* ═══════ SLIDE 8 — CALL TO ACTION ═══════ */}
         <section className="relative min-h-screen flex items-center justify-center px-6 overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_50%,hsl(175_40%_10%),transparent_50%)]" />
-          <ParticleField />
-          
-          {/* Light beam effect */}
+
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
             <div className="w-[600px] h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent blur-sm" />
           </div>
 
-          <motion.div className="relative z-10 text-center" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
-            <motion.div variants={scaleIn} className="flex flex-col items-center gap-6 mb-10">
-              <img src="/logo-atentai.png" alt="AtentAI" className="h-16 sm:h-20 drop-shadow-[0_0_40px_hsl(175_60%_40%/0.5)]" />
-              <div className="flex items-center gap-4 sm:gap-8">
-                <span className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight text-white"
-                  style={{ textShadow: "0 0 60px hsl(0 0% 100% / 0.1)" }}>
-                  SERAC
-                </span>
-                <span className="text-3xl sm:text-4xl lg:text-5xl font-light text-primary/40">+</span>
-                <span className="text-4xl sm:text-5xl lg:text-7xl font-black tracking-tight bg-gradient-to-r from-primary to-info bg-clip-text text-transparent"
-                  style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
-                  ATENTAI
-                </span>
-              </div>
-            </motion.div>
-
-            <motion.h2 variants={fadeUp} className="text-2xl lg:text-3xl font-bold text-white/80 mb-12">
-              A Nova Era da Contabilidade Inteligente
+          <motion.div className="relative z-10 text-center max-w-3xl mx-auto" initial="hidden" whileInView="visible" viewport={{ once: true }} variants={stagger}>
+            <motion.h2 variants={fadeUp} className="text-4xl lg:text-6xl font-black mb-12">
+              Próximo Passo
             </motion.h2>
 
-            <motion.div variants={staggerFast} className="flex flex-col items-center gap-3 mb-16">
-              {["Mais inteligência.", "Mais estratégia.", "Mais crescimento."].map((t, i) => (
-                <motion.p key={i} variants={fadeUp} className="text-lg text-white/40">{t}</motion.p>
+            <motion.div className="space-y-4 mb-16" variants={staggerFast}>
+              {[
+                { num: "01", t: "Aprovação do modelo" },
+                { num: "02", t: "Definição do formato de monetização" },
+                { num: "03", t: "Início da implementação" },
+                { num: "04", t: "Go-live estratégico" },
+              ].map((step, i) => (
+                <motion.div key={i} variants={fadeUp}>
+                  <GlassCard className="p-5 flex items-center gap-4">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <span className="text-primary font-mono font-bold text-sm">{step.num}</span>
+                    </div>
+                    <span className="text-white/80 font-medium text-lg">{step.t}</span>
+                    <CheckCircle2 className="w-5 h-5 text-primary/40 ml-auto" />
+                  </GlassCard>
+                </motion.div>
               ))}
             </motion.div>
 
-            <motion.div variants={fadeUp}>
+            <motion.div variants={scaleIn} className="mb-12">
+              <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent" style={{ filter: "drop-shadow(0 0 40px hsl(175 60% 40% / 0.3))" }}>
+                O momento de posicionamento é agora.
+              </p>
+            </motion.div>
+
+            <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
                 href="https://atentai.com.br"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-gradient-to-r from-primary to-info text-white font-semibold text-lg hover:opacity-90 transition-opacity shadow-[0_0_40px_-10px_hsl(175_60%_40%/0.5)] group"
+                className="inline-flex items-center gap-3 px-10 py-5 rounded-2xl bg-gradient-to-r from-primary to-primary/80 text-white font-semibold text-lg hover:opacity-90 transition-opacity shadow-[0_0_40px_-10px_hsl(175_60%_40%/0.5)] group"
               >
                 <Rocket className="w-5 h-5" />
-                Quero saber mais
+                Agendar Reunião
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </a>
+              <a
+                href="https://wa.me/5511999999999"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-3 px-8 py-5 rounded-2xl border border-white/10 text-white/70 font-medium text-lg hover:bg-white/[0.05] transition-colors"
+              >
+                <Phone className="w-5 h-5" />
+                Falar pelo WhatsApp
+              </a>
             </motion.div>
+
+            <motion.p variants={fadeIn} className="mt-12 text-white/20 text-sm tracking-widest uppercase">
+              Powered by Atentai
+            </motion.p>
           </motion.div>
         </section>
 
         {/* Footer */}
         <footer className="py-8 px-6 text-center border-t border-white/[0.05]">
-          <p className="text-white/20 text-sm">© {new Date().getFullYear()} SERAC + ATENTAI · Inteligência Artificial para Contadores</p>
+          <p className="text-white/20 text-sm">© {new Date().getFullYear()} SERAC Intelligence Platform · Powered by Atentai</p>
         </footer>
       </div>
     </>
