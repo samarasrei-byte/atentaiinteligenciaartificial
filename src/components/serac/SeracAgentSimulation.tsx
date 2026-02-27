@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  Activity, ShieldCheck, FileSearch, MessageSquare, User,
-  Megaphone, Clock, CheckCircle2, AlertTriangle, ArrowRight,
-  Zap, TrendingUp, Mail, Phone, BarChart3
+  Target, TrendingUp, Users, ShieldCheck, BookOpen,
+  User, Clock, CheckCircle2, Zap, Gamepad2,
+  FileText, Megaphone, Building
 } from "lucide-react";
 
 interface SimMessage {
@@ -27,125 +27,163 @@ interface AgentTab {
 
 const agents: AgentTab[] = [
   {
-    id: "reforma",
-    label: "Monitoramento da Reforma",
-    shortLabel: "Reforma",
-    icon: Activity,
-    color: "text-violet-400",
-    dotColor: "bg-violet-500",
-    description: "Monitora em tempo real todas as mudanças legislativas da Reforma Tributária 2026 e simula impacto nos clientes.",
+    id: "sdr",
+    label: "SDR Tributário (Captação e Qualificação)",
+    shortLabel: "SDR",
+    icon: Target,
+    color: "text-blue-400",
+    dotColor: "bg-blue-500",
+    description: "Capta e qualifica leads automaticamente. Identifica faturamento, regime tributário, segmento e dor atual. Classifica como Frio, Morno, Quente ou Premium.",
     kpis: [
-      { label: "Alertas/mês", value: "142" },
-      { label: "Simulações", value: "89" },
-      { label: "Precisão", value: "97%" },
+      { label: "Leads/mês", value: "5.000" },
+      { label: "Qualificados", value: "23%" },
+      { label: "Premium", value: "8%" },
     ],
     simulation: [
-      { from: "Agente Reforma", text: "Nova publicação detectada: Lei Complementar IBS/CBS — analisando impacto...", time: "09:01", type: "info" },
-      { from: "Agente Reforma", text: "Impacto calculado para 23 clientes no regime Lucro Presumido. Aumento médio de +2,8%.", time: "09:03", type: "alert" },
-      { from: "Agente Reforma", text: "Simulação detalhada gerada para Alfa Ltda: carga tributária sobe R$ 18.400/ano.", time: "09:05", type: "action" },
-      { from: "Agente Reforma", text: "Relatório de impacto consolidado enviado ao Supervisor para validação.", time: "09:07", type: "success" },
+      { from: "SDR Tributário", text: "Novo lead capturado via landing page: Cartório São José — SP. Iniciando qualificação...", time: "09:01", type: "info" },
+      { from: "SDR Tributário", text: "Dados coletados: Faturamento R$ 3.2M/ano, Lucro Presumido, 12 funcionários, sem planejamento tributário.", time: "09:03", type: "action" },
+      { from: "SDR Tributário", text: "⭐ Lead classificado como PREMIUM. Score: 92/100. Dor principal: carga tributária elevada.", time: "09:04", type: "success" },
+      { from: "SDR Tributário", text: "Lead encaminhado automaticamente para Consultor Sênior Carlos Mendes. Reunião sugerida em 48h.", time: "09:05", type: "success" },
     ],
   },
   {
-    id: "compliance",
-    label: "Compliance Fiscal",
-    shortLabel: "Compliance",
-    icon: ShieldCheck,
-    color: "text-amber-400",
-    dotColor: "bg-amber-500",
-    description: "Verifica automaticamente inconsistências fiscais, créditos tributários e obrigações acessórias em tempo real.",
-    kpis: [
-      { label: "Inconsistências", value: "34" },
-      { label: "Economia gerada", value: "R$ 890k" },
-      { label: "Obrigações", value: "100%" },
-    ],
-    simulation: [
-      { from: "Agente Compliance", text: "Iniciando auditoria automatizada nos créditos de PIS/COFINS — Alfa Ltda.", time: "09:10", type: "info" },
-      { from: "Agente Compliance", text: "⚠️ Divergência de R$ 48.000 no crédito de PIS. Possível recuperação.", time: "09:12", type: "alert" },
-      { from: "Agente Compliance", text: "Cruzamento SPED x NF-e concluído. 3 notas sem correspondência identificadas.", time: "09:14", type: "action" },
-      { from: "Agente Compliance", text: "Dossiê de compliance gerado. Encaminhando para revisão do Supervisor.", time: "09:16", type: "success" },
-    ],
-  },
-  {
-    id: "triagem",
-    label: "Triagem Documental",
-    shortLabel: "Triagem",
-    icon: FileSearch,
-    color: "text-sky-400",
-    dotColor: "bg-sky-500",
-    description: "Classifica, organiza e valida documentos recebidos usando OCR e IA, sinalizando pendências automaticamente.",
-    kpis: [
-      { label: "Docs/dia", value: "1.200+" },
-      { label: "Tempo médio", value: "3s" },
-      { label: "Acurácia", value: "99.2%" },
-    ],
-    simulation: [
-      { from: "Agente Triagem", text: "42 documentos recebidos de Alfa Ltda. Iniciando classificação por IA.", time: "09:15", type: "info" },
-      { from: "Agente Triagem", text: "OCR aplicado em 12 notas fiscais digitalizadas. Dados extraídos com sucesso.", time: "09:16", type: "action" },
-      { from: "Agente Triagem", text: "⚠️ 3 documentos com pendência: DARF vencido, CND expirada, contrato sem assinatura.", time: "09:17", type: "alert" },
-      { from: "Agente Triagem", text: "Documentos organizados por categoria. Dashboard atualizado.", time: "09:18", type: "success" },
-    ],
-  },
-  {
-    id: "atendimento",
-    label: "Atendimento ao Cliente",
-    shortLabel: "Atendimento",
-    icon: MessageSquare,
+    id: "diagnostico",
+    label: "Diagnóstico Tributário Inteligente",
+    shortLabel: "Diagnóstico",
+    icon: TrendingUp,
     color: "text-emerald-400",
     dotColor: "bg-emerald-500",
-    description: "Atende clientes 24/7 com respostas contextuais, escala para humanos quando necessário e mantém histórico completo.",
+    description: "Analisa faturamento, regime tributário e estrutura da empresa para identificar excesso de tributação e oportunidades de economia fiscal.",
     kpis: [
-      { label: "Satisfação", value: "96%" },
-      { label: "Tempo resposta", value: "<30s" },
-      { label: "Resolução IA", value: "78%" },
+      { label: "Diagnósticos/mês", value: "340" },
+      { label: "Economia média", value: "R$ 52k" },
+      { label: "Conversão", value: "34%" },
     ],
     simulation: [
-      { from: "Agente Atendimento", text: "Cliente Alfa Ltda abriu chamado: 'Qual o impacto da reforma no meu regime?'", time: "09:20", type: "info" },
-      { from: "Agente Atendimento", text: "Contexto carregado: Lucro Presumido, setor serviços, faturamento R$ 2.4M/ano.", time: "09:20", type: "action" },
-      { from: "Agente Atendimento", text: "Resposta personalizada enviada com simulação + link para relatório detalhado.", time: "09:21", type: "success" },
-      { from: "Agente Atendimento", text: "Cliente satisfeito — NPS 9. Caso encerrado automaticamente.", time: "09:25", type: "success" },
+      { from: "Diagnóstico", text: "Iniciando análise tributária de Cartório São José: cruzando dados com base setorial de 1.200 cartórios...", time: "09:10", type: "info" },
+      { from: "Diagnóstico", text: "⚠️ Regime atual (Lucro Presumido) sub-ótimo. Economia estimada com migração para Lucro Real: R$ 74.000/ano.", time: "09:13", type: "alert" },
+      { from: "Diagnóstico", text: "Créditos de PIS/COFINS não aproveitados identificados: R$ 28.000 em recuperação retroativa.", time: "09:15", type: "alert" },
+      { from: "Diagnóstico", text: "Relatório gerado: 'Sua empresa pode estar pagando até 18,7% a mais de impostos do que deveria.'", time: "09:16", type: "success" },
     ],
   },
   {
-    id: "comercial",
-    label: "Comercial & Nutrição de Leads",
-    shortLabel: "Comercial",
+    id: "cartorios",
+    label: "Especialista em Cartórios",
+    shortLabel: "Cartórios",
+    icon: Building,
+    color: "text-violet-400",
+    dotColor: "bg-violet-500",
+    description: "Agente especializado no segmento de cartórios. Conhece a legislação específica, tributação diferenciada e desafios operacionais do setor.",
+    kpis: [
+      { label: "Cartórios ativos", value: "187" },
+      { label: "Economia gerada", value: "R$ 4.2M" },
+      { label: "Satisfação", value: "97%" },
+    ],
+    simulation: [
+      { from: "Esp. Cartórios", text: "Contexto carregado: setor extrajudicial, regime emolumentar, peculiaridades ISSQN de serviços notariais.", time: "09:16", type: "info" },
+      { from: "Esp. Cartórios", text: "Cartórios com faturamento acima de R$ 2M têm 73% de chance de economia com Lucro Real, segundo nossa base.", time: "09:17", type: "action" },
+      { from: "Esp. Cartórios", text: "Sugestão: restructuração societária para separação de serviços registrais e notariais. Impacto: -12% de carga.", time: "09:18", type: "action" },
+      { from: "Esp. Cartórios", text: "Proposta customizada para cartório gerada com linguagem específica do setor. Pronta para envio.", time: "09:19", type: "success" },
+    ],
+  },
+  {
+    id: "infoprodutores",
+    label: "Especialista em Infoprodutores",
+    shortLabel: "Infoprodutores",
     icon: Megaphone,
     color: "text-rose-400",
     dotColor: "bg-rose-500",
-    description: "Prospecta contadores, nutre leads com conteúdo estratégico e qualifica oportunidades para o time de vendas.",
+    description: "Atende criadores de conteúdo, infoprodutores e negócios digitais com foco em tributação sobre royalties, SaaS e vendas digitais.",
     kpis: [
-      { label: "Leads/mês", value: "5.000" },
-      { label: "Conversão", value: "6%" },
-      { label: "Pipeline", value: "R$ 750k" },
+      { label: "Infoprodutores", value: "312" },
+      { label: "Ticket médio", value: "R$ 3.800" },
+      { label: "Retenção", value: "94%" },
     ],
     simulation: [
-      { from: "Agente Comercial", text: "Campanha de prospecção iniciada: 5.000 contadores segmentados por região e porte.", time: "08:00", type: "info" },
-      { from: "Agente Comercial", text: "E-mail de impacto tributário enviado — 'Como a Reforma afeta seus clientes'. Taxa abertura: 32%.", time: "10:00", type: "action" },
-      { from: "Agente Comercial", text: "147 leads engajaram. Score atualizado. 23 qualificados para reunião.", time: "14:00", type: "alert" },
-      { from: "Agente Comercial", text: "Sequência de nutrição ativada: webinar + case study + proposta personalizada.", time: "15:00", type: "action" },
-      { from: "Agente Comercial", text: "✅ 8 reuniões agendadas automaticamente. Pipeline atualizado: +R$ 200k.", time: "17:00", type: "success" },
+      { from: "Esp. Infoprodutores", text: "Lead identificado: infoprodutor com faturamento R$ 800k/mês em cursos online. Regime: Simples Nacional.", time: "10:00", type: "info" },
+      { from: "Esp. Infoprodutores", text: "⚠️ Simples Nacional com Anexo V é sub-ótimo acima de R$ 480k/mês. Recomendação: migrar para Lucro Presumido.", time: "10:03", type: "alert" },
+      { from: "Esp. Infoprodutores", text: "Economia projetada: R$ 156.000/ano com reestruturação + holding patrimonial.", time: "10:05", type: "action" },
+      { from: "Esp. Infoprodutores", text: "Material personalizado gerado: 'Guia Tributário para Infoprodutores 2026'. Enviado ao lead.", time: "10:07", type: "success" },
     ],
   },
   {
-    id: "supervisor",
-    label: "Supervisor Humano (Contador SERAC)",
-    shortLabel: "Supervisor",
-    icon: User,
+    id: "gamers",
+    label: "Especialista em Gamers & Streamers",
+    shortLabel: "Gamers",
+    icon: Gamepad2,
     color: "text-cyan-400",
-    dotColor: "bg-cyan-400",
-    description: "Valida decisões críticas dos agentes, aprova recomendações e garante a qualidade estratégica de todas as entregas.",
+    dotColor: "bg-cyan-500",
+    description: "Focado em streamers, e-sports e criadores de conteúdo gaming. Tributação sobre doações, subs, patrocínios e premiações.",
     kpis: [
-      { label: "Validações/dia", value: "45" },
-      { label: "Aprovação", value: "94%" },
-      { label: "Tempo revisão", value: "8min" },
+      { label: "Gamers ativos", value: "89" },
+      { label: "Economia média", value: "R$ 42k" },
+      { label: "NPS", value: "96" },
     ],
     simulation: [
-      { from: "Supervisor SERAC", text: "Recebidos 4 relatórios dos agentes para validação — priorizando por urgência.", time: "09:30", type: "info" },
-      { from: "Supervisor SERAC", text: "Relatório de Compliance aprovado. Economia de R$ 48k confirmada para Alfa Ltda.", time: "09:35", type: "success" },
-      { from: "Supervisor SERAC", text: "Ajuste solicitado no relatório de Reforma: incluir cenário otimista na simulação.", time: "09:38", type: "action" },
-      { from: "Supervisor SERAC", text: "Leads qualificados pelo Agente Comercial revisados. 6/8 aprovados para proposta.", time: "09:42", type: "success" },
-      { from: "Supervisor SERAC", text: "✅ Todas as validações concluídas. Relatório final enviado ao cliente.", time: "09:50", type: "success" },
+      { from: "Esp. Gamers", text: "Streamer captado: receita de R$ 120k/mês entre subs, doações e patrocínios. Pessoa Física atualmente.", time: "11:00", type: "info" },
+      { from: "Esp. Gamers", text: "⚠️ Tributação PF em 27,5% sobre rendimentos. Economia com PJ (Simples): 60% de redução tributária.", time: "11:02", type: "alert" },
+      { from: "Esp. Gamers", text: "Planejamento inclui: abertura MEI/ME, conta PJ, contratos de patrocínio restructurados.", time: "11:04", type: "action" },
+      { from: "Esp. Gamers", text: "Proposta enviada na linguagem do público gamer. Call agendada para amanhã.", time: "11:05", type: "success" },
+    ],
+  },
+  {
+    id: "success",
+    label: "Customer Success AI",
+    shortLabel: "Success",
+    icon: ShieldCheck,
+    color: "text-amber-400",
+    dotColor: "bg-amber-500",
+    description: "Acompanha clientes ativos, envia alertas sobre impostos e riscos, sugere melhorias e gera oportunidades de upsell automático.",
+    kpis: [
+      { label: "Clientes ativos", value: "1.847" },
+      { label: "Upsell/mês", value: "R$ 320k" },
+      { label: "Churn", value: "2.1%" },
+    ],
+    simulation: [
+      { from: "Customer Success", text: "Alerta para cliente Tech Solutions: prazo DCTF vence em 5 dias. Notificação enviada.", time: "08:00", type: "info" },
+      { from: "Customer Success", text: "Oportunidade detectada: cliente cresceu 40% em 6 meses. Sugerindo migração de Simples para Lucro Presumido.", time: "08:15", type: "alert" },
+      { from: "Customer Success", text: "E-mail personalizado enviado: 'Identificamos que sua empresa pode reduzir impostos migrando de regime.'", time: "08:20", type: "action" },
+      { from: "Customer Success", text: "✅ Cliente aceitou reunião de upsell. Valor estimado do upgrade: R$ 4.200/mês.", time: "09:00", type: "success" },
+    ],
+  },
+  {
+    id: "conteudo",
+    label: "Autoridade & Conteúdo",
+    shortLabel: "Conteúdo",
+    icon: BookOpen,
+    color: "text-pink-400",
+    dotColor: "bg-pink-500",
+    description: "Gera conteúdo técnico de autoridade, responde perguntas especializadas e posiciona o SERAC como referência nacional em inteligência fiscal.",
+    kpis: [
+      { label: "Conteúdos/mês", value: "240" },
+      { label: "Engajamento", value: "+180%" },
+      { label: "Leads orgânicos", value: "890" },
+    ],
+    simulation: [
+      { from: "Agente Conteúdo", text: "Tendência detectada: 'regime tributário para infoprodutor' com +340% de buscas. Gerando artigo técnico.", time: "07:00", type: "info" },
+      { from: "Agente Conteúdo", text: "Artigo publicado: 'Qual o melhor regime tributário para infoprodutores em 2026?' — SEO otimizado.", time: "07:30", type: "action" },
+      { from: "Agente Conteúdo", text: "Respostas automáticas configuradas para 15 perguntas frequentes sobre Reforma Tributária.", time: "08:00", type: "action" },
+      { from: "Agente Conteúdo", text: "✅ Post gerou 47 leads orgânicos nas últimas 24h. Pipeline atualizado automaticamente.", time: "09:00", type: "success" },
+    ],
+  },
+  {
+    id: "diretor",
+    label: "Diretor de Inteligência (Humano)",
+    shortLabel: "Diretor",
+    icon: User,
+    color: "text-slate-300",
+    dotColor: "bg-cyan-400",
+    description: "Supervisiona todos os agentes, valida decisões estratégicas, aprova propostas premium e garante qualidade da operação.",
+    kpis: [
+      { label: "Validações/dia", value: "68" },
+      { label: "Aprovação", value: "94%" },
+      { label: "Tempo revisão", value: "6min" },
+    ],
+    simulation: [
+      { from: "Diretor", text: "Dashboard matinal: 23 leads premium qualificados, 4 propostas pendentes, 2 upsells em andamento.", time: "08:30", type: "info" },
+      { from: "Diretor", text: "Proposta Cartório São José revisada e aprovada. Economia de R$ 74k/ano validada pela equipe técnica.", time: "09:25", type: "success" },
+      { from: "Diretor", text: "Ajuste solicitado na proposta do infoprodutor: incluir cenário com holding patrimonial.", time: "09:30", type: "action" },
+      { from: "Diretor", text: "✅ Relatório semanal DIEC: 30 novos contratos, R$ 75k em receita adicional, pipeline de R$ 1.2M.", time: "10:00", type: "success" },
     ],
   },
 ];
@@ -158,7 +196,7 @@ const typeStyles = {
 };
 
 export function SeracAgentSimulation() {
-  const [activeTab, setActiveTab] = useState("reforma");
+  const [activeTab, setActiveTab] = useState("sdr");
   const [visibleMsgs, setVisibleMsgs] = useState(0);
 
   const active = agents.find((a) => a.id === activeTab)!;
@@ -180,9 +218,9 @@ export function SeracAgentSimulation() {
       <div className="px-6 py-5 border-b border-white/[0.06]">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_hsl(185_80%_60%/0.5)]" />
-          <h3 className="text-xl font-black text-white">Simulação dos Agentes</h3>
+          <h3 className="text-xl font-black text-white">Simulação dos Agentes DIEC</h3>
         </div>
-        <p className="text-sm text-slate-500">Veja como cada agente atua em tempo real</p>
+        <p className="text-sm text-slate-500">Departamento de Inteligência Fiscal e Crescimento — veja cada agente em ação</p>
       </div>
 
       {/* Tabs */}
@@ -224,7 +262,7 @@ export function SeracAgentSimulation() {
           {/* Left — Agent Info + KPIs */}
           <div className="lg:w-80 p-6 border-b lg:border-b-0 lg:border-r border-white/[0.06] bg-white/[0.01]">
             <div className="flex items-center gap-3 mb-4">
-              <div className={`w-12 h-12 rounded-2xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08]`}>
+              <div className="w-12 h-12 rounded-2xl flex items-center justify-center bg-white/[0.05] border border-white/[0.08]">
                 <active.icon className={`w-6 h-6 ${active.color}`} />
               </div>
               <div>

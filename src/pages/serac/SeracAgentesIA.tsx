@@ -2,67 +2,113 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { Bot, MessageSquare, FileSearch, ShieldCheck, Activity, Eye, BarChart3 } from 'lucide-react';
+import {
+  Bot, Target, TrendingUp, Users, ShieldCheck, BookOpen,
+  User, Eye, BarChart3, Megaphone, Gamepad2, Building
+} from 'lucide-react';
 import { SeracAgentsOrchestration } from '@/components/serac/SeracAgentsOrchestration';
+import { SeracAgentSimulation } from '@/components/serac/SeracAgentSimulation';
+
 const agentes = [
   {
-    nome: 'Agente de Atendimento Fiscal',
-    desc: 'Responde dúvidas tributárias dos clientes com base na legislação vigente e na LC 214/2025.',
-    icon: MessageSquare,
+    nome: 'SDR Tributário',
+    desc: 'Capta e qualifica leads automaticamente. Classifica como Frio, Morno, Quente ou Premium.',
+    icon: Target,
     status: 'ativo',
-    logs: 1247,
-    precisao: 94,
-    color: '#2563EB',
+    logs: 5247,
+    precisao: 92,
+    color: '#3B82F6',
   },
   {
-    nome: 'Agente de Triagem Documental',
-    desc: 'Classifica e valida documentos fiscais recebidos, identificando inconsistências automaticamente.',
-    icon: FileSearch,
+    nome: 'Diagnóstico Tributário',
+    desc: 'Analisa faturamento e regime para identificar economia fiscal. Gera gatilho de contratação.',
+    icon: TrendingUp,
     status: 'ativo',
-    logs: 856,
+    logs: 3420,
     precisao: 97,
-    color: '#059669',
+    color: '#10B981',
   },
   {
-    nome: 'Agente de Compliance',
-    desc: 'Monitora obrigações acessórias e prazos, gerando alertas preventivos para a equipe.',
-    icon: ShieldCheck,
-    status: 'pausado',
-    logs: 432,
-    precisao: 91,
-    color: '#D97706',
+    nome: 'Especialista Cartórios',
+    desc: 'Agente nichado para o setor extrajudicial. Conhece legislação específica de cartórios.',
+    icon: Building,
+    status: 'ativo',
+    logs: 1890,
+    precisao: 96,
+    color: '#8B5CF6',
   },
   {
-    nome: 'Agente de Monitoramento de Risco',
-    desc: 'Analisa continuamente a carteira de clientes para identificar riscos fiscais emergentes.',
-    icon: Activity,
+    nome: 'Especialista Infoprodutores',
+    desc: 'Focado em criadores digitais, SaaS e vendas online. Tributação sobre royalties e cursos.',
+    icon: Megaphone,
     status: 'ativo',
     logs: 2103,
-    precisao: 89,
-    color: '#7C3AED',
+    precisao: 94,
+    color: '#F43F5E',
+  },
+  {
+    nome: 'Especialista Gamers',
+    desc: 'Streamers, e-sports e gaming. Tributação sobre doações, subs, patrocínios e premiações.',
+    icon: Gamepad2,
+    status: 'ativo',
+    logs: 856,
+    precisao: 93,
+    color: '#06B6D4',
+  },
+  {
+    nome: 'Customer Success AI',
+    desc: 'Acompanha clientes, envia alertas fiscais, sugere melhorias e gera upsell automático.',
+    icon: ShieldCheck,
+    status: 'ativo',
+    logs: 8932,
+    precisao: 95,
+    color: '#F59E0B',
+  },
+  {
+    nome: 'Autoridade & Conteúdo',
+    desc: 'Gera conteúdo técnico, respostas especializadas e posicionamento de autoridade.',
+    icon: BookOpen,
+    status: 'ativo',
+    logs: 4521,
+    precisao: 91,
+    color: '#EC4899',
+  },
+  {
+    nome: 'Diretor de Inteligência',
+    desc: 'Supervisiona todos os agentes, valida decisões e aprova propostas premium.',
+    icon: User,
+    status: 'ativo',
+    logs: 6800,
+    precisao: 99,
+    color: '#0891B2',
   },
 ];
 
 const logsRecentes = [
-  { agente: 'Atendimento Fiscal', acao: 'Respondeu consulta sobre crédito de ICMS-ST', tempo: '2 min atrás', supervisionado: true },
-  { agente: 'Triagem Documental', acao: 'Classificou 12 notas fiscais de entrada', tempo: '8 min atrás', supervisionado: false },
-  { agente: 'Monitoramento de Risco', acao: 'Detectou divergência na EFD de cliente', tempo: '15 min atrás', supervisionado: true },
-  { agente: 'Atendimento Fiscal', acao: 'Gerou parecer sobre recuperação de PIS/COFINS', tempo: '32 min atrás', supervisionado: true },
+  { agente: 'SDR Tributário', acao: 'Lead premium captado: Cartório São José — score 92%', tempo: '2 min atrás', supervisionado: false },
+  { agente: 'Diagnóstico', acao: 'Economia de R$ 74k/ano identificada para lead premium', tempo: '5 min atrás', supervisionado: true },
+  { agente: 'Esp. Infoprodutores', acao: 'Proposta personalizada enviada — migração de regime', tempo: '12 min atrás', supervisionado: true },
+  { agente: 'Customer Success', acao: 'Upsell detectado: cliente cresceu 40%, sugerindo Lucro Presumido', tempo: '18 min atrás', supervisionado: false },
+  { agente: 'Conteúdo', acao: 'Artigo publicado: regime tributário para infoprodutores 2026', tempo: '25 min atrás', supervisionado: false },
+  { agente: 'Diretor', acao: 'Relatório semanal DIEC aprovado: 30 novos contratos, R$ 75k receita', tempo: '32 min atrás', supervisionado: true },
 ];
 
 export default function SeracAgentesIA() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold text-[#1B3A5C]">Agentes de IA</h2>
-        <p className="text-sm text-[#6B7280] mt-1">Assistentes inteligentes com supervisão humana</p>
+        <h2 className="text-2xl font-bold text-[#1B3A5C]">DIEC — Inteligência Fiscal e Crescimento</h2>
+        <p className="text-sm text-[#6B7280] mt-1">Departamento de agentes especializados com supervisão humana</p>
       </div>
 
       {/* Orchestration Card */}
       <SeracAgentsOrchestration compact />
 
-      {/* Agents */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {/* Agent Simulation */}
+      <SeracAgentSimulation />
+
+      {/* Agents Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
         {agentes.map((a, i) => (
           <Card key={i} className="border-[#E5E7EB] hover:shadow-md transition-shadow">
             <CardContent className="p-5">
@@ -80,7 +126,7 @@ export default function SeracAgentesIA() {
               </div>
               <p className="text-xs text-[#6B7280] mb-4">{a.desc}</p>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-[#9CA3AF]">{a.logs.toLocaleString()} logs registrados</span>
+                <span className="text-[#9CA3AF]">{a.logs.toLocaleString()} logs</span>
                 <span className="font-semibold" style={{ color: a.color }}>Precisão: {a.precisao}%</span>
               </div>
               <div className="flex gap-2 mt-3">
@@ -100,7 +146,7 @@ export default function SeracAgentesIA() {
       <Card className="border-[#E5E7EB]">
         <CardHeader>
           <CardTitle className="text-sm font-semibold text-[#1B3A5C] flex items-center gap-2">
-            <Bot className="h-4 w-4" /> Logs Recentes
+            <Bot className="h-4 w-4" /> Logs Recentes — DIEC
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
