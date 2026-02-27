@@ -78,12 +78,15 @@ export default function SeracDashboard() {
   useEffect(() => {
     let i = 0;
     const interval = setInterval(() => {
-      if (i < assistantMessages.length) {
-        setVisibleMessages(prev => [...prev, assistantMessages[i]]);
-        i++;
-      } else {
+      if (i >= assistantMessages.length) {
         clearInterval(interval);
+        return;
       }
+      const msg = assistantMessages[i];
+      if (msg) {
+        setVisibleMessages(prev => [...prev, msg]);
+      }
+      i++;
     }, 1200);
     return () => clearInterval(interval);
   }, []);
