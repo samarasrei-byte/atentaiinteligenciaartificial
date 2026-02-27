@@ -17,6 +17,7 @@ import seracAiBrain from "@/assets/serac-ai-brain.jpg";
 import seracDashboard from "@/assets/serac-dashboard.jpg";
 import seracOffice from "@/assets/serac-office.png";
 import seracBuilding from "@/assets/serac-building.png";
+import seracLogo from "@/assets/logo_serac.png";
 
 /* ── Animated Counter ── */
 function AnimatedCounter({ value, suffix = "", prefix = "", duration = 2 }: { value: number; suffix?: string; prefix?: string; duration?: number }) {
@@ -239,9 +240,9 @@ export default function SeracPresentation() {
               <motion.div variants={fadeUp}>
                 <Badge>Proposta Exclusiva · Contrato 12 Meses</Badge>
               </motion.div>
-              <motion.h1 variants={fadeUp} className="text-6xl sm:text-7xl lg:text-9xl font-black tracking-tighter text-white mb-4" style={{ textShadow: "0 0 80px hsl(185 80% 50% / 0.2)" }}>
-                SERAC
-              </motion.h1>
+              <motion.div variants={fadeUp} className="flex justify-center mb-4">
+                <img src={seracLogo} alt="SERAC" className="h-20 sm:h-24 lg:h-32 object-contain drop-shadow-[0_0_40px_hsl(185_80%_50%/0.3)]" />
+              </motion.div>
               <motion.p variants={fadeUp} className="text-2xl sm:text-3xl lg:text-5xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-cyan-300 bg-clip-text text-transparent mb-6">
                 Seu Departamento Comercial com IA
               </motion.p>
