@@ -311,11 +311,10 @@ export default function SeracPresentation() {
                   { value: 21000000, suffix: "+", label: "Empresas no Brasil" },
                   { value: 13800, suffix: "+", label: "Cartórios" },
                   { value: 520000, suffix: "+", label: "Contadores" },
-                  { value: 4320000, prefix: "R$ ", label: "Receita/ano" },
                 ].map((s, i) => (
                   <div key={i} className="text-center">
                     <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                      <AnimatedCounter value={s.value} prefix={s.prefix || ""} suffix={s.suffix || ""} duration={2.5} />
+                      <AnimatedCounter value={s.value} prefix={"" } suffix={s.suffix || ""} duration={2.5} />
                     </div>
                     <p className="text-slate-500 text-xs mt-1 uppercase tracking-wider font-semibold">{s.label}</p>
                   </div>
