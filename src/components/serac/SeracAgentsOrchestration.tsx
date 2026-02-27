@@ -18,11 +18,11 @@ interface AgentMessage {
 
 /* ── Data ── */
 const agentConfig = {
-  reforma: { label: "Monitoramento da Reforma", icon: Activity, color: "bg-violet-100 text-violet-700", dot: "bg-violet-500" },
-  compliance: { label: "Compliance Fiscal", icon: ShieldCheck, color: "bg-amber-100 text-amber-700", dot: "bg-amber-500" },
-  triagem: { label: "Triagem Documental", icon: FileSearch, color: "bg-sky-100 text-sky-700", dot: "bg-sky-500" },
-  atendimento: { label: "Atendimento ao Cliente", icon: MessageSquare, color: "bg-emerald-100 text-emerald-700", dot: "bg-emerald-500" },
-  supervisor: { label: "Supervisor SERAC", icon: User, color: "bg-slate-200 text-slate-800", dot: "bg-slate-700" },
+  reforma: { label: "Monitoramento da Reforma", icon: Activity, color: "bg-violet-500/15 text-violet-400", dot: "bg-violet-500" },
+  compliance: { label: "Compliance Fiscal", icon: ShieldCheck, color: "bg-amber-500/15 text-amber-400", dot: "bg-amber-500" },
+  triagem: { label: "Triagem Documental", icon: FileSearch, color: "bg-sky-500/15 text-sky-400", dot: "bg-sky-500" },
+  atendimento: { label: "Atendimento ao Cliente", icon: MessageSquare, color: "bg-emerald-500/15 text-emerald-400", dot: "bg-emerald-500" },
+  supervisor: { label: "Supervisor SERAC", icon: User, color: "bg-cyan-500/15 text-cyan-400", dot: "bg-cyan-400" },
 };
 
 const conversation: AgentMessage[] = [
@@ -34,15 +34,15 @@ const conversation: AgentMessage[] = [
 ];
 
 const statusConfig = {
-  ativo: { label: "Ativo", cls: "bg-emerald-100 text-emerald-700" },
-  analisando: { label: "Analisando", cls: "bg-amber-100 text-amber-700" },
-  concluído: { label: "Concluído", cls: "bg-slate-100 text-slate-600" },
+  ativo: { label: "Ativo", cls: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20" },
+  analisando: { label: "Analisando", cls: "bg-amber-500/15 text-amber-400 border border-amber-500/20" },
+  concluído: { label: "Concluído", cls: "bg-slate-500/15 text-slate-400 border border-slate-500/20" },
 };
 
 const riskConfig = {
-  baixo: { label: "Baixo", cls: "text-emerald-600 bg-emerald-50 border-emerald-200" },
-  medio: { label: "Médio", cls: "text-amber-600 bg-amber-50 border-amber-200" },
-  alto: { label: "Alto", cls: "text-red-600 bg-red-50 border-red-200" },
+  baixo: { label: "Baixo", cls: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20" },
+  medio: { label: "Médio", cls: "text-amber-400 bg-amber-500/10 border-amber-500/20" },
+  alto: { label: "Alto", cls: "text-red-400 bg-red-500/10 border-red-500/20" },
 };
 
 /* ── Component ── */
@@ -51,7 +51,6 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
   const [expanded, setExpanded] = useState(false);
   const [approved, setApproved] = useState(false);
 
-  // Animate messages appearing one by one
   useEffect(() => {
     if (visibleMessages < conversation.length) {
       const timer = setTimeout(() => setVisibleMessages((v) => v + 1), 800);
@@ -62,30 +61,30 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
   const risk = "medio" as keyof typeof riskConfig;
 
   return (
-    <div className={`rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden ${compact ? "" : "max-w-5xl mx-auto"}`}>
+    <div className={`rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm shadow-lg overflow-hidden ${compact ? "" : "max-w-5xl mx-auto"}`}>
       {/* Header */}
-      <div className="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+      <div className="px-6 py-5 border-b border-white/10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2 mb-1">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <h3 className="text-lg font-bold text-slate-900">Agentes SERAC em Ação</h3>
+            <div className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse shadow-[0_0_8px_hsl(185_80%_60%/0.5)]" />
+            <h3 className="text-lg font-bold text-white">Agentes SERAC em Ação</h3>
           </div>
-          <p className="text-sm text-slate-500">Orquestração Inteligente com Supervisão Humana</p>
+          <p className="text-sm text-slate-400">Orquestração Inteligente com Supervisão Humana</p>
         </div>
         <div className="flex items-center gap-2">
           <span className={`inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full border ${riskConfig[risk].cls}`}>
             <AlertTriangle className="w-3 h-3" />
             Risco: {riskConfig[risk].label}
           </span>
-          <span className="inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-slate-100 text-slate-600">
-            <Zap className="w-3 h-3" /> 5 agentes
+          <span className="inline-flex items-center gap-1 text-xs font-medium px-3 py-1 rounded-full bg-white/5 border border-white/10 text-slate-400">
+            <Zap className="w-3 h-3 text-cyan-400" /> 5 agentes
           </span>
         </div>
       </div>
 
       <div className="flex flex-col lg:flex-row">
         {/* Chat Panel */}
-        <div className="flex-1 p-5 border-b lg:border-b-0 lg:border-r border-slate-100">
+        <div className="flex-1 p-5 border-b lg:border-b-0 lg:border-r border-white/10">
           <div className="space-y-3 min-h-[280px]">
             <AnimatePresence>
               {conversation.slice(0, visibleMessages).map((msg) => {
@@ -98,22 +97,22 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className={`flex gap-3 ${isSuper ? "bg-slate-50 -mx-2 px-2 py-2 rounded-xl border border-slate-200" : ""}`}
+                    className={`flex gap-3 ${isSuper ? "bg-cyan-500/5 -mx-2 px-2 py-2 rounded-xl border border-cyan-500/20" : ""}`}
                   >
                     <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 ${cfg.color}`}>
                       <Icon className="w-4 h-4" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                        <span className="text-sm font-semibold text-slate-800">{cfg.label}</span>
+                        <span className="text-sm font-semibold text-slate-200">{cfg.label}</span>
                         <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${statusConfig[msg.status].cls}`}>
                           {statusConfig[msg.status].label}
                         </span>
-                        <span className="text-[10px] text-slate-400 flex items-center gap-0.5 ml-auto">
+                        <span className="text-[10px] text-slate-500 flex items-center gap-0.5 ml-auto">
                           <Clock className="w-2.5 h-2.5" /> {msg.timestamp}
                         </span>
                       </div>
-                      <p className="text-sm text-slate-600 leading-relaxed">{msg.message}</p>
+                      <p className="text-sm text-slate-400 leading-relaxed">{msg.message}</p>
                     </div>
                   </motion.div>
                 );
@@ -123,36 +122,36 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
             {visibleMessages < conversation.length && (
               <div className="flex items-center gap-2 pl-12">
                 <div className="flex gap-1">
-                  <span className="w-2 h-2 rounded-full bg-slate-300 animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <span className="w-2 h-2 rounded-full bg-slate-300 animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <span className="w-2 h-2 rounded-full bg-slate-300 animate-bounce" style={{ animationDelay: "300ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-cyan-500/50 animate-bounce" style={{ animationDelay: "0ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-cyan-500/50 animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 rounded-full bg-cyan-500/50 animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
-                <span className="text-xs text-slate-400">Agente processando...</span>
+                <span className="text-xs text-slate-500">Agente processando...</span>
               </div>
             )}
           </div>
 
           {/* Actions */}
-          <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-slate-100">
+          <div className="flex flex-wrap items-center gap-2 mt-4 pt-4 border-t border-white/10">
             <button
               onClick={() => setApproved(true)}
               disabled={approved}
-              className={`inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg transition-colors ${
+              className={`inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg transition-all ${
                 approved
-                  ? "bg-emerald-100 text-emerald-700 cursor-default"
-                  : "bg-emerald-600 text-white hover:bg-emerald-700"
+                  ? "bg-emerald-500/15 text-emerald-400 cursor-default border border-emerald-500/20"
+                  : "bg-cyan-500 text-white hover:bg-cyan-600 shadow-[0_0_12px_hsl(185_80%_50%/0.3)]"
               }`}
             >
               <CheckCircle2 className="w-3.5 h-3.5" />
               {approved ? "Ação Aprovada" : "Aprovar ação"}
             </button>
-            <button className="inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
+            <button className="inline-flex items-center gap-1.5 text-xs font-medium px-4 py-2 rounded-lg border border-white/10 text-slate-400 hover:bg-white/5 transition-colors">
               <RotateCcw className="w-3.5 h-3.5" />
               Solicitar revisão humana
             </button>
             <button
               onClick={() => setExpanded(!expanded)}
-              className="inline-flex items-center gap-1 text-xs font-medium px-4 py-2 rounded-lg text-slate-500 hover:text-slate-700 hover:bg-slate-50 transition-colors ml-auto"
+              className="inline-flex items-center gap-1 text-xs font-medium px-4 py-2 rounded-lg text-slate-500 hover:text-slate-300 hover:bg-white/5 transition-colors ml-auto"
             >
               {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               Ver Log Completo
@@ -169,7 +168,7 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
                 transition={{ duration: 0.3 }}
                 className="overflow-hidden"
               >
-                <div className="mt-3 space-y-2 p-3 rounded-xl bg-slate-50 border border-slate-100">
+                <div className="mt-3 space-y-2 p-3 rounded-xl bg-white/5 border border-white/10">
                   {[
                     { t: "09:10", a: "Reforma", d: "Iniciou monitoramento do cliente Alfa Ltda" },
                     { t: "09:11", a: "Reforma", d: "Simulação IBS/CBS concluída — aumento estimado +3,2%" },
@@ -180,8 +179,8 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
                     { t: "09:20", a: "Supervisor", d: "Validação final concluída" },
                   ].map((log, i) => (
                     <div key={i} className="flex items-start gap-3 text-xs">
-                      <span className="text-slate-400 font-mono w-10 flex-shrink-0">{log.t}</span>
-                      <span className="font-medium text-slate-600 w-24 flex-shrink-0">{log.a}</span>
+                      <span className="text-cyan-500/70 font-mono w-10 flex-shrink-0">{log.t}</span>
+                      <span className="font-medium text-slate-400 w-24 flex-shrink-0">{log.a}</span>
                       <span className="text-slate-500">{log.d}</span>
                     </div>
                   ))}
@@ -192,8 +191,8 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
         </div>
 
         {/* Sidebar — Client Summary */}
-        <div className="lg:w-72 p-5 bg-slate-50/50">
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">Resumo do Caso</h4>
+        <div className="lg:w-72 p-5 bg-white/[0.02]">
+          <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mb-4">Resumo do Caso</h4>
           <div className="space-y-4">
             {[
               { label: "Cliente", value: "Alfa Ltda" },
@@ -203,25 +202,24 @@ export function SeracAgentsOrchestration({ compact = false }: { compact?: boolea
               { label: "Risco fiscal", value: "Médio", badge: true },
             ].map((item, i) => (
               <div key={i}>
-                <p className="text-[10px] text-slate-400 uppercase tracking-wider mb-0.5">{item.label}</p>
+                <p className="text-[10px] text-slate-500 uppercase tracking-wider mb-0.5">{item.label}</p>
                 {item.badge ? (
                   <span className={`inline-flex items-center gap-1 text-xs font-medium px-2.5 py-0.5 rounded-full border ${riskConfig[risk].cls}`}>
                     <AlertTriangle className="w-3 h-3" /> {item.value}
                   </span>
                 ) : (
-                  <p className={`text-sm font-semibold ${item.highlight ? "text-emerald-700" : "text-slate-800"}`}>{item.value}</p>
+                  <p className={`text-sm font-semibold ${item.highlight ? "text-cyan-400" : "text-slate-200"}`}>{item.value}</p>
                 )}
               </div>
             ))}
           </div>
 
-          {/* Agent Status */}
-          <h4 className="text-xs font-semibold text-slate-400 uppercase tracking-widest mt-6 mb-3">Agentes Ativos</h4>
+          <h4 className="text-xs font-semibold text-slate-500 uppercase tracking-widest mt-6 mb-3">Agentes Ativos</h4>
           <div className="space-y-2">
             {(Object.entries(agentConfig) as [string, typeof agentConfig.reforma][]).map(([key, cfg]) => (
               <div key={key} className="flex items-center gap-2">
-                <div className={`w-2 h-2 rounded-full ${cfg.dot} ${key !== "supervisor" ? "animate-pulse" : ""}`} />
-                <span className="text-xs text-slate-600 truncate">{cfg.label}</span>
+                <div className={`w-2 h-2 rounded-full ${cfg.dot} ${key !== "supervisor" ? "animate-pulse" : ""}`} style={{ boxShadow: `0 0 6px currentColor` }} />
+                <span className="text-xs text-slate-400 truncate">{cfg.label}</span>
               </div>
             ))}
           </div>

@@ -23,10 +23,10 @@ const scaleIn = {
 };
 const stagger = { visible: { transition: { staggerChildren: 0.12 } } };
 
-/* ── Corporate Card ── */
+/* ── Futuristic Card ── */
 function Card({ children, className = "", accent = false }: { children: React.ReactNode; className?: string; accent?: boolean }) {
   return (
-    <div className={`rounded-2xl border ${accent ? "border-emerald-200 bg-emerald-50/50" : "border-slate-200 bg-white"} shadow-sm hover:shadow-md transition-shadow duration-300 ${className}`}>
+    <div className={`rounded-2xl border ${accent ? "border-cyan-500/30 bg-cyan-950/30 backdrop-blur-sm" : "border-white/10 bg-white/5 backdrop-blur-sm"} shadow-lg hover:shadow-cyan-500/10 transition-all duration-300 ${className}`}>
       {children}
     </div>
   );
@@ -36,10 +36,10 @@ function Card({ children, className = "", accent = false }: { children: React.Re
 function FunnelStep({ value, label, width, index }: { value: string; label: string; width: string; index: number }) {
   return (
     <motion.div variants={fadeUp} className="flex flex-col items-center">
-      <div className={`${width} mx-auto rounded-xl py-4 text-center mb-2 transition-all`} style={{ background: `linear-gradient(135deg, hsl(160 60% ${48 - index * 6}%), hsl(175 50% ${40 - index * 5}%))` }}>
-        <span className="text-white font-bold text-lg">{value}</span>
+      <div className={`${width} mx-auto rounded-xl py-4 text-center mb-2 transition-all border border-cyan-500/20`} style={{ background: `linear-gradient(135deg, hsl(185 80% ${22 - index * 3}%), hsl(200 70% ${18 - index * 3}%))` }}>
+        <span className="text-cyan-300 font-bold text-lg">{value}</span>
       </div>
-      <span className="text-slate-500 text-sm text-center max-w-xs">{label}</span>
+      <span className="text-slate-400 text-sm text-center max-w-xs">{label}</span>
     </motion.div>
   );
 }
@@ -61,15 +61,16 @@ function ProjectionChart() {
           transition={{ delay: i * 0.07, duration: 0.5 }}
           style={{ transformOrigin: "bottom" }}
         >
-          <span className="text-xs font-semibold text-emerald-700">R${values[i]}k</span>
+          <span className="text-xs font-semibold text-cyan-400">R${values[i]}k</span>
           <div
             className="w-full rounded-t-lg"
             style={{
               height: `${(values[i] / max) * 100}%`,
-              background: `linear-gradient(to top, hsl(160 60% 40%), hsl(175 50% 55%))`,
+              background: `linear-gradient(to top, hsl(185 80% 30%), hsl(200 70% 50%))`,
+              boxShadow: "0 0 12px hsl(185 80% 40% / 0.3)",
             }}
           />
-          <span className="text-xs text-slate-400 mt-1">{m}</span>
+          <span className="text-xs text-slate-500 mt-1">{m}</span>
         </motion.div>
       ))}
     </div>
@@ -96,7 +97,7 @@ function Section({ children, className = "", id }: { children: React.ReactNode; 
 /* ── Section Badge ── */
 function Badge({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-block text-emerald-700 bg-emerald-100 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4">
+    <span className="inline-block text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4">
       {children}
     </span>
   );
@@ -111,43 +112,46 @@ export default function SeracPresentation() {
         <meta name="robots" content="noindex, nofollow" />
       </Helmet>
 
-      <div className="min-h-screen bg-slate-50 text-slate-800 overflow-x-hidden font-sans">
+      <div className="min-h-screen bg-slate-950 text-slate-200 overflow-x-hidden font-sans">
 
         {/* ═══════ HERO ═══════ */}
-        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-white">
-          <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, hsl(160 40% 50%) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
-          <div className="absolute top-0 right-0 w-[600px] h-[600px] rounded-full bg-emerald-100/40 blur-3xl -translate-y-1/2 translate-x-1/4" />
-          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] rounded-full bg-emerald-50/60 blur-3xl translate-y-1/3 -translate-x-1/4" />
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-slate-950">
+          {/* Grid pattern */}
+          <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, hsl(185 60% 50%) 1px, transparent 0)", backgroundSize: "40px 40px" }} />
+          {/* Glow orbs */}
+          <div className="absolute top-0 right-0 w-[700px] h-[700px] rounded-full bg-cyan-500/10 blur-[120px] -translate-y-1/2 translate-x-1/4" />
+          <div className="absolute bottom-0 left-0 w-[500px] h-[500px] rounded-full bg-blue-600/10 blur-[100px] translate-y-1/3 -translate-x-1/4" />
+          <div className="absolute top-1/2 left-1/2 w-[300px] h-[300px] rounded-full bg-violet-500/5 blur-[80px] -translate-x-1/2 -translate-y-1/2" />
 
           <motion.div className="relative z-10 max-w-4xl mx-auto px-6 text-center" initial="hidden" animate="visible" variants={stagger}>
             <motion.div variants={fadeUp}>
               <Badge>White Label Estratégico</Badge>
             </motion.div>
-            <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tight text-slate-900 mb-3">
+            <motion.h1 variants={fadeUp} className="text-5xl sm:text-6xl lg:text-8xl font-black tracking-tight text-white mb-3">
               SERAC
             </motion.h1>
-            <motion.p variants={fadeUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-emerald-700 mb-3">
+            <motion.p variants={fadeUp} className="text-2xl sm:text-3xl lg:text-4xl font-bold text-cyan-400 mb-3">
               Intelligence Platform
             </motion.p>
-            <motion.p variants={fadeUp} className="text-lg text-slate-500 mb-3">
+            <motion.p variants={fadeUp} className="text-lg text-slate-400 mb-3">
               Com Máquina de Prospecção Nacional de Contadores
             </motion.p>
-            <motion.p variants={fadeIn} className="text-sm text-slate-400 tracking-widest uppercase">
+            <motion.p variants={fadeIn} className="text-sm text-slate-500 tracking-widest uppercase">
               Powered by Atentai
             </motion.p>
             <motion.div variants={fadeIn} className="mt-16">
-              <ChevronDown className="w-7 h-7 text-slate-300 mx-auto animate-bounce" />
+              <ChevronDown className="w-7 h-7 text-cyan-500/50 mx-auto animate-bounce" />
             </motion.div>
           </motion.div>
         </section>
 
         {/* ═══════ SLIDE 1 — OPORTUNIDADE DE MERCADO ═══════ */}
-        <Section className="bg-slate-50">
+        <Section className="bg-slate-900">
           <motion.div variants={fadeUp} className="text-center mb-14">
             <Badge>Oportunidade</Badge>
-            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mt-2">
+            <h2 className="text-3xl lg:text-5xl font-bold text-white mt-2">
               O Mercado Contábil Brasileiro<br />
-              na Era da <span className="text-emerald-700">Reforma Tributária</span>
+              na Era da <span className="text-cyan-400">Reforma Tributária</span>
             </h2>
           </motion.div>
 
@@ -158,11 +162,11 @@ export default function SeracPresentation() {
             ].map((s, i) => (
               <motion.div key={i} variants={scaleIn}>
                 <Card className="p-8 text-center">
-                  <div className="w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center mx-auto mb-4">
-                    <s.icon className="w-7 h-7 text-emerald-700" />
+                  <div className="w-14 h-14 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mx-auto mb-4">
+                    <s.icon className="w-7 h-7 text-cyan-400" />
                   </div>
-                  <div className="text-4xl font-black text-emerald-700 mb-2">{s.value}</div>
-                  <p className="text-slate-500">{s.label}</p>
+                  <div className="text-4xl font-black text-cyan-400 mb-2">{s.value}</div>
+                  <p className="text-slate-400">{s.label}</p>
                 </Card>
               </motion.div>
             ))}
@@ -170,8 +174,8 @@ export default function SeracPresentation() {
 
           <motion.div variants={fadeUp}>
             <Card className="p-8">
-              <p className="text-slate-400 text-sm uppercase tracking-widest mb-6">Reforma Tributária 2026 exige reposicionamento estratégico</p>
-              <p className="text-slate-600 mb-4 font-medium">Escritórios precisarão de:</p>
+              <p className="text-slate-500 text-sm uppercase tracking-widest mb-6">Reforma Tributária 2026 exige reposicionamento estratégico</p>
+              <p className="text-slate-300 mb-4 font-medium">Escritórios precisarão de:</p>
               <div className="grid sm:grid-cols-2 gap-3">
                 {[
                   { icon: Brain, t: "Inteligência fiscal" },
@@ -179,9 +183,9 @@ export default function SeracPresentation() {
                   { icon: Shield, t: "Compliance automatizado" },
                   { icon: Scale, t: "Suporte jurídico estruturado" },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 border border-slate-100">
-                    <item.icon className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                    <span className="text-slate-700">{item.t}</span>
+                  <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-white/5 border border-white/10">
+                    <item.icon className="w-5 h-5 text-cyan-400 flex-shrink-0" />
+                    <span className="text-slate-300">{item.t}</span>
                   </div>
                 ))}
               </div>
@@ -189,20 +193,20 @@ export default function SeracPresentation() {
           </motion.div>
 
           <motion.div variants={fadeUp} className="mt-12 text-center">
-            <p className="text-2xl lg:text-3xl font-bold text-slate-900">
-              Quem liderar agora <span className="text-emerald-700">domina o mercado da Reforma.</span>
+            <p className="text-2xl lg:text-3xl font-bold text-white">
+              Quem liderar agora <span className="text-cyan-400">domina o mercado da Reforma.</span>
             </p>
           </motion.div>
         </Section>
 
         {/* ═══════ SLIDE 2 — A SOLUÇÃO ═══════ */}
-        <Section className="bg-white">
+        <Section className="bg-slate-950">
           <motion.div variants={scaleIn} className="text-center mb-6">
             <Badge>A Solução</Badge>
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 mt-2">SERAC</h2>
-            <p className="text-2xl lg:text-3xl font-bold text-emerald-700 mt-1">Intelligence Platform</p>
+            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mt-2">SERAC</h2>
+            <p className="text-2xl lg:text-3xl font-bold text-cyan-400 mt-1">Intelligence Platform</p>
           </motion.div>
-          <motion.p variants={fadeUp} className="text-slate-500 text-lg mb-10 max-w-2xl mx-auto text-center">
+          <motion.p variants={fadeUp} className="text-slate-400 text-lg mb-10 max-w-2xl mx-auto text-center">
             Plataforma white label exclusiva da SERAC, com:
           </motion.p>
 
@@ -217,28 +221,28 @@ export default function SeracPresentation() {
             ].map((f, i) => (
               <motion.div key={i} variants={fadeUp}>
                 <Card className="p-5 flex items-center gap-4 h-full">
-                  <div className="w-11 h-11 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                    <f.icon className="w-5 h-5 text-emerald-700" />
+                  <div className="w-11 h-11 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                    <f.icon className="w-5 h-5 text-cyan-400" />
                   </div>
-                  <span className="text-slate-700 font-medium">{f.t}</span>
+                  <span className="text-slate-300 font-medium">{f.t}</span>
                 </Card>
               </motion.div>
             ))}
           </motion.div>
 
-          <motion.p variants={fadeIn} className="text-slate-400 text-sm tracking-widest uppercase text-center">Powered by Atentai</motion.p>
+          <motion.p variants={fadeIn} className="text-slate-500 text-sm tracking-widest uppercase text-center">Powered by Atentai</motion.p>
         </Section>
 
         {/* ═══════ SLIDE 3 — DIFERENCIAL ESTRATÉGICO ═══════ */}
-        <Section className="bg-slate-50">
+        <Section className="bg-slate-900">
           <motion.div variants={fadeUp} className="text-center mb-4">
             <Badge>Diferencial</Badge>
           </motion.div>
-          <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold text-slate-900 text-center mb-3">
+          <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold text-white text-center mb-3">
             Não é Software.
           </motion.h2>
           <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold text-center mb-12">
-            É <span className="text-emerald-700">Infraestrutura de Crescimento.</span>
+            É <span className="text-cyan-400">Infraestrutura de Crescimento.</span>
           </motion.h2>
 
           <div className="grid sm:grid-cols-2 gap-5 mb-14">
@@ -250,11 +254,11 @@ export default function SeracPresentation() {
             ].map((d, i) => (
               <motion.div key={i} variants={fadeUp}>
                 <Card className="p-6 h-full">
-                  <div className="w-12 h-12 rounded-xl bg-emerald-100 flex items-center justify-center mb-4">
-                    <d.icon className="w-6 h-6 text-emerald-700" />
+                  <div className="w-12 h-12 rounded-xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-4">
+                    <d.icon className="w-6 h-6 text-cyan-400" />
                   </div>
-                  <h3 className="text-lg font-bold text-slate-900 mb-2">{d.t}</h3>
-                  <p className="text-slate-500 text-sm">{d.d}</p>
+                  <h3 className="text-lg font-bold text-white mb-2">{d.t}</h3>
+                  <p className="text-slate-400 text-sm">{d.d}</p>
                 </Card>
               </motion.div>
             ))}
@@ -262,9 +266,9 @@ export default function SeracPresentation() {
 
           <motion.div variants={fadeUp}>
             <Card accent className="p-8 text-center">
-              <p className="text-lg text-slate-700">
+              <p className="text-lg text-slate-300">
                 SERAC deixa de ser apenas escritório contábil e passa a ser{" "}
-                <span className="text-emerald-700 font-bold">plataforma nacional de inteligência fiscal.</span>
+                <span className="text-cyan-400 font-bold">plataforma nacional de inteligência fiscal.</span>
               </p>
             </Card>
           </motion.div>
@@ -276,17 +280,17 @@ export default function SeracPresentation() {
         </Section>
 
         {/* ═══════ SLIDE 4 — MÁQUINA DE PROSPECÇÃO ═══════ */}
-        <Section className="bg-white">
+        <Section className="bg-slate-950">
           <motion.div variants={fadeUp} className="text-center mb-14">
             <Badge>Prospecção Incluída</Badge>
-            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mt-2">
-              Aquisição Ativa de <span className="text-emerald-700">Contadores</span>
+            <h2 className="text-3xl lg:text-5xl font-bold text-white mt-2">
+              Aquisição Ativa de <span className="text-cyan-400">Contadores</span>
             </h2>
           </motion.div>
 
           <motion.div variants={fadeUp} className="mb-10">
             <Card className="p-8">
-              <p className="text-slate-400 text-sm uppercase tracking-widest mb-8">Prospecção mensal estruturada</p>
+              <p className="text-slate-500 text-sm uppercase tracking-widest mb-8">Prospecção mensal estruturada</p>
               <div className="space-y-5">
                 <FunnelStep value="5.000" label="Contadores impactados por mês" width="w-full" index={0} />
                 <FunnelStep value="10%" label="Taxa média de resposta → 500 respostas" width="w-[85%]" index={1} />
@@ -304,9 +308,9 @@ export default function SeracPresentation() {
             ].map((r, i) => (
               <motion.div key={i} variants={scaleIn}>
                 <Card className="p-6 text-center">
-                  <div className="text-3xl font-black text-emerald-700 mb-2">{r.value}</div>
-                  <p className="text-slate-700 font-medium mb-1">{r.label}</p>
-                  <p className="text-slate-400 text-xs">{r.sub}</p>
+                  <div className="text-3xl font-black text-cyan-400 mb-2">{r.value}</div>
+                  <p className="text-slate-300 font-medium mb-1">{r.label}</p>
+                  <p className="text-slate-500 text-xs">{r.sub}</p>
                 </Card>
               </motion.div>
             ))}
@@ -314,27 +318,27 @@ export default function SeracPresentation() {
         </Section>
 
         {/* ═══════ SLIDE 5 — MODELO FINANCEIRO ═══════ */}
-        <Section className="bg-slate-50">
+        <Section className="bg-slate-900">
           <motion.div variants={fadeUp} className="text-center mb-14">
             <Badge>Investimento</Badge>
-            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mt-2">Estrutura de Investimento</h2>
+            <h2 className="text-3xl lg:text-5xl font-bold text-white mt-2">Estrutura de Investimento</h2>
           </motion.div>
 
           <div className="grid md:grid-cols-2 gap-6 mb-8">
             <motion.div variants={fadeUp}>
               <Card className="p-8 h-full">
-                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-                  <DollarSign className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                  <DollarSign className="w-5 h-5 text-cyan-400" />
                   Modelo White Label + Prospecção
                 </h3>
                 <div className="space-y-6">
                   <div>
-                    <p className="text-slate-400 text-sm mb-1">Setup estratégico</p>
-                    <p className="text-2xl font-bold text-emerald-700">R$ 120.000 a R$ 180.000</p>
+                    <p className="text-slate-500 text-sm mb-1">Setup estratégico</p>
+                    <p className="text-2xl font-bold text-cyan-400">R$ 120.000 a R$ 180.000</p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm mb-1">Mensalidade</p>
-                    <p className="text-2xl font-bold text-emerald-700">R$ 30.000 a R$ 60.000</p>
+                    <p className="text-slate-500 text-sm mb-1">Mensalidade</p>
+                    <p className="text-2xl font-bold text-cyan-400">R$ 30.000 a R$ 60.000</p>
                   </div>
                 </div>
               </Card>
@@ -342,19 +346,19 @@ export default function SeracPresentation() {
 
             <motion.div variants={fadeUp}>
               <Card accent className="p-8 h-full">
-                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
+                <h3 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-cyan-400" />
                   Modelo Híbrido (Performance)
                 </h3>
                 <div className="space-y-6">
                   <div>
-                    <p className="text-slate-400 text-sm mb-1">Mensalidade fixa</p>
-                    <p className="text-2xl font-bold text-emerald-700">R$ 25.000</p>
+                    <p className="text-slate-500 text-sm mb-1">Mensalidade fixa</p>
+                    <p className="text-2xl font-bold text-cyan-400">R$ 25.000</p>
                   </div>
                   <div>
-                    <p className="text-slate-400 text-sm mb-1">+ Performance</p>
-                    <p className="text-2xl font-bold text-emerald-700">10% a 20%</p>
-                    <p className="text-slate-500 text-sm mt-1">sobre novos contratos fechados</p>
+                    <p className="text-slate-500 text-sm mb-1">+ Performance</p>
+                    <p className="text-2xl font-bold text-cyan-400">10% a 20%</p>
+                    <p className="text-slate-400 text-sm mt-1">sobre novos contratos fechados</p>
                   </div>
                 </div>
               </Card>
@@ -363,17 +367,17 @@ export default function SeracPresentation() {
 
           <motion.div variants={fadeUp} className="text-center">
             <Card className="inline-flex items-center gap-2 px-6 py-3">
-              <Calendar className="w-4 h-4 text-emerald-600" />
-              <span className="text-slate-600 font-medium">Contrato mínimo: <strong className="text-slate-900">12 meses</strong></span>
+              <Calendar className="w-4 h-4 text-cyan-400" />
+              <span className="text-slate-300 font-medium">Contrato mínimo: <strong className="text-white">12 meses</strong></span>
             </Card>
           </motion.div>
         </Section>
 
         {/* ═══════ SLIDE 6 — PROJEÇÃO 12 MESES ═══════ */}
-        <Section className="bg-white">
+        <Section className="bg-slate-950">
           <motion.div variants={fadeUp} className="text-center mb-6">
             <Badge>Projeção</Badge>
-            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mt-2">Projeção de 12 Meses</h2>
+            <h2 className="text-3xl lg:text-5xl font-bold text-white mt-2">Projeção de 12 Meses</h2>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-4 mb-6">
@@ -384,8 +388,8 @@ export default function SeracPresentation() {
             ].map((s, i) => (
               <motion.div key={i} variants={scaleIn}>
                 <Card className="p-5 text-center">
-                  <div className="text-2xl font-black text-emerald-700">{s.value}</div>
-                  <p className="text-slate-500 text-sm mt-1">{s.label}</p>
+                  <div className="text-2xl font-black text-cyan-400">{s.value}</div>
+                  <p className="text-slate-400 text-sm mt-1">{s.label}</p>
                 </Card>
               </motion.div>
             ))}
@@ -399,21 +403,21 @@ export default function SeracPresentation() {
 
           <motion.div variants={scaleIn} className="mt-8 text-center">
             <Card accent className="inline-block px-10 py-6">
-              <p className="text-sm text-slate-500 uppercase tracking-widest mb-2">Receita potencial anual</p>
-              <p className="text-4xl lg:text-5xl font-black text-emerald-700">R$ 4.320.000</p>
+              <p className="text-sm text-slate-400 uppercase tracking-widest mb-2">Receita potencial anual</p>
+              <p className="text-4xl lg:text-5xl font-black text-cyan-400" style={{ textShadow: "0 0 30px hsl(185 80% 50% / 0.3)" }}>R$ 4.320.000</p>
             </Card>
           </motion.div>
         </Section>
 
         {/* ═══════ SLIDE 7 — POSICIONAMENTO FINAL ═══════ */}
-        <Section className="bg-slate-900 text-white">
+        <Section className="bg-slate-900">
           <motion.div variants={fadeUp} className="text-center mb-4">
-            <span className="inline-block text-emerald-400 bg-emerald-400/10 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4">
+            <span className="inline-block text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 text-xs font-semibold tracking-widest uppercase px-4 py-1.5 rounded-full mb-4">
               Posicionamento
             </span>
           </motion.div>
           <motion.h2 variants={fadeUp} className="text-3xl lg:text-5xl font-bold text-white text-center mb-12">
-            SERAC como <span className="text-emerald-400">Plataforma Nacional</span><br />da Reforma 2026
+            SERAC como <span className="text-cyan-400">Plataforma Nacional</span><br />da Reforma 2026
           </motion.h2>
 
           <motion.div variants={fadeUp} className="max-w-3xl mx-auto text-center space-y-6">
@@ -421,19 +425,19 @@ export default function SeracPresentation() {
               A SERAC não está adquirindo tecnologia.<br />
               <strong className="text-white">Está estruturando uma máquina de crescimento nacional.</strong>
             </p>
-            <div className="w-16 h-px bg-emerald-500/40 mx-auto" />
+            <div className="w-16 h-px bg-cyan-500/40 mx-auto" />
             <p className="text-xl text-slate-300 leading-relaxed">
               A Reforma Tributária será o maior evento contábil da década.<br />
-              <strong className="text-emerald-400">Quem liderar agora se torna referência definitiva.</strong>
+              <strong className="text-cyan-400">Quem liderar agora se torna referência definitiva.</strong>
             </p>
           </motion.div>
         </Section>
 
         {/* ═══════ SLIDE 8 — CTA ═══════ */}
-        <Section className="bg-white">
+        <Section className="bg-slate-950">
           <motion.div variants={fadeUp} className="text-center mb-12">
             <Badge>Próximo Passo</Badge>
-            <h2 className="text-3xl lg:text-5xl font-bold text-slate-900 mt-2">Próximo Passo</h2>
+            <h2 className="text-3xl lg:text-5xl font-bold text-white mt-2">Próximo Passo</h2>
           </motion.div>
 
           <div className="max-w-2xl mx-auto space-y-4 mb-14">
@@ -445,11 +449,11 @@ export default function SeracPresentation() {
             ].map((s, i) => (
               <motion.div key={i} variants={fadeUp}>
                 <Card className="p-5 flex items-center gap-5">
-                  <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                    <span className="text-emerald-700 font-bold text-sm">{s.step}</span>
+                  <div className="w-10 h-10 rounded-full bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center flex-shrink-0">
+                    <span className="text-cyan-400 font-bold text-sm">{s.step}</span>
                   </div>
-                  <span className="text-slate-800 font-semibold text-lg">{s.t}</span>
-                  <ArrowRight className="w-5 h-5 text-emerald-400 ml-auto" />
+                  <span className="text-white font-semibold text-lg">{s.t}</span>
+                  <ArrowRight className="w-5 h-5 text-cyan-500/50 ml-auto" />
                 </Card>
               </motion.div>
             ))}
@@ -457,17 +461,17 @@ export default function SeracPresentation() {
 
           <motion.div variants={scaleIn} className="text-center">
             <Card accent className="inline-block px-12 py-8">
-              <p className="text-2xl lg:text-3xl font-bold text-slate-900 mb-2">
-                O momento de posicionamento é <span className="text-emerald-700">agora.</span>
+              <p className="text-2xl lg:text-3xl font-bold text-white mb-2">
+                O momento de posicionamento é <span className="text-cyan-400">agora.</span>
               </p>
-              <p className="text-slate-500">SERAC Intelligence Platform · Powered by Atentai</p>
+              <p className="text-slate-400">SERAC Intelligence Platform · Powered by Atentai</p>
             </Card>
           </motion.div>
         </Section>
 
         {/* Footer */}
-        <footer className="py-8 px-6 text-center border-t border-slate-200 bg-white">
-          <p className="text-slate-400 text-sm">© {new Date().getFullYear()} SERAC Intelligence Platform · Powered by Atentai</p>
+        <footer className="py-8 px-6 text-center border-t border-white/10 bg-slate-950">
+          <p className="text-slate-500 text-sm">© {new Date().getFullYear()} SERAC Intelligence Platform · Powered by Atentai</p>
         </footer>
       </div>
     </>
