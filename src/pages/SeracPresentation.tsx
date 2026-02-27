@@ -705,80 +705,233 @@ export default function SeracPresentation() {
           </motion.div>
         </ParallaxSection>
 
-        {/* ═══════ PROPOSTA — CONTRATO 12 MESES ═══════ */}
+        {/* ═══════ PROPOSTA — PLANOS SEPARADOS + BUNDLE ═══════ */}
         <ParallaxSection id="proposta-comercial" className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.3}>
           <FloatingParticles count={20} />
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Proposta Comercial</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              Contrato de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">12 Meses</span>
+              Escolha o <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Plano Ideal</span>
             </h2>
             <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
-              Investimento estratégico com reajuste anual baseado em resultados comprovados
+              Contrate cada solução separadamente ou aproveite o pacote completo com condição especial
             </p>
           </motion.div>
 
-          {/* Value Justification */}
+          {/* 3 Planos Individuais */}
+          <div className="grid md:grid-cols-3 gap-6 mb-10">
+            {/* AtentAI White Label */}
+            <motion.div variants={fadeUp} whileHover={{ y: -8 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="p-8 h-full relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-cyan-500/5 blur-[80px]" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
+                    <Brain className="w-7 h-7 text-cyan-400" />
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-black text-white">AtentAI</h3>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-cyan-400/70 bg-cyan-500/5 border border-cyan-500/10 px-2 py-0.5 rounded-full">White Label</span>
+                  </div>
+                  <p className="text-slate-400 text-sm mb-6">Plataforma completa com a marca SERAC — o mercado enxerga como tecnologia própria</p>
+                  
+                  <div className="mb-6">
+                    <span className="text-4xl font-black text-white">R$ 30.000</span>
+                    <span className="text-slate-500 text-sm">/mês</span>
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    {[
+                      "Plataforma White Label com logo e cores SERAC",
+                      "Exclusividade total no marketplace",
+                      "Dashboard executivo e relatórios",
+                      "Simulador Reforma Tributária 2026",
+                      "Inteligência fiscal com IA integrada",
+                      "Marketplace de serviços exclusivo",
+                      "Suporte técnico dedicado",
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-slate-400 text-xs">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider font-medium">Comissão do parceiro: 10% sobre contratos fechados</p>
+                </div>
+              </GlassCard>
+            </motion.div>
+
+            {/* G8 Prospect */}
+            <motion.div variants={fadeUp} whileHover={{ y: -8 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="p-8 h-full relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-violet-500/5 blur-[80px]" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
+                    <Target className="w-7 h-7 text-violet-400" />
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-black text-white">G8 Prospect</h3>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-violet-400/70 bg-violet-500/5 border border-violet-500/10 px-2 py-0.5 rounded-full">Campanhas</span>
+                  </div>
+                  <p className="text-slate-400 text-sm mb-6">Prospecção ativa multicanal com 7 anos de experiência e R$ 360M+ em negócios gerados</p>
+                  
+                  <div className="mb-6">
+                    <span className="text-4xl font-black text-white">R$ 20.000</span>
+                    <span className="text-slate-500 text-sm">/mês</span>
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    {[
+                      "5 campanhas ativas por mês",
+                      "Prospecção empresas, contadores e cartórios",
+                      "Acesso a base de C-Levels e decisores",
+                      "Qualificação inteligente de leads",
+                      "Relatórios de performance das campanhas",
+                      "Estratégia de abordagem personalizada",
+                      "7 anos de track record comprovado",
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-slate-400 text-xs">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider font-medium">Comissão do parceiro: 10% sobre contratos fechados</p>
+                </div>
+              </GlassCard>
+            </motion.div>
+
+            {/* Clauthor Agentes IA */}
+            <motion.div variants={fadeUp} whileHover={{ y: -8 }} transition={{ type: "spring", stiffness: 300 }}>
+              <GlassCard className="p-8 h-full relative overflow-hidden">
+                <div className="absolute -top-20 -right-20 w-40 h-40 rounded-full bg-emerald-500/5 blur-[80px]" />
+                <div className="relative z-10">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
+                    <Bot className="w-7 h-7 text-emerald-400" />
+                  </div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <h3 className="text-xl font-black text-white">Clauthor</h3>
+                    <span className="text-[9px] font-bold uppercase tracking-wider text-emerald-400/70 bg-emerald-500/5 border border-emerald-500/10 px-2 py-0.5 rounded-full">Agentes IA</span>
+                  </div>
+                  <p className="text-slate-400 text-sm mb-6">Departamento de agentes inteligentes operando 24/7 como extensão do time comercial SERAC</p>
+                  
+                  <div className="mb-6">
+                    <span className="text-4xl font-black text-white">R$ 6.000</span>
+                    <span className="text-slate-500 text-sm">/mês</span>
+                  </div>
+
+                  <div className="space-y-3 mb-6">
+                    {[
+                      "5 agentes de IA especializados",
+                      "SDR Tributário automatizado 24/7",
+                      "Diagnóstico Tributário com IA",
+                      "Especialista em Cartórios",
+                      "Customer Success automatizado",
+                      "Diretor de Inteligência Comercial",
+                      "Tecnologia americana de ponta",
+                    ].map((item, i) => (
+                      <div key={i} className="flex items-start gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" />
+                        <span className="text-slate-400 text-xs">{item}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  <p className="text-[10px] text-slate-600 uppercase tracking-wider font-medium">Comissão do parceiro: 10% sobre contratos fechados</p>
+                </div>
+              </GlassCard>
+            </motion.div>
+          </div>
+
+          {/* Pacote Completo */}
           <motion.div variants={fadeUp} className="mb-10">
             <GlassCard accent glow className="p-10 relative overflow-hidden">
               <div className="absolute top-0 left-0 w-80 h-80 bg-cyan-500/5 rounded-full blur-[100px]" />
               <div className="absolute bottom-0 right-0 w-80 h-80 bg-violet-500/5 rounded-full blur-[100px]" />
               <div className="relative z-10">
-                <h3 className="text-2xl font-black text-white mb-6 text-center">Por que este ecossistema tem esse valor?</h3>
-                <div className="grid md:grid-cols-3 gap-6 mb-8">
-                  <div className="text-center p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <Brain className="w-10 h-10 text-cyan-400 mx-auto mb-3" />
-                    <p className="text-white font-bold mb-2">AtentAI</p>
-                    <p className="text-slate-400 text-sm">Plataforma com valor de mercado consolidado, centenas de usuários e marketplace ativo. Implementações White Label no mercado custam entre <strong className="text-white">R$ 120k–180k de setup</strong>.</p>
+                <div className="flex flex-col md:flex-row items-center justify-between gap-8">
+                  <div className="flex-1 text-center md:text-left">
+                    <div className="flex items-center gap-3 mb-3 justify-center md:justify-start">
+                      <Crown className="w-8 h-8 text-amber-400" />
+                      <h3 className="text-2xl font-black text-white">Pacote Ecossistema Completo</h3>
+                    </div>
+                    <p className="text-slate-400 mb-4">AtentAI White Label + G8 Prospect Campanhas + Clauthor Agentes IA — tudo integrado em uma única operação</p>
+                    
+                    <div className="flex flex-wrap gap-3 justify-center md:justify-start mb-4">
+                      <span className="inline-flex items-center gap-1.5 text-cyan-400 bg-cyan-500/10 border border-cyan-500/20 text-xs font-bold px-3 py-1 rounded-full">
+                        <Brain className="w-3 h-3" /> AtentAI
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-violet-400 bg-violet-500/10 border border-violet-500/20 text-xs font-bold px-3 py-1 rounded-full">
+                        <Target className="w-3 h-3" /> G8 Prospect
+                      </span>
+                      <span className="inline-flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full">
+                        <Bot className="w-3 h-3" /> Clauthor
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-3 justify-center md:justify-start">
+                      <span className="text-slate-600 line-through text-lg">R$ 56.000/mês</span>
+                      <span className="text-amber-400 text-sm font-bold bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">Economia de R$ 6.000/mês</span>
+                    </div>
                   </div>
-                  <div className="text-center p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <Target className="w-10 h-10 text-violet-400 mx-auto mb-3" />
-                    <p className="text-white font-bold mb-2">G8 Prospect</p>
-                    <p className="text-slate-400 text-sm"><strong className="text-white">7 anos</strong> de experiência no mercado. Já gerou <strong className="text-violet-400">R$ 360M+ em negócios</strong>. Acesso a base de C-Levels e decisores estratégicos.</p>
-                  </div>
-                  <div className="text-center p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
-                    <Bot className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
-                    <p className="text-white font-bold mb-2">Clauthor</p>
-                    <p className="text-slate-400 text-sm">Empresa <strong className="text-emerald-400">americana</strong> com tecnologia de ponta. Grandes clientes globais. Agentes de IA operando <strong className="text-white">24/7</strong> como time comercial dedicado.</p>
+
+                  <div className="text-center md:text-right flex-shrink-0">
+                    <div className="mb-2">
+                      <span className="text-5xl font-black bg-gradient-to-r from-cyan-400 via-blue-400 to-violet-400 bg-clip-text text-transparent">R$ 50.000</span>
+                      <span className="text-slate-500 text-lg">/mês</span>
+                    </div>
+                    <p className="text-slate-500 text-xs mb-4">Contrato de 12 meses · Reajuste por resultado</p>
+                    <p className="text-amber-400 text-xs font-bold">+ 10% de comissão sobre novos contratos</p>
                   </div>
                 </div>
-                <p className="text-center text-slate-300 text-lg">
-                  O SERAC terá acesso a <strong className="text-white">todo esse ecossistema</strong> por um investimento <strong className="text-cyan-400">muito abaixo do valor de mercado individual</strong> de cada uma dessas tecnologias.
-                </p>
               </div>
             </GlassCard>
           </motion.div>
 
-          {/* Contract terms */}
-          <div className="grid sm:grid-cols-3 gap-5 mb-10">
-            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
-              <GlassCard className="p-6 text-center h-full">
-                <Calendar className="w-8 h-8 text-cyan-400 mx-auto mb-3" />
-                <h4 className="text-white font-bold mb-2">Contrato 12 Meses</h4>
-                <p className="text-slate-500 text-xs">Operação estruturada com previsibilidade e compromisso de resultados</p>
-              </GlassCard>
-            </motion.div>
-            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
-              <GlassCard className="p-6 text-center h-full">
-                <TrendingUp className="w-8 h-8 text-emerald-400 mx-auto mb-3" />
-                <h4 className="text-white font-bold mb-2">Reajuste por Resultado</h4>
-                <p className="text-slate-500 text-xs">Reajuste anual baseado nos resultados comprovados da operação</p>
-              </GlassCard>
-            </motion.div>
-            <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
-              <GlassCard className="p-6 text-center h-full">
-                <Shield className="w-8 h-8 text-violet-400 mx-auto mb-3" />
-                <h4 className="text-white font-bold mb-2">Comissionamento</h4>
-                <p className="text-slate-500 text-xs">Nosso sucesso está atrelado ao seu — ganhamos mais quando o SERAC ganha mais</p>
-              </GlassCard>
-            </motion.div>
-          </div>
-
+          {/* Comparativo Avulso vs Bundle */}
           <motion.div variants={fadeUp}>
-            <GlassCard className="p-8 text-center">
-              <p className="text-xl text-slate-300 leading-relaxed">
-                O SERAC não está pagando por prospecção. Está investindo em uma <span className="text-cyan-400 font-bold">máquina de aquisição de clientes exclusiva</span> com 3 startups integradas, <span className="text-white font-bold">plataforma White Label própria</span> e <span className="text-emerald-400 font-bold">time comercial de IA 24/7</span>.
-              </p>
+            <GlassCard className="p-8">
+              <h4 className="text-white font-bold text-center mb-6">Comparativo: Avulso vs. Pacote Completo</h4>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-white/10">
+                      <th className="text-left text-slate-400 font-medium py-3 pr-4">Solução</th>
+                      <th className="text-center text-slate-400 font-medium py-3 px-4">Avulso</th>
+                      <th className="text-center text-cyan-400 font-medium py-3 pl-4">Pacote</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      { name: "AtentAI White Label", avulso: "R$ 30.000", pacote: true },
+                      { name: "G8 Prospect Campanhas", avulso: "R$ 20.000", pacote: true },
+                      { name: "Clauthor Agentes IA", avulso: "R$ 6.000", pacote: true },
+                      { name: "Integração total entre soluções", avulso: "—", pacote: true },
+                      { name: "Economia mensal", avulso: "—", pacote: false, highlight: "R$ 6.000" },
+                    ].map((row, i) => (
+                      <tr key={i} className="border-b border-white/[0.04]">
+                        <td className="text-slate-300 py-3 pr-4 font-medium">{row.name}</td>
+                        <td className="text-center text-slate-500 py-3 px-4">{row.avulso}</td>
+                        <td className="text-center py-3 pl-4">
+                          {row.highlight ? (
+                            <span className="text-amber-400 font-bold">{row.highlight}</span>
+                          ) : row.pacote ? (
+                            <CheckCircle2 className="w-5 h-5 text-cyan-400 mx-auto" />
+                          ) : (
+                            <span className="text-slate-600">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td className="text-white font-bold py-3 pr-4">Total</td>
+                      <td className="text-center text-slate-400 font-bold py-3 px-4">R$ 56.000/mês</td>
+                      <td className="text-center font-black py-3 pl-4 bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent text-lg">R$ 50.000/mês</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </GlassCard>
           </motion.div>
         </ParallaxSection>
