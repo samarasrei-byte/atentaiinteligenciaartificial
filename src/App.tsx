@@ -133,6 +133,10 @@ const SeracLogin = lazy(() => import("./pages/serac/SeracLogin"));
 const SeracProtectedRoute = lazy(() => import("./pages/serac/SeracProtectedRoute"));
 const SeracCampanhas = lazy(() => import("./pages/serac/SeracCampanhas"));
 const SeracMarketplace = lazy(() => import("./pages/serac/SeracMarketplace"));
+const SeracCRM = lazy(() => import("./pages/serac/SeracCRM"));
+const SeracAPIHub = lazy(() => import("./pages/serac/SeracAPIHub"));
+const SeracFolhaCartorio = lazy(() => import("./pages/serac/SeracFolhaCartorio"));
+const SeracMentorias = lazy(() => import("./pages/serac/SeracMentorias"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
@@ -406,6 +410,10 @@ const App = () => (
                   <Route index element={<SeracDashboard />} />
                   <Route path="campanhas" element={<SeracCampanhas />} />
                   <Route path="marketplace" element={<SeracMarketplace />} />
+                  <Route path="crm" element={<SeracCRM />} />
+                  <Route path="api-hub" element={<SeracAPIHub />} />
+                  <Route path="folha-cartorio" element={<SeracFolhaCartorio />} />
+                  <Route path="mentorias" element={<SeracMentorias />} />
                   <Route path="reforma-tributaria" element={<SeracReformaTributaria />} />
                   <Route path="inteligencia-fiscal" element={<SeracInteligenciaFiscal />} />
                   <Route path="clientes" element={<SeracClientes />} />

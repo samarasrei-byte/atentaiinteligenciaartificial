@@ -3,22 +3,27 @@ import { Outlet, NavLink, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Scale, Brain, Users, ShieldCheck,
   Bot, Target, Gavel, FileText, Settings, Menu, X,
-  ChevronLeft, Megaphone, ShoppingBag
+  ChevronLeft, Megaphone, ShoppingBag, Kanban, Plug,
+  GraduationCap, FileSpreadsheet
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import seracLogo from '@/assets/logo_serac.png';
 
 const navItems = [
   { label: 'Dashboard Executivo', icon: LayoutDashboard, path: '/serac' },
+  { label: 'CRM Pipeline', icon: Kanban, path: '/serac/crm' },
   { label: 'Central de Campanhas', icon: Megaphone, path: '/serac/campanhas' },
   { label: 'Marketplace', icon: ShoppingBag, path: '/serac/marketplace' },
-  { label: 'Prospecção Estratégica', icon: Target, path: '/serac/prospeccao' },
+  { label: 'Prospecção (3 Canais)', icon: Target, path: '/serac/prospeccao' },
   { label: 'Agentes de IA', icon: Bot, path: '/serac/agentes-ia' },
   { label: 'Reforma Tributária 2026', icon: Scale, path: '/serac/reforma-tributaria' },
   { label: 'Inteligência Fiscal', icon: Brain, path: '/serac/inteligencia-fiscal' },
+  { label: 'Folha & Cartório', icon: FileSpreadsheet, path: '/serac/folha-cartorio' },
   { label: 'Clientes 360°', icon: Users, path: '/serac/clientes' },
   { label: 'Compliance & Risco', icon: ShieldCheck, path: '/serac/compliance' },
   { label: 'Jurídico Integrado', icon: Gavel, path: '/serac/juridico' },
+  { label: 'API Hub', icon: Plug, path: '/serac/api-hub' },
+  { label: 'Mentorias', icon: GraduationCap, path: '/serac/mentorias' },
   { label: 'Relatórios', icon: FileText, path: '/serac/relatorios' },
   { label: 'Configurações', icon: Settings, path: '/serac/configuracoes' },
 ];
