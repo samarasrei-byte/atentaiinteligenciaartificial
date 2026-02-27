@@ -1,21 +1,19 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Target, Search, Download, MapPin, Building2, Star,
   MessageSquare, Users, Gavel, TrendingUp, Calendar,
   CheckCircle2, DollarSign
 } from 'lucide-react';
 import { useState } from 'react';
+import { cn } from '@/lib/utils';
 
 const canalData = {
   empresas: {
-    label: 'Empresas',
-    icon: Building2,
-    color: '#2563EB',
+    label: 'Empresas', icon: Building2,
     kpis: { captados: 342, qualificados: 189, reunioes: 47, contratos: 23, receita: 'R$ 92.400/mês' },
     leads: [
       { nome: 'Tech Solutions Ltda', regiao: 'São Paulo - SP', porte: 'Médio', regime: 'Lucro Presumido', score: 92, setor: 'Tecnologia' },
@@ -26,9 +24,7 @@ const canalData = {
     ]
   },
   contadores: {
-    label: 'Contadores',
-    icon: Users,
-    color: '#059669',
+    label: 'Contadores', icon: Users,
     kpis: { captados: 187, qualificados: 102, reunioes: 31, contratos: 14, receita: 'R$ 45.800/mês' },
     leads: [
       { nome: 'Escritório Contábil Exata', regiao: 'São Paulo - SP', porte: 'Médio', regime: 'Lucro Presumido', score: 92, setor: 'Contabilidade' },
@@ -38,9 +34,7 @@ const canalData = {
     ]
   },
   cartorios: {
-    label: 'Cartórios',
-    icon: Gavel,
-    color: '#7C3AED',
+    label: 'Cartórios', icon: Gavel,
     kpis: { captados: 98, qualificados: 54, reunioes: 18, contratos: 9, receita: 'R$ 67.200/mês' },
     leads: [
       { nome: 'Cartório 3º Ofício - SP', regiao: 'São Paulo - SP', porte: 'Grande', regime: 'Lucro Presumido', score: 94, setor: 'Notas' },
@@ -63,17 +57,16 @@ export default function SeracProspeccao() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#1B3A5C]">Prospecção Estratégica — 3 Canais</h2>
-          <p className="text-sm text-[#6B7280] mt-1">Empresas • Contadores • Cartórios</p>
+          <h2 className="text-2xl font-bold text-foreground">Prospecção Estratégica — 3 Canais</h2>
+          <p className="text-sm text-muted-foreground mt-1">Empresas • Contadores • Cartórios</p>
         </div>
-        <Button className="bg-[#1B3A5C] hover:bg-[#1B3A5C]/90 text-white">
+        <Button className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
           <Download className="h-4 w-4 mr-2" /> Exportar Leads
         </Button>
       </div>
 
-      {/* Canal Tabs */}
       <Tabs value={canal} onValueChange={(v) => setCanal(v as CanalKey)}>
-        <TabsList className="bg-[#F3F4F6]">
+        <TabsList>
           {Object.entries(canalData).map(([key, val]) => (
             <TabsTrigger key={key} value={key} className="flex items-center gap-2">
               <val.icon className="h-4 w-4" /> {val.label}
@@ -83,7 +76,6 @@ export default function SeracProspeccao() {
 
         {Object.entries(canalData).map(([key, val]) => (
           <TabsContent key={key} value={key} className="mt-4 space-y-6">
-            {/* KPIs */}
             <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
               {[
                 { label: 'Captados', value: val.kpis.captados, icon: Target },
@@ -92,35 +84,33 @@ export default function SeracProspeccao() {
                 { label: 'Contratos', value: val.kpis.contratos, icon: TrendingUp },
                 { label: 'Receita', value: val.kpis.receita, icon: DollarSign },
               ].map((k) => (
-                <Card key={k.label} className="border-[#E5E7EB]">
+                <Card key={k.label} className="border-border">
                   <CardContent className="p-4 text-center">
-                    <k.icon className="h-4 w-4 mx-auto mb-1" style={{ color: val.color }} />
-                    <p className="text-xs text-[#6B7280]">{k.label}</p>
-                    <p className="text-lg font-bold" style={{ color: val.color }}>{k.value}</p>
+                    <k.icon className="h-4 w-4 mx-auto mb-1 text-primary" />
+                    <p className="text-xs text-muted-foreground">{k.label}</p>
+                    <p className="text-lg font-bold text-primary">{k.value}</p>
                   </CardContent>
                 </Card>
               ))}
             </div>
 
-            {/* Search */}
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" />
-              <Input placeholder={`Buscar lead de ${val.label}...`} value={search} onChange={e => setSearch(e.target.value)} className="pl-9 border-[#E5E7EB]" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input placeholder={`Buscar lead de ${val.label}...`} value={search} onChange={e => setSearch(e.target.value)} className="pl-9" />
             </div>
 
-            {/* Leads */}
             <div className="grid gap-4">
               {filtered.map((l, i) => (
-                <Card key={i} className="border-[#E5E7EB] hover:shadow-md transition-shadow">
+                <Card key={i} className="border-border hover:shadow-md transition-shadow">
                   <CardContent className="p-5">
                     <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 rounded-xl flex items-center justify-center" style={{ backgroundColor: `${val.color}10` }}>
-                          <val.icon className="h-5 w-5" style={{ color: val.color }} />
+                        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-primary/10">
+                          <val.icon className="h-5 w-5 text-primary" />
                         </div>
                         <div>
-                          <p className="font-semibold text-[#1B3A5C]">{l.nome}</p>
-                          <div className="flex items-center gap-2 text-xs text-[#6B7280] mt-0.5">
+                          <p className="font-semibold text-foreground">{l.nome}</p>
+                          <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5">
                             <MapPin className="h-3 w-3" /> {l.regiao}
                             <span>•</span> {l.setor}
                           </div>
@@ -128,21 +118,21 @@ export default function SeracProspeccao() {
                       </div>
                       <div className="flex items-center gap-6">
                         <div className="text-center">
-                          <p className="text-xs text-[#6B7280]">Porte</p>
+                          <p className="text-xs text-muted-foreground">Porte</p>
                           <Badge variant="secondary" className="text-[10px]">{l.porte}</Badge>
                         </div>
                         <div className="text-center">
-                          <p className="text-xs text-[#6B7280]">Regime</p>
-                          <p className="text-xs font-medium text-[#4B5563]">{l.regime}</p>
+                          <p className="text-xs text-muted-foreground">Regime</p>
+                          <p className="text-xs font-medium text-foreground/70">{l.regime}</p>
                         </div>
                         <div className="text-center">
-                          <p className="text-xs text-[#6B7280]">Score</p>
+                          <p className="text-xs text-muted-foreground">Score</p>
                           <div className="flex items-center gap-1">
-                            <Star className="h-3.5 w-3.5 text-amber-500 fill-amber-500" />
-                            <span className="text-lg font-bold text-[#1B3A5C]">{l.score}</span>
+                            <Star className="h-3.5 w-3.5 text-accent fill-accent" />
+                            <span className="text-lg font-bold text-foreground">{l.score}</span>
                           </div>
                         </div>
-                        <Button size="sm" style={{ backgroundColor: val.color }} className="text-white hover:opacity-90">
+                        <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
                           <MessageSquare className="h-3.5 w-3.5 mr-1" /> Abordar
                         </Button>
                       </div>

@@ -3,11 +3,13 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import {
   Building2, Landmark, Gamepad2, ShoppingBag, Calculator,
   Award, KeyRound, Briefcase, FileText, Scale, Shield, User,
   Search, ArrowRight, Lock, Clock, Rocket
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Service {
   name: string;
@@ -77,9 +79,9 @@ const categories: { key: string; label: string; services: Service[] }[] = [
 ];
 
 const statusConfig = {
-  available: { label: 'Disponível', icon: Rocket, className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
-  soon: { label: 'Em breve', icon: Clock, className: 'bg-amber-50 text-amber-700 border-amber-200' },
-  exclusive: { label: 'Exclusivo SERAC', icon: Lock, className: 'bg-blue-50 text-blue-700 border-blue-200' },
+  available: { label: 'Disponível', icon: Rocket, cls: 'bg-success/10 text-success border-success/30' },
+  soon: { label: 'Em breve', icon: Clock, cls: 'bg-accent/20 text-accent-foreground border-accent/30' },
+  exclusive: { label: 'Exclusivo SERAC', icon: Lock, cls: 'bg-info/10 text-info border-info/30' },
 };
 
 export default function SeracMarketplace() {
@@ -93,37 +95,29 @@ export default function SeracMarketplace() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-3">
         <div>
-          <h2 className="text-2xl font-bold text-[#1B3A5C]">Marketplace SERAC</h2>
-          <p className="text-sm text-[#6B7280] mt-1">Catálogo completo de serviços especializados</p>
+          <h2 className="text-2xl font-bold text-foreground">Marketplace SERAC</h2>
+          <p className="text-sm text-muted-foreground mt-1">Catálogo completo de serviços especializados</p>
         </div>
         <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[#9CA3AF]" />
-          <input
-            type="text"
-            placeholder="Buscar serviço..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 pr-4 py-2 text-sm border border-[#E5E7EB] rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#2563EB]/20 focus:border-[#2563EB] w-64"
-          />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Buscar serviço..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 w-64" />
         </div>
       </div>
 
-      {/* Summary */}
       <div className="grid grid-cols-3 gap-3">
         {Object.entries(statusConfig).map(([key, cfg]) => {
           const count = categories.reduce((acc, cat) => acc + cat.services.filter(s => s.status === key).length, 0);
           return (
-            <Card key={key} className="border-[#E5E7EB]">
+            <Card key={key} className="border-border">
               <CardContent className="p-3 flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${cfg.className.split(' ')[0]}`}>
-                  <cfg.icon className={`h-4 w-4 ${cfg.className.split(' ')[1]}`} />
+                <div className={cn("p-2 rounded-lg", cfg.cls.split(' ')[0])}>
+                  <cfg.icon className={cn("h-4 w-4", cfg.cls.split(' ')[1])} />
                 </div>
                 <div>
-                  <p className="text-lg font-bold text-[#1B3A5C]">{count}</p>
-                  <p className="text-[10px] text-[#9CA3AF] uppercase">{cfg.label}</p>
+                  <p className="text-lg font-bold text-foreground">{count}</p>
+                  <p className="text-[10px] text-muted-foreground uppercase">{cfg.label}</p>
                 </div>
               </CardContent>
             </Card>
@@ -131,9 +125,8 @@ export default function SeracMarketplace() {
         })}
       </div>
 
-      {/* Category Tabs */}
       <Tabs value={tab} onValueChange={setTab}>
-        <TabsList className="bg-[#F3F4F6] flex-wrap h-auto gap-1 p-1">
+        <TabsList className="flex-wrap h-auto gap-1 p-1">
           {categories.map(c => (
             <TabsTrigger key={c.key} value={c.key} className="text-xs">{c.label}</TabsTrigger>
           ))}
@@ -144,26 +137,26 @@ export default function SeracMarketplace() {
             {filteredServices.map((svc) => {
               const sc = statusConfig[svc.status];
               return (
-                <Card key={svc.name} className="border-[#E5E7EB] hover:shadow-md transition-all group">
+                <Card key={svc.name} className="border-border hover:shadow-md transition-all group">
                   <CardContent className="p-5">
                     <div className="flex items-start justify-between mb-3">
-                      <div className="p-2.5 rounded-xl bg-[#1B3A5C]/5 group-hover:bg-[#2563EB]/10 transition-colors">
-                        <svc.icon className="h-5 w-5 text-[#1B3A5C]" />
+                      <div className="p-2.5 rounded-xl bg-secondary/10 group-hover:bg-primary/10 transition-colors">
+                        <svc.icon className="h-5 w-5 text-foreground" />
                       </div>
-                      <Badge variant="outline" className={`text-[10px] ${sc.className}`}>
+                      <Badge variant="outline" className={cn("text-[10px]", sc.cls)}>
                         <sc.icon className="h-2.5 w-2.5 mr-1" />
                         {sc.label}
                       </Badge>
                     </div>
-                    <h3 className="font-semibold text-[#1B3A5C] text-sm mb-1">{svc.name}</h3>
-                    <p className="text-[11px] text-[#6B7280] mb-3">{svc.description}</p>
+                    <h3 className="font-semibold text-foreground text-sm mb-1">{svc.name}</h3>
+                    <p className="text-[11px] text-muted-foreground mb-3">{svc.description}</p>
                     <div className="flex flex-wrap gap-1">
                       {svc.items.map(item => (
-                        <span key={item} className="text-[10px] px-2 py-0.5 rounded-full bg-[#F3F4F6] text-[#6B7280]">{item}</span>
+                        <span key={item} className="text-[10px] px-2 py-0.5 rounded-full bg-muted text-muted-foreground">{item}</span>
                       ))}
                     </div>
                     {svc.status === 'available' && (
-                      <Button variant="ghost" size="sm" className="w-full mt-3 text-xs text-[#2563EB] hover:text-[#1D4ED8] hover:bg-blue-50 gap-1">
+                      <Button variant="ghost" size="sm" className="w-full mt-3 text-xs text-primary hover:text-primary hover:bg-primary/10 gap-1">
                         Solicitar <ArrowRight className="h-3 w-3" />
                       </Button>
                     )}

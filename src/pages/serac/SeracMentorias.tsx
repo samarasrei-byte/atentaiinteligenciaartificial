@@ -2,8 +2,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
-  GraduationCap, Calendar, Users, Star, Play, Clock, Award, Trophy
+  GraduationCap, Calendar, Users, Star, Play, Award, Trophy
 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const mentorias = [
   { titulo: 'Masterclass Reforma Tributária 2026', mentor: 'Dr. Marcos Cintra', data: '05/03/2026', vagas: 12, inscritos: 48, tipo: 'Ao vivo', nivel: 'Avançado' },
@@ -21,11 +22,11 @@ const ranking = [
   { nome: 'Roberto Almeida', pontos: 3100, posicao: 5, certificados: 7 },
 ];
 
-const nivelColor: Record<string, string> = {
-  'Básico': '#059669',
-  'Intermediário': '#2563EB',
-  'Avançado': '#D97706',
-  'Expert': '#DC2626',
+const nivelCls: Record<string, string> = {
+  'Básico': 'bg-success/10 text-success',
+  'Intermediário': 'bg-primary/10 text-primary',
+  'Avançado': 'bg-accent/20 text-accent-foreground',
+  'Expert': 'bg-destructive/10 text-destructive',
 };
 
 export default function SeracMentorias() {
@@ -33,30 +34,29 @@ export default function SeracMentorias() {
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-[#1B3A5C]">Clube SERAC — Mentorias & Capacitação</h2>
-          <p className="text-sm text-[#6B7280] mt-1">Programa de desenvolvimento para contadores e parceiros</p>
+          <h2 className="text-2xl font-bold text-foreground">Clube SERAC — Mentorias & Capacitação</h2>
+          <p className="text-sm text-muted-foreground mt-1">Programa de desenvolvimento para contadores e parceiros</p>
         </div>
-        <Badge className="bg-amber-100 text-amber-700 border-0">
+        <Badge className="bg-accent/20 text-accent-foreground border-0">
           <Trophy className="h-3 w-3 mr-1" /> Gamificação Ativa
         </Badge>
       </div>
 
-      {/* KPIs */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Mentorias Ativas', value: '5', icon: GraduationCap, color: '#2563EB' },
-          { label: 'Participantes', value: '134', icon: Users, color: '#059669' },
-          { label: 'Certificados Emitidos', value: '89', icon: Award, color: '#7C3AED' },
-          { label: 'Nota Média', value: '4.8', icon: Star, color: '#D97706' },
+          { label: 'Mentorias Ativas', value: '5', icon: GraduationCap, cls: 'text-primary bg-primary/10' },
+          { label: 'Participantes', value: '134', icon: Users, cls: 'text-success bg-success/10' },
+          { label: 'Certificados Emitidos', value: '89', icon: Award, cls: 'text-info bg-info/10' },
+          { label: 'Nota Média', value: '4.8', icon: Star, cls: 'text-accent-foreground bg-accent/20' },
         ].map((k) => (
-          <Card key={k.label} className="border-[#E5E7EB]">
+          <Card key={k.label} className="border-border">
             <CardContent className="p-4 flex items-center gap-3">
-              <div className="p-2.5 rounded-lg" style={{ backgroundColor: `${k.color}10` }}>
-                <k.icon className="h-5 w-5" style={{ color: k.color }} />
+              <div className={cn("p-2.5 rounded-lg", k.cls.split(' ')[1])}>
+                <k.icon className={cn("h-5 w-5", k.cls.split(' ')[0])} />
               </div>
               <div>
-                <p className="text-xs text-[#6B7280]">{k.label}</p>
-                <p className="text-lg font-bold" style={{ color: k.color }}>{k.value}</p>
+                <p className="text-xs text-muted-foreground">{k.label}</p>
+                <p className={cn("text-lg font-bold", k.cls.split(' ')[0])}>{k.value}</p>
               </div>
             </CardContent>
           </Card>
@@ -64,28 +64,25 @@ export default function SeracMentorias() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Mentorias */}
         <div className="lg:col-span-2 space-y-4">
-          <h3 className="text-sm font-semibold text-[#1B3A5C]">Próximas Mentorias</h3>
+          <h3 className="text-sm font-semibold text-foreground">Próximas Mentorias</h3>
           {mentorias.map((m, i) => (
-            <Card key={i} className="border-[#E5E7EB] hover:shadow-md transition-shadow">
+            <Card key={i} className="border-border hover:shadow-md transition-shadow">
               <CardContent className="p-5">
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <Badge className="text-[10px]" style={{ backgroundColor: `${nivelColor[m.nivel]}15`, color: nivelColor[m.nivel], border: 'none' }}>
-                        {m.nivel}
-                      </Badge>
+                      <Badge className={cn("text-[10px] border-none", nivelCls[m.nivel])}>{m.nivel}</Badge>
                       <Badge variant="secondary" className="text-[10px]">{m.tipo}</Badge>
                     </div>
-                    <p className="text-sm font-semibold text-[#1B3A5C]">{m.titulo}</p>
-                    <p className="text-xs text-[#6B7280] mt-0.5">por {m.mentor}</p>
-                    <div className="flex items-center gap-3 mt-2 text-xs text-[#9CA3AF]">
+                    <p className="text-sm font-semibold text-foreground">{m.titulo}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">por {m.mentor}</p>
+                    <div className="flex items-center gap-3 mt-2 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {m.data}</span>
                       <span className="flex items-center gap-1"><Users className="h-3 w-3" /> {m.inscritos}/{m.vagas + m.inscritos} vagas</span>
                     </div>
                   </div>
-                  <Button size="sm" className="bg-[#1B3A5C] hover:bg-[#1B3A5C]/90 text-white">
+                  <Button size="sm" className="bg-secondary text-secondary-foreground hover:bg-secondary/90">
                     <Play className="h-3 w-3 mr-1" /> Inscrever
                   </Button>
                 </div>
@@ -94,22 +91,23 @@ export default function SeracMentorias() {
           ))}
         </div>
 
-        {/* Ranking */}
-        <Card className="border-[#E5E7EB]">
+        <Card className="border-border">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold text-[#1B3A5C] flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-amber-500" /> Ranking de Engajamento
+            <CardTitle className="text-sm font-semibold text-foreground flex items-center gap-2">
+              <Trophy className="h-4 w-4 text-accent" /> Ranking de Engajamento
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-3">
             {ranking.map((r, i) => (
-              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-[#F9FAFB] border border-[#E5E7EB]">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold ${r.posicao <= 3 ? 'bg-gradient-to-br from-amber-400 to-amber-600' : 'bg-[#9CA3AF]'}`}>
+              <div key={i} className="flex items-center gap-3 p-3 rounded-lg bg-muted/50 border border-border">
+                <div className={cn("w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold",
+                  r.posicao <= 3 ? "bg-gradient-to-br from-accent to-accent/70 text-accent-foreground" : "bg-muted text-muted-foreground"
+                )}>
                   {r.posicao}
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[#1B3A5C]">{r.nome}</p>
-                  <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
+                  <p className="text-sm font-medium text-foreground">{r.nome}</p>
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span>{r.pontos.toLocaleString()} pts</span>
                     <span>•</span>
                     <span>{r.certificados} certificados</span>
