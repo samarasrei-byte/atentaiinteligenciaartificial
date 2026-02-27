@@ -118,18 +118,18 @@ function GlassCard({ children, className = "", accent = false, glow = false }: {
 }
 
 /* ── Glass Button ── */
-function GlassButton({ children, className = "", variant = "default" }: { children: React.ReactNode; className?: string; variant?: "default" | "primary" | "ghost" }) {
+function GlassButton({ children, className = "", variant = "default", onClick }: { children: React.ReactNode; className?: string; variant?: "default" | "primary" | "ghost"; onClick?: () => void }) {
   const base = "inline-flex items-center gap-2 font-semibold rounded-xl px-6 py-3 transition-all duration-300 backdrop-blur-md border text-sm";
   const variants = {
     default: "border-white/10 bg-white/5 text-slate-300 hover:bg-white/10 hover:border-white/20 hover:text-white",
     primary: "border-cyan-400/40 bg-gradient-to-r from-cyan-500/20 to-blue-500/20 text-cyan-300 hover:from-cyan-500/30 hover:to-blue-500/30 hover:text-white shadow-[0_0_20px_hsl(185_80%_50%/0.2)] hover:shadow-[0_0_30px_hsl(185_80%_50%/0.35)]",
     ghost: "border-transparent bg-transparent text-slate-400 hover:text-cyan-400 hover:bg-white/5",
   };
-  return <button className={`${base} ${variants[variant]} ${className}`}>{children}</button>;
+  return <button onClick={onClick} className={`${base} ${variants[variant]} ${className}`}>{children}</button>;
 }
 
 /* ── Parallax Section ── */
-function ParallaxSection({ children, className = "", id, speed = 0.3 }: { children: React.ReactNode; className?: string; id?: string; speed?: number }) {
+function ParallaxSection({ children, className = "", id, speed = 0.3 }: { children: React.ReactNode; className?: string; id?: string; speed?: number; }) {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
   const y = useTransform(scrollYProgress, [0, 1], [80 * speed, -80 * speed]);
@@ -197,6 +197,19 @@ export default function SeracPresentation() {
   const heroOpacity = useTransform(heroScroll, [0, 0.6], [1, 0]);
   const heroScale = useTransform(heroScroll, [0, 0.6], [1, 0.9]);
   const heroImgScale = useTransform(heroScroll, [0, 1], [1, 1.3]);
+  const [showStickyCTA, setShowStickyCTA] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setShowStickyCTA(window.scrollY > 600);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToSection = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const whatsappLink = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20gostaria%20de%20agendar%20uma%20reuni%C3%A3o%20sobre%20a%20proposta%20SERAC.";
 
   return (
     <>
@@ -255,10 +268,15 @@ export default function SeracPresentation() {
               <motion.p variants={fadeIn} className="text-sm text-slate-600 tracking-[0.3em] uppercase font-medium">
                 Powered by AtentAI · G8 Prospect · Clauthor
               </motion.p>
-              <motion.div variants={fadeIn} className="mt-12 flex justify-center gap-4">
-                <GlassButton variant="primary">
+              <motion.div variants={fadeIn} className="mt-12 flex flex-wrap justify-center gap-4">
+                <GlassButton variant="primary" className="cursor-pointer" onClick={() => scrollToSection('proposta-comercial')}>
                   <Rocket className="w-4 h-4" /> Ver Proposta Completa
                 </GlassButton>
+                <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+                  <GlassButton className="cursor-pointer">
+                    <ArrowRight className="w-4 h-4" /> Agendar Reunião
+                  </GlassButton>
+                </a>
               </motion.div>
               <motion.div variants={fadeIn} className="mt-14">
                 <ChevronDown className="w-7 h-7 text-cyan-500/40 mx-auto animate-bounce" />
@@ -687,7 +705,7 @@ export default function SeracPresentation() {
         </ParallaxSection>
 
         {/* ═══════ PROPOSTA — CONTRATO 12 MESES ═══════ */}
-        <ParallaxSection className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.3}>
+        <ParallaxSection id="proposta-comercial" className="bg-slate-900/50 border-t border-white/[0.03]" speed={0.3}>
           <FloatingParticles count={20} />
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Proposta Comercial</Badge>
@@ -898,19 +916,45 @@ export default function SeracPresentation() {
             ))}
           </div>
 
-          <motion.div variants={scaleIn} className="text-center">
-            <GlassButton variant="primary" className="text-lg px-10 py-5">
-              <Rocket className="w-5 h-5" /> Agendar Reunião Estratégica <ArrowRight className="w-5 h-5" />
-            </GlassButton>
+          <motion.div variants={scaleIn} className="text-center space-y-4">
+            <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+              <GlassButton variant="primary" className="text-lg px-10 py-5 cursor-pointer">
+                <Rocket className="w-5 h-5" /> Agendar Reunião Estratégica <ArrowRight className="w-5 h-5" />
+              </GlassButton>
+            </a>
+            <p className="text-slate-600 text-xs">Reunião sem compromisso · 30 minutos · Online</p>
           </motion.div>
         </ParallaxSection>
 
         {/* Footer */}
-        <footer className="py-12 px-6 border-t border-white/[0.04] text-center">
-          <p className="text-slate-600 text-sm">
-            SERAC Intelligence Platform — <span className="text-slate-500">Powered by AtentAI · G8 Prospect · Clauthor</span>
-          </p>
+        <footer className="py-16 px-6 border-t border-white/[0.04]">
+          <div className="max-w-4xl mx-auto text-center space-y-6">
+            <p className="text-slate-500 text-sm">
+              © {new Date().getFullYear()} SERAC Intelligence Platform
+            </p>
+            <p className="text-slate-700 text-xs">
+              Powered by AtentAI · G8 Prospect · Clauthor
+            </p>
+            <p className="text-slate-700 text-[10px] uppercase tracking-widest">
+              Documento confidencial · Proposta comercial exclusiva
+            </p>
+          </div>
         </footer>
+
+        {/* Sticky CTA */}
+        <motion.div
+          initial={{ y: 100, opacity: 0 }}
+          animate={{ y: showStickyCTA ? 0 : 100, opacity: showStickyCTA ? 1 : 0 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+          className="fixed bottom-6 right-6 z-50"
+        >
+          <a href={whatsappLink} target="_blank" rel="noopener noreferrer">
+            <button className="flex items-center gap-2 px-6 py-3.5 rounded-full bg-gradient-to-r from-cyan-500 to-blue-600 text-white font-bold text-sm shadow-[0_0_30px_hsl(185_80%_50%/0.4)] hover:shadow-[0_0_50px_hsl(185_80%_50%/0.6)] transition-all duration-300 hover:scale-105">
+              <Rocket className="w-4 h-4" />
+              Agendar Reunião
+            </button>
+          </a>
+        </motion.div>
       </div>
     </>
   );
