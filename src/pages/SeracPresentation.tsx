@@ -382,16 +382,16 @@ export default function SeracPresentation() {
                   <h3 className="text-2xl font-black text-white mb-1">G8 Prospect</h3>
                   <p className="text-violet-400 text-xs font-bold uppercase tracking-wider mb-4">Ecossistema de 8 Startups</p>
                   <p className="text-slate-400 text-sm leading-relaxed mb-5">
-                    Ecossistema de inovação com <strong className="text-white">87 anos de experiência combinada</strong> entre os fundadores. Já gerou mais de <strong className="text-violet-400">R$ 30 milhões em negócios</strong> para seus clientes.
+                    Ecossistema de inovação com <strong className="text-white">7 anos de experiência</strong> no mercado. Já gerou mais de <strong className="text-violet-400">R$ 360 milhões em negócios</strong> para seus clientes.
                   </p>
                   <div className="space-y-2 mb-5">
                     <div className="flex items-center gap-2 text-xs">
                       <Award className="w-3.5 h-3.5 text-violet-400" />
-                      <span className="text-slate-300"><strong className="text-white">87 anos</strong> de experiência combinada</span>
+                      <span className="text-slate-300"><strong className="text-white">7 anos</strong> de experiência no mercado</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
                       <TrendingUp className="w-3.5 h-3.5 text-violet-400" />
-                      <span className="text-slate-300"><strong className="text-white">R$ 30M+</strong> em negócios gerados</span>
+                      <span className="text-slate-300"><strong className="text-white">R$ 360M+</strong> em negócios gerados</span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
                       <Crown className="w-3.5 h-3.5 text-violet-400" />
@@ -399,7 +399,7 @@ export default function SeracPresentation() {
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {["Leads B2B", "C-Levels", "8 Startups", "R$ 30M+"].map((tag, i) => (
+                    {["Leads B2B", "C-Levels", "8 Startups", "R$ 360M+"].map((tag, i) => (
                       <span key={i} className="text-[10px] font-bold uppercase tracking-wider text-slate-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full">{tag}</span>
                     ))}
                   </div>
@@ -450,7 +450,7 @@ export default function SeracPresentation() {
           <motion.div variants={fadeUp}>
             <GlassCard accent glow className="p-8 text-center">
               <p className="text-xl text-slate-300 leading-relaxed">
-                O SERAC terá acesso a <span className="text-white font-bold">todo esse ecossistema</span> integrado: <span className="text-cyan-400 font-bold">AtentAI</span> como plataforma White Label exclusiva · <span className="text-violet-400 font-bold">G8 Prospect</span> com 87 anos de experiência e R$ 30M+ em negócios · <span className="text-emerald-400 font-bold">Clauthor</span> com tecnologia americana de ponta
+                O SERAC terá acesso a <span className="text-white font-bold">todo esse ecossistema</span> integrado: <span className="text-cyan-400 font-bold">AtentAI</span> como plataforma White Label exclusiva · <span className="text-violet-400 font-bold">G8 Prospect</span> com 7 anos de experiência e R$ 360M+ em negócios · <span className="text-emerald-400 font-bold">Clauthor</span> com tecnologia americana de ponta
               </p>
             </GlassCard>
           </motion.div>
@@ -715,7 +715,7 @@ export default function SeracPresentation() {
                   <div className="text-center p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                     <Target className="w-10 h-10 text-violet-400 mx-auto mb-3" />
                     <p className="text-white font-bold mb-2">G8 Prospect</p>
-                    <p className="text-slate-400 text-sm"><strong className="text-white">87 anos</strong> de experiência combinada. Já gerou <strong className="text-violet-400">R$ 30M+ em negócios</strong>. Acesso a base de C-Levels e decisores estratégicos.</p>
+                    <p className="text-slate-400 text-sm"><strong className="text-white">7 anos</strong> de experiência no mercado. Já gerou <strong className="text-violet-400">R$ 360M+ em negócios</strong>. Acesso a base de C-Levels e decisores estratégicos.</p>
                   </div>
                   <div className="text-center p-5 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                     <Bot className="w-10 h-10 text-emerald-400 mx-auto mb-3" />
@@ -786,7 +786,7 @@ export default function SeracPresentation() {
                   Com este ecossistema, o SERAC recebe: uma <span className="text-cyan-400 font-bold">plataforma White Label</span> que o mercado enxerga como tecnologia própria do SERAC, <span className="text-emerald-400 font-bold">exclusividade total</span> no maior marketplace fiscal com IA do país, e um <span className="text-violet-400 font-bold">time comercial de IA</span> da Clauthor (empresa americana com grandes clientes globais) prospectando 24/7.
                 </p>
                 <p>
-                  A G8 Prospect traz <strong className="text-white">87 anos de experiência combinada</strong> e já gerou <strong className="text-violet-400">mais de R$ 30 milhões em negócios</strong>. A AtentAI já tem centenas de usuários ativos e um marketplace com valor de mercado consolidado. A Clauthor é uma <strong className="text-emerald-400">empresa americana</strong> que trabalha com grandes clientes globais.
+                  A G8 Prospect traz <strong className="text-white">7 anos de experiência</strong> e já gerou <strong className="text-violet-400">mais de R$ 360 milhões em negócios</strong>. A AtentAI já tem centenas de usuários ativos e um marketplace com valor de mercado consolidado. A Clauthor é uma <strong className="text-emerald-400">empresa americana</strong> que trabalha com grandes clientes globais.
                 </p>
                 <p>
                   Nosso modelo de <span className="text-cyan-400 font-bold">comissionamento</span> é a prova da nossa confiança: <span className="text-white font-bold">nós só ganhamos mais se o SERAC ganha mais</span>. É uma operação de crescimento com risco compartilhado.
@@ -823,7 +823,7 @@ export default function SeracPresentation() {
             <FAQItem
               index={3}
               question="Quem são as empresas por trás dessa proposta?"
-              answer="São 3 startups integradas: AtentAI — plataforma de inteligência fiscal com centenas de usuários e marketplace consolidado; G8 Prospect — ecossistema com 87 anos de experiência combinada e R$ 30M+ em negócios gerados; e Clauthor — empresa americana com tecnologia de ponta que trabalha com grandes clientes globais."
+              answer="São 3 startups integradas: AtentAI — plataforma de inteligência fiscal com centenas de usuários e marketplace consolidado; G8 Prospect — ecossistema com 7 anos de experiência e R$ 360M+ em negócios gerados; e Clauthor — empresa americana com tecnologia de ponta que trabalha com grandes clientes globais."
             />
             <FAQItem
               index={4}
