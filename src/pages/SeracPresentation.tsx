@@ -14,6 +14,8 @@ import {
 import seracHeroBg from "@/assets/serac-hero-bg.jpg";
 import seracAiBrain from "@/assets/serac-ai-brain.jpg";
 import seracDashboard from "@/assets/serac-dashboard.jpg";
+import seracOffice from "@/assets/serac-office.png";
+import seracBuilding from "@/assets/serac-building.png";
 
 /* ── Animated Counter ── */
 function AnimatedCounter({ value, suffix = "", prefix = "", duration = 2 }: { value: number; suffix?: string; prefix?: string; duration?: number }) {
@@ -351,23 +353,23 @@ export default function SeracPresentation() {
           <div className="grid md:grid-cols-3 gap-6">
             <StartupCard
               name="AtentAI"
-              description="Inteligência Artificial aplicada à gestão contábil e fiscal. Motor de IA que alimenta toda a plataforma com análise preditiva e automação inteligente."
+              description="Startup de tecnologia fiscal e inteligência artificial. Motor de IA que alimenta toda a plataforma com análise preditiva, automação tributária e inteligência fiscal avançada para contadores e empresas."
               icon={Brain}
-              tags={["IA", "Machine Learning", "NLP"]}
+              tags={["Tecnologia Fiscal", "IA", "Automação"]}
               gradient="bg-cyan-500"
             />
             <StartupCard
-              name="G8"
-              description="Infraestrutura de dados e compliance para o mercado financeiro. Segurança, governança e processamento em escala nacional."
-              icon={Shield}
-              tags={["Compliance", "Data", "Segurança"]}
+              name="G8 Prospect"
+              description="Startup especializada em prospecção e geração de leads qualificados. Responsável pela máquina de aquisição de clientes com abordagem B2B estruturada e pipeline de vendas automatizado."
+              icon={Target}
+              tags={["Prospecção", "Leads B2B", "Growth"]}
               gradient="bg-violet-500"
             />
             <StartupCard
               name="Clauthor"
-              description="Plataforma de automação jurídica e documental. Geração inteligente de contratos, pareceres e análise de risco legal."
-              icon={Scale}
-              tags={["Legal Tech", "Automação", "Docs"]}
+              description="Startup de agentes de inteligência artificial especializados por área. Desenvolve e opera agentes de IA para compliance, fiscal, jurídico, atendimento e automação de processos corporativos."
+              icon={Bot}
+              tags={["Agentes IA", "Automação", "Multi-área"]}
               gradient="bg-emerald-500"
             />
           </div>
@@ -382,12 +384,23 @@ export default function SeracPresentation() {
             </h2>
           </motion.div>
 
-          {/* AI Brain image with glow */}
-          <motion.div variants={scaleIn} className="flex justify-center my-12">
-            <div className="relative">
-              <img src={seracAiBrain} alt="AI Brain" className="w-64 h-64 rounded-3xl object-cover border border-cyan-500/20" />
-              <div className="absolute inset-0 rounded-3xl shadow-[0_0_60px_hsl(185_80%_50%/0.3)]" />
-              <div className="absolute -inset-2 rounded-3xl bg-gradient-to-b from-cyan-500/10 to-transparent blur-xl -z-10" />
+          {/* Real SERAC images */}
+          <motion.div variants={fadeUp} className="grid sm:grid-cols-2 gap-6 my-12">
+            <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-[0_0_40px_hsl(185_80%_50%/0.1)] group">
+              <img src={seracBuilding} alt="Sede SERAC" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+              <div className="absolute bottom-4 left-4">
+                <p className="text-white font-bold text-sm">Sede SERAC</p>
+                <p className="text-slate-400 text-xs">São Paulo, SP</p>
+              </div>
+            </div>
+            <div className="relative rounded-2xl overflow-hidden border border-white/[0.08] shadow-[0_0_40px_hsl(185_80%_50%/0.1)] group">
+              <img src={seracOffice} alt="Escritório SERAC" className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/20 to-transparent" />
+              <div className="absolute bottom-4 left-4">
+                <p className="text-white font-bold text-sm">Operação SERAC</p>
+                <p className="text-slate-400 text-xs">+200 profissionais</p>
+              </div>
             </div>
           </motion.div>
 
