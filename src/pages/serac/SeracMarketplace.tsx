@@ -360,6 +360,64 @@ export default function SeracMarketplace() {
         </div>
       </section>
 
+      {/* SaaS para Clientes SERAC */}
+      <section className="py-16 border-t border-border" style={{ background: 'linear-gradient(135deg, hsl(210 50% 15%) 0%, hsl(215 60% 22%) 50%, hsl(200 50% 18%) 100%)' }}>
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <Badge className="bg-accent/20 text-accent border-accent/30 mb-4">EM BREVE</Badge>
+            <h2 className="text-2xl lg:text-3xl font-bold text-white mb-3">
+              Plataforma Completa para os <span className="text-accent">Clientes SERAC</span>
+            </h2>
+            <p className="text-white/70 max-w-2xl mx-auto">
+              Cada cliente da SERAC terá acesso a uma plataforma SaaS exclusiva com agentes de IA, prospecção automatizada, mentorias e muito mais — tudo integrado ao ecossistema SERAC.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: Zap, title: 'Agentes de IA Próprios', desc: 'Cada cliente terá seus próprios agentes para atendimento, qualificação e automação comercial 24/7.' },
+              { icon: Rocket, title: 'Prospecção Automatizada', desc: 'Motor de prospecção B2B integrado para que os clientes SERAC expandam sua própria carteira.' },
+              { icon: Sparkles, title: 'Mentorias & Capacitação', desc: 'Plataforma de mentorias e conteúdo exclusivo para evolução contínua dos clientes.' },
+            ].map((item, i) => (
+              <div key={i} className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 text-center">
+                <div className="h-12 w-12 rounded-xl bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                  <item.icon className="h-6 w-6 text-accent" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-2">{item.title}</h3>
+                <p className="text-sm text-white/60">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Rastreamento & Transparência */}
+      <section className="py-14 bg-card border-t border-border">
+        <div className="max-w-5xl mx-auto px-4">
+          <div className="text-center mb-10">
+            <h2 className="text-2xl lg:text-3xl font-bold text-foreground mb-3">
+              Rastreamento <span className="text-primary">100% Transparente</span>
+            </h2>
+            <p className="text-muted-foreground max-w-2xl mx-auto">
+              Cada lead possui ID único e rastreamento completo. Só cobramos sobre clientes originados pela nossa infraestrutura — os clientes ativos da SERAC nunca entram nessa conta.
+            </p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { icon: BadgeCheck, title: 'ID Único por Lead', desc: 'Rastreamento individual com UTM source, campaign e medium.' },
+              { icon: Shield, title: 'Tag AtentAI', desc: 'Clientes originados pela AtentAI recebem tag própria e exclusiva.' },
+              { icon: Lock, title: 'Base Separada', desc: 'Clientes ativos da SERAC nunca são misturados — tudo auditável.' },
+              { icon: Star, title: 'Cobrança Justa', desc: 'Pagamento apenas sobre leads gerados pela infraestrutura AtentAI.' },
+            ].map((item, i) => (
+              <div key={i} className="bg-muted/50 border border-border rounded-xl p-5 text-center">
+                <item.icon className="h-6 w-6 text-primary mx-auto mb-3" />
+                <h3 className="text-sm font-bold text-foreground mb-1">{item.title}</h3>
+                <p className="text-xs text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* Social Proof */}
       <section className="py-12 bg-card border-t border-border">
         <div className="max-w-5xl mx-auto px-4">
