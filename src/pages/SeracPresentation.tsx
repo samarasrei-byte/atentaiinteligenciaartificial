@@ -338,7 +338,6 @@ export default function SeracPresentation() {
                   { value: 21000000, suffix: "+", label: "Empresas no Brasil" },
                   { value: 13800, suffix: "+", label: "Cartórios" },
                   { value: 520000, suffix: "+", label: "Contadores" },
-                  { value: 5000, suffix: "/mês", label: "Impactos Qualificados" },
                 ].map((s, i) => (
                   <div key={i} className="text-center">
                     <div className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
@@ -518,7 +517,7 @@ export default function SeracPresentation() {
                   <p className="text-slate-500 text-xs font-bold tracking-[0.2em] uppercase mb-3">Mensalidade</p>
                   <h3 className="text-5xl font-black text-emerald-400 mb-4">R$ 35.000<span className="text-2xl text-slate-500">/mês</span></h3>
                   <p className="text-slate-400 text-sm leading-relaxed">
-                    Operação contínua da máquina de prospecção — manutenção dos agentes de IA, gestão das campanhas e geração de <span className="text-white font-bold">5.000 impactos qualificados por mês</span>.
+                    Operação contínua da máquina de prospecção — manutenção dos agentes de IA, gestão das campanhas e <span className="text-white font-bold">prospecção qualificada através dos 3 canais</span>.
                   </p>
                 </div>
               </GlassCard>
@@ -550,45 +549,42 @@ export default function SeracPresentation() {
             </motion.div>
           </div>
 
-          {/* Volume breakdown */}
+          {/* 3 Canais de Prospecção */}
           <motion.div variants={fadeUp}>
             <GlassCard glow className="p-10">
-              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-8 text-center">Volume de Impacto Mensal</p>
+              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-8 text-center">3 Canais de Prospecção para o SERAC</p>
               <div className="grid sm:grid-cols-3 gap-6">
                 {[
-                  { value: 2000, icon: Users, label: "Contadores", desc: "Para eventos, mentorias e programas de capacitação do SERAC", color: "cyan" },
-                  { value: 2000, icon: Building2, label: "Empresas", desc: "Para serviços contábeis — contabilidade exclusiva SERAC", color: "emerald" },
-                  { value: 1000, icon: Scale, label: "Cartórios", desc: "Para serviços especializados do SERAC", color: "violet" },
+                  { icon: Users, label: "Canal 1 — Contadores", desc: "Prospecção de contadores para eventos, mentorias e programas de capacitação do SERAC", color: "cyan" },
+                  { icon: Building2, label: "Canal 2 — Empresas", desc: "Prospecção de empresas para a contabilidade exclusiva do SERAC via marketplace AtentAI", color: "emerald" },
+                  { icon: Scale, label: "Canal 3 — Cartórios", desc: "Prospecção de cartórios para serviços especializados, direcionados ao time comercial do SERAC", color: "violet" },
                 ].map((item, i) => (
                   <motion.div key={i} whileHover={{ scale: 1.05 }} className="text-center p-6 rounded-xl bg-white/[0.03] border border-white/[0.06]">
                     <item.icon className={`w-10 h-10 text-${item.color}-400 mx-auto mb-3`} />
-                    <div className={`text-4xl font-black bg-gradient-to-r from-${item.color}-400 to-blue-400 bg-clip-text text-transparent mb-2`}>
-                      <AnimatedCounter value={item.value} suffix="/mês" duration={2} />
-                    </div>
-                    <p className="text-white font-bold text-sm mb-1">{item.label}</p>
+                    <p className="text-white font-bold text-sm mb-2">{item.label}</p>
                     <p className="text-slate-500 text-xs">{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
               <div className="mt-8 text-center">
-                <p className="text-3xl font-black bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                  = 5.000 impactos qualificados/mês
+                <p className="text-lg text-slate-300 leading-relaxed">
+                  Todos os leads gerados são direcionados <span className="text-cyan-400 font-bold">exclusivamente</span> para o SERAC — sem concorrência no marketplace
                 </p>
               </div>
             </GlassCard>
           </motion.div>
         </ParallaxSection>
 
-        {/* ═══════ PARCERIA EXCLUSIVA — COMO FUNCIONA ═══════ */}
+        {/* ═══════ COMO FUNCIONA — 3 CANAIS ═══════ */}
         <ParallaxSection className="bg-slate-950 border-t border-white/[0.03]" speed={0.3}>
           <FloatingParticles count={20} />
           <motion.div variants={fadeUp} className="text-center mb-16">
-            <Badge>Modelo de Parceria</Badge>
+            <Badge>Como Funciona</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              AtentAI Prospecta. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">SERAC Atende com Exclusividade.</span>
+              3 Canais de Prospecção. <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">1 Destino: SERAC.</span>
             </h2>
             <p className="text-slate-500 text-lg mt-4 max-w-3xl mx-auto">
-              A AtentAI se torna uma <strong className="text-slate-300">extensão do departamento de vendas do SERAC</strong>, com funil de leads pré-qualificados e dedicados. Não haverá concorrência interna.
+              O ecossistema de 3 startups funciona como uma <strong className="text-slate-300">extensão do time comercial do SERAC</strong> — prospectando empresas, contadores e cartórios com IA e direcionando tudo exclusivamente para o SERAC.
             </p>
           </motion.div>
 
@@ -626,9 +622,9 @@ export default function SeracPresentation() {
             </GlassCard>
           </motion.div>
 
-          {/* Ganha-ganha */}
+          {/* O que o SERAC recebe */}
           <motion.div variants={fadeUp} className="mb-10">
-            <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-6 text-center">Modelo ganha-ganha-ganha</p>
+            <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-6 text-center">O que cada parte entrega</p>
           </motion.div>
           <div className="grid md:grid-cols-3 gap-6">
             <motion.div variants={fadeUp} whileHover={{ y: -5 }}>
@@ -636,7 +632,7 @@ export default function SeracPresentation() {
                 <div className="w-14 h-14 rounded-2xl bg-cyan-500/10 border border-cyan-500/20 flex items-center justify-center mb-5">
                   <Brain className="w-7 h-7 text-cyan-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">AtentAI ganha</h3>
+                <h3 className="text-xl font-bold text-white mb-3">AtentAI entrega</h3>
                 <ul className="space-y-2 text-slate-400 text-sm">
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Setup R$ 45k</strong> pela implantação</span></li>
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-cyan-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">R$ 35k/mês</strong> pela operação contínua</span></li>
@@ -649,12 +645,13 @@ export default function SeracPresentation() {
                 <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mb-5">
                   <Building2 className="w-7 h-7 text-emerald-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">SERAC ganha</h3>
+                <h3 className="text-xl font-bold text-white mb-3">SERAC recebe</h3>
                 <ul className="space-y-2 text-slate-400 text-sm">
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Exclusividade total</strong> no marketplace AtentAI</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">5.000 leads/mês</strong> sem custo comercial interno</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Plataforma White Label</strong> com o logo e marca do SERAC</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">3 canais de prospecção</strong> alimentando o time comercial</span></li>
+                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Agentes de IA</strong> como time comercial dedicado 24/7</span></li>
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Clube de mentorias</strong> com contadores e cartórios</span></li>
-                  <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-emerald-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Receita escalável</strong> sem custo de aquisição</span></li>
                 </ul>
               </GlassCard>
             </motion.div>
@@ -663,7 +660,7 @@ export default function SeracPresentation() {
                 <div className="w-14 h-14 rounded-2xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center mb-5">
                   <Users className="w-7 h-7 text-violet-400" />
                 </div>
-                <h3 className="text-xl font-bold text-white mb-3">Clientes ganham</h3>
+                <h3 className="text-xl font-bold text-white mb-3">Clientes recebem</h3>
                 <ul className="space-y-2 text-slate-400 text-sm">
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Contabilidade de excelência</strong> — SERAC com +300 profissionais</span></li>
                   <li className="flex items-start gap-2"><Sparkles className="w-4 h-4 text-violet-400 mt-0.5 flex-shrink-0" /> <span><strong className="text-white">Economia tributária</strong> com diagnóstico por IA</span></li>
@@ -703,7 +700,7 @@ export default function SeracPresentation() {
                   </div>
                 </div>
                 <p className="text-slate-500 text-xs mt-4 leading-relaxed">
-                  Custo-benefício superior: exclusividade + integração de 3 tecnologias + 5.000 impactos/mês inclusos
+                  Custo-benefício superior: exclusividade + plataforma White Label + integração de 3 startups + agentes de IA 24/7
                 </p>
               </GlassCard>
             </motion.div>
@@ -800,7 +797,7 @@ export default function SeracPresentation() {
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Funil de Prospecção</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">5.000 impactos/mês</span> gerando contratos
+              <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">3 Canais de Prospecção</span> gerando contratos
             </h2>
           </motion.div>
 
@@ -841,9 +838,9 @@ export default function SeracPresentation() {
           {/* Funnel */}
           <motion.div variants={fadeUp} className="mb-12">
             <GlassCard className="p-10">
-              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10">Prospecção mensal estruturada — 5.000 impactos</p>
+              <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10">Prospecção estruturada por 3 canais de IA</p>
               <div className="space-y-5">
-                <FunnelStep value="5.000" label="2.000 empresas + 2.000 contadores + 1.000 cartórios impactados/mês" width="w-full" index={0} />
+                <FunnelStep value="3 Canais" label="Empresas + Contadores + Cartórios prospectados via IA 24/7" width="w-full" index={0} />
                 <FunnelStep value="10%" label="Taxa média de resposta → 500 respostas" width="w-[85%]" index={1} />
                 <FunnelStep value="30%" label="Conversão para reunião → 150 reuniões" width="w-[65%]" index={2} />
                 <FunnelStep value="20%" label="Taxa de fechamento → 30 novos contratos" width="w-[45%]" index={3} />
@@ -852,9 +849,9 @@ export default function SeracPresentation() {
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-5">
-            <GlowingStat value={30} label="Novos contratos/mês" sub="Empresas + Contadores + Cartórios" />
-            <GlowingStat value={75} label="Receita adicional/mês" sub="R$ 75k — Ticket médio: R$ 2.500" />
-            <GlowingStat value={450} label="Acumulados em 6 meses" sub="R$ 450k — Crescimento composto" />
+            <GlowingStat value={3} label="Canais de Prospecção" sub="Empresas + Contadores + Cartórios" />
+            <GlowingStat value={300} label="Profissionais SERAC" sub="Time pronto para atender a demanda" />
+            <GlowingStat value={3500} label="Clientes Atuais" sub="Base sólida para crescimento exponencial" />
           </div>
         </ParallaxSection>
 
@@ -918,9 +915,9 @@ export default function SeracPresentation() {
             <motion.div whileHover={{ scale: 1.05 }}>
               <GlassCard className="px-4 py-3">
                 <div className="text-violet-400 font-black text-lg">
-                  <AnimatedCounter value={5000} suffix="/mês" duration={1.5} />
+                  <AnimatedCounter value={3} duration={1} />
                 </div>
-                <p className="text-slate-500 text-[10px]">Impactos qualificados</p>
+                <p className="text-slate-500 text-[10px]">Canais de Prospecção IA</p>
               </GlassCard>
             </motion.div>
             <motion.div whileHover={{ scale: 1.05 }}>
@@ -934,7 +931,7 @@ export default function SeracPresentation() {
           </motion.div>
 
           <motion.p variants={fadeUp} className="text-slate-500 text-lg mb-12 max-w-2xl mx-auto text-center">
-            Plataforma white label exclusiva da SERAC
+            Plataforma <span className="text-cyan-400 font-bold">White Label</span> exclusiva — com a marca e o logo do SERAC, como se fosse um software próprio
           </motion.p>
 
           <motion.div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }}>
@@ -1110,7 +1107,7 @@ export default function SeracPresentation() {
 
           <div className="max-w-2xl mx-auto space-y-4 mb-16">
             {[
-              { step: "01", t: "Aprovação do modelo de parceria" },
+              { step: "01", t: "Aprovação do modelo de operação" },
               { step: "02", t: "Pagamento do setup (R$ 45.000)" },
               { step: "03", t: "Customização dos agentes de IA" },
               { step: "04", t: "Go-live e início da prospecção" },
