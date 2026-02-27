@@ -454,27 +454,61 @@ export default function SeracPresentation() {
           <motion.div variants={fadeUp} className="text-center mb-16">
             <Badge>Prospecção Incluída</Badge>
             <h2 className="text-4xl lg:text-6xl font-black text-white mt-3">
-              Aquisição Ativa de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Contadores</span>
+              Aquisição Ativa de <span className="bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">Contadores & Cartórios</span>
             </h2>
+          </motion.div>
+
+          {/* Dados de Cartórios do Brasil */}
+          <motion.div variants={fadeUp} className="mb-12">
+            <GlassCard glow className="p-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-violet-400" />
+                </div>
+                <div>
+                  <h3 className="text-white font-bold text-lg">Mercado de Cartórios no Brasil</h3>
+                  <p className="text-slate-500 text-xs">Oportunidade massiva e nichada</p>
+                </div>
+              </div>
+              <div className="grid sm:grid-cols-4 gap-4 mb-6">
+                {[
+                  { value: "13.800+", label: "Cartórios no Brasil", detail: "Serventias extrajudiciais ativas" },
+                  { value: "R$ 28B", label: "Faturamento anual do setor", detail: "Emolumentos + custas" },
+                  { value: "1.000", label: "Cartórios prospectados/mês", detail: "Nossa meta de prospecção" },
+                  { value: "73%", label: "Pagam impostos a mais", detail: "Oportunidade de economia" },
+                ].map((item, i) => (
+                  <div key={i} className="text-center p-4 rounded-xl bg-white/[0.03] border border-white/[0.06]">
+                    <div className="text-2xl font-black bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-transparent mb-1">{item.value}</div>
+                    <p className="text-slate-300 text-sm font-semibold">{item.label}</p>
+                    <p className="text-slate-600 text-[10px] mt-0.5">{item.detail}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-slate-500 text-sm leading-relaxed">
+                Vamos prospectar <span className="text-cyan-400 font-bold">1.000 cartórios por mês</span> em todo o Brasil, 
+                com abordagem consultiva e diagnóstico tributário personalizado para cada serventia. 
+                Com base no faturamento médio de R$ 2M/ano por cartório, a economia média identificada é de <span className="text-emerald-400 font-bold">R$ 74.000/ano</span>.
+              </p>
+            </GlassCard>
           </motion.div>
 
           <motion.div variants={fadeUp} className="mb-12">
             <GlassCard className="p-10">
               <p className="text-slate-600 text-xs font-bold tracking-[0.2em] uppercase mb-10">Prospecção mensal estruturada</p>
               <div className="space-y-5">
-                <FunnelStep value="5.000" label="Contadores impactados por mês" width="w-full" index={0} />
-                <FunnelStep value="10%" label="Taxa média de resposta → 500 respostas" width="w-[85%]" index={1} />
-                <FunnelStep value="30%" label="Conversão para reunião → 150 reuniões" width="w-[65%]" index={2} />
-                <FunnelStep value="20%" label="Taxa de fechamento → 30 contratos" width="w-[45%]" index={3} />
+                <FunnelStep value="5.000" label="Contadores + 1.000 cartórios impactados por mês" width="w-full" index={0} />
+                <FunnelStep value="10%" label="Taxa média de resposta → 600 respostas" width="w-[85%]" index={1} />
+                <FunnelStep value="30%" label="Conversão para reunião → 180 reuniões" width="w-[65%]" index={2} />
+                <FunnelStep value="20%" label="Taxa de fechamento → 36 contratos" width="w-[45%]" index={3} />
               </div>
             </GlassCard>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-5">
             {[
-              { value: "30", label: "Novos contratos/mês", sub: "Ticket médio: R$ 2.500" },
-              { value: "R$ 75k", label: "Receita adicional/mês", sub: "A partir do primeiro mês" },
-              { value: "R$ 450k", label: "Acumulados em 6 meses", sub: "Crescimento composto" },
+              { value: "36", label: "Novos contratos/mês", sub: "Contadores + Cartórios" },
+              { value: "R$ 90k", label: "Receita adicional/mês", sub: "Ticket médio: R$ 2.500" },
+              { value: "R$ 540k", label: "Acumulados em 6 meses", sub: "Crescimento composto" },
             ].map((r, i) => (
               <motion.div key={i} variants={scaleIn}>
                 <GlassCard glow className="p-7 text-center">
