@@ -99,7 +99,7 @@ export default function PartnerGuilhermePanel() {
       if (user.id !== GUILHERME_USER_ID) {
         toast({ 
           title: 'Acesso restrito', 
-          description: 'Este painel é exclusivo do parceiro Guilherme Barros.',
+          description: 'Este painel é exclusivo do parceiro Guilherme Mesquita.',
           variant: 'destructive' 
         });
         navigate('/');
