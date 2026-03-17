@@ -144,11 +144,11 @@ export default function PartnerGuilhermePage() {
           await fetchRequestsForPartner(partnerData.id);
         }
       } else if (adminCheck) {
-        // Admin can see all requests - fetch partner Guilherme Barros
+        // Admin can see all requests - fetch partner Guilherme Mesquita
         const { data: guilhermePartner } = await supabase
           .from('credit_repair_partners')
           .select('*')
-          .eq('contact_person', 'Guilherme Barros')
+          .eq('contact_person', 'Guilherme Mesquita')
           .maybeSingle();
 
         if (guilhermePartner) {
