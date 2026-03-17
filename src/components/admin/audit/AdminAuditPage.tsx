@@ -143,7 +143,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.base_price_cents || 0,
           created_at: r.created_at,
           completed_at: null,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...certData.map(r => ({
           id: r.id,
