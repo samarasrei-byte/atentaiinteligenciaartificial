@@ -64,10 +64,10 @@ const SPECIALISTS = {
   fiscal: {
     // UUID real do especialista (receiver_id)
     id: '596de7f7-4352-4058-8855-18f9489a0311',
-    name: 'Guilherme Barros',
+    name: 'Guilherme Mesquita',
     role: 'Especialista Fiscal',
     avatar: '/guilherme-avatar.png',
-    initials: 'GB',
+    initials: 'GM',
   },
   bi: {
     // UUID real do especialista (receiver_id)

@@ -25,7 +25,7 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// GUILHERME BARROS - PAINEL EXCLUSIVO
+// GUILHERME MESQUITA - PAINEL EXCLUSIVO
 const GUILHERME_PARTNER_ID = 'df40dfff-62bd-4b66-88bd-c811cd90d78d';
 const GUILHERME_USER_ID = '596de7f7-4352-4058-8855-18f9489a0311';
 
@@ -99,7 +99,7 @@ export default function PartnerGuilhermePanel() {
       if (user.id !== GUILHERME_USER_ID) {
         toast({ 
           title: 'Acesso restrito', 
-          description: 'Este painel é exclusivo do parceiro Guilherme Barros.',
+          description: 'Este painel é exclusivo do parceiro Guilherme Mesquita.',
           variant: 'destructive' 
         });
         navigate('/');
@@ -301,7 +301,7 @@ export default function PartnerGuilhermePanel() {
             {!collapsed && (
               <div>
                 <span className="text-base font-bold text-foreground">AtentAI</span>
-                <span className="block text-[10px] text-emerald-500 font-medium -mt-0.5">Guilherme Barros</span>
+                <span className="block text-[10px] text-emerald-500 font-medium -mt-0.5">Guilherme Mesquita</span>
               </div>
             )}
           </div>
@@ -729,7 +729,7 @@ export default function PartnerGuilhermePanel() {
           <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center">
             <Sparkles className="h-4 w-4 text-white" />
           </div>
-          <span className="font-bold">Guilherme Barros</span>
+          <span className="font-bold">Guilherme Mesquita</span>
         </div>
         <Button variant="ghost" size="icon" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
           {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}

@@ -21,7 +21,7 @@ import limpaNomeHeroImage from "@/assets/limpa-nome-hero.png";
 
 // Parceiro fixo - Guilherme é responsável pelo Limpa Nome
 const PARTNER_INFO = {
-  name: 'Guilherme Barros',
+  name: 'Guilherme Mesquita',
   role: 'Especialista em Limpa Nome',
   avatar: null,
 };
@@ -521,7 +521,7 @@ export default function LimpaNomeLanding() {
                     className="w-full"
                   >
                     <Handshake className="h-5 w-5 mr-2" />
-                    Conectar com Guilherme Barros
+                    Conectar com Guilherme Mesquita
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
                 </CardContent>

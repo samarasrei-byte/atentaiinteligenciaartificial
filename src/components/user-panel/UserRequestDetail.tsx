@@ -339,7 +339,7 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
         <CardContent>
           {(() => {
             const isBIRequest = requestType === 'fiscal' && (request?.notes || '').toUpperCase().startsWith('[BI]');
-            const specialistName = isBIRequest ? 'César' : 'Guilherme Barros';
+            const specialistName = isBIRequest ? 'César' : 'Guilherme Mesquita';
             const specialistRole = isBIRequest ? 'Especialista BI+ Contabilidade™' : 'Especialista Fiscal & Limpa Nome';
             const specialistInitial = isBIRequest ? 'C' : 'G';
             return (
@@ -416,7 +416,7 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
                                 <Avatar className="h-6 w-6">
                                   <AvatarFallback className="bg-indigo-100 text-indigo-700 text-xs">G</AvatarFallback>
                                 </Avatar>
-                                <span className="text-xs text-slate-500">Guilherme Barros</span>
+                                <span className="text-xs text-slate-500">Guilherme Mesquita</span>
                               </div>
                             )}
                             <div className={`p-3 rounded-2xl ${

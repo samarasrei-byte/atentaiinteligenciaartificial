@@ -117,7 +117,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.final_price_cents || 0,
           created_at: r.created_at,
           completed_at: r.completed_at,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...fiscalData.map(r => ({
           id: r.id,
@@ -130,7 +130,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.service_fee_cents || 0,
           created_at: r.created_at,
           completed_at: null,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...irData.map(r => ({
           id: r.id,
@@ -143,7 +143,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.base_price_cents || 0,
           created_at: r.created_at,
           completed_at: null,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...certData.map(r => ({
           id: r.id,
@@ -156,7 +156,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.amount_cents || 0,
           created_at: r.created_at,
           completed_at: r.processed_at,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...companyData.map(r => ({
           id: r.id,
@@ -169,7 +169,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.service_price_cents || 0,
           created_at: r.created_at,
           completed_at: null,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
       ];
 

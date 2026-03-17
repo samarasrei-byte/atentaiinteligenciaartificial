@@ -93,7 +93,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Limpa Nome - ${r.full_name}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
         ...(fiscal.data || []).map(r => ({
           id: r.id,
@@ -101,7 +101,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Análise Fiscal - ${r.company_name || r.full_name}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
         ...(ir.data || []).map(r => ({
           id: r.id,
@@ -109,7 +109,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `IR ${r.fiscal_year} - ${r.full_name}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
         ...(certificates.data || []).map(r => ({
           id: r.id,
@@ -117,7 +117,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Certidão - ${r.certificate_type?.replace('_', ' ').toUpperCase()}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
         ...(companyOpening.data || []).map(r => ({
           id: r.id,
@@ -125,7 +125,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Abertura - ${r.recommended_regime?.toUpperCase() || 'Análise Pendente'}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
       ];
 
