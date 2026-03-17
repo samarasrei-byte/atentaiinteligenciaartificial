@@ -25,7 +25,7 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
-// GUILHERME BARROS - PAINEL EXCLUSIVO
+// GUILHERME MESQUITA - PAINEL EXCLUSIVO
 const GUILHERME_PARTNER_ID = 'df40dfff-62bd-4b66-88bd-c811cd90d78d';
 const GUILHERME_USER_ID = '596de7f7-4352-4058-8855-18f9489a0311';
 
