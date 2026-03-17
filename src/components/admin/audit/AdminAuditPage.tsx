@@ -117,7 +117,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.final_price_cents || 0,
           created_at: r.created_at,
           completed_at: r.completed_at,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...fiscalData.map(r => ({
           id: r.id,
