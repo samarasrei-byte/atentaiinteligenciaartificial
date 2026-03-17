@@ -17,7 +17,7 @@ import { Footer } from "@/components/layout/Footer";
 
 // Parceiro fixo
 const PARTNER_INFO = {
-  name: 'Guilherme Barros',
+  name: 'Guilherme Mesquita',
   role: 'Especialista em Recuperação Fiscal',
   avatar: null,
 };
