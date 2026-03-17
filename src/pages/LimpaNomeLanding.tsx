@@ -21,7 +21,7 @@ import limpaNomeHeroImage from "@/assets/limpa-nome-hero.png";
 
 // Parceiro fixo - Guilherme é responsável pelo Limpa Nome
 const PARTNER_INFO = {
-  name: 'Guilherme Barros',
+  name: 'Guilherme Mesquita',
   role: 'Especialista em Limpa Nome',
   avatar: null,
 };
