@@ -156,7 +156,7 @@ export const AdminAuditPage: React.FC = () => {
           amount_cents: r.amount_cents || 0,
           created_at: r.created_at,
           completed_at: r.processed_at,
-          responsible: 'Guilherme Barros',
+          responsible: 'Guilherme Mesquita',
         })),
         ...companyData.map(r => ({
           id: r.id,
