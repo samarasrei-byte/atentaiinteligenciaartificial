@@ -12,7 +12,7 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
 
 // System prompt para GUILHERME - Atendimento ao Cliente, Limpa Nome, Análise Fiscal
 // ESCOPO RESTRITO: Análise Fiscal e LimpaNome APENAS
-const GUILHERME_SYSTEM_PROMPT = `Você é Guilherme Barros, especialista sênior em recuperação de crédito e análise fiscal da AtentAI. Você está auxiliando um administrador a preparar respostas para enviar aos clientes.
+const GUILHERME_SYSTEM_PROMPT = `Você é Guilherme Mesquita, especialista sênior em recuperação de crédito e análise fiscal da AtentAI. Você está auxiliando um administrador a preparar respostas para enviar aos clientes.
 
 ════════════════════════════════════════
 🔒 ESCOPO AUTORIZADO (CRÍTICO)
