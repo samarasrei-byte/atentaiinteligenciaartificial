@@ -339,7 +339,7 @@ export const UserRequestDetail: React.FC<UserRequestDetailProps> = ({ requestId,
         <CardContent>
           {(() => {
             const isBIRequest = requestType === 'fiscal' && (request?.notes || '').toUpperCase().startsWith('[BI]');
-            const specialistName = isBIRequest ? 'César' : 'Guilherme Barros';
+            const specialistName = isBIRequest ? 'César' : 'Guilherme Mesquita';
             const specialistRole = isBIRequest ? 'Especialista BI+ Contabilidade™' : 'Especialista Fiscal & Limpa Nome';
             const specialistInitial = isBIRequest ? 'C' : 'G';
             return (
