@@ -93,7 +93,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Limpa Nome - ${r.full_name}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
         ...(fiscal.data || []).map(r => ({
           id: r.id,
