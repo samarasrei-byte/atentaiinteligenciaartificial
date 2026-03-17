@@ -98,7 +98,7 @@ interface PartnerInfo {
 
 // Partner Guilherme Info - Fixed for display
 const PARTNER_GUILHERME = {
-  name: 'Guilherme Barros',
+  name: 'Guilherme Mesquita',
   role: 'Especialista AtentAI',
   specialty: 'Limpa Nome & Análise Fiscal'
 };
