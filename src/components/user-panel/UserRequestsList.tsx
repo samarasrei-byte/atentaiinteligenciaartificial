@@ -117,7 +117,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Certidão - ${r.certificate_type?.replace('_', ' ').toUpperCase()}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
         ...(companyOpening.data || []).map(r => ({
           id: r.id,
