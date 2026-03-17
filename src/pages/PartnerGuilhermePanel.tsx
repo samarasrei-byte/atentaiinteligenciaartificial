@@ -301,7 +301,7 @@ export default function PartnerGuilhermePanel() {
             {!collapsed && (
               <div>
                 <span className="text-base font-bold text-foreground">AtentAI</span>
-                <span className="block text-[10px] text-emerald-500 font-medium -mt-0.5">Guilherme Barros</span>
+                <span className="block text-[10px] text-emerald-500 font-medium -mt-0.5">Guilherme Mesquita</span>
               </div>
             )}
           </div>
