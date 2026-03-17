@@ -40,7 +40,7 @@ export const DREAnalysis: React.FC = () => {
   const [isUploading, setIsUploading] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState<string | null>(null);
   const [analysisStep, setAnalysisStep] = useState(0);
-  const analysisTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const analysisTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [selectedAnalysis, setSelectedAnalysis] = useState<DREAnalysisRecord | null>(null);
   const [compareAnalysis, setCompareAnalysis] = useState<DREAnalysisRecord | null>(null);
   const [compareMode, setCompareMode] = useState(false);
