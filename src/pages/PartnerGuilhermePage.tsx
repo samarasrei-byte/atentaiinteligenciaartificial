@@ -81,9 +81,9 @@ interface ChatMessage {
   read_at: string | null;
 }
 
-// Partner Info - Guilherme Barros
+// Partner Info - Guilherme Mesquita
 const PARTNER_INFO = {
-  name: 'Guilherme Barros',
+  name: 'Guilherme Mesquita',
   role: 'Especialista em Recuperação Financeira',
   avatar: null,
   company: 'Parceiro AtentAI',
