@@ -370,7 +370,7 @@ export default function ModuloFiscalLanding() {
                     className="w-full"
                   >
                     <Handshake className="h-5 w-5 mr-2" />
-                    Conectar com Guilherme Barros
+                    Conectar com Guilherme Mesquita
                     <ArrowRight className="h-5 w-5 ml-2" />
                   </Button>
                 </CardContent>

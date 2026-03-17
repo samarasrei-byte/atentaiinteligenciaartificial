@@ -125,7 +125,7 @@ export const UserRequestsList: React.FC<UserRequestsListProps> = ({ onSelectRequ
           title: `Abertura - ${r.recommended_regime?.toUpperCase() || 'Análise Pendente'}`,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'Guilherme Barros'
+          responsible: 'Guilherme Mesquita'
         })),
       ];
 

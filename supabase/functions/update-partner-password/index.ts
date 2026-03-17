@@ -69,7 +69,7 @@ serve(async (req) => {
         email,
         password,
         email_confirm: true,
-        user_metadata: { full_name: "Guilherme Barros" },
+        user_metadata: { full_name: "Guilherme Mesquita" },
       });
 
       if (createError) {

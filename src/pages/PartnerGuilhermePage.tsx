@@ -175,9 +175,9 @@ export default function PartnerGuilhermePage() {
       .from('credit_repair_partners')
       .insert({
         company_name: 'Parceiro AtentAI',
-        trade_name: 'Guilherme Barros Especialista',
-        contact_person: 'Guilherme Barros',
-        email: 'guilherme.barros@atentai.com',
+        trade_name: 'Guilherme Mesquita Especialista',
+        contact_person: 'Guilherme Mesquita',
+        email: 'guilherme.mesquita@atentai.com',
         phone: '(11) 99999-0000',
         is_active: true,
         commission_percent: 15,

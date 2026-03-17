@@ -360,7 +360,7 @@ const MinhasSolicitacoesPage = () => {
                 onClick={() => openPartnerChat('fiscal', request.id, request.partner_id!)}
               >
                 <MessageCircle className="h-4 w-4" />
-                Chat com Guilherme Barros
+                Chat com Guilherme Mesquita
               </Button>
             )}
           </div>
