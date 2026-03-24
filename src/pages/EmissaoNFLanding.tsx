@@ -391,4 +391,4 @@ const EmissaoNFLanding = () => {
   );
 };
 
-export default TentaiLanding;
+export default EmissaoNFLanding;
