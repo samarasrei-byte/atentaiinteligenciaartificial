@@ -73,7 +73,16 @@ export function Header({ onNavigate }: HeaderProps) {
             <img 
               src="/logo-atentai.png" 
               alt="AtentAI" 
-              className="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300 group-hover:brightness-110"
+              className="h-8 sm:h-10 md:h-12 w-auto transition-all duration-300 group-hover:brightness-110 dark:brightness-100 dark:invert-0"
+              style={{ minWidth: '80px' }}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.style.display = 'none';
+                const fallback = document.createElement('span');
+                fallback.textContent = 'AtentAI';
+                fallback.className = 'text-xl font-bold text-primary';
+                target.parentElement?.appendChild(fallback);
+              }}
             />
           </button>
 
