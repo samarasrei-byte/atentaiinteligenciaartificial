@@ -99,13 +99,13 @@ export const CesarChatHub: React.FC = () => {
             
             <Badge variant="outline" className="hidden sm:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
               <BarChart3 className="h-3 w-3" />
-              <span className="hidden md:inline">BI Completo</span>
-              <span className="md:hidden">BI</span>
+              <span className="hidden md:inline">Emissão NF</span>
+              <span className="md:hidden">NF</span>
             </Badge>
             <Badge variant="outline" className="hidden sm:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
               <FileText className="h-3 w-3" />
-              <span className="hidden md:inline">Contabilidade</span>
-              <span className="md:hidden">Cont</span>
+              <span className="hidden md:inline">Validação Fiscal</span>
+              <span className="md:hidden">Valid</span>
             </Badge>
           </div>
         </div>
