@@ -97,7 +97,7 @@ const sidebarGroups: SidebarGroup[] = [
     defaultOpen: true,
     items: [
       { icon: MessageCircle, label: 'Central de Atendimento', tabId: 'client-chat', isLive: true, badge: 'Guilherme' },
-      { icon: Brain, label: 'Chat BI Contabilidade', tabId: 'smart-chat', isLive: true, badge: 'César' },
+      { icon: FileText, label: 'Chat Emissão de NF', tabId: 'smart-chat', isLive: true },
       { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
       { icon: Sparkles, label: 'Alertas de KPI', tabId: 'kpi-alerts', isLive: true },
       { icon: MessagesSquare, label: 'Mensagens em Massa', tabId: 'mass-messages' },

@@ -270,33 +270,32 @@ export const ServicesHubModern: React.FC = () => {
       badge: 'Sem Custo Inicial',
     },
     {
-      title: 'BI+ Inteligência Fiscal™',
-      description: 'Inteligência artificial com análise humana especializada',
-      icon: Brain,
+      title: 'Emissão de NF',
+      description: 'Emissão automatizada de notas fiscais com inteligência artificial e validação em tempo real',
+      icon: FileText,
       basePrice: 0,
       discountedPrice: 0,
       discountPercent: 0,
       features: [
-        'IA + Validação Humana',
-        'Dashboards financeiros',
-        'Análise gratuita',
+        'NF-e, NFS-e e NFC-e automatizadas',
+        'Validação fiscal inteligente',
+        'Integração com prefeituras',
       ],
-      gradient: 'from-indigo-500/40 to-violet-500/40',
-      iconGradient: 'from-indigo-500 to-violet-500',
+      gradient: 'from-emerald-500/40 to-teal-500/40',
+      iconGradient: 'from-emerald-500 to-teal-500',
       onClick: () => {
-        // Redireciona para o chat-bi (César) dentro do painel
         const currentPath = window.location.pathname;
         const isPanelContext = currentPath.includes('/autonomo') || currentPath.includes('/empresa');
 
         if (isPanelContext) {
-          navigate({ search: '?tab=chat-bi' }); // Tab separada para BI → César
+          navigate({ search: '?tab=chat-bi' });
           return;
         }
 
         navigate('/bi-contabilidade');
       },
       badge: 'Novo',
-      isCustomPricing: true, // Shows "Sob consulta"
+      isCustomPricing: true,
     },
   ];
 
