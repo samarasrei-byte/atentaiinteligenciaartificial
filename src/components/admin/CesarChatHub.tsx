@@ -75,7 +75,7 @@ export const CesarChatHub: React.FC = () => {
             </div>
             <div className="min-w-0">
               <h1 className="text-base sm:text-xl font-bold text-white flex items-center gap-2">
-                <span className="truncate">Chat – César</span>
+                <span className="truncate">Chat – Emissão de NF</span>
                 <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex rounded-full h-full w-full bg-white" />
