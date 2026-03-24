@@ -237,11 +237,11 @@ const App = () => (
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
-              {/* Tentaí routes */}
-              <Route path="/tentai" element={<TentaiLanding />} />
-              <Route path="/tentai/dashboard" element={
+              {/* Emissão de NF routes */}
+              <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
+              <Route path="/emissao-nf/dashboard" element={
                 <ProtectedRoute>
-                  <TentaiDashboard />
+                  <EmissaoNFDashboard />
                 </ProtectedRoute>
               } />
               {/* Affiliate routes */}
