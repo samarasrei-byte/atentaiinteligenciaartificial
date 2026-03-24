@@ -240,6 +240,24 @@ export const ServicesHubModern: React.FC = () => {
 
   const services = [
     {
+      title: 'Automação Financeira Completa',
+      description: 'Receba e emita notas automaticamente. Pix, boleto e cartão integrados.',
+      icon: Rocket,
+      basePrice: 9700,
+      discountedPrice: 9700,
+      discountPercent: 0,
+      features: [
+        'Cobranças automáticas (Pix, boleto, cartão)',
+        'Nota fiscal emitida sozinha',
+        'Dashboard financeiro completo',
+      ],
+      gradient: 'from-emerald-500/40 to-green-500/40',
+      iconGradient: 'from-emerald-500 to-green-500',
+      onClick: () => navigate('/tentai'),
+      badge: 'DESTAQUE',
+      popular: true,
+    },
+    {
       title: 'Análise Fiscal Inteligente',
       description: 'Identifique oportunidades de economia tributária',
       icon: FileSearch,
