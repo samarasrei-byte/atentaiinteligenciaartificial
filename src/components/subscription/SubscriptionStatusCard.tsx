@@ -256,7 +256,7 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
                     key={planKey}
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/chat/cesar?upgrade=${planKey}`)}
+                    onClick={() => navigate(`/chat/especialista?upgrade=${planKey}`)}
                     className="gap-2"
                   >
                     <Sparkles className="h-3 w-3" />
