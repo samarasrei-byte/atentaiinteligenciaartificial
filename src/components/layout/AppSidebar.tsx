@@ -110,7 +110,7 @@ const servicosGroup: SidebarGroup = {
   items: [
     { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
     { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
-    { icon: Brain, label: 'BI Inteligência Fiscal', tabId: 'chat-bi', badge: 'IA+' },
+    { icon: FileText, label: 'Emissão de NF', tabId: 'emissao-nf', badge: 'Novo' },
   ],
 };
 
