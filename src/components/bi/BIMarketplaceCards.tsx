@@ -32,9 +32,9 @@ export function BIMarketplaceCards({ variant = 'grid', showTitle = true }: BIMar
   const handlePurchase = (planKey: BIPlanType) => {
     const plan = BI_PLANS[planKey];
     
-    // Performance → always chat with César
+    // Performance → always chat with specialist
     if (planKey === 'performance') {
-      navigate(`/chat/cesar?servico=bi-${planKey}&plano=${planKey}`);
+      navigate(`/chat/especialista?servico=bi-${planKey}&plano=${planKey}`);
       return;
     }
 
