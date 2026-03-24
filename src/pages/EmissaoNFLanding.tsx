@@ -3,11 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
   Zap, FileText, CreditCard, ArrowRight, CheckCircle2,
-  QrCode, Receipt, TrendingUp, Clock, Shield, Users,
+  QrCode, TrendingUp, Clock, Shield, Users,
   ChevronRight, Sparkles, DollarSign, BarChart3
 } from 'lucide-react';
 
@@ -27,10 +26,11 @@ const EmissaoNFLanding = () => {
       </Helmet>
 
       {/* Header */}
-      <header className="fixed top-0 w-full z-50 bg-[#0a0a0f]/80 backdrop-blur-xl border-b border-white/5">
+      <header className="fixed top-0 w-full z-50 bg-[#0a0a0f]/90 backdrop-blur-xl border-b border-white/10">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-8 w-auto" />
+            <span className="text-white font-bold text-lg tracking-tight">AtentAI</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm text-white/60">
             <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
@@ -67,7 +67,7 @@ const EmissaoNFLanding = () => {
             <motion.h1
               variants={fadeUp}
               custom={1}
-              className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 tracking-tight"
+              className="text-4xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 tracking-tight text-white"
             >
               Receba no Pix e a{' '}
               <span className="bg-gradient-to-r from-emerald-400 to-emerald-300 bg-clip-text text-transparent">
@@ -95,7 +95,7 @@ const EmissaoNFLanding = () => {
                 variant="ghost"
                 size="lg"
                 onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })}
-                className="text-white/60 hover:text-white rounded-full px-8 h-14 text-lg w-full sm:w-auto"
+                className="text-white/60 hover:text-white hover:bg-white/5 rounded-full px-8 h-14 text-lg w-full sm:w-auto"
               >
                 Ver como funciona <ChevronRight className="ml-1 w-5 h-5" />
               </Button>
@@ -130,7 +130,7 @@ const EmissaoNFLanding = () => {
             viewport={{ once: true }}
           >
             <Badge className="mb-4 bg-blue-500/10 text-blue-400 border-blue-500/20">3 passos simples</Badge>
-            <h2 className="text-3xl md:text-4xl font-bold">
+            <h2 className="text-3xl md:text-4xl font-bold text-white">
               Você cobra. <span className="text-emerald-400">A gente faz o resto.</span>
             </h2>
           </motion.div>
@@ -148,16 +148,14 @@ const EmissaoNFLanding = () => {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
               >
-                <Card className="bg-white/[0.03] border-white/[0.06] h-full hover:border-white/10 transition-all">
-                  <CardContent className="p-8 text-center">
-                    <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mx-auto mb-5`}>
-                      <item.icon className="w-7 h-7 text-white" />
-                    </div>
-                    <span className="text-xs font-mono text-white/30 uppercase tracking-wider">Passo {item.step}</span>
-                    <h3 className="text-xl font-semibold mt-2 mb-3">{item.title}</h3>
-                    <p className="text-white/40 text-sm">{item.desc}</p>
-                  </CardContent>
-                </Card>
+                <div className="bg-white/[0.03] border border-white/[0.06] rounded-2xl h-full hover:border-white/10 transition-all p-8 text-center">
+                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${item.color} flex items-center justify-center mx-auto mb-5`}>
+                    <item.icon className="w-7 h-7 text-white" />
+                  </div>
+                  <span className="text-xs font-mono text-white/30 uppercase tracking-wider">Passo {item.step}</span>
+                  <h3 className="text-xl font-semibold mt-2 mb-3 text-white">{item.title}</h3>
+                  <p className="text-white/40 text-sm">{item.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
@@ -180,7 +178,7 @@ const EmissaoNFLanding = () => {
       </section>
 
       {/* Benefits */}
-      <section id="beneficios" className="py-24">
+      <section id="beneficios" className="py-24 bg-[#0a0a0f]">
         <div className="container mx-auto px-4">
           <motion.div
             className="text-center mb-16"
@@ -188,7 +186,7 @@ const EmissaoNFLanding = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Tudo automático</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Tudo automático</h2>
             <p className="text-white/40 text-lg">Escale seu faturamento sem esforço</p>
           </motion.div>
 
@@ -210,7 +208,7 @@ const EmissaoNFLanding = () => {
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-4 group-hover:bg-emerald-500/20 transition-colors">
                   <item.icon className="w-5 h-5 text-emerald-400" />
                 </div>
-                <h3 className="font-semibold mb-2">{item.title}</h3>
+                <h3 className="font-semibold mb-2 text-white">{item.title}</h3>
                 <p className="text-sm text-white/40">{item.desc}</p>
               </motion.div>
             ))}
@@ -227,7 +225,7 @@ const EmissaoNFLanding = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Seu painel financeiro completo</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Seu painel financeiro completo</h2>
             <p className="text-white/40">Tudo que você precisa em um só lugar</p>
           </motion.div>
 
@@ -237,13 +235,12 @@ const EmissaoNFLanding = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            {/* Fake dashboard */}
             <div className="flex items-center justify-between mb-8">
               <div>
                 <p className="text-sm text-white/40">Saldo disponível</p>
                 <p className="text-3xl font-bold text-emerald-400">R$ 12.450,00</p>
               </div>
-              <Button className="bg-emerald-500 hover:bg-emerald-600 rounded-full">
+              <Button className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full">
                 + Nova cobrança
               </Button>
             </div>
@@ -256,10 +253,10 @@ const EmissaoNFLanding = () => {
                 { label: 'Via Cartão', value: '45', icon: '💳' },
                 { label: 'Receita líquida', value: 'R$ 44.100', icon: '📈' },
               ].map((m, i) => (
-                <div key={i} className="bg-white/[0.03] rounded-xl p-4 text-center">
+                <div key={i} className="bg-white/[0.05] rounded-xl p-4 text-center">
                   <span className="text-lg">{m.icon}</span>
                   <p className="text-xs text-white/40 mt-1">{m.label}</p>
-                  <p className="text-sm font-semibold mt-0.5">{m.value}</p>
+                  <p className="text-sm font-semibold mt-0.5 text-white">{m.value}</p>
                 </div>
               ))}
             </div>
@@ -277,7 +274,7 @@ const EmissaoNFLanding = () => {
                   { name: 'NF-e #1245', amount: 'R$ 2.100,00', status: 'Emitida ✅', statusColor: 'text-emerald-400' },
                 ]},
               ].map((section, si) => (
-                <div key={si} className="bg-white/[0.02] rounded-xl p-4">
+                <div key={si} className="bg-white/[0.04] rounded-xl p-4">
                   <p className="text-sm font-medium text-white/60 mb-3">{section.title}</p>
                   <div className="space-y-3">
                     {section.items.map((item, ii) => (
@@ -298,7 +295,7 @@ const EmissaoNFLanding = () => {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-24">
+      <section id="pricing" className="py-24 bg-[#0a0a0f]">
         <div className="container mx-auto px-4">
           <motion.div
             className="max-w-lg mx-auto text-center"
@@ -306,42 +303,40 @@ const EmissaoNFLanding = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Simples e justo</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">Simples e justo</h2>
             <p className="text-white/40 mb-10">Você só paga quando ganha dinheiro</p>
 
-            <Card className="bg-gradient-to-br from-white/[0.05] to-white/[0.02] border-emerald-500/20 overflow-hidden">
-              <CardContent className="p-8 md:p-10">
-                <Badge className="mb-6 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Plano único</Badge>
-                <div className="mb-2">
-                  <span className="text-5xl md:text-6xl font-bold">R$ 97</span>
-                  <span className="text-white/40 text-lg">/mês</span>
-                </div>
-                <p className="text-emerald-400 text-sm font-medium mb-8">+ R$ 2,90 por nota emitida</p>
+            <div className="bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-emerald-500/20 rounded-3xl overflow-hidden p-8 md:p-10">
+              <Badge className="mb-6 bg-emerald-500/10 text-emerald-400 border-emerald-500/20">Plano único</Badge>
+              <div className="mb-2">
+                <span className="text-5xl md:text-6xl font-bold text-white">R$ 97</span>
+                <span className="text-white/40 text-lg">/mês</span>
+              </div>
+              <p className="text-emerald-400 text-sm font-medium mb-8">+ R$ 2,90 por nota emitida</p>
 
-                <div className="space-y-3 text-left mb-8">
-                  {[
-                    'Cobranças ilimitadas (Pix, boleto, cartão)',
-                    'Nota fiscal automática',
-                    'Dashboard completo',
-                    'Gestão de clientes',
-                    'Relatórios em tempo real',
-                    'Suporte com especialista',
-                  ].map((f, i) => (
-                    <div key={i} className="flex items-center gap-3 text-sm">
-                      <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
-                      <span className="text-white/70">{f}</span>
-                    </div>
-                  ))}
-                </div>
+              <div className="space-y-3 text-left mb-8">
+                {[
+                  'Cobranças ilimitadas (Pix, boleto, cartão)',
+                  'Nota fiscal automática',
+                  'Dashboard completo',
+                  'Gestão de clientes',
+                  'Relatórios em tempo real',
+                  'Suporte com especialista',
+                ].map((f, i) => (
+                  <div key={i} className="flex items-center gap-3 text-sm">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0" />
+                    <span className="text-white/70">{f}</span>
+                  </div>
+                ))}
+              </div>
 
-                <Button
-                  onClick={() => navigate('/auth')}
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-full h-14 text-lg font-semibold shadow-lg shadow-emerald-500/25"
-                >
-                  Ativar agora <ArrowRight className="ml-2 w-5 h-5" />
-                </Button>
-              </CardContent>
-            </Card>
+              <Button
+                onClick={() => navigate('/auth')}
+                className="w-full bg-emerald-500 hover:bg-emerald-600 text-white rounded-full h-14 text-lg font-semibold shadow-lg shadow-emerald-500/25"
+              >
+                Ativar agora <ArrowRight className="ml-2 w-5 h-5" />
+              </Button>
+            </div>
           </motion.div>
         </div>
       </section>
@@ -355,7 +350,7 @@ const EmissaoNFLanding = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-3xl md:text-5xl font-bold mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold mb-6 text-white">
               Receba no Pix <span className="text-emerald-400">sem esforço</span>
             </h2>
             <p className="text-white/40 text-lg mb-10">
@@ -373,10 +368,11 @@ const EmissaoNFLanding = () => {
       </section>
 
       {/* Footer */}
-      <footer className="py-8 border-t border-white/5">
+      <footer className="py-8 border-t border-white/5 bg-[#0a0a0f]">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between text-sm text-white/30">
           <div className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-6 w-auto" />
+            <span className="text-white/50 font-medium">AtentAI</span>
           </div>
           <p className="mt-2 md:mt-0">Parte do ecossistema AtentAI</p>
         </div>
