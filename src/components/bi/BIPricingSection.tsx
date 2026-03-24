@@ -22,6 +22,9 @@ import { useToast } from '@/hooks/use-toast';
 import { BI_PLANS, formatPrice, BIPlanType } from '@/lib/plans';
 
 export function BIPricingSection() {
+  // Provisoriamente oculto - rebranding para Emissão de NF
+  return null;
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const { openCheckout } = useMPCheckout();
