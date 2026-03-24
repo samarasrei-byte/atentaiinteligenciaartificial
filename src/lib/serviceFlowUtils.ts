@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
  * - Cria solicitação → Cria conversa → Dispara notificação → Redireciona para chat
  */
 
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade' | 'abertura-empresa' | 'certidao' | 'ir';
+export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade' | 'abertura-empresa' | 'certidao' | 'ir' | 'emissao-nf';
 
 export interface ServiceRequest {
   serviceType: ServiceType;

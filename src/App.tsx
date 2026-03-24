@@ -228,9 +228,10 @@ const App = () => (
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/onboarding" element={<FiscalAnalysisOnboarding />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
-              <Route path="/bi-contabilidade" element={<BIContabilidadeLanding />} />
-              <Route path="/bi-contabilidade/onboarding" element={<BIContabilidadeOnboarding />} />
-              <Route path="/bi-contabilidade/cesar" element={<CesarBILanding />} />
+              {/* BI/César routes hidden */}
+              <Route path="/bi-contabilidade" element={<Navigate to="/" replace />} />
+              <Route path="/bi-contabilidade/onboarding" element={<Navigate to="/" replace />} />
+              <Route path="/bi-contabilidade/cesar" element={<Navigate to="/" replace />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
               <Route path="/apresentacao/serac" element={<SeracPresentation />} />
               <Route path="/serac/defesas" element={<SeracDefesasDoc />} />
