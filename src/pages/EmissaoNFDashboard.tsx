@@ -79,7 +79,7 @@ const EmissaoNFDashboard = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
       <Helmet>
-        <title>Tentaí - Painel</title>
+        <title>AtentAI - Emissão de NF</title>
       </Helmet>
 
       {/* Top Bar */}
