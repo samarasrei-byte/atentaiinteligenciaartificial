@@ -114,7 +114,7 @@ export const CesarChatHub: React.FC = () => {
         <div className="flex items-center gap-3 sm:gap-6 mt-2 sm:mt-4 text-violet-100 text-xs sm:text-sm overflow-x-auto">
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span>{stats.biClients} <span className="hidden sm:inline">clientes</span> BI</span>
+            <span>{stats.biClients} <span className="hidden sm:inline">solicitações</span> NF</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
