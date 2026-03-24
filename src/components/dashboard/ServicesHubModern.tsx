@@ -287,26 +287,6 @@ export const ServicesHubModern: React.FC = () => {
       },
       badge: 'Sem Custo Inicial',
     },
-    {
-      title: 'Emissão de NF',
-      description: 'Emissão automatizada de notas fiscais com inteligência artificial e validação em tempo real',
-      icon: FileText,
-      basePrice: 0,
-      discountedPrice: 0,
-      discountPercent: 0,
-      features: [
-        'NF-e, NFS-e e NFC-e automatizadas',
-        'Validação fiscal inteligente',
-        'Integração com prefeituras',
-      ],
-      gradient: 'from-emerald-500/40 to-teal-500/40',
-      iconGradient: 'from-emerald-500 to-teal-500',
-      onClick: () => {
-        navigate('/emissao-nf');
-      },
-      badge: 'Novo',
-      isCustomPricing: true,
-    },
   ];
 
   const containerVariants = {
