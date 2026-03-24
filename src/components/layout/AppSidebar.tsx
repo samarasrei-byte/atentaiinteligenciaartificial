@@ -102,8 +102,7 @@ const reformaGroup: SidebarGroup = {
   ],
 };
 
-// SERVIÇOS - Consolidados sem duplicação (Sem "Contratar Serviços" - duplicado)
-// Análise Fiscal → Guilherme | BI Inteligência Fiscal → César (tabs separados)
+// SERVIÇOS - Consolidados sem duplicação
 const servicosGroup: SidebarGroup = {
   id: 'servicos',
   label: 'Serviços',
