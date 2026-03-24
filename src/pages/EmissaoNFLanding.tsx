@@ -16,14 +16,14 @@ const fadeUp = {
   visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: i * 0.1, duration: 0.5 } }),
 };
 
-const TentaiLanding = () => {
+const EmissaoNFLanding = () => {
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden">
       <Helmet>
-        <title>Tentaí - Receba no Pix e a nota sai sozinha</title>
-        <meta name="description" content="Cobre seus clientes e automatize todo seu financeiro em minutos. Pix, boleto, cartão e nota fiscal automática." />
+        <title>AtentAI - Emissão de NF Automática | Receba e emita notas</title>
+        <meta name="description" content="Emita notas fiscais automaticamente após cada pagamento. NF-e, NFS-e e NFC-e integradas. A partir de R$97/mês." />
       </Helmet>
 
       {/* Header */}
@@ -33,7 +33,7 @@ const TentaiLanding = () => {
             <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <span className="text-xl font-bold">Tentaí</span>
+            <span className="text-xl font-bold">AtentAI</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm text-white/60">
             <a href="#como-funciona" className="hover:text-white transition-colors">Como funciona</a>
@@ -63,7 +63,7 @@ const TentaiLanding = () => {
             <motion.div variants={fadeUp} custom={0}>
               <Badge className="mb-6 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-4 py-1.5 text-sm">
                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                Automação financeira completa
+                Emissão de NF automática
               </Badge>
             </motion.div>
 
@@ -382,7 +382,7 @@ const TentaiLanding = () => {
             <div className="w-5 h-5 rounded bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
               <Zap className="w-3 h-3 text-white" />
             </div>
-            <span>Tentaí © 2026</span>
+            <span>AtentAI © 2026</span>
           </div>
           <p className="mt-2 md:mt-0">Parte do ecossistema AtentAI</p>
         </div>
@@ -391,4 +391,4 @@ const TentaiLanding = () => {
   );
 };
 
-export default TentaiLanding;
+export default EmissaoNFLanding;

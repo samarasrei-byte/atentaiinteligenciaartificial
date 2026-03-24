@@ -140,8 +140,8 @@ const SeracMentorias = lazy(() => import("./pages/serac/SeracMentorias"));
 const SeracDefesasDoc = lazy(() => import("./pages/serac/SeracDefesasDoc"));
 
 // Tentaí - Fintech SaaS
-const TentaiLanding = lazy(() => import("./pages/TentaiLanding"));
-const TentaiDashboard = lazy(() => import("./pages/TentaiDashboard"));
+const EmissaoNFLanding = lazy(() => import("./pages/EmissaoNFLanding"));
+const EmissaoNFDashboard = lazy(() => import("./pages/EmissaoNFDashboard"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
@@ -237,11 +237,11 @@ const App = () => (
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
-              {/* Tentaí routes */}
-              <Route path="/tentai" element={<TentaiLanding />} />
-              <Route path="/tentai/dashboard" element={
+              {/* Emissão de NF routes */}
+              <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
+              <Route path="/emissao-nf/dashboard" element={
                 <ProtectedRoute>
-                  <TentaiDashboard />
+                  <EmissaoNFDashboard />
                 </ProtectedRoute>
               } />
               {/* Affiliate routes */}

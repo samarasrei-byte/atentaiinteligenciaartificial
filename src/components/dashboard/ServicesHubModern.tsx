@@ -240,20 +240,20 @@ export const ServicesHubModern: React.FC = () => {
 
   const services = [
     {
-      title: 'Automação Financeira Completa',
-      description: 'Receba e emita notas automaticamente. Pix, boleto e cartão integrados.',
+      title: 'Emissão de NF Automática',
+      description: 'Emita notas fiscais automaticamente após cada pagamento. Zero trabalho manual.',
       icon: Rocket,
       basePrice: 9700,
       discountedPrice: 9700,
       discountPercent: 0,
       features: [
-        'Cobranças automáticas (Pix, boleto, cartão)',
-        'Nota fiscal emitida sozinha',
-        'Dashboard financeiro completo',
+        'NF-e, NFS-e e NFC-e automáticas',
+        'Emissão após pagamento confirmado',
+        'Dashboard de notas em tempo real',
       ],
       gradient: 'from-emerald-500/40 to-green-500/40',
       iconGradient: 'from-emerald-500 to-green-500',
-      onClick: () => navigate('/tentai'),
+      onClick: () => navigate('/emissao-nf'),
       badge: 'DESTAQUE',
       popular: true,
     },

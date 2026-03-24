@@ -46,7 +46,7 @@ const statusMap: Record<string, { label: string; color: string; icon: React.Elem
 
 const methodIcons: Record<string, string> = { pix: '⚡', card: '💳', boleto: '📄' };
 
-const TentaiDashboard = () => {
+const EmissaoNFDashboard = () => {
   const navigate = useNavigate();
   const { signOut, profile } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
@@ -79,7 +79,7 @@ const TentaiDashboard = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white">
       <Helmet>
-        <title>Tentaí - Painel</title>
+        <title>AtentAI - Emissão de NF</title>
       </Helmet>
 
       {/* Top Bar */}
@@ -90,7 +90,7 @@ const TentaiDashboard = () => {
               <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
                 <Zap className="w-3.5 h-3.5 text-white" />
               </div>
-              <span className="text-lg font-bold">Tentaí</span>
+              <span className="text-lg font-bold">AtentAI</span>
             </div>
             <div className="hidden md:block text-sm text-white/40 border-l border-white/10 pl-4">
               Saldo: <span className="text-emerald-400 font-semibold">R$ 12.450,00</span>
@@ -114,7 +114,7 @@ const TentaiDashboard = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => { signOut(); navigate('/tentai'); }}
+              onClick={() => { signOut(); navigate('/emissao-nf'); }}
               className="text-white/40 hover:text-white"
             >
               <LogOut className="w-5 h-5" />
@@ -424,4 +424,4 @@ const TentaiDashboard = () => {
   );
 };
 
-export default TentaiDashboard;
+export default EmissaoNFDashboard;
