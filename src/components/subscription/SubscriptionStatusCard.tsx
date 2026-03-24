@@ -153,7 +153,7 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => navigate('/chat/cesar')}
+                onClick={() => navigate('/chat/especialista')}
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
