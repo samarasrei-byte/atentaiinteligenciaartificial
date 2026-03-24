@@ -424,4 +424,4 @@ const EmissaoNFDashboard = () => {
   );
 };
 
-export default TentaiDashboard;
+export default EmissaoNFDashboard;
