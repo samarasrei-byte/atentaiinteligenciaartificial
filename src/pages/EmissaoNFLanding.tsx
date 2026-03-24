@@ -28,9 +28,8 @@ const EmissaoNFLanding = () => {
       {/* Header */}
       <header className="fixed top-0 w-full z-50 bg-white border-b border-gray-200 shadow-sm">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-8 w-auto" />
-            <span className="text-gray-800 font-bold text-lg tracking-tight">AtentAI</span>
           </div>
           <div className="hidden md:flex items-center gap-6 text-sm text-gray-500">
             <a href="#como-funciona" className="hover:text-gray-800 transition-colors">Como funciona</a>
