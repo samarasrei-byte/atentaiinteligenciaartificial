@@ -114,7 +114,7 @@ const EmissaoNFDashboard = () => {
             <Button
               variant="ghost"
               size="icon"
-              onClick={() => { signOut(); navigate('/tentai'); }}
+              onClick={() => { signOut(); navigate('/emissao-nf'); }}
               className="text-white/40 hover:text-white"
             >
               <LogOut className="w-5 h-5" />
