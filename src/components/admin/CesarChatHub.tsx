@@ -118,7 +118,7 @@ export const CesarChatHub: React.FC = () => {
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span>Docs contábeis</span>
+            <span>Docs fiscais</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Activity className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

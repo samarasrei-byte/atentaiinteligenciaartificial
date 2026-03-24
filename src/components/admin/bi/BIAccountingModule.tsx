@@ -39,7 +39,7 @@ export const BIAccountingModule: React.FC = () => {
               Emissão de NF
             </h1>
             <p className="text-muted-foreground mt-1">
-              Inteligência Artificial para análises • Decisões finais por especialistas humanos
+              Emissão automatizada de notas fiscais com validação inteligente e integração com prefeituras
             </p>
           </div>
           
