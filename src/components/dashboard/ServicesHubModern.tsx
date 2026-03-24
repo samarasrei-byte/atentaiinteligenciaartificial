@@ -302,15 +302,7 @@ export const ServicesHubModern: React.FC = () => {
       gradient: 'from-emerald-500/40 to-teal-500/40',
       iconGradient: 'from-emerald-500 to-teal-500',
       onClick: () => {
-        const currentPath = window.location.pathname;
-        const isPanelContext = currentPath.includes('/autonomo') || currentPath.includes('/empresa');
-
-        if (isPanelContext) {
-          navigate({ search: '?tab=chat-bi' });
-          return;
-        }
-
-        navigate('/bi-contabilidade');
+        navigate('/emissao-nf');
       },
       badge: 'Novo',
       isCustomPricing: true,
