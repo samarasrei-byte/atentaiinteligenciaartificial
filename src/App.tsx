@@ -140,8 +140,8 @@ const SeracMentorias = lazy(() => import("./pages/serac/SeracMentorias"));
 const SeracDefesasDoc = lazy(() => import("./pages/serac/SeracDefesasDoc"));
 
 // Tentaí - Fintech SaaS
-const TentaiLanding = lazy(() => import("./pages/TentaiLanding"));
-const TentaiDashboard = lazy(() => import("./pages/TentaiDashboard"));
+const EmissaoNFLanding = lazy(() => import("./pages/EmissaoNFLanding"));
+const EmissaoNFDashboard = lazy(() => import("./pages/EmissaoNFDashboard"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
