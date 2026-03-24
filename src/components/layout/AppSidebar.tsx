@@ -311,6 +311,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
   const handleItemClick = (item: SidebarItem) => {
     const { tabId, isService, serviceKey } = item;
 
+    // Emissão de NF → navega para dashboard dedicado
+    if (tabId === 'emissao-nf') {
+      navigate('/emissao-nf/dashboard');
+      return;
+    }
+
     // Se for um serviço do marketplace, abre o modal
     if (isService && serviceKey) {
       openServiceModal(serviceKey);
@@ -319,16 +325,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
     // Assinatura abre o modal de planos
     if (tabId === 'subscription') {
-      // Abre o tab de assinatura normalmente para mostrar status atual
       if (onTabChange) {
         onTabChange(tabId);
         window.scrollTo({ top: 0, behavior: "instant" });
       }
       return;
     }
-
-    // Todas as rotas agora são internas - navegação via tab
-    // Removido redirecionamento externo para manter usuário no painel
 
     // Navegação padrão via tab
     if (onTabChange) {
