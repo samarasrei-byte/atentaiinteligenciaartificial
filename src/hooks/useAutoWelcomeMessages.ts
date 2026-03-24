@@ -123,16 +123,10 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
         });
       }
 
-      // Create César message ONLY if user has BI access and not exists today
-      if (hasBIAccess && !todayTypes.includes('cesar')) {
-        await createWelcomeMessage('cesar', getCesarMessage(userName));
-        
-        // Show notification
-        toast({
-          title: '📊 Nova mensagem de César',
-          description: 'César está pronto para ajudar com BI e Contabilidade!',
-        });
-      }
+      // César messages hidden - BI module temporarily disabled
+      // if (hasBIAccess && !todayTypes.includes('cesar')) {
+      //   await createWelcomeMessage('cesar', getCesarMessage(userName));
+      // }
 
       // Refresh the list
       await fetchWelcomeChats();

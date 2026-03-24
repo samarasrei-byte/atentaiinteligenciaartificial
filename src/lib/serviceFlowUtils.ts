@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
  * - Cria solicitação → Cria conversa → Dispara notificação → Redireciona para chat
  */
 
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade' | 'abertura-empresa' | 'certidao' | 'ir';
+export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade' | 'abertura-empresa' | 'certidao' | 'ir' | 'emissao-nf';
 
 export interface ServiceRequest {
   serviceType: ServiceType;
@@ -95,6 +95,7 @@ export const getServiceDisplayName = (serviceType: ServiceType): string => {
     'abertura-empresa': 'Abertura de Empresa',
     'certidao': 'Emissão de Certidão',
     'ir': 'Declaração de IR',
+    'emissao-nf': 'Emissão de NF',
   };
   return names[serviceType] || serviceType;
 };

@@ -103,9 +103,10 @@ const PartnerGuilhermePanel = lazy(() => import("./pages/PartnerGuilhermePanel")
 const MarketplaceServicePage = lazy(() => import("./pages/MarketplaceServicePage"));
 const SobrePage = lazy(() => import("./pages/SobrePage"));
 const SuportePage = lazy(() => import("./pages/SuportePage"));
-const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
-const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
-const CesarBILanding = lazy(() => import("./pages/CesarBILanding"));
+// BI/César routes hidden - kept imports commented for future reactivation
+// const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
+// const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
+// const CesarBILanding = lazy(() => import("./pages/CesarBILanding"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
 const ChatCesar = lazy(() => import("./pages/ChatCesar"));
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
@@ -227,9 +228,10 @@ const App = () => (
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/onboarding" element={<FiscalAnalysisOnboarding />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
-              <Route path="/bi-contabilidade" element={<BIContabilidadeLanding />} />
-              <Route path="/bi-contabilidade/onboarding" element={<BIContabilidadeOnboarding />} />
-              <Route path="/bi-contabilidade/cesar" element={<CesarBILanding />} />
+              {/* BI/César routes hidden */}
+              <Route path="/bi-contabilidade" element={<Navigate to="/" replace />} />
+              <Route path="/bi-contabilidade/onboarding" element={<Navigate to="/" replace />} />
+              <Route path="/bi-contabilidade/cesar" element={<Navigate to="/" replace />} />
               <Route path="/admin/login" element={<AdminLoginNew />} />
               <Route path="/apresentacao/serac" element={<SeracPresentation />} />
               <Route path="/serac/defesas" element={<SeracDefesasDoc />} />
