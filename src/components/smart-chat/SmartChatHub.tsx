@@ -161,9 +161,9 @@ export const SmartChatHub: React.FC = () => {
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-lg font-semibold text-foreground">Chat BI Contabilidade</h1>
+              <h1 className="text-lg font-semibold text-foreground">Chat Emissão de NF</h1>
               <p className="text-xs text-muted-foreground">
-                <span className="text-primary font-medium">César</span> • KPIs + Alertas em tempo real
+                <span className="text-primary font-medium">Especialista</span> • Notas Fiscais + Validação em tempo real
               </p>
             </div>
           </div>

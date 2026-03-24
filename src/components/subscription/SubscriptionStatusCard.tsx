@@ -153,7 +153,7 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
               <Button 
                 variant="ghost" 
                 size="sm" 
-                onClick={() => navigate('/chat/cesar')}
+                onClick={() => navigate('/chat/especialista')}
               >
                 <MessageSquare className="h-4 w-4" />
               </Button>
@@ -236,9 +236,9 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
             <BarChart3 className="h-4 w-4" />
             Abrir BI
           </Button>
-          <Button variant="outline" onClick={() => navigate('/chat/cesar')} className="gap-2">
+          <Button variant="outline" onClick={() => navigate('/chat/especialista')} className="gap-2">
             <MessageSquare className="h-4 w-4" />
-            Falar com César
+            Falar com Especialista
           </Button>
         </div>
 
@@ -256,7 +256,7 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
                     key={planKey}
                     variant="outline"
                     size="sm"
-                    onClick={() => navigate(`/chat/cesar?upgrade=${planKey}`)}
+                    onClick={() => navigate(`/chat/especialista?upgrade=${planKey}`)}
                     className="gap-2"
                   >
                     <Sparkles className="h-3 w-3" />

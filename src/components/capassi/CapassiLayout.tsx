@@ -166,7 +166,7 @@ export function CapassiLayout() {
                   <span className="text-sm font-bold text-violet-300">C</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-medium text-white/80 truncate">César</p>
+                  <p className="text-xs font-medium text-white/80 truncate">Especialista NF</p>
                   <p className="text-[10px] text-white/30 truncate">{user?.email}</p>
                 </div>
               </div>

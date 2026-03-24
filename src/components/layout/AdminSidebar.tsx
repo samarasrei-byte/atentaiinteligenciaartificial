@@ -73,14 +73,14 @@ interface AdminSidebarProps {
 
 // NOVA HIERARQUIA ZANINE: BI → Comunicação → Marketplace → Sistema
 const sidebarGroups: SidebarGroup[] = [
-  // 1️⃣ BI CONTABILIDADE - Produto principal, âncora do sistema
+  // 1️⃣ EMISSÃO DE NF - Produto principal, âncora do sistema
   {
-    id: 'bi-contabilidade',
-    label: 'BI Contabilidade',
-    icon: Brain,
+    id: 'emissao-nf',
+    label: 'Emissão de NF',
+    icon: FileText,
     defaultOpen: true,
     items: [
-      { icon: Brain, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
+      { icon: FileText, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
       { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
       { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
       { icon: BarChart3, label: 'Métricas SaaS', tabId: 'saas-metrics' },
@@ -97,7 +97,7 @@ const sidebarGroups: SidebarGroup[] = [
     defaultOpen: true,
     items: [
       { icon: MessageCircle, label: 'Central de Atendimento', tabId: 'client-chat', isLive: true, badge: 'Guilherme' },
-      { icon: Brain, label: 'Chat BI Contabilidade', tabId: 'smart-chat', isLive: true, badge: 'César' },
+      { icon: FileText, label: 'Chat Emissão de NF', tabId: 'smart-chat', isLive: true },
       { icon: Bell, label: 'Notificações', tabId: 'churn-notifications' },
       { icon: Sparkles, label: 'Alertas de KPI', tabId: 'kpi-alerts', isLive: true },
       { icon: MessagesSquare, label: 'Mensagens em Massa', tabId: 'mass-messages' },

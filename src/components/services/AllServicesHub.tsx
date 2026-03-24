@@ -178,18 +178,18 @@ export const AllServicesHub: React.FC = () => {
       onboardingRoute: '/modulo-fiscal/onboarding', // IMMUTABLE ROUTE - NOT BI!
     },
     
-    // ===== BI CONTABILIDADE - ALWAYS goes to /bi-contabilidade/onboarding =====
+    // ===== EMISSÃO DE NF =====
     {
       id: 'bi-contabilidade',
-      name: 'BI+ Inteligência Fiscal™',
-      description: 'Inteligência artificial com análise humana especializada',
-      icon: Brain,
-      gradient: 'from-purple-500 to-pink-600',
+      name: 'Emissão de NF',
+      description: 'Emissão automatizada de notas fiscais com validação inteligente',
+      icon: FileText,
+      gradient: 'from-emerald-500 to-teal-600',
       priceCents: 0,
       features: [
-        'Diagnóstico fiscal completo',
-        'IA + Análise humana dedicada',
-        'Relatórios personalizados',
+        'NF-e, NFS-e e NFC-e automatizadas',
+        'Validação fiscal em tempo real',
+        'Integração com prefeituras',
       ],
       isNew: true,
       onboardingRoute: '/bi-contabilidade/onboarding', // IMMUTABLE ROUTE

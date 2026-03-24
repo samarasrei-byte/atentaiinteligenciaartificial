@@ -27,10 +27,9 @@ interface Stats {
 }
 
 /**
- * CesarChatHub - Central de BI & Contabilidade
+ * CesarChatHub - Central de Emissão de NF
  * 
- * RESPONSÁVEL: César
- * SERVIÇOS: BI Completo, Contabilidade, Comunicação com Clientes BI
+ * SERVIÇOS: Emissão de NF, Validação Fiscal, Comunicação com Clientes
  */
 export const CesarChatHub: React.FC = () => {
   const [isWhatsAppConnected] = React.useState(true);
@@ -71,17 +70,17 @@ export const CesarChatHub: React.FC = () => {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/20 shrink-0">
-              <span className="text-base sm:text-xl font-bold text-white">C</span>
+              <span className="text-base sm:text-xl font-bold text-white">NF</span>
             </div>
             <div className="min-w-0">
               <h1 className="text-base sm:text-xl font-bold text-white flex items-center gap-2">
-                <span className="truncate">Chat – César</span>
+                <span className="truncate">Chat – Emissão de NF</span>
                 <span className="relative flex h-2 w-2 sm:h-2.5 sm:w-2.5 shrink-0">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex rounded-full h-full w-full bg-white" />
                 </span>
               </h1>
-              <p className="text-violet-100 text-xs sm:text-sm truncate">BI & Contabilidade • Comunicação com Clientes</p>
+              <p className="text-violet-100 text-xs sm:text-sm truncate">Notas Fiscais • NF-e, NFS-e, NFC-e</p>
             </div>
           </div>
           
@@ -100,13 +99,13 @@ export const CesarChatHub: React.FC = () => {
             
             <Badge variant="outline" className="hidden sm:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
               <BarChart3 className="h-3 w-3" />
-              <span className="hidden md:inline">BI Completo</span>
-              <span className="md:hidden">BI</span>
+              <span className="hidden md:inline">Emissão NF</span>
+              <span className="md:hidden">NF</span>
             </Badge>
             <Badge variant="outline" className="hidden sm:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
               <FileText className="h-3 w-3" />
-              <span className="hidden md:inline">Contabilidade</span>
-              <span className="md:hidden">Cont</span>
+              <span className="hidden md:inline">Validação Fiscal</span>
+              <span className="md:hidden">Valid</span>
             </Badge>
           </div>
         </div>
@@ -115,11 +114,11 @@ export const CesarChatHub: React.FC = () => {
         <div className="flex items-center gap-3 sm:gap-6 mt-2 sm:mt-4 text-violet-100 text-xs sm:text-sm overflow-x-auto">
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <MessageCircle className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span>{stats.biClients} <span className="hidden sm:inline">clientes</span> BI</span>
+            <span>{stats.biClients} <span className="hidden sm:inline">solicitações</span> NF</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-            <span>Docs contábeis</span>
+            <span>Docs fiscais</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Activity className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

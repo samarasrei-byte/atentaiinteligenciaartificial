@@ -91,7 +91,7 @@ export const getServiceDisplayName = (serviceType: ServiceType): string => {
   const names: Record<ServiceType, string> = {
     'limpanome': 'Limpa Nome',
     'analise-fiscal': 'Análise Fiscal',
-    'bi-contabilidade': 'BI+ Contabilidade',
+    'bi-contabilidade': 'Emissão de NF',
     'abertura-empresa': 'Abertura de Empresa',
     'certidao': 'Emissão de Certidão',
     'ir': 'Declaração de IR',
