@@ -81,7 +81,7 @@ export const CesarChatHub: React.FC = () => {
                   <span className="relative inline-flex rounded-full h-full w-full bg-white" />
                 </span>
               </h1>
-              <p className="text-violet-100 text-xs sm:text-sm truncate">BI & Contabilidade • Comunicação com Clientes</p>
+              <p className="text-violet-100 text-xs sm:text-sm truncate">Notas Fiscais • NF-e, NFS-e, NFC-e</p>
             </div>
           </div>
           
