@@ -237,6 +237,13 @@ const App = () => (
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/test-login" element={<TestLogin />} />
+              {/* Tentaí routes */}
+              <Route path="/tentai" element={<TentaiLanding />} />
+              <Route path="/tentai/dashboard" element={
+                <ProtectedRoute>
+                  <TentaiDashboard />
+                </ProtectedRoute>
+              } />
               {/* Affiliate routes */}
               <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
               <Route path="/afiliado/oferta/:affiliateCode" element={<AffiliateOfferPage />} />
