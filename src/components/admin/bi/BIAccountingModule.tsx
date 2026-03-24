@@ -36,7 +36,7 @@ export const BIAccountingModule: React.FC = () => {
               <div className="p-2 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600">
                 <LayoutDashboard className="h-6 w-6 text-white" />
               </div>
-              BI + Contabilidade
+              Emissão de NF
             </h1>
             <p className="text-muted-foreground mt-1">
               Inteligência Artificial para análises • Decisões finais por especialistas humanos
