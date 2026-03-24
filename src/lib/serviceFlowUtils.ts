@@ -95,6 +95,7 @@ export const getServiceDisplayName = (serviceType: ServiceType): string => {
     'abertura-empresa': 'Abertura de Empresa',
     'certidao': 'Emissão de Certidão',
     'ir': 'Declaração de IR',
+    'emissao-nf': 'Emissão de NF',
   };
   return names[serviceType] || serviceType;
 };
