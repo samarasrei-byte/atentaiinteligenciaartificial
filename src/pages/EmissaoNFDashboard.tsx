@@ -87,10 +87,7 @@ const EmissaoNFDashboard = () => {
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2">
-              <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center">
-                <Zap className="w-3.5 h-3.5 text-white" />
-              </div>
-              <span className="text-lg font-bold">AtentAI</span>
+              <img src="/logo-atentai.png" alt="AtentAI" className="h-7 w-auto" />
             </div>
             <div className="hidden md:block text-sm text-white/40 border-l border-white/10 pl-4">
               Saldo: <span className="text-emerald-400 font-semibold">R$ 12.450,00</span>
