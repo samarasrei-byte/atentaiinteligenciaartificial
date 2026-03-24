@@ -22,8 +22,8 @@ const EmissaoNFLanding = () => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white overflow-x-hidden">
       <Helmet>
-        <title>Tentaí - Receba no Pix e a nota sai sozinha</title>
-        <meta name="description" content="Cobre seus clientes e automatize todo seu financeiro em minutos. Pix, boleto, cartão e nota fiscal automática." />
+        <title>AtentAI - Emissão de NF Automática | Receba e emita notas</title>
+        <meta name="description" content="Emita notas fiscais automaticamente após cada pagamento. NF-e, NFS-e e NFC-e integradas. A partir de R$97/mês." />
       </Helmet>
 
       {/* Header */}
