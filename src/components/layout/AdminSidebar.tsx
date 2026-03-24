@@ -73,14 +73,14 @@ interface AdminSidebarProps {
 
 // NOVA HIERARQUIA ZANINE: BI → Comunicação → Marketplace → Sistema
 const sidebarGroups: SidebarGroup[] = [
-  // 1️⃣ BI CONTABILIDADE - Produto principal, âncora do sistema
+  // 1️⃣ EMISSÃO DE NF - Produto principal, âncora do sistema
   {
-    id: 'bi-contabilidade',
-    label: 'BI Contabilidade',
-    icon: Brain,
+    id: 'emissao-nf',
+    label: 'Emissão de NF',
+    icon: FileText,
     defaultOpen: true,
     items: [
-      { icon: Brain, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
+      { icon: FileText, label: 'Módulo Completo', tabId: 'bi-accounting', isLive: true },
       { icon: LayoutDashboard, label: 'Dashboard', tabId: 'overview' },
       { icon: Activity, label: 'Tempo Real', tabId: 'realtime', isLive: true },
       { icon: BarChart3, label: 'Métricas SaaS', tabId: 'saas-metrics' },
