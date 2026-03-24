@@ -139,7 +139,7 @@ const SeracFolhaCartorio = lazy(() => import("./pages/serac/SeracFolhaCartorio")
 const SeracMentorias = lazy(() => import("./pages/serac/SeracMentorias"));
 const SeracDefesasDoc = lazy(() => import("./pages/serac/SeracDefesasDoc"));
 
-// Tentaí - Fintech SaaS
+// Emissão de NF - SaaS
 const EmissaoNFLanding = lazy(() => import("./pages/EmissaoNFLanding"));
 const EmissaoNFDashboard = lazy(() => import("./pages/EmissaoNFDashboard"));
 
