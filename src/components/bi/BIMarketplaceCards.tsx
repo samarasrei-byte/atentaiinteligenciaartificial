@@ -24,6 +24,9 @@ interface BIMarketplaceCardsProps {
 }
 
 export function BIMarketplaceCards({ variant = 'grid', showTitle = true }: BIMarketplaceCardsProps) {
+  // Provisoriamente oculto - rebranding para Emissão de NF
+  return null;
+
   const navigate = useNavigate();
   const { user } = useAuth();
   const { toast } = useToast();

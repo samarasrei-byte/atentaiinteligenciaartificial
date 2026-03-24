@@ -467,10 +467,18 @@ const ServicosPage = () => {
   const legacyServiceKeys = ['company_opening', 'certificate', 'ir_simples', 'ir_completo'];
   const showLegacyServices = isFeatureEnabled('LEGACY_SERVICES');
 
+  // BI plan keys to hide (provisório - rebranding Emissão de NF)
+  const biPlanKeys = ['bi_clarity', 'bi_control', 'bi_performance'];
+
   const filteredServices = useMemo(() => {
     return serviceConfigs.filter((service) => {
       // Hide legacy services if flag is disabled
       if (!showLegacyServices && legacyServiceKeys.includes(service.key)) {
+        return false;
+      }
+
+      // Hide BI plans (provisório)
+      if (biPlanKeys.includes(service.key)) {
         return false;
       }
 
