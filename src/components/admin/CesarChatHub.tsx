@@ -70,7 +70,7 @@ export const CesarChatHub: React.FC = () => {
         <div className="flex items-center justify-between gap-2">
           <div className="flex items-center gap-2 sm:gap-4 min-w-0">
             <div className="h-9 w-9 sm:h-12 sm:w-12 rounded-full bg-white/10 backdrop-blur-sm flex items-center justify-center border-2 border-white/20 shrink-0">
-              <span className="text-base sm:text-xl font-bold text-white">C</span>
+              <span className="text-base sm:text-xl font-bold text-white">NF</span>
             </div>
             <div className="min-w-0">
               <h1 className="text-base sm:text-xl font-bold text-white flex items-center gap-2">
