@@ -90,7 +90,7 @@ export const FinancialModule: React.FC = () => {
       // Distribuição por sócio (simulado - 33% cada para marketplace)
       const partnerDistribution = [
         { name: 'Guilherme Mesquita', value: Math.round(totalRevenue * 0.45), color: '#10b981' },
-        { name: 'César', value: Math.round(totalRevenue * 0.275), color: '#8b5cf6' },
+        { name: 'Emissão NF', value: Math.round(totalRevenue * 0.275), color: '#8b5cf6' },
         { name: 'Guilherme Mesquita', value: Math.round(totalRevenue * 0.275), color: '#3b82f6' }
       ];
 
