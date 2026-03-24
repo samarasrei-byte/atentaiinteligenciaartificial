@@ -236,9 +236,9 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
             <BarChart3 className="h-4 w-4" />
             Abrir BI
           </Button>
-          <Button variant="outline" onClick={() => navigate('/chat/cesar')} className="gap-2">
+          <Button variant="outline" onClick={() => navigate('/chat/especialista')} className="gap-2">
             <MessageSquare className="h-4 w-4" />
-            Falar com César
+            Falar com Especialista
           </Button>
         </div>
 

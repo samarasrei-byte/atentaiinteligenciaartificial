@@ -237,7 +237,7 @@ export function BIMarketplaceCards({ variant = 'grid', showTitle = true }: BIMar
       </div>
 
       <p className="text-center text-xs text-muted-foreground">
-        Após a compra, você será automaticamente direcionado ao César para onboarding e ativação.
+        Após a compra, você será automaticamente direcionado ao especialista para onboarding e ativação.
       </p>
     </div>
   );
