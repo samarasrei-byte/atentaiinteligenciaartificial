@@ -46,7 +46,7 @@ const statusMap: Record<string, { label: string; color: string; icon: React.Elem
 
 const methodIcons: Record<string, string> = { pix: '⚡', card: '💳', boleto: '📄' };
 
-const TentaiDashboard = () => {
+const EmissaoNFDashboard = () => {
   const navigate = useNavigate();
   const { signOut, profile } = useAuth();
   const [activeTab, setActiveTab] = useState('overview');
