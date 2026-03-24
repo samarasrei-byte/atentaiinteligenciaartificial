@@ -27,10 +27,9 @@ interface Stats {
 }
 
 /**
- * CesarChatHub - Central de BI & Contabilidade
+ * CesarChatHub - Central de Emissão de NF
  * 
- * RESPONSÁVEL: César
- * SERVIÇOS: BI Completo, Contabilidade, Comunicação com Clientes BI
+ * SERVIÇOS: Emissão de NF, Validação Fiscal, Comunicação com Clientes
  */
 export const CesarChatHub: React.FC = () => {
   const [isWhatsAppConnected] = React.useState(true);
