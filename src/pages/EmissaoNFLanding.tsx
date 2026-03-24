@@ -63,7 +63,7 @@ const EmissaoNFLanding = () => {
             <motion.div variants={fadeUp} custom={0}>
               <Badge className="mb-6 bg-emerald-500/10 text-emerald-400 border-emerald-500/20 px-4 py-1.5 text-sm">
                 <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-                Automação financeira completa
+                Emissão de NF automática
               </Badge>
             </motion.div>
 
