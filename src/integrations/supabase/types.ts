@@ -2588,6 +2588,178 @@ export type Database = {
         }
         Relationships: []
       }
+      nf_charges: {
+        Row: {
+          asaas_charge_id: string | null
+          billing_type: string
+          boleto_url: string | null
+          created_at: string
+          customer_id: string
+          description: string | null
+          due_date: string
+          id: string
+          invoice_issued: boolean
+          pix_copy_paste: string | null
+          pix_qr_code: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          value_cents: number
+        }
+        Insert: {
+          asaas_charge_id?: string | null
+          billing_type?: string
+          boleto_url?: string | null
+          created_at?: string
+          customer_id: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_issued?: boolean
+          pix_copy_paste?: string | null
+          pix_qr_code?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          value_cents: number
+        }
+        Update: {
+          asaas_charge_id?: string | null
+          billing_type?: string
+          boleto_url?: string | null
+          created_at?: string
+          customer_id?: string
+          description?: string | null
+          due_date?: string
+          id?: string
+          invoice_issued?: boolean
+          pix_copy_paste?: string | null
+          pix_qr_code?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          value_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nf_charges_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "nf_customers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nf_customers: {
+        Row: {
+          asaas_customer_id: string | null
+          cpf_cnpj: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          phone: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asaas_customer_id?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          phone?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asaas_customer_id?: string | null
+          cpf_cnpj?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          phone?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      nf_invoices: {
+        Row: {
+          asaas_invoice_id: string | null
+          charge_id: string
+          created_at: string
+          id: string
+          pdf_url: string | null
+          service_description: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          value_cents: number
+        }
+        Insert: {
+          asaas_invoice_id?: string | null
+          charge_id: string
+          created_at?: string
+          id?: string
+          pdf_url?: string | null
+          service_description?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          value_cents: number
+        }
+        Update: {
+          asaas_invoice_id?: string | null
+          charge_id?: string
+          created_at?: string
+          id?: string
+          pdf_url?: string | null
+          service_description?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          value_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nf_invoices_charge_id_fkey"
+            columns: ["charge_id"]
+            isOneToOne: false
+            referencedRelation: "nf_charges"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nf_webhook_logs: {
+        Row: {
+          created_at: string
+          event_type: string
+          id: string
+          payload: Json | null
+          payment_id: string
+          processed: boolean
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          id?: string
+          payload?: Json | null
+          payment_id: string
+          processed?: boolean
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          id?: string
+          payload?: Json | null
+          payment_id?: string
+          processed?: boolean
+        }
+        Relationships: []
+      }
       partner_invitations: {
         Row: {
           accepted_at: string | null
