@@ -249,6 +249,12 @@ const App = () => (
                   <EmissaoNFDashboard />
                 </ProtectedRoute>
               } />
+              {/* Contador IA routes */}
+              <Route path="/contador-ia" element={
+                <ProtectedRoute>
+                  <ContadorIADashboard />
+                </ProtectedRoute>
+              } />
               {/* Affiliate routes */}
               <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
               <Route path="/afiliado/oferta/:affiliateCode" element={<AffiliateOfferPage />} />
