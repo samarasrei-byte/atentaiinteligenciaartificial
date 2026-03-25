@@ -45,6 +45,7 @@ type DocFile = {
 };
 
 const statusMap: Record<string, { label: string; color: string; icon: React.ElementType }> = {
+  draft: { label: 'Rascunho', color: 'text-muted-foreground bg-muted', icon: FileText },
   pending_documents: { label: 'Envie documentos', color: 'text-amber-400 bg-amber-500/10', icon: Upload },
   processing: { label: 'Processando', color: 'text-blue-400 bg-blue-500/10', icon: Loader2 },
   ai_analysis: { label: 'IA Analisando', color: 'text-purple-400 bg-purple-500/10', icon: Brain },
