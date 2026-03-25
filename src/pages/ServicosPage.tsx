@@ -17,7 +17,6 @@ import {
   FileText, 
   FileSpreadsheet,
   ArrowRight,
-  ArrowLeft,
   Crown,
   Shield,
   Search,
@@ -34,12 +33,186 @@ import {
   BadgeCheck,
   Brain,
   Clock,
+  Receipt,
+  Sparkles,
 } from 'lucide-react';
 
-const categories = [
-  { id: 'all', label: 'Todos', icon: Briefcase },
-  { id: 'declaracoes', label: 'Declarações', icon: FileText },
-  { id: 'empresarial', label: 'Empresarial', icon: Building2 },
+// ===== SERVICE CONFIGS =====
+
+// ONE-TIME services (serviços avulsos)
+const oneTimeServices: ServiceCardConfig[] = [
+  {
+    key: 'credit_repair_pf',
+    name: 'Limpa Nome Pessoa Física',
+    description: 'Regularização de restrições com análise humana especializada.',
+    targetAudience: 'Para CPF negativado',
+    features: [
+      'Análise individual por especialista',
+      'Estratégia personalizada',
+      'Acompanhamento humano dedicado',
+    ],
+    guarantees: ['Atendimento humano', 'Parceria séria'],
+    basePrice: 82450,
+    originalPrice: 123800,
+    discountPercent: 10,
+    installments: 4,
+    badge: 'popular',
+    cta: 'Limpar meu nome agora',
+    color: 'accent',
+    icon: CreditCard,
+    serviceType: 'credit_repair_pf',
+    category: 'documentos',
+  },
+  {
+    key: 'credit_repair_pj',
+    name: 'Limpa Nome Empresa (CNPJ)',
+    description: 'Regularização cadastral com análise fiscal e jurídica especializada.',
+    targetAudience: 'Para empresas com restrições',
+    features: [
+      'Avaliação completa do CNPJ',
+      'Estratégia adequada ao porte da empresa',
+      'Atendimento humano especializado',
+    ],
+    guarantees: ['Especialistas reais', 'Atendimento responsável'],
+    basePrice: 128000,
+    originalPrice: 156800,
+    discountPercent: 10,
+    installments: 4,
+    badge: 'popular',
+    cta: 'Regularizar meu CNPJ',
+    color: 'accent',
+    icon: Building2,
+    serviceType: 'credit_repair_pj',
+    category: 'empresarial',
+  },
+  {
+    key: 'fiscal_analysis',
+    name: 'Análise Fiscal Inteligente',
+    description: 'Recuperação de créditos tributários e otimização fiscal com análise especializada.',
+    targetAudience: 'Para empresas que querem economizar',
+    features: [
+      'Análise completa gratuita',
+      'Identificação de créditos tributários',
+      'Pagamento apenas no êxito (50%)',
+    ],
+    guarantees: ['Sem risco', 'Pagamento no êxito'],
+    basePrice: 0,
+    discountPercent: 0,
+    badge: 'free',
+    cta: 'Solicitar análise',
+    color: 'emerald',
+    icon: Scale,
+    serviceType: 'fiscal_analysis',
+    isFree: true,
+    successFee: true,
+    isCustomPricing: true,
+    checkoutRoute: '/chat/guilherme?servico=fiscal',
+    category: 'empresarial',
+  },
+];
+
+// AI-POWERED services
+const aiServices: ServiceCardConfig[] = [
+  {
+    key: 'contador_ia',
+    name: 'Contador IA — Imposto de Renda',
+    description: 'Envie seus documentos e a IA mais avançada do Brasil faz sua declaração de IR em minutos.',
+    targetAudience: 'Para quem quer declarar sem complicação',
+    features: [
+      'Análise automática de documentos',
+      'Extração de dados por IA',
+      'Cálculo automático de imposto',
+      'Dicas de otimização fiscal',
+      'Alertas de inconsistências',
+    ],
+    guarantees: ['IA de última geração', '97% de precisão'],
+    basePrice: 4990,
+    discountPercent: 0,
+    badge: 'new' as const,
+    cta: 'Fazer minha declaração',
+    color: 'purple' as const,
+    icon: Brain,
+    serviceType: 'contador_ia',
+    checkoutRoute: '/contador-ia',
+    category: 'declaracoes',
+    isFree: false,
+  },
+];
+
+// SUBSCRIPTION plans
+const subscriptionPlans: ServiceCardConfig[] = [
+  {
+    key: 'simulator',
+    name: 'Simulador Tributário',
+    description: 'Simule o impacto da reforma tributária na sua empresa com IA.',
+    targetAudience: 'Para entender a reforma',
+    features: [
+      'Simulador tributário completo',
+      'Comparação de regimes',
+      'Exportação em PDF',
+      '5 perguntas à IA por dia',
+    ],
+    guarantees: ['Atualizado 2026', 'IBS + CBS'],
+    basePrice: PLANS.simulator.price,
+    discountPercent: 0,
+    cta: 'Assinar Agora',
+    color: 'blue',
+    icon: Calculator,
+    serviceType: 'simulator',
+    checkoutRoute: '/#pricing',
+    category: 'consultoria',
+    isFree: false,
+    isSubscription: true,
+  },
+  {
+    key: 'autonomo',
+    name: 'Plano Autônomo',
+    description: 'Dashboard financeiro completo para profissionais autônomos.',
+    targetAudience: 'Para profissionais liberais',
+    features: [
+      'Tudo do Simulador +',
+      'Dashboard financeiro',
+      'Metas financeiras',
+      '10 perguntas à IA por dia',
+      'Comparador PF vs PJ',
+    ],
+    guarantees: ['Painel dedicado', 'Suporte IA'],
+    basePrice: PLANS.autonomo.price,
+    discountPercent: 0,
+    badge: 'popular',
+    cta: 'Assinar Agora',
+    color: 'primary',
+    icon: Wallet,
+    serviceType: 'autonomo',
+    checkoutRoute: '/#pricing',
+    category: 'consultoria',
+    isFree: false,
+    isSubscription: true,
+  },
+  {
+    key: 'premium',
+    name: 'AtentAI Premium',
+    description: 'Recursos completos para empresas com IA ilimitada.',
+    targetAudience: 'Para empresas',
+    features: [
+      'Tudo do Autônomo +',
+      'IA ilimitada',
+      'Simulador de locação',
+      'Exportação Excel',
+      'Suporte prioritário',
+    ],
+    guarantees: ['IA sem limites', 'Prioridade total'],
+    basePrice: PLANS.premium.price,
+    discountPercent: 0,
+    cta: 'Assinar Agora',
+    color: 'accent',
+    icon: Star,
+    serviceType: 'premium',
+    checkoutRoute: '/#pricing',
+    category: 'consultoria',
+    isFree: false,
+    isSubscription: true,
+  },
 ];
 
 const freeTools = [
@@ -66,20 +239,12 @@ const freeTools = [
   },
 ];
 
-// Panel access - filtered based on feature flags
-const allPanelAccess = [
+const panelAccess = [
   {
     role: 'autonomo',
     name: 'Autônomo',
     description: 'Simulador e metas',
     icon: Wallet,
-    href: '/dashboard',
-  },
-  {
-    role: 'contador',
-    name: 'Contador',
-    description: 'Gestão de clientes',
-    icon: Scale,
     href: '/dashboard',
   },
   {
@@ -91,459 +256,32 @@ const allPanelAccess = [
   },
 ];
 
-// Import feature flag at top of file and filter here
-const panelAccess = allPanelAccess.filter(p => p.role !== 'contador');
-
-const socialProof = [
-  { value: '2.847+', label: 'Clientes atendidos' },
-  { value: 'R$ 15M+', label: 'Economizados' },
-  { value: '4.9/5', label: 'Avaliação média' },
-  { value: '24h', label: 'Tempo resposta' },
-];
-
-// Service configurations with all information needed
-// ORDERED: Cheapest services first, then BI plans last (to not scare users)
-const serviceConfigs: ServiceCardConfig[] = [
-  // ===== SERVIÇOS MAIS BARATOS PRIMEIRO =====
-  // Certidão - R$ 80
-  {
-    key: 'certificate',
-    name: 'Emissão de Certidão',
-    description: 'Certidões negativas de débitos fiscais para sua empresa ou CPF.',
-    targetAudience: 'Para regularização fiscal',
-    features: [
-      'Emissão de certidões negativas',
-      'Federal, estadual e municipal',
-      'Entrega digital rápida',
-    ],
-    guarantees: ['Processo ágil', 'Suporte incluso'],
-    basePrice: 8000,
-    discountPercent: 10,
-    cta: 'Solicitar certidão',
-    color: 'primary',
-    icon: FileCheck,
-    serviceType: 'certificate',
-    category: 'documentos',
-  },
-  // IR Simples - R$ 200
-  {
-    key: 'ir_simples',
-    name: 'Declaração IR Simples',
-    description: 'Para CLT com poucos rendimentos e sem investimentos complexos.',
-    targetAudience: 'Para CLT sem investimentos',
-    features: [
-      'Declaração completa',
-      'Revisão por especialista',
-      'Envio à Receita Federal',
-    ],
-    guarantees: ['Sem erros', 'Recibo garantido'],
-    basePrice: 20000,
-    discountPercent: 20,
-    cta: 'Fazer minha declaração',
-    color: 'primary',
-    icon: FileText,
-    serviceType: 'ir_simples',
-    checkoutRoute: '/ir',
-    category: 'declaracoes',
-  },
-  // IR Completo - R$ 420
-  {
-    key: 'ir_completo',
-    name: 'Declaração IR Completo',
-    description: 'Para autônomos, investidores ou quem tem múltiplas fontes de renda.',
-    targetAudience: 'Para autônomos e investidores',
-    features: [
-      'Declaração detalhada',
-      'Análise completa de rendimentos',
-      'Otimização fiscal inclusa',
-    ],
-    guarantees: ['Maximiza restituição', 'Especialista dedicado'],
-    basePrice: 42000,
-    discountPercent: 20,
-    cta: 'Fazer minha declaração',
-    color: 'purple',
-    icon: FileSpreadsheet,
-    serviceType: 'ir_completo',
-    checkoutRoute: '/ir',
-    category: 'declaracoes',
-  },
-  // Limpa Nome PF - R$ 824,50
-  {
-    key: 'credit_repair_pf',
-    name: 'Limpa Nome Pessoa Física',
-    description: 'Regularização de restrições com análise humana especializada.',
-    targetAudience: 'Para CPF negativado',
-    features: [
-      'Análise individual por especialista',
-      'Estratégia personalizada',
-      'Acompanhamento humano dedicado',
-    ],
-    guarantees: ['Atendimento humano', 'Parceria séria'],
-    basePrice: 82450,
-    originalPrice: 123800,
-    discountPercent: 10,
-    installments: 4,
-    badge: 'popular',
-    cta: 'Limpar meu nome agora',
-    color: 'accent',
-    icon: CreditCard,
-    serviceType: 'credit_repair_pf',
-    category: 'documentos',
-  },
-  // Abertura de Empresa - R$ 780
-  {
-    key: 'company_opening',
-    name: 'Abertura de Empresa',
-    description: 'Abertura completa de CNPJ com suporte contábil especializado.',
-    targetAudience: 'Para quem quer abrir CNPJ',
-    features: [
-      'Abertura completa de CNPJ',
-      'Suporte contábil especializado',
-      'Documentação inclusa',
-    ],
-    guarantees: ['Processo simplificado', 'Acompanhamento total'],
-    basePrice: 78000,
-    discountPercent: 15,
-    cta: 'Abrir minha empresa',
-    color: 'blue',
-    icon: Building2,
-    serviceType: 'company_opening',
-    checkoutRoute: '/abertura-empresa',
-    category: 'empresarial',
-  },
-  // Limpa Nome PJ - R$ 1.280
-  {
-    key: 'credit_repair_pj',
-    name: 'Limpa Nome Empresa (CNPJ)',
-    description: 'Regularização cadastral com análise fiscal e jurídica especializada.',
-    targetAudience: 'Para empresas com restrições',
-    features: [
-      'Avaliação completa do CNPJ',
-      'Estratégia adequada ao porte da empresa',
-      'Atendimento humano especializado',
-    ],
-    guarantees: ['Especialistas reais', 'Atendimento responsável'],
-    basePrice: 128000,
-    originalPrice: 156800,
-    discountPercent: 10,
-    installments: 4,
-    badge: 'popular',
-    cta: 'Regularizar meu CNPJ',
-    color: 'accent',
-    icon: Building2,
-    serviceType: 'credit_repair_pj',
-    category: 'empresarial',
-  },
-  // Análise Fiscal - GRÁTIS (Success Fee)
-  {
-    key: 'fiscal_analysis',
-    name: 'Análise Fiscal Inteligente',
-    description: 'Recuperação de créditos tributários e otimização fiscal com análise especializada.',
-    targetAudience: 'Para empresas que querem economizar',
-    features: [
-      'Análise completa gratuita',
-      'Identificação de créditos tributários',
-      'Pagamento apenas no êxito (50%)',
-    ],
-    guarantees: ['Sem risco', 'Pagamento no êxito'],
-    basePrice: 0,
-    discountPercent: 0,
-    badge: 'free',
-    cta: 'Solicitar análise',
-    color: 'emerald',
-    icon: Scale,
-    serviceType: 'fiscal_analysis',
-    isFree: true,
-    successFee: true,
-    isCustomPricing: true,
-    checkoutRoute: '/chat/guilherme?servico=fiscal',
-    category: 'empresarial',
-  },
-  // ===== PLANOS DE ASSINATURA DA HOMEPAGE =====
-  // Simulador Tributário - R$ 39/mês
-  {
-    key: 'simulator',
-    name: 'Simulador Tributário',
-    description: 'Simule o impacto da reforma tributária na sua empresa com IA.',
-    targetAudience: 'Para entender a reforma',
-    features: [
-      'Simulador tributário completo',
-      'Comparação de regimes',
-      'Exportação em PDF',
-      '5 perguntas à IA por dia',
-    ],
-    guarantees: ['Atualizado 2026', 'IBS + CBS'],
-    basePrice: PLANS.simulator.price, // R$ 39,99/mês
-    discountPercent: 0,
-    cta: 'Assinar Agora',
-    color: 'blue',
-    icon: Calculator,
-    serviceType: 'simulator',
-    checkoutRoute: '/#pricing',
-    category: 'consultoria',
-    isFree: false,
-    isSubscription: true,
-  },
-  // Plano Autônomo - R$ 49,90/mês
-  {
-    key: 'autonomo',
-    name: 'Plano Autônomo',
-    description: 'Dashboard financeiro completo para profissionais autônomos.',
-    targetAudience: 'Para profissionais liberais',
-    features: [
-      'Tudo do Simulador +',
-      'Dashboard financeiro',
-      'Metas financeiras',
-      '10 perguntas à IA por dia',
-      'Comparador PF vs PJ',
-    ],
-    guarantees: ['Painel dedicado', 'Suporte IA'],
-    basePrice: PLANS.autonomo.price, // R$ 65,00/mês
-    discountPercent: 0,
-    badge: 'popular',
-    cta: 'Assinar Agora',
-    color: 'primary',
-    icon: Wallet,
-    serviceType: 'autonomo',
-    checkoutRoute: '/#pricing',
-    category: 'consultoria',
-    isFree: false,
-    isSubscription: true,
-  },
-  // AtentAI Premium - R$ 97/mês
-  {
-    key: 'premium',
-    name: 'AtentAI Premium',
-    description: 'Recursos completos para empresas com IA ilimitada.',
-    targetAudience: 'Para empresas',
-    features: [
-      'Tudo do Autônomo +',
-      'IA ilimitada',
-      'Simulador de locação',
-      'Exportação Excel',
-      'Suporte prioritário',
-    ],
-    guarantees: ['IA sem limites', 'Prioridade total'],
-    basePrice: PLANS.premium.price, // R$ 98,00/mês
-    discountPercent: 0,
-    cta: 'Assinar Agora',
-    color: 'accent',
-    icon: Star,
-    serviceType: 'premium',
-    checkoutRoute: '/#pricing',
-    category: 'consultoria',
-    isFree: false,
-    isSubscription: true,
-  },
-  // Contador Premium Plus - EM BREVE
-  {
-    key: 'contador',
-    name: 'Contador Premium Plus',
-    description: 'Painel completo para contadores e escritórios contábeis.',
-    targetAudience: 'Para contadores',
-    features: [
-      'Tudo do Premium +',
-      'Painel de clientes',
-      'Consultorias mensais',
-      'API de integração',
-      'White label',
-    ],
-    guarantees: ['Gestão de carteira', 'API exclusiva'],
-    basePrice: PLANS.contador.price, // R$ 198,99/mês
-    discountPercent: 0,
-    badge: 'coming_soon',
-    cta: 'Em Breve',
-    color: 'blue',
-    icon: Briefcase,
-    serviceType: 'contador',
-    checkoutRoute: '#',
-    category: 'consultoria',
-    isFree: false,
-    isSubscription: true,
-    isDisabled: true,
-  },
-  // ===== EMISSÃO DE NF (DESTAQUE) =====
-  {
-    key: 'emissao_nf',
-    name: 'Emissão de NF Automática',
-    description: 'Receba no Pix e tenha a nota fiscal emitida automaticamente. Automação financeira completa.',
-    targetAudience: 'Para quem quer automatizar o financeiro',
-    features: [
-      'Cobranças via Pix, boleto e cartão',
-      'Nota fiscal emitida automaticamente',
-      'Dashboard financeiro completo',
-      'Gestão de clientes integrada',
-      'Relatórios em tempo real',
-    ],
-    guarantees: ['Tudo automático', 'Segurança bancária'],
-    basePrice: 9700, // R$ 97,00/mês
-    discountPercent: 0,
-    badge: 'popular' as const,
-    cta: 'Ativar agora',
-    color: 'accent' as const,
-    icon: Zap,
-    serviceType: 'emissao-nf',
-    checkoutRoute: '/emissao-nf',
-    category: 'empresarial',
-    isFree: false,
-    isSubscription: true,
-  },
-  // ===== CONTADOR IA (DESTAQUE) =====
-  {
-    key: 'contador_ia',
-    name: 'Contador IA — Imposto de Renda',
-    description: 'Envie seus documentos e a IA mais avançada do Brasil faz sua declaração de IR em minutos.',
-    targetAudience: 'Para quem quer declarar sem complicação',
-    features: [
-      'Análise automática de documentos',
-      'Extração de dados por IA',
-      'Cálculo automático de imposto',
-      'Dicas de otimização fiscal',
-      'Alertas de inconsistências',
-    ],
-    guarantees: ['IA de última geração', '97% de precisão'],
-    basePrice: 4990, // R$ 49,90
-    discountPercent: 0,
-    badge: 'new' as const,
-    cta: 'Fazer minha declaração',
-    color: 'purple' as const,
-    icon: Brain,
-    serviceType: 'contador_ia',
-    checkoutRoute: '/contador-ia',
-    category: 'declaracoes',
-    isFree: false,
-  },
-  // ===== PLANOS ATENTAI BI =====
-  // Atentai Clarity - R$ 1.497/mês
-  {
-    key: 'bi_clarity',
-    name: 'Atentai Clarity',
-    description: 'Clareza financeira e entendimento dos números.',
-    targetAudience: 'Para empresas que querem clareza',
-    features: [
-      'BI padrão com DRE gerencial',
-      'Resultado, margem e despesas',
-      'IA explicativa e educativa',
-      'Linguagem clara e acessível',
-      'Supervisão humana obrigatória',
-      'Relatórios mensais em PDF',
-    ],
-    guarantees: ['Validação humana', 'Suporte César'],
-    basePrice: 149700, // R$ 1.497,00
-    discountPercent: 0,
-    badge: undefined,
-    cta: 'Assinar Agora',
-    color: 'blue',
-    icon: Brain,
-    serviceType: 'clarity',
-    category: 'consultoria',
-    isFree: false,
-    successFee: false,
-    isCustomPricing: false,
-    isSubscription: true,
-  },
-  // Atentai Control - R$ 3.497/mês (Mais Popular)
-  {
-    key: 'bi_control',
-    name: 'Atentai Control',
-    description: 'Controle, previsão e suporte à decisão.',
-    targetAudience: 'Para empresas que querem controle',
-    features: [
-      'Tudo do Clarity +',
-      'Real x Orçado e forecast',
-      'Indicadores personalizados',
-      'Alertas inteligentes',
-      'Simulações de cenários',
-      'IA analítica e orientada à ação',
-      'Apoio a decisões táticas',
-    ],
-    guarantees: ['Validação humana', 'Suporte César'],
-    basePrice: 349700, // R$ 3.497,00
-    discountPercent: 0,
-    badge: 'popular',
-    cta: 'Assinar Agora',
-    color: 'primary',
-    icon: Brain,
-    serviceType: 'control',
-    category: 'consultoria',
-    isFree: false,
-    successFee: false,
-    isCustomPricing: false,
-    isSubscription: true,
-  },
-  // Atentai Performance - R$ 8.000+/mês (Premium)
-  {
-    key: 'bi_performance',
-    name: 'Atentai Performance',
-    description: 'Performance, crescimento e estratégia empresarial.',
-    targetAudience: 'Para empresas que querem escalar',
-    features: [
-      'Tudo do Control +',
-      'P&L por área, produto ou unidade',
-      'IA como apoio estratégico sênior',
-      'Recomendações financeiras e comerciais',
-      'Integração ERP e CRM',
-      'Planejamento financeiro completo',
-      'Linguagem executiva e estratégica',
-      'Validação humana em todas as recomendações',
-    ],
-    guarantees: ['Atendimento VIP', 'IA + Estrategista'],
-    basePrice: 800000, // A partir de R$ 8.000,00
-    discountPercent: 0,
-    badge: 'premium' as const,
-    cta: 'Solicitar Contato',
-    color: 'accent' as const,
-    icon: Brain,
-    serviceType: 'performance',
-    checkoutRoute: '/chat/cesar?servico=bi-performance&plano=performance',
-    category: 'consultoria',
-    isFree: false,
-    successFee: false,
-    isCustomPricing: true,
-  },
-];
-
 const ServicosPage = () => {
   const { subscription, user } = useAuth();
   const navigate = useNavigate();
   const isSubscriber = subscription.subscribed;
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('all');
 
-  const scrollToSection = (section: string) => {
-    window.location.href = '/';
+  // Merge all services for search
+  const allServices = useMemo(() => [
+    ...oneTimeServices, ...aiServices, ...subscriptionPlans,
+  ], []);
+
+  // Filter by search
+  const filterBySearch = (services: ServiceCardConfig[]) => {
+    if (!searchTerm) return services;
+    const term = searchTerm.toLowerCase();
+    return services.filter(s =>
+      s.name.toLowerCase().includes(term) ||
+      s.description.toLowerCase().includes(term) ||
+      s.targetAudience.toLowerCase().includes(term)
+    );
   };
 
-  // IDs of legacy services to hide when LEGACY_SERVICES flag is false
-  const legacyServiceKeys = ['company_opening', 'certificate', 'ir_simples', 'ir_completo'];
-  const showLegacyServices = isFeatureEnabled('LEGACY_SERVICES');
-
-  // BI plan keys to hide (provisório - rebranding Emissão de NF)
-  const biPlanKeys = ['bi_clarity', 'bi_control', 'bi_performance'];
-
-  const filteredServices = useMemo(() => {
-    return serviceConfigs.filter((service) => {
-      // Hide legacy services if flag is disabled
-      if (!showLegacyServices && legacyServiceKeys.includes(service.key)) {
-        return false;
-      }
-
-      // Hide BI plans (provisório)
-      if (biPlanKeys.includes(service.key)) {
-        return false;
-      }
-
-      const matchesSearch = 
-        service.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        service.targetAudience.toLowerCase().includes(searchTerm.toLowerCase());
-      
-      const matchesCategory = 
-        selectedCategory === 'all' || service.category === selectedCategory;
-      
-      return matchesSearch && matchesCategory;
-    });
-  }, [searchTerm, selectedCategory, showLegacyServices]);
+  const filteredOneTime = filterBySearch(oneTimeServices);
+  const filteredAI = filterBySearch(aiServices);
+  const filteredSubs = filterBySearch(subscriptionPlans);
+  const hasResults = filteredOneTime.length + filteredAI.length + filteredSubs.length > 0;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -557,210 +295,233 @@ const ServicosPage = () => {
     <PublicLayout>
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
         <main>
-        {/* Hero Section - Clean & Modern */}
-        <section className="relative py-16 lg:py-20 overflow-hidden bg-gradient-to-br from-slate-900 via-primary to-slate-800">
-          <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-accent/20 rounded-full blur-[150px]" />
-            <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-primary/30 rounded-full blur-[120px]" />
-          </div>
-          
-          <div className="container max-w-6xl mx-auto px-4 relative z-10">
-            <motion.div 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center"
-            >
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 tracking-tight">
-                Marketplace de Serviços
-                <span className="block text-accent mt-1">Contábeis & Fiscais</span>
-              </h1>
-              
-              <p className="text-base lg:text-lg text-white/80 max-w-xl mx-auto mb-8">
-                {!isSubscriber ? (
-                  <>Assine e economize <span className="text-accent font-semibold">até 30%</span> em todos os serviços</>
-                ) : (
-                  <span className="text-accent">✓ Seus descontos exclusivos estão aplicados</span>
-                )}
-              </p>
+          {/* Hero — Emissão de NF (produto core) */}
+          <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-emerald-500/15 rounded-full blur-[150px]" />
+              <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/15 rounded-full blur-[120px]" />
+            </div>
 
-              {/* Trust indicators */}
-              <div className="flex flex-wrap items-center justify-center gap-6 text-white/70 text-sm">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-accent" />
-                  <span>100% Seguro</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <BadgeCheck className="w-4 h-4 text-accent" />
-                  <span>Profissionais Verificados</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Star className="w-4 h-4 text-accent" />
-                  <span>4.9 Avaliação</span>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* Search & Filter Bar - STICKY */}
-        <section className="sticky top-0 z-40 bg-white/98 backdrop-blur-xl border-b border-slate-200 shadow-md">
-          <div className="container max-w-6xl mx-auto px-4 py-4">
-            <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-              <div className="flex flex-col sm:flex-row gap-3 items-center w-full lg:w-auto">
-                <h2 className="text-xl lg:text-2xl font-bold text-slate-900 whitespace-nowrap">
-                  Nossos Serviços
-                </h2>
-                {!isSubscriber && (
-                  <Badge variant="outline" className="bg-accent/10 text-accent border-accent/30 whitespace-nowrap">
-                    Assine para descontos
+            <div className="container max-w-6xl mx-auto px-4 relative z-10">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="grid lg:grid-cols-2 gap-12 items-center"
+              >
+                {/* Left — Copy */}
+                <div>
+                  <Badge className="bg-emerald-500/20 text-emerald-300 border-emerald-500/30 mb-4 px-3 py-1.5">
+                    <Zap className="w-3 h-3 mr-1.5" /> Produto Principal
                   </Badge>
-                )}
-              </div>
-              
-              <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
-                <div className="relative w-full sm:w-64">
+                  <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4 leading-tight">
+                    Receba no Pix e a nota
+                    <span className="block text-emerald-400">sai sozinha</span>
+                  </h1>
+                  <p className="text-lg text-white/70 mb-6 max-w-lg">
+                    Automatize cobranças, pagamentos e emissão de nota fiscal. Sem retrabalho. Sem erro. Sem estresse.
+                  </p>
+                  <div className="flex flex-wrap gap-3 mb-8">
+                    <Button
+                      size="lg"
+                      onClick={() => navigate('/emissao-nf')}
+                      className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl px-8 h-12 font-semibold shadow-lg shadow-emerald-500/25"
+                    >
+                      <Receipt className="w-5 h-5 mr-2" />
+                      Ativar agora — R$ 97/mês
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Button>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-6 text-white/50 text-sm">
+                    <span className="flex items-center gap-1.5"><Shield className="w-4 h-4 text-emerald-400" /> Segurança bancária</span>
+                    <span className="flex items-center gap-1.5"><Zap className="w-4 h-4 text-emerald-400" /> Setup em 2 min</span>
+                    <span className="flex items-center gap-1.5"><BadgeCheck className="w-4 h-4 text-emerald-400" /> NF automática</span>
+                  </div>
+                </div>
+
+                {/* Right — Feature summary card */}
+                <div className="hidden lg:block">
+                  <Card className="bg-white/5 border-white/10 backdrop-blur-sm rounded-3xl">
+                    <CardContent className="p-8 space-y-5">
+                      {[
+                        { icon: CreditCard, text: 'Cobranças via Pix, boleto e cartão', color: 'text-blue-400' },
+                        { icon: Receipt, text: 'Nota fiscal emitida automaticamente', color: 'text-emerald-400' },
+                        { icon: FileBarChart, text: 'Dashboard financeiro em tempo real', color: 'text-purple-400' },
+                        { icon: Users, text: 'Gestão de clientes integrada', color: 'text-amber-400' },
+                      ].map((item, i) => (
+                        <div key={i} className="flex items-center gap-4">
+                          <div className="h-10 w-10 rounded-xl bg-white/10 flex items-center justify-center">
+                            <item.icon className={`w-5 h-5 ${item.color}`} />
+                          </div>
+                          <span className="text-white/80 text-sm font-medium">{item.text}</span>
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+
+          {/* Search Bar */}
+          <section className="sticky top-0 z-40 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 shadow-sm">
+            <div className="container max-w-6xl mx-auto px-4 py-3">
+              <div className="flex items-center gap-4">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white whitespace-nowrap hidden sm:block">
+                  Marketplace
+                </h2>
+                <div className="relative w-full max-w-sm">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
                   <Input
                     placeholder="Buscar serviço..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-50 border-slate-200 focus:bg-white transition-colors"
+                    className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:bg-white dark:focus:bg-slate-700 transition-colors"
                   />
                 </div>
-                
-                <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-hide">
-                  {categories.map((category) => (
-                    <Button
-                      key={category.id}
-                      variant={selectedCategory === category.id ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setSelectedCategory(category.id)}
-                      className={`whitespace-nowrap transition-all ${
-                        selectedCategory === category.id 
-                          ? 'bg-primary text-white shadow-md' 
-                          : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-primary/30'
-                      }`}
-                    >
-                      <category.icon className="h-3.5 w-3.5 mr-1.5" />
-                      {category.label}
-                    </Button>
-                  ))}
-                </div>
+                {user && (
+                  <div className="hidden md:flex items-center gap-2 ml-auto">
+                    <span className="text-xs text-slate-500">Acesso rápido:</span>
+                    {panelAccess.map((panel) => (
+                      <Link key={panel.role} to={panel.href}>
+                        <Button variant="outline" size="sm" className="text-xs">
+                          <panel.icon className="h-3 w-3 mr-1.5 text-primary" />
+                          {panel.name}
+                        </Button>
+                      </Link>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
 
-        {/* Panel Access - If logged in */}
-        {user && (
-          <section className="py-6 bg-slate-50/50">
+          {/* Free Tools — Lead magnets on top */}
+          <section className="py-8 bg-white dark:bg-slate-900">
             <div className="container max-w-6xl mx-auto px-4">
-              <div className="flex items-center gap-4 overflow-x-auto pb-2">
-                <span className="text-sm font-medium text-slate-600 whitespace-nowrap">Acesso rápido:</span>
-                {panelAccess.map((panel) => (
-                  <Link key={panel.role} to={panel.href}>
-                    <Button variant="outline" size="sm" className="whitespace-nowrap bg-white">
-                      <panel.icon className="h-4 w-4 mr-2 text-primary" />
-                      {panel.name}
-                    </Button>
+              <div className="flex items-center gap-3 mb-4">
+                <Badge variant="outline" className="border-primary/30 text-primary text-xs">
+                  <Sparkles className="w-3 h-3 mr-1" /> Gratuito
+                </Badge>
+                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ferramentas Gratuitas</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                {freeTools.map((tool) => (
+                  <Link key={tool.key} to={tool.href}>
+                    <Card className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30 hover:bg-white dark:hover:bg-slate-750 transition-all duration-300 hover:shadow-md">
+                      <CardContent className="p-4 flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                          <tool.icon className="h-5 w-5 text-primary" />
+                        </div>
+                        <div className="min-w-0">
+                          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">{tool.name}</h4>
+                          <p className="text-xs text-slate-500 dark:text-slate-400">{tool.description}</p>
+                        </div>
+                        <ArrowRight className="w-4 h-4 text-slate-400 ml-auto shrink-0" />
+                      </CardContent>
+                    </Card>
                   </Link>
                 ))}
               </div>
             </div>
           </section>
-        )}
 
-        {/* Main Services Grid */}
-        <section className="py-12 bg-slate-50">
-          <div className="container max-w-6xl mx-auto px-4">
-            <motion.div 
-              variants={containerVariants}
-              initial="hidden"
-              animate="visible"
-              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-            >
-              {filteredServices.map((service) => (
-                <ServiceCardPremium
-                  key={service.key}
-                  service={service}
-                  isSubscriber={isSubscriber}
-                />
-              ))}
-            </motion.div>
+          {/* Section 1: IA-POWERED */}
+          {filteredAI.length > 0 && (
+            <section className="py-10 bg-gradient-to-b from-purple-50/50 to-white dark:from-purple-950/20 dark:to-slate-900">
+              <div className="container max-w-6xl mx-auto px-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
+                    <Brain className="w-4 h-4 text-purple-500" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Inteligência Artificial</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Serviços automatizados com IA</p>
+                  </div>
+                </div>
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredAI.map((service) => (
+                    <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
+                  ))}
+                </motion.div>
+              </div>
+            </section>
+          )}
 
-            {filteredServices.length === 0 && (
-              <div className="text-center py-16">
-                <p className="text-slate-500 mb-4">
+          {/* Section 2: SERVIÇOS AVULSOS */}
+          {filteredOneTime.length > 0 && (
+            <section className="py-10 bg-slate-50 dark:bg-slate-900/50">
+              <div className="container max-w-6xl mx-auto px-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
+                    <Briefcase className="w-4 h-4 text-accent" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Serviços Avulsos</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Contrate sem assinatura, pague uma vez</p>
+                  </div>
+                </div>
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredOneTime.map((service) => (
+                    <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
+                  ))}
+                </motion.div>
+              </div>
+            </section>
+          )}
+
+          {/* Section 3: PLANOS DE ASSINATURA */}
+          {filteredSubs.length > 0 && (
+            <section className="py-10 bg-white dark:bg-slate-900">
+              <div className="container max-w-6xl mx-auto px-4">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Crown className="w-4 h-4 text-primary" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Planos de Assinatura</h2>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Ferramentas e dashboards com cobrança mensal</p>
+                  </div>
+                </div>
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {filteredSubs.map((service) => (
+                    <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
+                  ))}
+                </motion.div>
+              </div>
+            </section>
+          )}
+
+          {/* No results */}
+          {!hasResults && searchTerm && (
+            <section className="py-16">
+              <div className="container max-w-6xl mx-auto px-4 text-center">
+                <p className="text-slate-500 dark:text-slate-400 mb-4">
                   Nenhum serviço encontrado para "{searchTerm}"
                 </p>
-                <Button 
-                  variant="outline" 
-                  onClick={() => { setSearchTerm(''); setSelectedCategory('all'); }}
-                >
-                  Limpar filtros
+                <Button variant="outline" onClick={() => setSearchTerm('')}>
+                  Limpar busca
                 </Button>
               </div>
-            )}
-          </div>
-        </section>
+            </section>
+          )}
 
-        {/* Free Tools Section */}
-        <section className="py-12 bg-white">
-          <div className="container max-w-6xl mx-auto px-4">
-            <div className="text-center mb-8">
-              <Badge variant="outline" className="mb-3 px-3 py-1.5 border-primary/30 text-primary">
-                <Zap className="w-3 h-3 mr-1.5" />
-                Gratuito
-              </Badge>
-              <h2 className="text-2xl font-bold text-slate-900 mb-2">
-                Ferramentas Gratuitas
-              </h2>
-              <p className="text-slate-500 text-sm">
-                Prepare-se para a reforma tributária
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {freeTools.map((tool) => (
-                <Link key={tool.key} to={tool.href}>
-                  <Card className="h-full bg-slate-50 border-slate-200 hover:border-primary/30 hover:bg-white transition-all duration-300 hover:shadow-md">
-                    <CardContent className="p-5 flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <tool.icon className="h-6 w-6 text-primary" />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-slate-900">{tool.name}</h3>
-                        <p className="text-sm text-slate-500">{tool.description}</p>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-slate-400 ml-auto" />
-                    </CardContent>
-                  </Card>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA Section - Non-subscribers */}
-        {!isSubscriber && (
-          <section className="py-16 bg-gradient-to-br from-primary via-primary/95 to-slate-800">
-            <div className="container max-w-4xl mx-auto px-4 text-center">
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-medium mb-6">
-                <Crown className="w-4 h-4 text-accent" />
-                Economia de até 30%
-              </div>
-              
-              <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-                Desbloqueie descontos exclusivos
-              </h2>
-              <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-                Assinantes têm acesso a preços especiais em todos os serviços e suporte prioritário.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Button 
-                  size="lg" 
+          {/* CTA — Non-subscribers */}
+          {!isSubscriber && (
+            <section className="py-16 bg-gradient-to-br from-primary via-primary/95 to-slate-800">
+              <div className="container max-w-4xl mx-auto px-4 text-center">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-medium mb-6">
+                  <Crown className="w-4 h-4 text-accent" />
+                  Economia de até 30%
+                </div>
+                <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
+                  Desbloqueie descontos exclusivos
+                </h2>
+                <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
+                  Assinantes têm acesso a preços especiais em todos os serviços e suporte prioritário.
+                </p>
+                <Button
+                  size="lg"
                   variant="accent"
                   onClick={() => navigate('/pricing')}
                   className="px-8 group"
@@ -769,34 +530,10 @@ const ServicosPage = () => {
                   Ver Planos
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
-                <Button 
-                  size="lg" 
-                  variant="outline"
-                  onClick={() => navigate('/contadores-publico')}
-                  className="border-white/30 text-white hover:bg-white/10"
-                >
-                  <Users className="w-5 h-5 mr-2" />
-                  Ver Contadores
-                </Button>
               </div>
-            </div>
-          </section>
-        )}
-
-        {/* Social Proof */}
-        <section className="py-12 bg-white border-t border-slate-100">
-          <div className="container max-w-5xl mx-auto px-4">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
-              {socialProof.map((stat, i) => (
-                <div key={i}>
-                  <p className="text-2xl lg:text-3xl font-bold text-slate-900">{stat.value}</p>
-                  <p className="text-sm text-slate-500">{stat.label}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      </main>
+            </section>
+          )}
+        </main>
       </div>
     </PublicLayout>
   );

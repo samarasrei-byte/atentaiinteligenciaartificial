@@ -272,7 +272,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
               <div>
                 <span className="text-xl font-bold text-purple-600">Sob Consulta</span>
                 <p className="text-xs text-slate-500 mt-1">
-                  Fale com o César para uma proposta personalizada
+                  Fale com um especialista para uma proposta personalizada
                 </p>
               </div>
             ) : service.isFree ? (
