@@ -363,9 +363,10 @@ serve(async (req) => {
       const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
       const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
         user_id: userId,
-        tax_year: new Date().getFullYear() - 1,
+        fiscal_year: new Date().getFullYear() - 1,
         declaration_type: declarationType,
         status: 'draft',
+        full_name: fullName || '',
       }).select('id').single();
       log("IR AI declaration created", { declarationId: newDecl?.id, type: declarationType });
     } else if (serviceType === 'certificate') {
