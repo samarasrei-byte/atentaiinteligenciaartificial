@@ -390,7 +390,7 @@ const BIContabilidadeOnboarding = () => {
         await supabase.from('service_notifications').insert({
           user_id: authData.user.id,
           title: '🎉 Solicitação BI+ Contabilidade Enviada!',
-          message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
+          message: 'Sua solicitação foi recebida. Nosso especialista entrará em contato em breve.',
           notification_type: 'service_created',
           service_type: 'bi-contabilidade',
           metadata: { requestId },
