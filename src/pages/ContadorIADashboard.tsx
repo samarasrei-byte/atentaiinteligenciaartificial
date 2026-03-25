@@ -168,6 +168,7 @@ const ContadorIADashboard = () => {
     if (error) { toast.error('Erro ao criar declaração'); return; }
     toast.success('Declaração criada! Envie seus documentos.');
     const newDecl = data as Declaration;
+    activeDeclarationRef.current = newDecl.id;
     setActiveDeclaration(newDecl);
     setDocuments([]);
     setActiveTab('documents');
