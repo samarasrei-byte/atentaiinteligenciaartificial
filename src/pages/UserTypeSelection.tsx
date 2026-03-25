@@ -381,7 +381,7 @@ const UserTypeSelection = () => {
                   </p>
 
                   {/* Features */}
-                  <ul className="space-y-3">
+                  <ul className="space-y-2 md:space-y-3 hidden sm:block">
                     {option.features.map((feature, idx) => (
                       <motion.li 
                         key={idx} 
