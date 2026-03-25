@@ -73,7 +73,7 @@ interface StripeSidebarProps {
  * Estrutura definitiva com 9 grupos principais:
  * 1. Dashboard
  * 2. Chat – Guilherme (Atendimento / Limpa Nome / Análise Fiscal)
- * 3. Chat – César (BI & Contabilidade)
+ * 3. Chat – Emissão NF (BI & Contabilidade)
  * 4. Documentos
  * 5. Serviços
  * 6. Marketplace
