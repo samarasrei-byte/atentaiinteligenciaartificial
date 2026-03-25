@@ -131,7 +131,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
         .insert({
           request_id: newRequest.id,
           sender_id: user.id,
-          // Sempre notificar o especialista correto (Guilherme/César)
+          // Sempre notificar o especialista correto
           receiver_id: specialistId,
           content: welcomeMessage,
         });

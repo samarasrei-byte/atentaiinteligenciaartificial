@@ -121,7 +121,7 @@ export function useAutoOpenChat() {
           return;
         }
 
-        // Check for active IR request (César - BI related)
+        // Check for active IR request (BI related)
         const { data: irRequest, error: irError } = await supabase
           .from('ir_requests')
           .select('id, status')

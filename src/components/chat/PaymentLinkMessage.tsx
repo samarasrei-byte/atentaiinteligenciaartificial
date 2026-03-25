@@ -35,7 +35,7 @@ const serviceLabels: Record<string, { name: string; icon: typeof Shield; gradien
 /**
  * PaymentLinkMessage - Mensagem especial de link de pagamento
  * 
- * Guilherme/César podem enviar esse componente no chat
+ * Guilherme pode enviar esse componente no chat
  * O cliente clica e abre Stripe Checkout
  */
 export const PaymentLinkMessage: React.FC<PaymentLinkMessageProps> = ({
