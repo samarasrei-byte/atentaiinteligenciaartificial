@@ -2465,6 +2465,122 @@ export type Database = {
           },
         ]
       }
+      ir_ai_declarations: {
+        Row: {
+          ai_analysis: Json | null
+          ai_confidence_percent: number | null
+          completed_at: string | null
+          cpf: string | null
+          created_at: string
+          declaration_type: string
+          fiscal_year: number
+          full_name: string | null
+          human_reviewed: boolean | null
+          id: string
+          notes: string | null
+          refund_cents: number | null
+          reviewed_at: string | null
+          status: string
+          tax_due_cents: number | null
+          total_deductions_cents: number | null
+          total_income_cents: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          ai_confidence_percent?: number | null
+          completed_at?: string | null
+          cpf?: string | null
+          created_at?: string
+          declaration_type?: string
+          fiscal_year?: number
+          full_name?: string | null
+          human_reviewed?: boolean | null
+          id?: string
+          notes?: string | null
+          refund_cents?: number | null
+          reviewed_at?: string | null
+          status?: string
+          tax_due_cents?: number | null
+          total_deductions_cents?: number | null
+          total_income_cents?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          ai_confidence_percent?: number | null
+          completed_at?: string | null
+          cpf?: string | null
+          created_at?: string
+          declaration_type?: string
+          fiscal_year?: number
+          full_name?: string | null
+          human_reviewed?: boolean | null
+          id?: string
+          notes?: string | null
+          refund_cents?: number | null
+          reviewed_at?: string | null
+          status?: string
+          tax_due_cents?: number | null
+          total_deductions_cents?: number | null
+          total_income_cents?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ir_ai_documents: {
+        Row: {
+          ai_extracted_data: Json | null
+          ai_status: string | null
+          created_at: string
+          declaration_id: string
+          document_type: string
+          file_name: string
+          file_path: string
+          file_size_bytes: number | null
+          id: string
+          mime_type: string | null
+          user_id: string
+        }
+        Insert: {
+          ai_extracted_data?: Json | null
+          ai_status?: string | null
+          created_at?: string
+          declaration_id: string
+          document_type?: string
+          file_name: string
+          file_path: string
+          file_size_bytes?: number | null
+          id?: string
+          mime_type?: string | null
+          user_id: string
+        }
+        Update: {
+          ai_extracted_data?: Json | null
+          ai_status?: string | null
+          created_at?: string
+          declaration_id?: string
+          document_type?: string
+          file_name?: string
+          file_path?: string
+          file_size_bytes?: number | null
+          id?: string
+          mime_type?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ir_ai_documents_declaration_id_fkey"
+            columns: ["declaration_id"]
+            isOneToOne: false
+            referencedRelation: "ir_ai_declarations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ir_requests: {
         Row: {
           base_price_cents: number
