@@ -109,7 +109,7 @@ const SuportePage = lazy(() => import("./pages/SuportePage"));
 // const CesarBILanding = lazy(() => import("./pages/CesarBILanding"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
 const ChatCesar = lazy(() => import("./pages/ChatCesar"));
-const ChatJose = lazy(() => import("./pages/ChatJose"));
+
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
 const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
 const CheckoutPage = lazy(() => import("./pages/CheckoutPage"));
@@ -408,11 +408,6 @@ const App = () => (
               <Route path="/chat/cesar" element={
                 <ProtectedRoute>
                   <ChatCesar />
-                </ProtectedRoute>
-              } />
-              <Route path="/chat/jose" element={
-                <ProtectedRoute>
-                  <ChatJose />
                 </ProtectedRoute>
               } />
               

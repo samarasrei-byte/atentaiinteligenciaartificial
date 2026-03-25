@@ -19,8 +19,8 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'contador_premium': { chatType: 'guilherme', specialist: 'Guilherme' },
   'abertura_empresa': { chatType: 'guilherme', specialist: 'Guilherme' },
   'analise_fiscal': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'ir_simples': { chatType: 'jose', specialist: 'José' },
-  'ir_completo': { chatType: 'jose', specialist: 'José' },
+  'ir_simples': { chatType: 'ia', specialist: 'Contador IA' },
+  'ir_completo': { chatType: 'ia', specialist: 'Contador IA' },
   'certificate': { chatType: 'cesar', specialist: 'César' },
   'clarity': { chatType: 'cesar', specialist: 'César' },
   'control': { chatType: 'cesar', specialist: 'César' },
@@ -47,8 +47,8 @@ function getWelcomeMessage(serviceType: string, serviceName: string, userName: s
     'contador_premium': `Pagamento confirmado ✅\nSua assinatura **Contador Premium Plus** já está ativa.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com seu contador responsável.\n\nEstou à disposição para qualquer dúvida contábil, fiscal ou tributária. Como posso ajudar? 🤝`,
     'clarity': `Pagamento confirmado ✅\nSeu plano **Atentai Clarity** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista de BI financeiro.\n\nVamos iniciar seu onboarding financeiro:\n📊 Qual o segmento da sua empresa?\n💰 Faturamento mensal aproximado?\n🎯 Quais métricas são mais importantes para você?\n\nVamos transformar seus dados em decisões! 📈`,
     'control': `Pagamento confirmado ✅\nSeu plano **Atentai Control** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista de controle financeiro avançado.\n\nVamos iniciar o diagnóstico empresarial:\n🏢 Razão social e CNPJ\n📊 Número de funcionários e faturamento\n🎯 Principais desafios financeiros\n\nJuntos vamos ter controle total! 🚀`,
-    'ir_simples': `Pagamento confirmado ✅\nSeu serviço **Declaração IR Simples** já está ativo.\n\nOlá, ${firstName}! 👋\nSou o José, especialista em Imposto de Renda.\n\nPara iniciarmos sua declaração, preciso de:\n📄 Informe de rendimentos\n📝 Documentos pessoais (CPF, comprovante de endereço)\n\nVamos cuidar do seu IR! 🤝`,
-    'ir_completo': `Pagamento confirmado ✅\nSeu serviço **Declaração IR Completo** já está ativo.\n\nOlá, ${firstName}! 👋\nSou o José, especialista em Imposto de Renda.\n\nPara iniciarmos sua declaração, preciso de:\n📄 Informes de rendimentos e investimentos\n📝 Documentos pessoais\n🏠 Comprovantes de bens e direitos\n\nVamos cuidar do seu IR! 🤝`,
+    'ir_simples': `Pagamento confirmado ✅\nSeu serviço **Declaração IR Simples** já está ativo.\n\nOlá, ${firstName}! 👋\nSua declaração será processada 100% por IA.\n\n📄 Acesse o painel Contador IA para fazer upload dos seus documentos.\nA análise é automática e instantânea! 🤖`,
+    'ir_completo': `Pagamento confirmado ✅\nSeu serviço **Declaração IR Completo** já está ativo.\n\nOlá, ${firstName}! 👋\nSua declaração será processada 100% por IA.\n\n📄 Acesse o painel Contador IA para fazer upload de todos os documentos.\nA análise é automática e instantânea! 🤖`,
     'certificate': `Pagamento confirmado ✅\nSeu serviço **Emissão de Certidão** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara emitirmos sua certidão, preciso de:\n📄 CPF ou CNPJ\n📝 Tipo de certidão desejada\n\nVamos providenciar! 🤝`,
     'abertura_empresa': `Pagamento confirmado ✅\nSeu serviço **Abertura de Empresa** já está ativo.\n\nOlá, ${firstName}! 👋\nEste é seu canal direto com o especialista responsável.\n\nPara iniciarmos o processo, preciso de:\n📄 Documentos pessoais\n📝 Atividade desejada e nome fantasia\n🏢 Endereço comercial\n\nVamos abrir sua empresa! 🚀`,
     'simulator': `Pagamento confirmado ✅\nSua assinatura **Simulador Tributário** já está ativa.\n\nOlá, ${firstName}! 👋\nAcesse o simulador no menu principal para comparar regimes tributários.\n\nQualquer dúvida, estou à disposição! 🤝`,
@@ -359,8 +359,15 @@ serve(async (req) => {
 
       log("Subscription created/updated", { planType: plan.planType });
     } else if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
-      // IR services - create a record for tracking
-      log("IR service paid", { serviceType, userId });
+      // IR services - create AI declaration automatically
+      const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
+      const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
+        user_id: userId,
+        tax_year: new Date().getFullYear() - 1,
+        declaration_type: declarationType,
+        status: 'draft',
+      }).select('id').single();
+      log("IR AI declaration created", { declarationId: newDecl?.id, type: declarationType });
     } else if (serviceType === 'certificate') {
       // Certificate services - create a record for tracking
       log("Certificate service paid", { serviceType, userId });
@@ -436,8 +443,11 @@ serve(async (req) => {
           ? 'bi-contabilidade'
           : serviceType;
 
-    // Redirect to user panel with chat tab auto-opened (instead of standalone chat page)
-    const redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
+    // IR services redirect to Contador IA panel (100% AI, no human chat)
+    // All other services redirect to specialist chat
+    const redirectPath = (serviceType === 'ir_simples' || serviceType === 'ir_completo')
+      ? '/contador-ia'
+      : `/chat/${specialist.chatType}?servico=${serviceParam}`;
 
     log("Process complete", { userId, isNewUser, redirectPath });
 
