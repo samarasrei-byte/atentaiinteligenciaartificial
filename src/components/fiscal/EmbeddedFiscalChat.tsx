@@ -123,7 +123,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       const greeting = greetings[Math.floor(Math.random() * greetings.length)];
       
       const welcomeMessage = serviceType === 'bi'
-        ? `${greeting} César! Sou o ${firstName}. Acabei de entrar aqui no BI+ e queria entender melhor como funciona a análise da minha empresa. Me conta o que você precisa pra gente começar?`
+        ? `${greeting} Especialista! Sou o ${firstName}. Acabei de entrar aqui no BI+ e queria entender melhor como funciona a análise da minha empresa. Me conta o que você precisa pra gente começar?`
         : `${greeting} Guilherme! Sou o ${firstName}. Quero fazer uma análise fiscal aqui e vi que vocês identificam valores que posso recuperar. O que você precisa de mim pra começar?`;
 
       await supabase
