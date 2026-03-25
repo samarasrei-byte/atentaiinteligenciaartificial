@@ -42,14 +42,14 @@ export const SERVICE_PRICES = {
 
   // IR (Imposto de Renda) Services
   IR_SIMPLES: {
-    cents: 20000,
-    formatted: 'R$ 200,00',
+    cents: 8900,
+    formatted: 'R$ 89,00',
     serviceKey: 'ir_simples',
     subscriberDiscount: 0,
   },
   IR_COMPLETO: {
-    cents: 42000,
-    formatted: 'R$ 420,00',
+    cents: 18900,
+    formatted: 'R$ 189,00',
     serviceKey: 'ir_completo',
     subscriberDiscount: 0,
   },
