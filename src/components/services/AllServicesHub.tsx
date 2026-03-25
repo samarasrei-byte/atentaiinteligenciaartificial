@@ -180,7 +180,7 @@ export const AllServicesHub: React.FC = () => {
     
     // ===== EMISSÃO DE NF =====
     {
-      id: 'bi-contabilidade',
+      id: 'emissao-nf',
       name: 'Emissão de NF',
       description: 'Emissão automatizada de notas fiscais com validação inteligente',
       icon: FileText,
@@ -192,7 +192,7 @@ export const AllServicesHub: React.FC = () => {
         'Integração com prefeituras',
       ],
       isNew: true,
-      onboardingRoute: '/bi-contabilidade/onboarding', // IMMUTABLE ROUTE
+      onboardingRoute: '/emissao-nf',
     },
   ];
 
