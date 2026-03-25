@@ -153,6 +153,8 @@ export const AdminIRManagement: React.FC = () => {
 
   const handleStatusChange = async (declId: string, newStatus: string) => {
     setUpdatingStatus(declId);
+    const decl = declarations.find(d => d.id === declId);
+    const oldStatus = decl?.status || 'unknown';
     const updateData: any = { status: newStatus };
     if (newStatus === 'completed') {
       updateData.completed_at = new Date().toISOString();
@@ -166,6 +168,20 @@ export const AdminIRManagement: React.FC = () => {
     if (error) {
       toast({ title: 'Erro ao atualizar status', description: error.message, variant: 'destructive' });
     } else {
+      // Audit log
+      await supabase.from('audit_logs').insert({
+        action_type: 'admin_action',
+        resource_type: 'ir_ai_declarations',
+        resource_id: declId,
+        success: true,
+        metadata: {
+          action: 'status_change',
+          old_status: oldStatus,
+          new_status: newStatus,
+          client_name: decl?.full_name || profiles[decl?.user_id || '']?.name || 'N/A',
+          timestamp: new Date().toISOString(),
+        },
+      });
       toast({ title: 'Status atualizado', description: `Definido como: ${statusConfig[newStatus]?.label || newStatus}` });
       fetchDeclarations();
     }

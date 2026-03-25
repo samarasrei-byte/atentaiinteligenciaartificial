@@ -22,7 +22,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
-// Mock data
+// ⚠️ DADOS SIMULADOS — integração Asaas pendente
 const mockPayments = [
   { id: 1, client: 'Maria Silva', amount: 120000, method: 'pix', status: 'paid', date: '2026-03-23', nf: 'NF-e #1247' },
   { id: 2, client: 'João Santos', amount: 85000, method: 'card', status: 'pending', date: '2026-03-22', nf: null },
