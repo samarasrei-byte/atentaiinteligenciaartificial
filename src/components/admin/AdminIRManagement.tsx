@@ -232,9 +232,8 @@ export const AdminIRManagement: React.FC = () => {
     errors: declarations.filter(d => d.status === 'error').length,
   };
 
-  // Diagnostic checks
+  // Diagnostic checks (only uses server-side data, not in-memory doc state)
   const diagnostics = {
-    noDocDeclarations: declarations.filter(d => d.status !== 'draft' && !documents[d.id]?.length).length,
     staleProcessing: declarations.filter(d => {
       if (d.status !== 'processing' && d.status !== 'ai_analysis') return false;
       const updatedAt = new Date(d.updated_at || d.created_at);
@@ -242,6 +241,11 @@ export const AdminIRManagement: React.FC = () => {
     }).length,
     lowConfidence: declarations.filter(d => d.ai_confidence_percent != null && d.ai_confidence_percent < 50 && d.ai_confidence_percent > 0).length,
     errorDocs: Object.values(documents).flat().filter(d => d.ai_status === 'error').length,
+    draftNoAction: declarations.filter(d => {
+      if (d.status !== 'draft' && d.status !== 'pending_documents') return false;
+      const createdAt = new Date(d.created_at);
+      return (Date.now() - createdAt.getTime()) > 24 * 60 * 60 * 1000; // > 24h sem ação
+    }).length,
   };
 
   return (
