@@ -40,7 +40,7 @@ export const getResponsiblePerson = (serviceType: ServiceType): 'guilherme' | 'c
     case 'ir':
       return 'guilherme';
     case 'bi-contabilidade':
-      return 'cesar';
+      return 'guilherme';
     default:
       return 'guilherme';
   }
