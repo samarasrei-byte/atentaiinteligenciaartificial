@@ -174,7 +174,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                 <Input id="fullName" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cpf">CPF *</Label>
+                <Label htmlFor="cpf">CPF <span className="text-destructive">*</span></Label>
                 <MaskedInput id="cpf" mask="cpf" value={formData.cpf} onChange={(value, isValid) => { setFormData({ ...formData, cpf: value }); setCpfValid(isValid); }} required />
               </div>
             </div>
