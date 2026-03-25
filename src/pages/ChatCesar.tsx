@@ -451,7 +451,7 @@ export default function ChatCesar() {
                       sender={message.sender}
                       timestamp={message.timestamp}
                       avatar={message.sender === 'specialist' ? <SpecialistAvatar /> : undefined}
-                      senderName={message.sender === 'specialist' ? 'César' : undefined}
+                      senderName={message.sender === 'specialist' ? 'Especialista BI' : undefined}
                       attachmentUrl={message.attachmentUrl}
                       attachmentName={message.attachmentName}
                       isNew={Date.now() - message.timestamp.getTime() < 3000}

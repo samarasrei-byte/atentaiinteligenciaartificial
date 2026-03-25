@@ -360,7 +360,7 @@ const TestimonialSection = () => {
       initials: 'CF'
     },
     {
-      quote: 'César e sua equipe transformaram nossa gestão. Passamos de lucro zero para margem de 15% em apenas um ano.',
+      quote: 'A equipe AtentAI transformou nossa gestão. Passamos de lucro zero para margem de 15% em apenas um ano.',
       author: 'Paulo Silveira',
       role: 'Fundador, Indústria Nova',
       initials: 'PS'
