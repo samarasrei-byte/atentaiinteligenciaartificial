@@ -392,11 +392,11 @@ Guilherme`;
       welcome: (name: string) => {
         return `Oi, ${name}! Tudo bem?
 
-Aqui é o Guilherme. Recebi sua solicitação e vou encaminhar pro César, nosso especialista em BI e Contabilidade.
+Aqui é o Guilherme. Recebi sua solicitação de BI e Contabilidade e já estou analisando.
 
-Ele vai entrar em contato em breve pra dar início à análise!
+Vou entrar em contato em breve pra dar início à análise!
 
-Guilherme`;
+Guilherme Mesquita`;
       },
       followUp: (name: string) => {
         return `Oi, ${name}! Só passando pra ver se está tudo certo e se precisa de alguma coisa.

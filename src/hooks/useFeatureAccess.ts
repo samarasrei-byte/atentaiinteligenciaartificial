@@ -28,7 +28,7 @@ type Feature =
 type FreeService = 
   | 'limpa-nome'        // Pago por transação (R$824,50) - Chat com Guilherme
   | 'analise-fiscal'    // Grátis (Success Fee 50%) - Chat com Guilherme  
-  | 'bi-contabilidade'; // Sob consulta - Chat com César
+  | 'bi-contabilidade'; // Sob consulta - Chat com Guilherme
 
 // Serviços gratuitos disponíveis para todos os usuários autenticados
 const FREE_SERVICES: FreeService[] = [

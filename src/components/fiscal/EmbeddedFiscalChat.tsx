@@ -10,12 +10,12 @@ import { useToast } from '@/hooks/use-toast';
 
 interface EmbeddedFiscalChatProps {
   variant?: 'empresa' | 'autonomo';
-  serviceType?: 'fiscal' | 'bi'; // fiscal → Guilherme | bi → César
+  serviceType?: 'fiscal' | 'bi'; // fiscal → Guilherme | bi → Guilherme (BI)
 }
 
 // IDs dos especialistas responsáveis (IDs reais do banco de dados)
 const GUILHERME_ADMIN_ID = '596de7f7-4352-4058-8855-18f9489a0311'; // Análise Fiscal - Guilherme Mesquita
-const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9'; // BI Inteligência Fiscal - César
+const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9'; // BI Inteligência Fiscal - Equipe
 
 // Lista de IDs de especialistas que NÃO devem criar solicitações para si mesmos
 const SPECIALIST_IDS = [GUILHERME_ADMIN_ID, CESAR_ADMIN_ID];
@@ -31,7 +31,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
 
   // Determina o especialista responsável
   const specialistId = serviceType === 'bi' ? CESAR_ADMIN_ID : GUILHERME_ADMIN_ID;
-  const specialistName = serviceType === 'bi' ? 'César' : 'Guilherme';
+  const specialistName = serviceType === 'bi' ? 'Especialista BI' : 'Guilherme';
   const serviceName = serviceType === 'bi' ? 'BI+ Inteligência Fiscal' : 'Análise Fiscal';
 
   // Fetch active fiscal request for the user
@@ -63,7 +63,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
   const createAutoRequest = async () => {
     if (!user?.id || activeRequest || isCreating) return;
     
-    // IMPORTANTE: Especialistas (Guilherme/César) NÃO devem criar solicitações para si mesmos
+    // IMPORTANTE: Especialistas NÃO devem criar solicitações para si mesmos
     if (SPECIALIST_IDS.includes(user.id)) {
       console.log('[EmbeddedFiscalChat] Especialista detectado, não criando solicitação automática:', user.id);
       return;
@@ -123,7 +123,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       const greeting = greetings[Math.floor(Math.random() * greetings.length)];
       
       const welcomeMessage = serviceType === 'bi'
-        ? `${greeting} César! Sou o ${firstName}. Acabei de entrar aqui no BI+ e queria entender melhor como funciona a análise da minha empresa. Me conta o que você precisa pra gente começar?`
+        ? `${greeting} Especialista! Sou o ${firstName}. Acabei de entrar aqui no BI+ e queria entender melhor como funciona a análise da minha empresa. Me conta o que você precisa pra gente começar?`
         : `${greeting} Guilherme! Sou o ${firstName}. Quero fazer uma análise fiscal aqui e vi que vocês identificam valores que posso recuperar. O que você precisa de mim pra começar?`;
 
       await supabase
@@ -131,7 +131,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
         .insert({
           request_id: newRequest.id,
           sender_id: user.id,
-          // Sempre notificar o especialista correto (Guilherme/César)
+          // Sempre notificar o especialista correto
           receiver_id: specialistId,
           content: welcomeMessage,
         });

@@ -45,7 +45,7 @@ export const SmartChatHub: React.FC = () => {
     {
       id: '1',
       role: 'assistant',
-      content: 'Olá! Sou o assistente de BI do César. Posso te ajudar com:\n\n📊 KPIs em tempo real de todos os serviços\n🔔 Alertas de performance e anomalias\n💡 Insights automáticos e recomendações estratégicas\n📈 Análise de dados contábeis e financeiros\n\nO que você gostaria de analisar?',
+      content: 'Olá! Sou o assistente de BI da AtentAI. Posso te ajudar com:\n\n📊 KPIs em tempo real de todos os serviços\n🔔 Alertas de performance e anomalias\n💡 Insights automáticos e recomendações estratégicas\n📈 Análise de dados contábeis e financeiros\n\nO que você gostaria de analisar?',
       timestamp: new Date(),
     }
   ]);

@@ -73,7 +73,7 @@ interface StripeSidebarProps {
  * Estrutura definitiva com 9 grupos principais:
  * 1. Dashboard
  * 2. Chat – Guilherme (Atendimento / Limpa Nome / Análise Fiscal)
- * 3. Chat – César (BI & Contabilidade)
+ * 3. Chat – Emissão NF (BI & Contabilidade)
  * 4. Documentos
  * 5. Serviços
  * 6. Marketplace
@@ -107,7 +107,7 @@ const adminGroups: SidebarGroup[] = [
   },
   {
     id: 'cesar',
-    label: 'César',
+    label: 'Emissão NF',
     icon: Brain,
     defaultOpen: true,
     isPerson: true,
@@ -193,7 +193,7 @@ const autonomoGroups: SidebarGroup[] = [
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
       { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
-      { icon: MessageCircle, label: 'Chat César', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
+      { icon: MessageCircle, label: 'Chat Emissão NF', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
     ],
   },
   {
@@ -292,7 +292,7 @@ const empresaGroups: SidebarGroup[] = [
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
       { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
-      { icon: MessageCircle, label: 'Chat César', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
+      { icon: MessageCircle, label: 'Chat Emissão NF', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
     ],
   },
   {

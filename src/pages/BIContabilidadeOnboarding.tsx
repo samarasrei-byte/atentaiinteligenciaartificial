@@ -370,7 +370,7 @@ const BIContabilidadeOnboarding = () => {
             await supabase.from('service_notifications').insert({
               user_id: loginData.user.id,
               title: '🎉 Solicitação BI+ Contabilidade Enviada!',
-              message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
+              message: 'Sua solicitação foi recebida. Nosso especialista entrará em contato em breve.',
               notification_type: 'service_created',
               service_type: 'bi-contabilidade',
               metadata: { requestId },
@@ -390,7 +390,7 @@ const BIContabilidadeOnboarding = () => {
         await supabase.from('service_notifications').insert({
           user_id: authData.user.id,
           title: '🎉 Solicitação BI+ Contabilidade Enviada!',
-          message: 'Sua solicitação foi recebida. César, nosso especialista em BI, entrará em contato em breve.',
+          message: 'Sua solicitação foi recebida. Nosso especialista entrará em contato em breve.',
           notification_type: 'service_created',
           service_type: 'bi-contabilidade',
           metadata: { requestId },
@@ -409,8 +409,8 @@ const BIContabilidadeOnboarding = () => {
 
   // Final step: Redirect to chat
   const handleFinish = () => {
-    // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT com César
-    navigate(`/chat/cesar?servico=bi-contabilidade&request=${requestId}`);
+    // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT
+    navigate(`/chat/guilherme?servico=bi-contabilidade&request=${requestId}`);
   };
 
   const nextStep = () => {
@@ -1191,7 +1191,7 @@ const BIContabilidadeOnboarding = () => {
                           <ul className="space-y-1 text-xs text-slate-400">
                             <li className="flex items-center gap-2">
                               <Check className="h-3 w-3 text-indigo-400" />
-                              Chat direto com César (seu especialista BI)
+                              Chat direto com seu especialista BI
                             </li>
                             <li className="flex items-center gap-2">
                               <Check className="h-3 w-3 text-indigo-400" />
@@ -1265,7 +1265,7 @@ const BIContabilidadeOnboarding = () => {
                             Tudo pronto! 🎉
                           </h2>
                           <p className="text-slate-400">
-                            Seu painel está configurado. César já foi notificado.
+                            Seu painel está configurado. Nosso especialista já foi notificado.
                           </p>
                         </div>
 
@@ -1280,7 +1280,7 @@ const BIContabilidadeOnboarding = () => {
                           <div className="flex items-center gap-4 p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
                             <Brain className="h-6 w-6 text-indigo-400 shrink-0" />
                             <div className="text-left">
-                              <p className="font-medium text-white">Chat com César</p>
+                              <p className="font-medium text-white">Chat com Especialista</p>
                               <p className="text-sm text-slate-400">Seu especialista BI já está disponível</p>
                             </div>
                           </div>

@@ -14,7 +14,7 @@
   * 
   * Usado nos chats de:
   * - AdminClientChat (Guilherme)
-  * - CesarClientChat (César)
+  * - CesarClientChat (Emissão NF)
   * - UserRequestDetail (Cliente)
   */
  export const PaymentLinkRenderer: React.FC<PaymentLinkRendererProps> = ({

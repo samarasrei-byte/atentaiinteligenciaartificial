@@ -223,7 +223,7 @@ export default function ChatCesar() {
     const baseMessages: Message[] = [
       {
         id: 'welcome-1',
-        content: `Olá, ${name}! 👋\n\nSou César, especialista em BI e Contabilidade. Recebi sua solicitação de ${serviceContexts[serviceType]?.label || 'serviço contábil'} e estou pronto para te ajudar.`,
+        content: `Olá, ${name}! 👋\n\nSou o especialista em BI e Contabilidade da AtentAI. Recebi sua solicitação de ${serviceContexts[serviceType]?.label || 'serviço contábil'} e estou pronto para te ajudar.`,
         sender: 'specialist',
         timestamp: new Date(),
       },
@@ -389,14 +389,14 @@ export default function ChatCesar() {
           
           {/* Chat Container */}
           <ChatContainer className="h-[calc(100dvh-180px)] min-h-[400px]">
-            {/* Header - Violet/Indigo gradient for César */}
+            {/* Header - Violet/Indigo gradient for BI */}
             <ChatHeader
               avatar={
                 <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
                   <span className="text-xl font-bold text-white">C</span>
                 </div>
               }
-              title="Chat – César"
+              title="Chat – Especialista BI"
               subtitle="BI & Contabilidade"
               badges={
                 <>
@@ -451,7 +451,7 @@ export default function ChatCesar() {
                       sender={message.sender}
                       timestamp={message.timestamp}
                       avatar={message.sender === 'specialist' ? <SpecialistAvatar /> : undefined}
-                      senderName={message.sender === 'specialist' ? 'César' : undefined}
+                      senderName={message.sender === 'specialist' ? 'Especialista BI' : undefined}
                       attachmentUrl={message.attachmentUrl}
                       attachmentName={message.attachmentName}
                       isNew={Date.now() - message.timestamp.getTime() < 3000}

@@ -34,9 +34,9 @@ export function BIPricingSection() {
   const handleSubscribe = async (planKey: BIPlanType) => {
     const plan = BI_PLANS[planKey];
     
-    // For Performance plan with custom pricing, redirect to César chat
+    // For Performance plan with custom pricing, redirect to specialist chat
     if ('customPricing' in plan && plan.customPricing) {
-      navigate('/chat/cesar?servico=bi-performance&plano=performance');
+      navigate('/chat/guilherme?servico=bi-performance&plano=performance');
       return;
     }
 
@@ -295,7 +295,7 @@ export function BIPricingSection() {
             Todos os planos incluem suporte prioritário e validação humana obrigatória.
           </p>
           <p className="text-xs text-accent mt-4 font-medium">
-            Após a contratação, você será direcionado ao César para onboarding e ativação.
+            Após a contratação, você será direcionado ao nosso especialista para onboarding e ativação.
           </p>
         </div>
       </div>

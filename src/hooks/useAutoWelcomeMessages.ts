@@ -22,11 +22,11 @@ interface UseAutoWelcomeMessagesReturn {
 }
 
 /**
- * Hook that manages automatic welcome messages from Guilherme and César
+ * Hook that manages automatic welcome messages from Guilherme
  * 
  * REGRA GLOBAL DE COMUNICAÇÃO:
  * - Todo usuário SEMPRE recebe mensagem do Guilherme
- * - Se o usuário tiver BI/Contabilidade ativo, também recebe do César
+ * - Se o usuário tiver BI/Contabilidade ativo, também recebe do especialista BI
  * - Isso acontece automaticamente no login
  */
 export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {

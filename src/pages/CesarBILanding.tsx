@@ -82,7 +82,7 @@ const HeroSection = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-4">
               <Brain className="w-5 h-5" style={{ color: COLORS.secondary }} />
-              <span className="text-sm font-medium text-white">César Capassi • Especialista BI+</span>
+              <span className="text-sm font-medium text-white">AtentAI • Especialista BI+</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
@@ -144,7 +144,7 @@ const HeroSection = () => {
                     Diagnóstico Gratuito
                   </h2>
                   <p className="text-sm text-gray-600 mt-1">
-                    Com César Capassi
+                    Com especialistas AtentAI
                   </p>
                 </div>
 
@@ -360,7 +360,7 @@ const TestimonialSection = () => {
       initials: 'CF'
     },
     {
-      quote: 'César e sua equipe transformaram nossa gestão. Passamos de lucro zero para margem de 15% em apenas um ano.',
+      quote: 'A equipe AtentAI transformou nossa gestão. Passamos de lucro zero para margem de 15% em apenas um ano.',
       author: 'Paulo Silveira',
       role: 'Fundador, Indústria Nova',
       initials: 'PS'
@@ -439,7 +439,7 @@ const OfferSection = () => {
       description: 'Mentoria exclusiva para crescimento acelerado e captura de valor.',
       price: 'Sob Consulta',
       originalPrice: null,
-      features: ['Mentoria Mensal Exclusiva', 'Estratégia de M&A/IPO', 'Governança Corporativa', 'Acesso VIP ao César'],
+      features: ['Mentoria Mensal Exclusiva', 'Estratégia de M&A/IPO', 'Governança Corporativa', 'Acesso VIP ao Especialista'],
       highlighted: false,
       cta: 'Solicitar Proposta'
     }
