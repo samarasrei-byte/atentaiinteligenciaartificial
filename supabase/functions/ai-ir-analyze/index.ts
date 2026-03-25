@@ -64,8 +64,9 @@ serve(async (req) => {
 
       if (!docRecord) throw new Error("Document not found");
 
-      // Verify ownership
+      // Verify ownership AND that doc belongs to the correct declaration
       if (docRecord.user_id !== user.id) throw new Error("Unauthorized");
+      if (docRecord.declaration_id !== declarationId) throw new Error("Document does not belong to this declaration");
 
       // Update status
       await supabase.from("ir_ai_documents").update({ ai_status: "processing" }).eq("id", documentId);

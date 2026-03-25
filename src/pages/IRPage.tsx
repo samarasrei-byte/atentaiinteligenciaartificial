@@ -28,7 +28,7 @@ const IRPage = () => {
               Declaração de Imposto de Renda
             </h1>
             <p className="text-muted-foreground max-w-2xl mx-auto">
-              Deixe um contador especializado fazer sua declaração.
+              Declaração 100% automatizada por Inteligência Artificial — rápida, precisa e segura.
             </p>
           </div>
 

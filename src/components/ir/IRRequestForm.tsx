@@ -57,8 +57,8 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.email) {
-      toast({ variant: 'destructive', title: 'Campos obrigatórios', description: 'Preencha nome e email para continuar.' });
+    if (!formData.fullName || !formData.email || !formData.cpf) {
+      toast({ variant: 'destructive', title: 'Campos obrigatórios', description: 'Preencha nome, email e CPF para continuar.' });
       return;
     }
 
@@ -67,7 +67,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
       return;
     }
 
-    if (formData.cpf && !cpfValid) {
+    if (!cpfValid) {
       toast({ variant: 'destructive', title: 'CPF inválido', description: 'Informe um CPF válido para continuar.' });
       return;
     }
@@ -174,7 +174,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                 <Input id="fullName" value={formData.fullName} onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} required />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="cpf">CPF *</Label>
+                <Label htmlFor="cpf">CPF <span className="text-destructive">*</span></Label>
                 <MaskedInput id="cpf" mask="cpf" value={formData.cpf} onChange={(value, isValid) => { setFormData({ ...formData, cpf: value }); setCpfValid(isValid); }} required />
               </div>
             </div>

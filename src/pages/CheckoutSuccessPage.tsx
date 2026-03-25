@@ -56,7 +56,11 @@ export default function CheckoutSuccessPage() {
   };
 
   const getChatRoute = () => {
-    if (serviceType.includes('credit_repair') || serviceType === 'ir' || serviceType === 'certificate') {
+    // IR services are 100% AI - redirect to Contador IA panel
+    if (serviceType === 'ir_simples' || serviceType === 'ir_completo' || serviceType === 'ir') {
+      return '/contador-ia';
+    }
+    if (serviceType.includes('credit_repair') || serviceType === 'certificate') {
       return '/chat/guilherme';
     }
     if (serviceType === 'company_opening' || serviceType.includes('bi')) {

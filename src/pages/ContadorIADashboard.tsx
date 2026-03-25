@@ -91,6 +91,8 @@ const ContadorIADashboard = () => {
   }, []);
 
   // Load declarations
+  const activeDeclarationRef = useRef<string | null>(null);
+  
   const loadDeclarations = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
@@ -104,9 +106,10 @@ const ContadorIADashboard = () => {
     
     // Auto-select first on initial load, or refresh active declaration data
     if (decls.length > 0) {
-      const prevId = activeDeclaration?.id;
+      const prevId = activeDeclarationRef.current;
       if (!initializedRef.current || !prevId) {
         initializedRef.current = true;
+        activeDeclarationRef.current = decls[0].id;
         setActiveDeclaration(decls[0]);
         loadDocuments(decls[0].id);
       } else {
@@ -116,6 +119,7 @@ const ContadorIADashboard = () => {
           setActiveDeclaration(updated);
         } else {
           // Previously selected was deleted or user changed
+          activeDeclarationRef.current = decls[0].id;
           setActiveDeclaration(decls[0]);
           loadDocuments(decls[0].id);
         }
@@ -164,6 +168,7 @@ const ContadorIADashboard = () => {
     if (error) { toast.error('Erro ao criar declaração'); return; }
     toast.success('Declaração criada! Envie seus documentos.');
     const newDecl = data as Declaration;
+    activeDeclarationRef.current = newDecl.id;
     setActiveDeclaration(newDecl);
     setDocuments([]);
     setActiveTab('documents');
