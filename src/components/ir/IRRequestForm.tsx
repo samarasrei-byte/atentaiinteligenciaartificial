@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
+import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -10,10 +11,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { MaskedInput } from '@/components/ui/masked-input';
-import { AffiliateCouponInput, AppliedAffiliateCoupon, calculateAffiliateCouponDiscount } from '@/components/pricing/AffiliateCouponInput';
 import { useToast } from '@/hooks/use-toast';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
-import { cleanDocument } from '@/lib/documentValidation';
 import { 
   FileText, 
   FileSpreadsheet, 
@@ -23,9 +22,7 @@ import {
   Home,
   Globe,
   Users,
-  Lock,
   Sparkles,
-  Tag
 } from 'lucide-react';
 
 interface IRRequestFormProps {
@@ -34,6 +31,7 @@ interface IRRequestFormProps {
 
 export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   const { user, subscription } = useAuth();
+  const { openCheckout } = useMPCheckout();
   const navigate = useNavigate();
   const { toast } = useToast();
   
@@ -55,23 +53,16 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   
   const [cpfValid, setCpfValid] = useState(false);
   const [phoneValid, setPhoneValid] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<AppliedAffiliateCoupon | null>(null);
 
   const isSubscriber = subscription.subscribed;
   const serviceKey = irType === 'simples' ? 'ir_simples' : 'ir_completo';
   const service = SUBSCRIBER_DISCOUNTS[serviceKey];
-  const basePriceAfterSubscription = isSubscriber ? service.discountedPrice : service.basePrice;
-  const { discountCents: couponDiscountCents, finalPriceCents } = calculateAffiliateCouponDiscount(
-    basePriceAfterSubscription,
-    appliedCoupon
-  );
-  const finalPrice = finalPriceCents;
+  const finalPrice = isSubscriber ? service.discountedPrice : service.basePrice;
   const discountPercent = Math.round(service.discount * 100);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate required fields
     if (!formData.fullName || !formData.email) {
       toast({
         variant: 'destructive',
@@ -81,7 +72,6 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
       return;
     }
 
-    // Validate email format
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.email)) {
       toast({
@@ -92,49 +82,48 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
       return;
     }
 
-    setIsSubmitting(true);
-
-    try {
-      // Use guest checkout endpoint (works for both logged and guest users)
-      const { data: paymentData, error: paymentError } = await supabase.functions.invoke('create-guest-service-payment', {
-        body: {
-          serviceType: 'ir',
-          irType,
-          email: formData.email,
-          fullName: formData.fullName,
-          cpf: formData.cpf,
-          phone: formData.phone,
-          fiscalYear: formData.fiscalYear,
-          hasInvestments: formData.hasInvestments,
-          hasRentalIncome: formData.hasRentalIncome,
-          hasForeignIncome: formData.hasForeignIncome,
-          incomeSourcesCount: formData.incomeSourcesCount,
-          notes: formData.notes,
-        },
-      });
-
-      if (paymentError) throw paymentError;
-
-      if (paymentData?.url) {
-        toast({
-          title: 'Redirecionando para pagamento',
-          description: isSubscriber 
-            ? `Desconto de ${discountPercent}% aplicado!`
-            : !user ? 'Após o pagamento, sua conta será criada automaticamente.' : 'Assine para obter 20% de desconto!',
-        });
-        window.open(paymentData.url, '_blank');
-        onSuccess?.();
-      }
-    } catch (error: any) {
-      console.error('Error creating IR request:', error);
+    // Validate CPF
+    if (formData.cpf && !cpfValid) {
       toast({
         variant: 'destructive',
-        title: 'Erro ao criar solicitação',
-        description: error.message || 'Tente novamente mais tarde.',
+        title: 'CPF inválido',
+        description: 'Informe um CPF válido para continuar.',
       });
-    } finally {
-      setIsSubmitting(false);
+      return;
     }
+
+    // Open MP transparent checkout modal
+    openCheckout({
+      amountCents: finalPrice,
+      serviceName: service.name,
+      serviceType: serviceKey,
+      description: `${service.description} - Ano ${formData.fiscalYear}`,
+      gradient: 'from-violet-600 to-purple-700',
+      icon: irType === 'simples' ? FileText : FileSpreadsheet,
+      metadata: {
+        ir_type: irType,
+        fiscal_year: String(formData.fiscalYear),
+        full_name: formData.fullName,
+        cpf: formData.cpf,
+        phone: formData.phone,
+        email: formData.email,
+        has_investments: String(formData.hasInvestments),
+        has_rental_income: String(formData.hasRentalIncome),
+        has_foreign_income: String(formData.hasForeignIncome),
+        income_sources_count: String(formData.incomeSourcesCount),
+        notes: formData.notes || '',
+      },
+      guestEmail: formData.email,
+      guestName: formData.fullName,
+      requireGuestInfo: !user,
+      onSuccess: (paymentId) => {
+        toast({
+          title: 'Pagamento aprovado! ✅',
+          description: 'Sua declaração será processada em breve.',
+        });
+        onSuccess?.();
+      },
+    });
   };
 
   return (
@@ -191,7 +180,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                 </span>
                 {isSubscriber && (
                   <Badge variant="secondary" className="bg-success/20 text-success">
-                    -{discountPercent}%
+                    -20%
                   </Badge>
                 )}
               </div>
@@ -253,7 +242,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                 </span>
                 {isSubscriber && (
                   <Badge variant="secondary" className="bg-success/20 text-success">
-                    -{discountPercent}%
+                    -20%
                   </Badge>
                 )}
               </div>
@@ -299,13 +288,14 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email *</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder={user?.email || 'seu@email.com'}
+                  required
                 />
               </div>
               <div className="space-y-2">
@@ -377,11 +367,10 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
               />
             </div>
 
-
-            {!isSubscriber && !appliedCoupon && (
+            {!isSubscriber && (
               <div className="p-4 bg-primary/10 rounded-lg border border-primary/20">
                 <p className="text-sm text-foreground">
-                  <strong>💡 Dica:</strong> Assinantes têm {discountPercent}% de desconto em declarações de IR!{' '}
+                  <strong>💡 Dica:</strong> Assinantes têm 20% de desconto em declarações de IR!{' '}
                   <Button variant="link" className="p-0 h-auto" onClick={() => navigate('/pricing')}>
                     Ver planos
                   </Button>
@@ -392,7 +381,20 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
             <div className="flex items-center justify-between pt-4 border-t">
               <div>
                 <p className="text-sm text-muted-foreground">Total a pagar:</p>
-                <p className="text-2xl font-bold text-foreground">{formatPrice(finalPrice)}</p>
+                <div className="flex items-baseline gap-2">
+                  {isSubscriber && (
+                    <span className="text-sm text-muted-foreground line-through">
+                      {formatPrice(service.basePrice)}
+                    </span>
+                  )}
+                  <p className="text-2xl font-bold text-foreground">{formatPrice(finalPrice)}</p>
+                  {isSubscriber && (
+                    <Badge variant="secondary" className="bg-success/20 text-success text-xs">
+                      <Sparkles className="h-3 w-3 mr-1" />
+                      -20%
+                    </Badge>
+                  )}
+                </div>
               </div>
               <Button type="submit" size="lg" disabled={isSubmitting}>
                 {isSubmitting ? (
