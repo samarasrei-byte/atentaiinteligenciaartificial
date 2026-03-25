@@ -307,7 +307,7 @@ const UserTypeSelection = () => {
                   {/* Selection checkmark */}
                   <motion.div 
                     className={cn(
-                      "absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+                      "absolute top-3 right-3 md:top-5 md:right-5 w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-300",
                       isSelected
                         ? "bg-primary shadow-lg shadow-primary/50"
                         : "border-2 border-muted-foreground/30 bg-transparent"
