@@ -443,8 +443,11 @@ serve(async (req) => {
           ? 'bi-contabilidade'
           : serviceType;
 
-    // Redirect to user panel with chat tab auto-opened (instead of standalone chat page)
-    const redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
+    // IR services redirect to Contador IA panel (100% AI, no human chat)
+    // All other services redirect to specialist chat
+    const redirectPath = (serviceType === 'ir_simples' || serviceType === 'ir_completo')
+      ? '/contador-ia'
+      : `/chat/${specialist.chatType}?servico=${serviceParam}`;
 
     log("Process complete", { userId, isNewUser, redirectPath });
 
