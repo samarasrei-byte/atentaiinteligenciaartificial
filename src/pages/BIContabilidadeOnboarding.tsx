@@ -1265,7 +1265,7 @@ const BIContabilidadeOnboarding = () => {
                             Tudo pronto! 🎉
                           </h2>
                           <p className="text-slate-400">
-                            Seu painel está configurado. César já foi notificado.
+                            Seu painel está configurado. Nosso especialista já foi notificado.
                           </p>
                         </div>
 
