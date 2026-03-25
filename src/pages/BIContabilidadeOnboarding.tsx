@@ -409,8 +409,8 @@ const BIContabilidadeOnboarding = () => {
 
   // Final step: Redirect to chat
   const handleFinish = () => {
-    // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT com César
-    navigate(`/chat/cesar?servico=bi-contabilidade&request=${requestId}`);
+    // REGRA DE NEGÓCIO: Todo serviço finaliza em CHAT
+    navigate(`/chat/guilherme?servico=bi-contabilidade&request=${requestId}`);
   };
 
   const nextStep = () => {
