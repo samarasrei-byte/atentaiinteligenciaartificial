@@ -122,6 +122,29 @@ const ContadorIADashboard = () => {
 
   React.useEffect(() => { loadDeclarations(); }, [loadDeclarations]);
 
+  // Realtime: auto-refresh when declarations or documents change
+  React.useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('user-ir-realtime')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ir_ai_declarations',
+        filter: `user_id=eq.${user.id}`,
+      }, () => loadDeclarations())
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ir_ai_documents',
+        filter: `user_id=eq.${user.id}`,
+      }, () => {
+        if (activeDeclaration) loadDocuments(activeDeclaration.id);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, activeDeclaration?.id, loadDeclarations, loadDocuments]);
+
   // Create new declaration
   const createDeclaration = async () => {
     if (!user) return;
