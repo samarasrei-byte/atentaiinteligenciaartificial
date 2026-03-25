@@ -351,6 +351,59 @@ IMPORTANTE: Todos os valores devem ser em centavos.`,
         refund_cents: (typedAnalysis.refund_cents as number) || 0,
       }).eq("id", declarationId);
 
+      // Send email notification to user
+      try {
+        const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+        if (RESEND_API_KEY) {
+          const { data: declData } = await supabase.from("ir_ai_declarations")
+            .select("full_name, fiscal_year, user_id")
+            .eq("id", declarationId)
+            .single();
+          
+          if (declData) {
+            const { data: profileData } = await supabase.from("profiles")
+              .select("email")
+              .eq("user_id", declData.user_id)
+              .single();
+            
+            if (profileData?.email) {
+              const resend = new Resend(RESEND_API_KEY);
+              const firstName = (declData.full_name || "Cliente").split(" ")[0];
+              const formatBRL = (cents: number) => `R$ ${(cents / 100).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+              
+              await resend.emails.send({
+                from: "AtentAI <noreply@atentai.com.br>",
+                to: [profileData.email],
+                subject: `✅ Sua declaração IR ${declData.fiscal_year} está pronta!`,
+                html: `
+                  <div style="font-family: -apple-system, sans-serif; max-width: 520px; margin: 0 auto; padding: 32px 20px;">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                      <h1 style="color: #7c3aed; font-size: 24px; margin: 0;">AtentAI - Contador IA</h1>
+                    </div>
+                    <h2 style="color: #111; font-size: 20px;">Olá, ${firstName}! 🎉</h2>
+                    <p style="color: #555; line-height: 1.6;">Sua declaração de Imposto de Renda <strong>${declData.fiscal_year}</strong> foi analisada com sucesso pela nossa IA.</p>
+                    <div style="background: #f8f5ff; border-radius: 12px; padding: 20px; margin: 20px 0;">
+                      <p style="margin: 4px 0; color: #333;"><strong>Rendimentos:</strong> ${formatBRL((typedAnalysis.total_income_cents as number) || 0)}</p>
+                      <p style="margin: 4px 0; color: #333;"><strong>Deduções:</strong> ${formatBRL((typedAnalysis.total_deductions_cents as number) || 0)}</p>
+                      <p style="margin: 4px 0; color: #333;"><strong>Imposto devido:</strong> ${formatBRL((typedAnalysis.tax_due_cents as number) || 0)}</p>
+                      <p style="margin: 4px 0; color: #10b981;"><strong>Restituição:</strong> ${formatBRL((typedAnalysis.refund_cents as number) || 0)}</p>
+                    </div>
+                    <div style="text-align: center; margin: 24px 0;">
+                      <a href="https://atentaiinteligenciaartificial.lovable.app/contador-ia" style="display: inline-block; background: #7c3aed; color: white; padding: 12px 32px; border-radius: 999px; text-decoration: none; font-weight: bold;">Revisar minha declaração</a>
+                    </div>
+                    <p style="color: #999; font-size: 12px; text-align: center; margin-top: 32px;">AtentAI — Inteligência Artificial Contábil</p>
+                  </div>
+                `,
+              });
+              console.log("[ai-ir-analyze] Email notification sent to", profileData.email);
+            }
+          }
+        }
+      } catch (emailErr) {
+        console.error("[ai-ir-analyze] Email notification failed:", emailErr);
+        // Don't throw - email failure shouldn't block the response
+      }
+
       return new Response(JSON.stringify({ success: true, analysis }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
