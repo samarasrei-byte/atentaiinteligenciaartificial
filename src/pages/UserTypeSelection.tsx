@@ -345,7 +345,7 @@ const UserTypeSelection = () => {
                     }}
                     transition={{ duration: 0.5 }}
                   >
-                    <Icon className="h-10 w-10 text-white" />
+                    <Icon className="h-6 w-6 md:h-10 md:w-10 text-white" />
                     
                     {/* Icon sparkle */}
                     {isSelected && (
