@@ -487,7 +487,7 @@ const UserTypeSelection = () => {
           
           {/* Footer info */}
           <motion.div 
-            className="text-center mt-16 text-sm text-muted-foreground"
+            className="text-center mt-6 md:mt-16 text-sm text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}

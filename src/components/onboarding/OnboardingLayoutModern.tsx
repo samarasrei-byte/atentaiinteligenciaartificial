@@ -59,20 +59,9 @@ const OnboardingLayoutModern: React.FC<OnboardingLayoutModernProps> = ({
             <span className="font-bold text-lg text-foreground">AtentAI</span>
           </Link>
           
-          <nav className="hidden md:flex items-center gap-6 text-sm text-muted-foreground">
-            <Link to="/simulador" className="hover:text-foreground transition-colors">Simulador</Link>
-            <Link to="/modulo-fiscal" className="hover:text-foreground transition-colors">Módulo Fiscal</Link>
-            <Link to="/ai-chat" className="hover:text-foreground transition-colors">Consultar IA</Link>
-            <Link to="/servicos" className="hover:text-foreground transition-colors">Serviços</Link>
-          </nav>
-
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" className="hidden sm:flex" asChild>
-              <Link to="/pricing">Ver Planos</Link>
-            </Button>
-            <Button size="sm" className="bg-primary hover:bg-primary/90" asChild>
-              <Link to="/auth">Entrar</Link>
-            </Button>
+          {/* Step indicator in header */}
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span className="font-medium">Passo {currentStep} de {totalSteps}</span>
           </div>
         </div>
       </header>

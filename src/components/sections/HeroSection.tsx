@@ -12,7 +12,7 @@ export function HeroSection({ onNavigate }: HeroSectionProps) {
   const navigate = useNavigate();
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden">
       {/* Premium Background */}
       <div className="absolute inset-0 hero-gradient" />
       
