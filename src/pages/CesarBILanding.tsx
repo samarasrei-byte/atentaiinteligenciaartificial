@@ -144,7 +144,7 @@ const HeroSection = () => {
                     Diagnóstico Gratuito
                   </h2>
                   <p className="text-sm text-gray-600 mt-1">
-                    Com César Capassi
+                    Com especialistas AtentAI
                   </p>
                 </div>
 
