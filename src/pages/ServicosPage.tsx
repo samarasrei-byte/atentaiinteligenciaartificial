@@ -461,7 +461,7 @@ const ServicosPage = () => {
                     <p className="text-xs text-slate-500 dark:text-slate-400">Contrate sem assinatura, pague uma vez</p>
                   </div>
                 </div>
-                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className={`grid gap-6 ${filteredOneTime.length <= 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
                   {filteredOneTime.map((service) => (
                     <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
                   ))}
