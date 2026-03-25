@@ -193,7 +193,7 @@ const autonomoGroups: SidebarGroup[] = [
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
       { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
-      { icon: MessageCircle, label: 'Chat César', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
+      { icon: MessageCircle, label: 'Chat Emissão NF', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
     ],
   },
   {
