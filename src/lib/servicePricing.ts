@@ -9,8 +9,8 @@
  * - Limpa Nome PF: De R$ 1.238,00 por R$ 824,50 (PROMOÇÃO)
  * - Limpa Nome PJ: De R$ 1.568,00 por R$ 1.280,00 (PROMOÇÃO)
  * - Certidões: R$ 80,00
- * - IR Simples (CLT): R$ 200,00
- * - IR Completo: R$ 420,00
+ * - IR Simples (CLT): R$ 89,00
+ * - IR Completo: R$ 189,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
  * 
@@ -42,14 +42,14 @@ export const SERVICE_PRICES = {
 
   // IR (Imposto de Renda) Services
   IR_SIMPLES: {
-    cents: 20000,
-    formatted: 'R$ 200,00',
+    cents: 8900,
+    formatted: 'R$ 89,00',
     serviceKey: 'ir_simples',
     subscriberDiscount: 0,
   },
   IR_COMPLETO: {
-    cents: 42000,
-    formatted: 'R$ 420,00',
+    cents: 18900,
+    formatted: 'R$ 189,00',
     serviceKey: 'ir_completo',
     subscriberDiscount: 0,
   },
@@ -181,8 +181,8 @@ export const AFFILIATE_COMMISSIONS = {
   DEFAULT_PERCENT: 20,
   LIMPA_NOME_PF: 16490, // 20% of 82450
   LIMPA_NOME_CNPJ: 25600, // 20% of 128000
-  IR_SIMPLES: 4000, // 20% of 20000
-  IR_COMPLETO: 8400, // 20% of 42000
+  IR_SIMPLES: 1780, // 20% of 8900
+  IR_COMPLETO: 3780, // 20% of 18900
   ABERTURA_EMPRESA: 15600, // 20% of 78000
 } as const;
 

@@ -118,7 +118,7 @@ export const AllServicesHub: React.FC = () => {
       description: 'Declaração para CLT sem investimentos',
       icon: FileText,
       gradient: 'from-rose-500 to-red-600',
-      priceCents: 20000, // R$ 200,00 FIXED
+      priceCents: 8900, // R$ 89,00 FIXED
       features: [
         'Declaração completa',
         'Revisão por especialista',
@@ -135,7 +135,7 @@ export const AllServicesHub: React.FC = () => {
       description: 'Para autônomos e investidores',
       icon: FileText,
       gradient: 'from-purple-500 to-pink-600',
-      priceCents: 42000, // R$ 420,00 FIXED
+      priceCents: 18900, // R$ 189,00 FIXED
       features: [
         'Múltiplas fontes de renda',
         'Investimentos inclusos',

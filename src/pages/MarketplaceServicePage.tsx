@@ -84,8 +84,8 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     key: 'ir_simples',
     title: 'Declaração IR Simples',
     description: 'Sua declaração feita por contador especializado, enviada corretamente à Receita e com comprovante.',
-    price: 20000,
-    priceLabel: 'R$ 200,00',
+    price: 8900,
+    priceLabel: 'R$ 89,00',
     icon: FileText,
     color: 'amber',
     features: [
@@ -102,8 +102,8 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     key: 'ir_completo',
     title: 'Declaração IR Completo',
     description: 'Análise de todas as fontes de renda com otimização fiscal legal. Ideal para autônomos e investidores.',
-    price: 42000,
-    priceLabel: 'R$ 420,00',
+    price: 18900,
+    priceLabel: 'R$ 189,00',
     icon: FileSpreadsheet,
     color: 'orange',
     features: [

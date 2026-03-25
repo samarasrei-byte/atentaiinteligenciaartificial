@@ -16,8 +16,8 @@
  * - Limpa Nome PF: R$ 824,50 (PROMOÇÃO)
  * - Limpa Nome PJ: R$ 1.280,00 (PROMOÇÃO)
  * - Certidões: R$ 80,00
- * - IR Simples: R$ 200,00
- * - IR Completo: R$ 420,00
+  * - IR Simples: R$ 89,00
+  * - IR Completo: R$ 189,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
  * - BI+ Contabilidade: SOB CONSULTA
@@ -224,17 +224,17 @@ export const SUBSCRIBER_DISCOUNTS = {
   ir_simples: {
     name: 'Declaração IR Simples',
     description: 'Para CLT sem investimentos',
-    basePrice: 20000,
+    basePrice: 8900, // cents (R$89,00)
     discount: 0,
-    discountedPrice: 20000,
+    discountedPrice: 8900,
     icon: 'FileText',
   },
   ir_completo: {
     name: 'Declaração IR Completo',
     description: 'Para autônomos e investidores',
-    basePrice: 42000,
+    basePrice: 18900, // cents (R$189,00)
     discount: 0,
-    discountedPrice: 42000,
+    discountedPrice: 18900,
     icon: 'FileSpreadsheet',
   },
   fiscal_analysis: {
