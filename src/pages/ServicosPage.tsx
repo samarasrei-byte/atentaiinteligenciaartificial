@@ -483,7 +483,7 @@ const ServicosPage = () => {
                     <p className="text-xs text-slate-500 dark:text-slate-400">Ferramentas e dashboards com cobrança mensal</p>
                   </div>
                 </div>
-                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   {filteredSubs.map((service) => (
                     <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
                   ))}
