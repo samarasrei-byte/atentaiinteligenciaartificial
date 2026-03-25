@@ -1191,7 +1191,7 @@ const BIContabilidadeOnboarding = () => {
                           <ul className="space-y-1 text-xs text-slate-400">
                             <li className="flex items-center gap-2">
                               <Check className="h-3 w-3 text-indigo-400" />
-                              Chat direto com César (seu especialista BI)
+                              Chat direto com seu especialista BI
                             </li>
                             <li className="flex items-center gap-2">
                               <Check className="h-3 w-3 text-indigo-400" />
