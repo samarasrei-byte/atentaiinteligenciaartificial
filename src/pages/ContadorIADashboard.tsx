@@ -375,6 +375,66 @@ const ContadorIADashboard = () => {
 
             {/* OVERVIEW */}
             <TabsContent value="overview">
+              {/* Onboarding Banner for pending_documents */}
+              {activeDeclaration.status === 'pending_documents' && documents.length === 0 && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+                  <Card className="bg-gradient-to-br from-purple-600/20 via-blue-600/10 to-emerald-600/10 border-purple-500/30 overflow-hidden relative">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+                    <CardContent className="p-6 relative">
+                      <div className="flex items-start gap-4">
+                        <div className="w-12 h-12 rounded-xl bg-purple-500/20 flex items-center justify-center shrink-0">
+                          <Sparkles className="w-6 h-6 text-purple-400" />
+                        </div>
+                        <div className="flex-1">
+                          <h3 className="text-lg font-bold mb-1">🎉 Pagamento confirmado! Próximo passo:</h3>
+                          <p className="text-sm text-muted-foreground mb-4">
+                            Envie seus documentos (informes de rendimentos, recibos médicos, etc.) e a IA vai 
+                            analisar tudo automaticamente em minutos.
+                          </p>
+                          <Button onClick={() => setActiveTab('documents')} className="bg-purple-500 hover:bg-purple-600 rounded-full h-9 px-5 text-sm">
+                            <Upload className="w-4 h-4 mr-2" /> Enviar documentos agora
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border/30 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1"><FileText className="w-3 h-3" /> PDF, JPG ou PNG</span>
+                        <span className="flex items-center gap-1"><Zap className="w-3 h-3" /> Análise automática</span>
+                        <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Dados criptografados</span>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
+              {/* Error Banner */}
+              {activeDeclaration.status === 'error' && (
+                <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+                  <Card className="bg-red-500/5 border-red-500/20">
+                    <CardContent className="p-5 flex items-start gap-4">
+                      <div className="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center shrink-0">
+                        <AlertCircle className="w-5 h-5 text-red-400" />
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="font-bold text-red-400 mb-1">Ocorreu um erro na análise</h3>
+                        <p className="text-sm text-muted-foreground mb-3">
+                          A IA encontrou dificuldades ao processar seus documentos. Isso pode acontecer com arquivos 
+                          de baixa qualidade ou formatos não suportados. Tente reenviar os documentos.
+                        </p>
+                        <div className="flex gap-2">
+                          <Button onClick={() => setActiveTab('documents')} variant="outline" size="sm" className="rounded-full border-red-500/30 text-red-400 hover:bg-red-500/10">
+                            <Upload className="w-3 h-3 mr-1" /> Reenviar documentos
+                          </Button>
+                          <Button onClick={generateSummary} disabled={isAnalyzing || extractedDocs.length === 0} size="sm" className="rounded-full bg-purple-500 hover:bg-purple-600">
+                            {isAnalyzing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Brain className="w-3 h-3 mr-1" />}
+                            Tentar novamente
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+
               <div className="mb-6">
                 <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
                   <CardContent className="p-6">
@@ -420,27 +480,30 @@ const ContadorIADashboard = () => {
                 ))}
               </div>
 
-              {/* Steps */}
+              {/* Steps with active state */}
               <div className="grid sm:grid-cols-3 gap-4">
                 {[
-                  { step: 1, title: 'Enviar documentos', desc: 'Informes, recibos e comprovantes', icon: Upload, done: documents.length > 0, action: () => setActiveTab('documents') },
-                  { step: 2, title: 'IA analisa', desc: 'Extração automática de dados', icon: Brain, done: extractedDocs.length > 0, action: () => setActiveTab('analysis') },
-                  { step: 3, title: 'Revisar resultado', desc: 'Confira e aprove', icon: CheckCircle2, done: activeDeclaration.status === 'review' || activeDeclaration.status === 'completed', action: () => setActiveTab('result') },
+                  { step: 1, title: 'Enviar documentos', desc: 'Informes, recibos e comprovantes', icon: Upload, done: documents.length > 0, active: activeDeclaration.status === 'pending_documents', action: () => setActiveTab('documents') },
+                  { step: 2, title: 'IA analisa', desc: 'Extração automática de dados', icon: Brain, done: extractedDocs.length > 0, active: activeDeclaration.status === 'ai_analysis' || activeDeclaration.status === 'processing', action: () => setActiveTab('analysis') },
+                  { step: 3, title: 'Revisar resultado', desc: 'Confira e aprove', icon: CheckCircle2, done: activeDeclaration.status === 'review' || activeDeclaration.status === 'completed', active: activeDeclaration.status === 'review', action: () => setActiveTab('result') },
                 ].map((s) => (
                   <Card
                     key={s.step}
-                    className={`cursor-pointer transition-all ${s.done ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-card border-border'} hover:border-purple-500/30`}
+                    className={`cursor-pointer transition-all ${s.done ? 'bg-emerald-500/5 border-emerald-500/20' : s.active ? 'bg-purple-500/5 border-purple-500/30 ring-1 ring-purple-500/20' : 'bg-card border-border'} hover:border-purple-500/30`}
                     onClick={s.action}
                   >
                     <CardContent className="p-5">
                       <div className="flex items-center gap-3 mb-3">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${s.done ? 'bg-emerald-500 text-white' : 'bg-muted text-muted-foreground'}`}>
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${s.done ? 'bg-emerald-500 text-white' : s.active ? 'bg-purple-500 text-white animate-pulse' : 'bg-muted text-muted-foreground'}`}>
                           {s.done ? <CheckCircle2 className="w-4 h-4" /> : s.step}
                         </div>
-                        <s.icon className={`w-5 h-5 ${s.done ? 'text-emerald-400' : 'text-muted-foreground'}`} />
+                        <s.icon className={`w-5 h-5 ${s.done ? 'text-emerald-400' : s.active ? 'text-purple-400' : 'text-muted-foreground'}`} />
                       </div>
                       <p className="font-medium text-sm">{s.title}</p>
                       <p className="text-xs text-muted-foreground mt-1">{s.desc}</p>
+                      {s.active && !s.done && (
+                        <p className="text-xs text-purple-400 mt-2 font-medium">← Próximo passo</p>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
