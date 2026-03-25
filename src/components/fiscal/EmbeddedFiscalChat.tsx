@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface EmbeddedFiscalChatProps {
   variant?: 'empresa' | 'autonomo';
-  serviceType?: 'fiscal' | 'bi'; // fiscal → Guilherme | bi → César
+  serviceType?: 'fiscal' | 'bi'; // fiscal → Guilherme | bi → Guilherme (BI)
 }
 
 // IDs dos especialistas responsáveis (IDs reais do banco de dados)
