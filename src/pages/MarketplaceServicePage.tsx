@@ -84,8 +84,8 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     key: 'ir_simples',
     title: 'Declaração IR Simples',
     description: 'Sua declaração feita por contador especializado, enviada corretamente à Receita e com comprovante.',
-    price: 20000,
-    priceLabel: 'R$ 200,00',
+    price: 8900,
+    priceLabel: 'R$ 89,00',
     icon: FileText,
     color: 'amber',
     features: [
