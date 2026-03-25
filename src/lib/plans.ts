@@ -16,8 +16,8 @@
  * - Limpa Nome PF: R$ 824,50 (PROMOÇÃO)
  * - Limpa Nome PJ: R$ 1.280,00 (PROMOÇÃO)
  * - Certidões: R$ 80,00
- * - IR Simples: R$ 200,00
- * - IR Completo: R$ 420,00
+  * - IR Simples: R$ 89,00
+  * - IR Completo: R$ 189,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
  * - BI+ Contabilidade: SOB CONSULTA
