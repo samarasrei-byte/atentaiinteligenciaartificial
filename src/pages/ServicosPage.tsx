@@ -362,6 +362,32 @@ const serviceConfigs: ServiceCardConfig[] = [
     isSubscription: true,
     isDisabled: true,
   },
+  // ===== EMISSÃO DE NF (DESTAQUE) =====
+  {
+    key: 'emissao_nf',
+    name: 'Emissão de NF Automática',
+    description: 'Receba no Pix e tenha a nota fiscal emitida automaticamente. Automação financeira completa.',
+    targetAudience: 'Para quem quer automatizar o financeiro',
+    features: [
+      'Cobranças via Pix, boleto e cartão',
+      'Nota fiscal emitida automaticamente',
+      'Dashboard financeiro completo',
+      'Gestão de clientes integrada',
+      'Relatórios em tempo real',
+    ],
+    guarantees: ['Tudo automático', 'Segurança bancária'],
+    basePrice: 9700, // R$ 97,00/mês
+    discountPercent: 0,
+    badge: 'popular' as const,
+    cta: 'Ativar agora',
+    color: 'accent' as const,
+    icon: Zap,
+    serviceType: 'emissao-nf',
+    checkoutRoute: '/emissao-nf',
+    category: 'empresarial',
+    isFree: false,
+    isSubscription: true,
+  },
   // ===== PLANOS ATENTAI BI =====
   // Atentai Clarity - R$ 1.497/mês
   {
