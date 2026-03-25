@@ -105,9 +105,6 @@ export function PublicSidebar() {
             alt="AtentAI" 
             className="h-8 w-auto"
           />
-          {!isCollapsed && (
-            <span className="font-bold text-lg text-foreground">AtentAI</span>
-          )}
         </Link>
       </div>
 
