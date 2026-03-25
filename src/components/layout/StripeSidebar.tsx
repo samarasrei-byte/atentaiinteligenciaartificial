@@ -107,7 +107,7 @@ const adminGroups: SidebarGroup[] = [
   },
   {
     id: 'cesar',
-    label: 'César',
+    label: 'Emissão NF',
     icon: Brain,
     defaultOpen: true,
     isPerson: true,
