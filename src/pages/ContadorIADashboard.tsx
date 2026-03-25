@@ -45,6 +45,7 @@ type DocFile = {
 };
 
 const statusMap: Record<string, { label: string; color: string; icon: React.ElementType }> = {
+  draft: { label: 'Rascunho', color: 'text-muted-foreground bg-muted', icon: FileText },
   pending_documents: { label: 'Envie documentos', color: 'text-amber-400 bg-amber-500/10', icon: Upload },
   processing: { label: 'Processando', color: 'text-blue-400 bg-blue-500/10', icon: Loader2 },
   ai_analysis: { label: 'IA Analisando', color: 'text-purple-400 bg-purple-500/10', icon: Brain },
@@ -89,7 +90,7 @@ const ContadorIADashboard = () => {
     setDocuments((data as DocFile[]) || []);
   }, []);
 
-  // Load declarations - only once on mount
+  // Load declarations
   const loadDeclarations = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
@@ -100,15 +101,49 @@ const ContadorIADashboard = () => {
       .order('created_at', { ascending: false });
     const decls = (data as Declaration[]) || [];
     setDeclarations(decls);
-    if (decls.length > 0 && !initializedRef.current) {
-      initializedRef.current = true;
-      setActiveDeclaration(decls[0]);
-      loadDocuments(decls[0].id);
+    
+    // Auto-select first on initial load, or refresh active declaration data
+    if (decls.length > 0) {
+      if (!initializedRef.current) {
+        initializedRef.current = true;
+        setActiveDeclaration(decls[0]);
+        loadDocuments(decls[0].id);
+      } else {
+        // Refresh active declaration with fresh data
+        setActiveDeclaration(prev => {
+          if (!prev) return decls[0];
+          const updated = decls.find(d => d.id === prev.id);
+          return updated || decls[0];
+        });
+      }
     }
     setIsLoading(false);
   }, [user, loadDocuments]);
 
   React.useEffect(() => { loadDeclarations(); }, [loadDeclarations]);
+
+  // Realtime: auto-refresh when declarations or documents change
+  React.useEffect(() => {
+    if (!user) return;
+    const channel = supabase
+      .channel('user-ir-realtime')
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ir_ai_declarations',
+        filter: `user_id=eq.${user.id}`,
+      }, () => loadDeclarations())
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ir_ai_documents',
+        filter: `user_id=eq.${user.id}`,
+      }, () => {
+        if (activeDeclaration) loadDocuments(activeDeclaration.id);
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(channel); };
+  }, [user, activeDeclaration?.id, loadDeclarations, loadDocuments]);
 
   // Create new declaration
   const createDeclaration = async () => {
@@ -124,8 +159,10 @@ const ContadorIADashboard = () => {
       .single();
     if (error) { toast.error('Erro ao criar declaração'); return; }
     toast.success('Declaração criada! Envie seus documentos.');
-    setActiveDeclaration(data as Declaration);
+    const newDecl = data as Declaration;
+    setActiveDeclaration(newDecl);
     setDocuments([]);
+    setActiveTab('documents');
     loadDeclarations();
   };
 
@@ -238,9 +275,9 @@ const ContadorIADashboard = () => {
 
   const getProgress = (status: string) => {
     const map: Record<string, number> = {
-      pending_documents: 25, processing: 50, ai_analysis: 75, review: 90, completed: 100,
+      draft: 10, pending_documents: 25, processing: 50, ai_analysis: 75, review: 90, completed: 100, error: 0,
     };
-    return map[status] || 10;
+    return map[status] ?? 5;
   };
 
   return (
