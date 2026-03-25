@@ -295,7 +295,7 @@ export function BIPricingSection() {
             Todos os planos incluem suporte prioritário e validação humana obrigatória.
           </p>
           <p className="text-xs text-accent mt-4 font-medium">
-            Após a contratação, você será direcionado ao César para onboarding e ativação.
+            Após a contratação, você será direcionado ao nosso especialista para onboarding e ativação.
           </p>
         </div>
       </div>

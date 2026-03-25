@@ -1280,7 +1280,7 @@ const BIContabilidadeOnboarding = () => {
                           <div className="flex items-center gap-4 p-5 rounded-xl bg-indigo-500/10 border border-indigo-500/20">
                             <Brain className="h-6 w-6 text-indigo-400 shrink-0" />
                             <div className="text-left">
-                              <p className="font-medium text-white">Chat com César</p>
+                              <p className="font-medium text-white">Chat com Especialista</p>
                               <p className="text-sm text-slate-400">Seu especialista BI já está disponível</p>
                             </div>
                           </div>

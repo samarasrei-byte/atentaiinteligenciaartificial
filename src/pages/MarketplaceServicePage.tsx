@@ -230,7 +230,7 @@ export default function MarketplaceServicePage() {
         
         toast({ 
           title: '✅ Solicitação enviada!', 
-          description: `Abrindo chat com ${responsible === 'guilherme' ? 'Guilherme' : 'César'}...` 
+          description: 'Abrindo chat com nosso especialista...' 
         });
         navigate(result.chatUrl);
         
