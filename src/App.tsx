@@ -144,6 +144,9 @@ const SeracDefesasDoc = lazy(() => import("./pages/serac/SeracDefesasDoc"));
 const EmissaoNFLanding = lazy(() => import("./pages/EmissaoNFLanding"));
 const EmissaoNFDashboard = lazy(() => import("./pages/EmissaoNFDashboard"));
 
+// Contador IA - IR
+const ContadorIADashboard = lazy(() => import("./pages/ContadorIADashboard"));
+
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
 const CapassiLayoutLazy = lazy(() => import("./components/capassi/CapassiLayout").then(m => ({ default: m.CapassiLayout })));
