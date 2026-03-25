@@ -359,8 +359,15 @@ serve(async (req) => {
 
       log("Subscription created/updated", { planType: plan.planType });
     } else if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
-      // IR services - create a record for tracking
-      log("IR service paid", { serviceType, userId });
+      // IR services - create AI declaration automatically
+      const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
+      const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
+        user_id: userId,
+        tax_year: new Date().getFullYear() - 1,
+        declaration_type: declarationType,
+        status: 'draft',
+      }).select('id').single();
+      log("IR AI declaration created", { declarationId: newDecl?.id, type: declarationType });
     } else if (serviceType === 'certificate') {
       // Certificate services - create a record for tracking
       log("Certificate service paid", { serviceType, userId });
