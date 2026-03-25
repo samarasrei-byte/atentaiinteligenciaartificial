@@ -67,12 +67,12 @@ const SERVICE_CONFIGS: Record<string, { name: string; description: string; baseP
   ir_simples: {
     name: 'Declaração IR Simples',
     description: 'Declaração de Imposto de Renda - Modalidade Simples',
-    basePriceCents: 20000,
+    basePriceCents: 8900,
   },
   ir_completo: {
     name: 'Declaração IR Completo',
     description: 'Declaração de Imposto de Renda - Modalidade Completa',
-    basePriceCents: 42000,
+    basePriceCents: 18900,
   },
   credit_repair: {
     name: 'Limpa Nome Completo',

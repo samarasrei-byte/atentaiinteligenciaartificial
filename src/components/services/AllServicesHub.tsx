@@ -135,7 +135,7 @@ export const AllServicesHub: React.FC = () => {
       description: 'Para autônomos e investidores',
       icon: FileText,
       gradient: 'from-purple-500 to-pink-600',
-      priceCents: 42000, // R$ 420,00 FIXED
+      priceCents: 18900, // R$ 189,00 FIXED
       features: [
         'Múltiplas fontes de renda',
         'Investimentos inclusos',

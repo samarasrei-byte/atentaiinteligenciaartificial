@@ -86,7 +86,7 @@ const serviceConfigs: Record<string, {
       'Otimização fiscal legal',
       'Especialista dedicado',
     ],
-    basePriceCents: 42000, // R$ 420,00 FIXED
+    basePriceCents: 18900, // R$ 189,00 FIXED
     successUrl: '/payment-success?type=ir',
     serviceType: 'ir_completo',
   },

@@ -102,8 +102,8 @@ const serviceConfigs: Record<string, ServiceConfig> = {
     key: 'ir_completo',
     title: 'Declaração IR Completo',
     description: 'Análise de todas as fontes de renda com otimização fiscal legal. Ideal para autônomos e investidores.',
-    price: 42000,
-    priceLabel: 'R$ 420,00',
+    price: 18900,
+    priceLabel: 'R$ 189,00',
     icon: FileSpreadsheet,
     color: 'orange',
     features: [
