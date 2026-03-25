@@ -34,9 +34,9 @@ export function BIPricingSection() {
   const handleSubscribe = async (planKey: BIPlanType) => {
     const plan = BI_PLANS[planKey];
     
-    // For Performance plan with custom pricing, redirect to César chat
+    // For Performance plan with custom pricing, redirect to specialist chat
     if ('customPricing' in plan && plan.customPricing) {
-      navigate('/chat/cesar?servico=bi-performance&plano=performance');
+      navigate('/chat/guilherme?servico=bi-performance&plano=performance');
       return;
     }
 
