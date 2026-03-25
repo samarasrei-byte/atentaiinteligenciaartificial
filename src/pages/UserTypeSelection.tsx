@@ -182,14 +182,14 @@ const UserTypeSelection = () => {
         <div className="w-full max-w-5xl">
           {/* Title Section */}
           <motion.div 
-            className="text-center mb-12"
+            className="text-center mb-6 md:mb-12"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
             {/* Animated badge */}
             <motion.div 
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary text-sm font-semibold mb-8 border border-primary/30"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary text-sm font-semibold mb-4 md:mb-8 border border-primary/30"
               animate={{
                 boxShadow: [
                   "0 0 20px rgba(var(--primary), 0.2)",
@@ -205,7 +205,7 @@ const UserTypeSelection = () => {
             </motion.div>
 
             <motion.h1 
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-5"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-3 md:mb-5"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
@@ -218,7 +218,7 @@ const UserTypeSelection = () => {
             </motion.h1>
             
             <motion.p 
-              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto"
+              className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
