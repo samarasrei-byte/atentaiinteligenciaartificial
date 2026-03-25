@@ -550,6 +550,7 @@ const AdminPanel = () => {
           {activeTab === 'limpa-nome' && <CreditRepairManagement />}
           {activeTab === 'cashback' && <CashbackMetricsDashboard />}
           {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
+          {activeTab === 'ir-management' && <AdminIRManagement />}
           {activeTab === 'realtime' && <AdminRealtimeDashboard />}
           {activeTab === 'revenue-forecast' && <RevenueForecastDashboard />}
           {activeTab === 'churn' && <ChurnAnalytics />}
