@@ -83,23 +83,6 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     ],
     successFee: true,
   },
-  'bi-contabilidade': {
-    id: 'bi-contabilidade',
-    name: 'BI+ Contabilidade',
-    description: 'Inteligência financeira completa para sua empresa',
-    icon: Brain,
-    gradient: 'from-purple-500 to-pink-600',
-    flowType: 'request',
-    requestTable: 'bi_requests',
-    priceCents: 0,
-    features: [
-      'Dashboard em tempo real',
-      'IA + Análise humana',
-      'Insights automáticos',
-      'Suporte especializado',
-    ],
-    successFee: false,
-  },
   'contador-premium': {
     id: 'contador-premium',
     name: 'Contador Premium Plus',
