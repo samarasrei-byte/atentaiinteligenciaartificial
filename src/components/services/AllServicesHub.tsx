@@ -214,10 +214,15 @@ export const AllServicesHub: React.FC = () => {
     }
 
     // RULE 2: Fiscal/BI inside panel context → Navigate to embedded chat tab
-    if (isPanelContext && (service.id === 'analise-fiscal' || service.id === 'bi-contabilidade')) {
-      const tabId = service.id === 'bi-contabilidade' ? 'chat-bi' : 'chat-fiscal';
-      console.log(`[ROUTING PANEL] ${service.id} → ?tab=${tabId}`);
-      navigate({ search: `?tab=${tabId}` });
+    if (isPanelContext && service.id === 'analise-fiscal') {
+      console.log(`[ROUTING PANEL] ${service.id} → ?tab=chat-fiscal`);
+      navigate({ search: `?tab=chat-fiscal` });
+      return;
+    }
+
+    if (service.id === 'emissao-nf') {
+      console.log(`[ROUTING] emissao-nf → /emissao-nf`);
+      navigate('/emissao-nf');
       return;
     }
     
