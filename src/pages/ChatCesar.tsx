@@ -396,7 +396,7 @@ export default function ChatCesar() {
                   <span className="text-xl font-bold text-white">C</span>
                 </div>
               }
-              title="Chat – César"
+              title="Chat – Especialista BI"
               subtitle="BI & Contabilidade"
               badges={
                 <>
