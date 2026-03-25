@@ -410,6 +410,11 @@ const App = () => (
                   <ChatCesar />
                 </ProtectedRoute>
               } />
+              <Route path="/chat/jose" element={
+                <ProtectedRoute>
+                  <ChatJose />
+                </ProtectedRoute>
+              } />
               
               {/* Capassi Panel - Exclusive for César */}
               <Route path="/capassi" element={
