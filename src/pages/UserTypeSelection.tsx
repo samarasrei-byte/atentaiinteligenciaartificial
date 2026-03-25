@@ -360,10 +360,10 @@ const UserTypeSelection = () => {
                   </motion.div>
 
                   {/* Content */}
-                  <h3 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+                  <h3 className="text-base md:text-2xl font-bold text-foreground mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
                     {option.title}
                     {option.comingSoon && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
+                      <span className="text-[10px] md:text-xs font-semibold px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
                         Em breve
                       </span>
                     )}
@@ -372,11 +372,11 @@ const UserTypeSelection = () => {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                       >
-                        <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                        <Star className="h-4 w-4 md:h-5 md:w-5 text-yellow-400 fill-yellow-400" />
                       </motion.span>
                     )}
                   </h3>
-                  <p className="text-muted-foreground mb-5">
+                  <p className="text-muted-foreground text-xs md:text-base mb-2 md:mb-5 hidden sm:block">
                     {option.description}
                   </p>
 
