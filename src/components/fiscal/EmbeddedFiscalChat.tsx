@@ -31,7 +31,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
 
   // Determina o especialista responsável
   const specialistId = serviceType === 'bi' ? CESAR_ADMIN_ID : GUILHERME_ADMIN_ID;
-  const specialistName = serviceType === 'bi' ? 'César' : 'Guilherme';
+  const specialistName = serviceType === 'bi' ? 'Especialista BI' : 'Guilherme';
   const serviceName = serviceType === 'bi' ? 'BI+ Inteligência Fiscal' : 'Análise Fiscal';
 
   // Fetch active fiscal request for the user
