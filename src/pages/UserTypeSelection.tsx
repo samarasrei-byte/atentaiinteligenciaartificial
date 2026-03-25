@@ -260,7 +260,7 @@ const UserTypeSelection = () => {
                   }}
                   whileTap={option.comingSoon ? {} : { scale: 0.98 }}
                   className={cn(
-                    "relative text-left p-8 rounded-3xl border-2 transition-all duration-500",
+                    "relative text-left p-4 md:p-8 rounded-2xl md:rounded-3xl border-2 transition-all duration-500",
                     "backdrop-blur-xl overflow-hidden group",
                     "disabled:pointer-events-none",
                     "transform-gpu perspective-1000",
