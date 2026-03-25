@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
 import {
   Select,
   SelectContent,
@@ -15,11 +16,12 @@ import {
 import {
   Brain, FileText, Upload, CheckCircle2, AlertCircle,
   RefreshCw, Clock, Eye, Loader2, BarChart3, ChevronDown, ChevronUp,
-  Sparkles
+  Sparkles, Bug, Download, AlertTriangle, Filter, Search, ExternalLink
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useToast } from '@/hooks/use-toast';
+import { Input } from '@/components/ui/input';
 
 interface IRDeclaration {
   id: string;
@@ -36,6 +38,7 @@ interface IRDeclaration {
   ai_confidence_percent: number | null;
   ai_analysis: any;
   created_at: string;
+  updated_at: string;
 }
 
 interface IRDocument {
@@ -43,6 +46,9 @@ interface IRDocument {
   declaration_id: string;
   document_type: string;
   file_name: string;
+  file_path: string;
+  file_size_bytes: number | null;
+  mime_type: string | null;
   ai_status: string;
   ai_extracted_data: any;
   created_at: string;
@@ -58,10 +64,24 @@ const statusConfig: Record<string, { label: string; color: string; icon: React.E
   error: { label: 'Erro', color: 'bg-destructive/10 text-destructive', icon: AlertCircle },
 };
 
+const docStatusConfig: Record<string, { label: string; emoji: string; color: string }> = {
+  pending: { label: 'Pendente', emoji: '⏸️', color: 'bg-muted text-muted-foreground' },
+  processing: { label: 'Processando', emoji: '⏳', color: 'bg-blue-500/10 text-blue-500' },
+  extracted: { label: 'Extraído', emoji: '✅', color: 'bg-emerald-500/10 text-emerald-500' },
+  error: { label: 'Erro', emoji: '❌', color: 'bg-destructive/10 text-destructive' },
+};
+
 const statusOptions = ['draft', 'pending_documents', 'processing', 'ai_analysis', 'review', 'completed', 'error'];
 
 const formatCurrency = (cents: number) =>
   new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format((cents || 0) / 100);
+
+const formatBytes = (bytes: number | null) => {
+  if (!bytes) return '-';
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+};
 
 export const AdminIRManagement: React.FC = () => {
   const { toast } = useToast();
@@ -71,14 +91,22 @@ export const AdminIRManagement: React.FC = () => {
   const [profiles, setProfiles] = useState<Record<string, { name: string; email: string }>>({});
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [updatingStatus, setUpdatingStatus] = useState<string | null>(null);
+  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDebugPanel, setShowDebugPanel] = useState(false);
 
-  const fetchDeclarations = async () => {
+  const fetchDeclarations = useCallback(async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('ir_ai_declarations')
       .select('*')
       .order('created_at', { ascending: false })
-      .limit(100);
+      .limit(200);
+
+    if (error) {
+      console.error('Error fetching declarations:', error);
+      toast({ title: 'Erro ao carregar declarações', description: error.message, variant: 'destructive' });
+    }
 
     const items = (data || []) as any[];
     setDeclarations(items);
@@ -99,15 +127,16 @@ export const AdminIRManagement: React.FC = () => {
     }
 
     setLoading(false);
-  };
+  }, [toast]);
 
   const fetchDocuments = async (declarationId: string) => {
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('ir_ai_documents')
       .select('*')
       .eq('declaration_id', declarationId)
       .order('created_at', { ascending: false });
 
+    if (error) console.error('Error fetching docs:', error);
     setDocuments(prev => ({ ...prev, [declarationId]: (data || []) as any[] }));
   };
 
@@ -135,12 +164,23 @@ export const AdminIRManagement: React.FC = () => {
       .eq('id', declId);
 
     if (error) {
-      toast({ title: 'Erro ao atualizar status', variant: 'destructive' });
+      toast({ title: 'Erro ao atualizar status', description: error.message, variant: 'destructive' });
     } else {
       toast({ title: 'Status atualizado', description: `Definido como: ${statusConfig[newStatus]?.label || newStatus}` });
       fetchDeclarations();
     }
     setUpdatingStatus(null);
+  };
+
+  const getDocumentUrl = async (filePath: string) => {
+    const { data } = await supabase.storage
+      .from('ir-ai-documents')
+      .createSignedUrl(filePath, 3600);
+    if (data?.signedUrl) {
+      window.open(data.signedUrl, '_blank');
+    } else {
+      toast({ title: 'Erro ao gerar link do documento', variant: 'destructive' });
+    }
   };
 
   useEffect(() => {
@@ -153,10 +193,35 @@ export const AdminIRManagement: React.FC = () => {
         schema: 'public',
         table: 'ir_ai_declarations',
       }, () => fetchDeclarations())
+      .on('postgres_changes', {
+        event: '*',
+        schema: 'public',
+        table: 'ir_ai_documents',
+      }, (payload) => {
+        // Refresh docs for the affected declaration
+        const declId = (payload.new as any)?.declaration_id || (payload.old as any)?.declaration_id;
+        if (declId && expandedId === declId) {
+          fetchDocuments(declId);
+        }
+      })
       .subscribe();
 
     return () => { supabase.removeChannel(channel); };
-  }, []);
+  }, [fetchDeclarations, expandedId]);
+
+  // Filtered declarations
+  const filtered = declarations.filter(d => {
+    if (statusFilter !== 'all' && d.status !== statusFilter) return false;
+    if (searchTerm) {
+      const term = searchTerm.toLowerCase();
+      const profile = profiles[d.user_id];
+      const nameMatch = (d.full_name || profile?.name || '').toLowerCase().includes(term);
+      const emailMatch = (profile?.email || '').toLowerCase().includes(term);
+      const cpfMatch = (d.cpf || '').includes(term);
+      if (!nameMatch && !emailMatch && !cpfMatch) return false;
+    }
+    return true;
+  });
 
   const stats = {
     total: declarations.length,
@@ -164,6 +229,19 @@ export const AdminIRManagement: React.FC = () => {
     processing: declarations.filter(d => ['processing', 'ai_analysis'].includes(d.status)).length,
     completed: declarations.filter(d => d.status === 'completed').length,
     review: declarations.filter(d => d.status === 'review').length,
+    errors: declarations.filter(d => d.status === 'error').length,
+  };
+
+  // Diagnostic checks
+  const diagnostics = {
+    noDocDeclarations: declarations.filter(d => d.status !== 'draft' && !documents[d.id]?.length).length,
+    staleProcessing: declarations.filter(d => {
+      if (d.status !== 'processing' && d.status !== 'ai_analysis') return false;
+      const updatedAt = new Date(d.updated_at || d.created_at);
+      return (Date.now() - updatedAt.getTime()) > 30 * 60 * 1000; // > 30 min
+    }).length,
+    lowConfidence: declarations.filter(d => d.ai_confidence_percent != null && d.ai_confidence_percent < 50 && d.ai_confidence_percent > 0).length,
+    errorDocs: Object.values(documents).flat().filter(d => d.ai_status === 'error').length,
   };
 
   return (
@@ -174,21 +252,81 @@ export const AdminIRManagement: React.FC = () => {
             <Brain className="h-5 w-5 text-purple-500" />
             Imposto de Renda — Contador IA
           </h2>
-          <p className="text-sm text-muted-foreground">Declarações processadas por inteligência artificial</p>
+          <p className="text-sm text-muted-foreground">Monitoramento completo do fluxo de IR automatizado</p>
         </div>
-        <Button variant="outline" size="sm" onClick={fetchDeclarations} className="gap-2">
-          <RefreshCw className="h-3.5 w-3.5" /> Atualizar
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button
+            variant={showDebugPanel ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setShowDebugPanel(!showDebugPanel)}
+            className="gap-2"
+          >
+            <Bug className="h-3.5 w-3.5" /> Debug
+          </Button>
+          <Button variant="outline" size="sm" onClick={fetchDeclarations} className="gap-2">
+            <RefreshCw className="h-3.5 w-3.5" /> Atualizar
+          </Button>
+        </div>
       </div>
 
+      {/* Debug/Health Panel */}
+      {showDebugPanel && (
+        <Card className="bg-amber-500/5 border-amber-500/20">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm flex items-center gap-2 text-amber-500">
+              <Bug className="h-4 w-4" /> Diagnóstico do Sistema
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <div className={`p-3 rounded-lg ${diagnostics.staleProcessing > 0 ? 'bg-red-500/10 border border-red-500/20' : 'bg-muted/30'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertTriangle className={`h-4 w-4 ${diagnostics.staleProcessing > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
+                  <p className="text-xs font-medium">Travados (+30min)</p>
+                </div>
+                <p className="text-2xl font-bold">{diagnostics.staleProcessing}</p>
+                {diagnostics.staleProcessing > 0 && (
+                  <p className="text-[10px] text-red-500 mt-1">⚠️ Pode indicar erro na edge function</p>
+                )}
+              </div>
+              <div className={`p-3 rounded-lg ${stats.errors > 0 ? 'bg-red-500/10 border border-red-500/20' : 'bg-muted/30'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <AlertCircle className={`h-4 w-4 ${stats.errors > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
+                  <p className="text-xs font-medium">Declarações com Erro</p>
+                </div>
+                <p className="text-2xl font-bold">{stats.errors}</p>
+              </div>
+              <div className={`p-3 rounded-lg ${diagnostics.errorDocs > 0 ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-muted/30'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <FileText className={`h-4 w-4 ${diagnostics.errorDocs > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                  <p className="text-xs font-medium">Docs com Falha</p>
+                </div>
+                <p className="text-2xl font-bold">{diagnostics.errorDocs}</p>
+              </div>
+              <div className={`p-3 rounded-lg ${diagnostics.lowConfidence > 0 ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-muted/30'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Brain className={`h-4 w-4 ${diagnostics.lowConfidence > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                  <p className="text-xs font-medium">Baixa Confiança (&lt;50%)</p>
+                </div>
+                <p className="text-2xl font-bold">{diagnostics.lowConfidence}</p>
+              </div>
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-3">
+              💡 Expandir uma declaração mostra documentos detalhados. Docs com status "error" indicam falha na análise da IA (PDF corrompido, imagem ilegível, etc).
+            </p>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-3">
         {[
           { label: 'Total', value: stats.total, icon: BarChart3, color: 'text-purple-500 bg-purple-500/10' },
           { label: 'Pendentes', value: stats.pending, icon: Upload, color: 'text-amber-500 bg-amber-500/10' },
           { label: 'Processando', value: stats.processing, icon: Brain, color: 'text-blue-500 bg-blue-500/10' },
           { label: 'Revisão', value: stats.review, icon: Eye, color: 'text-indigo-500 bg-indigo-500/10' },
           { label: 'Concluídas', value: stats.completed, icon: CheckCircle2, color: 'text-emerald-500 bg-emerald-500/10' },
+          { label: 'Erros', value: stats.errors, icon: AlertCircle, color: stats.errors > 0 ? 'text-red-500 bg-red-500/10' : 'text-muted-foreground bg-muted' },
         ].map((s, i) => (
           <Card key={i} className="bg-card border-border">
             <CardContent className="p-4 flex items-center gap-3">
@@ -204,33 +342,63 @@ export const AdminIRManagement: React.FC = () => {
         ))}
       </div>
 
+      {/* Filters */}
+      <div className="flex items-center gap-3 flex-wrap">
+        <div className="relative flex-1 min-w-[200px] max-w-sm">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome, email ou CPF..."
+            value={searchTerm}
+            onChange={e => setSearchTerm(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-[180px]">
+            <Filter className="h-3.5 w-3.5 mr-2" />
+            <SelectValue placeholder="Filtrar status" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os status</SelectItem>
+            {statusOptions.map(s => (
+              <SelectItem key={s} value={s}>{statusConfig[s]?.label || s}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+        <span className="text-xs text-muted-foreground">
+          {filtered.length} de {declarations.length} declarações
+        </span>
+      </div>
+
       {/* Declarations List */}
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-base">Declarações</CardTitle>
-          <CardDescription>Clique para expandir e ver documentos, análise IA e controlar status</CardDescription>
+          <CardDescription>Clique para expandir — documentos, análise IA, erros e controle de status</CardDescription>
         </CardHeader>
         <CardContent>
           {loading ? (
             <div className="space-y-3">
               {[1, 2, 3].map(i => <Skeleton key={i} className="h-20 w-full rounded-xl" />)}
             </div>
-          ) : declarations.length === 0 ? (
+          ) : filtered.length === 0 ? (
             <div className="text-center py-12">
               <Brain className="h-12 w-12 mx-auto mb-4 text-muted-foreground/30" />
-              <p className="text-muted-foreground">Nenhuma declaração de IR ainda</p>
-              <p className="text-sm text-muted-foreground/60 mt-1">
-                As declarações aparecerão aqui quando os usuários iniciarem pelo Contador IA
+              <p className="text-muted-foreground">
+                {declarations.length === 0
+                  ? 'Nenhuma declaração de IR ainda'
+                  : 'Nenhuma declaração encontrada com esses filtros'}
               </p>
             </div>
           ) : (
             <div className="space-y-3">
-              {declarations.map(decl => {
+              {filtered.map(decl => {
                 const config = statusConfig[decl.status] || statusConfig.draft;
                 const Icon = config.icon;
                 const isExpanded = expandedId === decl.id;
                 const declDocs = documents[decl.id] || [];
                 const profile = profiles[decl.user_id];
+                const errorDocs = declDocs.filter(d => d.ai_status === 'error');
 
                 return (
                   <div key={decl.id} className="rounded-xl border border-border overflow-hidden">
@@ -262,16 +430,23 @@ export const AdminIRManagement: React.FC = () => {
                             Ano: {decl.fiscal_year}
                           </span>
                           {decl.ai_confidence_percent != null && decl.ai_confidence_percent > 0 && (
-                            <Badge variant="secondary" className="text-[10px] gap-1">
+                            <Badge variant="secondary" className={`text-[10px] gap-1 ${
+                              decl.ai_confidence_percent < 50 ? 'text-amber-500' : ''
+                            }`}>
                               <Brain className="h-3 w-3" />
                               {decl.ai_confidence_percent}%
+                            </Badge>
+                          )}
+                          {errorDocs.length > 0 && isExpanded && (
+                            <Badge className="bg-destructive/10 text-destructive border-0 text-[10px]">
+                              {errorDocs.length} doc(s) com erro
                             </Badge>
                           )}
                           <span className="text-[11px] text-muted-foreground/60 ml-auto">
                             {formatDistanceToNow(new Date(decl.created_at), { addSuffix: true, locale: ptBR })}
                           </span>
                         </div>
-                        {decl.status === 'completed' || decl.status === 'review' ? (
+                        {(decl.status === 'completed' || decl.status === 'review') && (
                           <div className="flex gap-4 mt-2 text-xs text-muted-foreground">
                             <span>Renda: {formatCurrency(decl.total_income_cents)}</span>
                             <span>Deduções: {formatCurrency(decl.total_deductions_cents)}</span>
@@ -282,7 +457,7 @@ export const AdminIRManagement: React.FC = () => {
                               <span className="text-destructive">Imposto: {formatCurrency(decl.tax_due_cents)}</span>
                             )}
                           </div>
-                        ) : null}
+                        )}
                       </div>
                       {isExpanded ? <ChevronUp className="h-4 w-4 text-muted-foreground shrink-0 mt-1" /> : <ChevronDown className="h-4 w-4 text-muted-foreground shrink-0 mt-1" />}
                     </div>
@@ -312,23 +487,29 @@ export const AdminIRManagement: React.FC = () => {
                           {updatingStatus === decl.id && <Loader2 className="h-4 w-4 animate-spin" />}
                         </div>
 
-                        {/* Info */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">
+                        {/* Info grid */}
+                        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-sm">
                           <div>
                             <p className="text-muted-foreground/60 text-xs">CPF</p>
                             <p>{decl.cpf || 'Não informado'}</p>
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Tipo</p>
-                            <p>{decl.declaration_type === 'completa' ? 'Declaração Completa' : 'Declaração Simplificada'}</p>
+                            <p>{decl.declaration_type === 'completa' ? 'Completa' : 'Simplificada'}</p>
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Confiança IA</p>
-                            <p>{decl.ai_confidence_percent != null ? `${decl.ai_confidence_percent}%` : 'N/A'}</p>
+                            <p className={decl.ai_confidence_percent != null && decl.ai_confidence_percent < 50 ? 'text-amber-500 font-medium' : ''}>
+                              {decl.ai_confidence_percent != null ? `${decl.ai_confidence_percent}%` : 'N/A'}
+                            </p>
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Criada em</p>
                             <p>{new Date(decl.created_at).toLocaleDateString('pt-BR')}</p>
+                          </div>
+                          <div>
+                            <p className="text-muted-foreground/60 text-xs">ID</p>
+                            <p className="text-[10px] font-mono text-muted-foreground break-all">{decl.id}</p>
                           </div>
                         </div>
 
@@ -339,28 +520,68 @@ export const AdminIRManagement: React.FC = () => {
                             Documentos ({declDocs.length})
                           </h4>
                           {declDocs.length === 0 ? (
-                            <p className="text-xs text-muted-foreground italic">Nenhum documento enviado ainda</p>
+                            <p className="text-xs text-muted-foreground italic">
+                              Nenhum documento enviado ainda
+                              {decl.status === 'draft' && ' — usuário precisa acessar o painel e fazer upload'}
+                            </p>
                           ) : (
                             <div className="space-y-1.5">
-                              {declDocs.map(doc => (
-                                <div key={doc.id} className="flex items-center justify-between p-2.5 rounded-lg bg-muted/30 border border-border text-sm">
-                                  <div className="flex items-center gap-2 min-w-0">
-                                    <FileText className="h-4 w-4 text-purple-400 shrink-0" />
-                                    <span className="truncate">{doc.file_name}</span>
-                                    <Badge variant="secondary" className="text-[10px] shrink-0">{doc.document_type}</Badge>
+                              {declDocs.map(doc => {
+                                const dsc = docStatusConfig[doc.ai_status] || docStatusConfig.pending;
+                                return (
+                                  <div key={doc.id} className="p-3 rounded-lg bg-muted/30 border border-border text-sm">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-2 min-w-0">
+                                        <FileText className="h-4 w-4 text-purple-400 shrink-0" />
+                                        <span className="truncate font-medium">{doc.file_name}</span>
+                                        <Badge variant="secondary" className="text-[10px] shrink-0">{doc.document_type}</Badge>
+                                        <span className="text-[10px] text-muted-foreground">{formatBytes(doc.file_size_bytes)}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2 shrink-0">
+                                        <Badge className={`${dsc.color} border-0`}>
+                                          {dsc.emoji} {dsc.label}
+                                        </Badge>
+                                        <Button
+                                          size="sm"
+                                          variant="ghost"
+                                          onClick={(e) => { e.stopPropagation(); getDocumentUrl(doc.file_path); }}
+                                          className="h-7 w-7 p-0 text-muted-foreground hover:text-foreground"
+                                          title="Visualizar documento"
+                                        >
+                                          <ExternalLink className="h-3.5 w-3.5" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Error details for failed docs */}
+                                    {doc.ai_status === 'error' && (
+                                      <div className="mt-2 p-2 rounded bg-destructive/5 border border-destructive/10">
+                                        <p className="text-xs text-destructive flex items-center gap-1">
+                                          <AlertTriangle className="h-3 w-3" />
+                                          Falha na análise — possíveis causas: PDF protegido/corrompido, imagem ilegível, formato não suportado, ou timeout da IA
+                                        </p>
+                                      </div>
+                                    )}
+
+                                    {/* Extracted data preview */}
+                                    {doc.ai_status === 'extracted' && doc.ai_extracted_data && (
+                                      <div className="mt-2 text-xs text-muted-foreground">
+                                        {doc.ai_extracted_data.source_name && (
+                                          <span>Fonte: {doc.ai_extracted_data.source_name} </span>
+                                        )}
+                                        {doc.ai_extracted_data.items?.length > 0 && (
+                                          <span>• {doc.ai_extracted_data.items.length} item(ns) extraídos </span>
+                                        )}
+                                        {doc.ai_extracted_data.confidence_percent != null && (
+                                          <span className={doc.ai_extracted_data.confidence_percent < 50 ? 'text-amber-500' : ''}>
+                                            • {doc.ai_extracted_data.confidence_percent}% confiança
+                                          </span>
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
-                                  <Badge className={
-                                    doc.ai_status === 'extracted' ? 'bg-emerald-500/10 text-emerald-500 border-0' :
-                                    doc.ai_status === 'processing' ? 'bg-blue-500/10 text-blue-500 border-0' :
-                                    doc.ai_status === 'error' ? 'bg-destructive/10 text-destructive border-0' :
-                                    'bg-muted text-muted-foreground border-0'
-                                  }>
-                                    {doc.ai_status === 'extracted' ? '✅ Extraído' :
-                                     doc.ai_status === 'processing' ? '⏳ Processando' :
-                                     doc.ai_status === 'error' ? '❌ Erro' : '⏸️ Pendente'}
-                                  </Badge>
-                                </div>
-                              ))}
+                                );
+                              })}
                             </div>
                           )}
                         </div>
@@ -402,6 +623,16 @@ export const AdminIRManagement: React.FC = () => {
                                   <div key={i} className="flex items-start gap-1.5 text-xs text-amber-500">
                                     <AlertCircle className="h-3 w-3 mt-0.5 shrink-0" />
                                     <span>{alert}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            )}
+                            {decl.ai_analysis.optimization_tips?.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                {decl.ai_analysis.optimization_tips.map((tip: string, i: number) => (
+                                  <div key={i} className="flex items-start gap-1.5 text-xs text-emerald-500">
+                                    <CheckCircle2 className="h-3 w-3 mt-0.5 shrink-0" />
+                                    <span>{tip}</span>
                                   </div>
                                 ))}
                               </div>

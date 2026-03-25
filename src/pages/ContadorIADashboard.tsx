@@ -275,9 +275,9 @@ const ContadorIADashboard = () => {
 
   const getProgress = (status: string) => {
     const map: Record<string, number> = {
-      pending_documents: 25, processing: 50, ai_analysis: 75, review: 90, completed: 100,
+      draft: 10, pending_documents: 25, processing: 50, ai_analysis: 75, review: 90, completed: 100, error: 0,
     };
-    return map[status] || 10;
+    return map[status] ?? 5;
   };
 
   return (
