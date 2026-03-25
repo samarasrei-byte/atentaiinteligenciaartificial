@@ -112,6 +112,7 @@ const sidebarGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
+      { icon: Brain, label: 'IR — Contador IA', tabId: 'ir-management' },
       { icon: Calendar, label: 'Consultas', tabId: 'consultations' },
       { icon: Star, label: 'Cashback', tabId: 'cashback' },
     ],

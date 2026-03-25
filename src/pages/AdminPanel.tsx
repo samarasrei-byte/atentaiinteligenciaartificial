@@ -53,6 +53,7 @@ import AdminAlertsHub from '@/components/admin/AdminAlertsHub';
 import ServiceManagement from '@/components/admin/ServiceManagement';
 import PanelManagement from '@/components/admin/PanelManagement';
 import { RoleManagementTab } from '@/components/admin/RoleManagementTab';
+import { AdminIRManagement } from '@/components/admin/AdminIRManagement';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -549,6 +550,7 @@ const AdminPanel = () => {
           {activeTab === 'limpa-nome' && <CreditRepairManagement />}
           {activeTab === 'cashback' && <CashbackMetricsDashboard />}
           {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
+          {activeTab === 'ir-management' && <AdminIRManagement />}
           {activeTab === 'realtime' && <AdminRealtimeDashboard />}
           {activeTab === 'revenue-forecast' && <RevenueForecastDashboard />}
           {activeTab === 'churn' && <ChurnAnalytics />}
