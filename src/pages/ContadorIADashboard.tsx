@@ -90,7 +90,7 @@ const ContadorIADashboard = () => {
     setDocuments((data as DocFile[]) || []);
   }, []);
 
-  // Load declarations - only once on mount
+  // Load declarations
   const loadDeclarations = useCallback(async () => {
     if (!user) return;
     setIsLoading(true);
@@ -101,10 +101,21 @@ const ContadorIADashboard = () => {
       .order('created_at', { ascending: false });
     const decls = (data as Declaration[]) || [];
     setDeclarations(decls);
-    if (decls.length > 0 && !initializedRef.current) {
-      initializedRef.current = true;
-      setActiveDeclaration(decls[0]);
-      loadDocuments(decls[0].id);
+    
+    // Auto-select first on initial load, or refresh active declaration data
+    if (decls.length > 0) {
+      if (!initializedRef.current) {
+        initializedRef.current = true;
+        setActiveDeclaration(decls[0]);
+        loadDocuments(decls[0].id);
+      } else {
+        // Refresh active declaration with fresh data
+        setActiveDeclaration(prev => {
+          if (!prev) return decls[0];
+          const updated = decls.find(d => d.id === prev.id);
+          return updated || decls[0];
+        });
+      }
     }
     setIsLoading(false);
   }, [user, loadDocuments]);
