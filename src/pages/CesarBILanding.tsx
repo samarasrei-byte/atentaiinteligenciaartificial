@@ -82,7 +82,7 @@ const HeroSection = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 border border-white/20 mb-4">
               <Brain className="w-5 h-5" style={{ color: COLORS.secondary }} />
-              <span className="text-sm font-medium text-white">César Capassi • Especialista BI+</span>
+              <span className="text-sm font-medium text-white">AtentAI • Especialista BI+</span>
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold leading-tight text-white">
