@@ -182,14 +182,14 @@ const UserTypeSelection = () => {
         <div className="w-full max-w-5xl">
           {/* Title Section */}
           <motion.div 
-            className="text-center mb-12"
+            className="text-center mb-6 md:mb-12"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
             {/* Animated badge */}
             <motion.div 
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary text-sm font-semibold mb-8 border border-primary/30"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/20 to-purple-500/20 text-primary text-sm font-semibold mb-4 md:mb-8 border border-primary/30"
               animate={{
                 boxShadow: [
                   "0 0 20px rgba(var(--primary), 0.2)",
@@ -205,7 +205,7 @@ const UserTypeSelection = () => {
             </motion.div>
 
             <motion.h1 
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-5"
+              className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground mb-3 md:mb-5"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.6 }}
@@ -218,7 +218,7 @@ const UserTypeSelection = () => {
             </motion.h1>
             
             <motion.p 
-              className="text-muted-foreground text-lg md:text-xl max-w-2xl mx-auto"
+              className="text-muted-foreground text-base md:text-xl max-w-2xl mx-auto"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.6 }}
@@ -228,7 +228,7 @@ const UserTypeSelection = () => {
           </motion.div>
 
           {/* Options Grid */}
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-10">
+          <div className="grid grid-cols-3 gap-3 md:gap-8 mb-6 md:mb-10">
             {userTypeOptions.map((option, index) => {
               const Icon = option.icon;
               const isSelected = selectedType === option.type;
@@ -260,7 +260,7 @@ const UserTypeSelection = () => {
                   }}
                   whileTap={option.comingSoon ? {} : { scale: 0.98 }}
                   className={cn(
-                    "relative text-left p-8 rounded-3xl border-2 transition-all duration-500",
+                    "relative text-left p-4 md:p-8 rounded-2xl md:rounded-3xl border-2 transition-all duration-500",
                     "backdrop-blur-xl overflow-hidden group",
                     "disabled:pointer-events-none",
                     "transform-gpu perspective-1000",
@@ -307,7 +307,7 @@ const UserTypeSelection = () => {
                   {/* Selection checkmark */}
                   <motion.div 
                     className={cn(
-                      "absolute top-5 right-5 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300",
+                      "absolute top-3 right-3 md:top-5 md:right-5 w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-300",
                       isSelected
                         ? "bg-primary shadow-lg shadow-primary/50"
                         : "border-2 border-muted-foreground/30 bg-transparent"
@@ -335,8 +335,8 @@ const UserTypeSelection = () => {
                   {/* Icon */}
                   <motion.div 
                     className={cn(
-                      "w-20 h-20 rounded-2xl flex items-center justify-center mb-6",
-                      "shadow-xl transition-all duration-300",
+                      "w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-6",
+                      "shadow-lg md:shadow-xl transition-all duration-300",
                       option.iconBg
                     )}
                     animate={{
@@ -345,7 +345,7 @@ const UserTypeSelection = () => {
                     }}
                     transition={{ duration: 0.5 }}
                   >
-                    <Icon className="h-10 w-10 text-white" />
+                    <Icon className="h-6 w-6 md:h-10 md:w-10 text-white" />
                     
                     {/* Icon sparkle */}
                     {isSelected && (
@@ -360,10 +360,10 @@ const UserTypeSelection = () => {
                   </motion.div>
 
                   {/* Content */}
-                  <h3 className="text-2xl font-bold text-foreground mb-2 flex items-center gap-2">
+                  <h3 className="text-base md:text-2xl font-bold text-foreground mb-1 md:mb-2 flex items-center gap-1 md:gap-2">
                     {option.title}
                     {option.comingSoon && (
-                      <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
+                      <span className="text-[10px] md:text-xs font-semibold px-1.5 md:px-2.5 py-0.5 md:py-1 rounded-full bg-amber-500/20 text-amber-600 border border-amber-500/30">
                         Em breve
                       </span>
                     )}
@@ -372,16 +372,16 @@ const UserTypeSelection = () => {
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
                       >
-                        <Star className="h-5 w-5 text-yellow-400 fill-yellow-400" />
+                        <Star className="h-4 w-4 md:h-5 md:w-5 text-yellow-400 fill-yellow-400" />
                       </motion.span>
                     )}
                   </h3>
-                  <p className="text-muted-foreground mb-5">
+                  <p className="text-muted-foreground text-xs md:text-base mb-2 md:mb-5 hidden sm:block">
                     {option.description}
                   </p>
 
                   {/* Features */}
-                  <ul className="space-y-3">
+                  <ul className="space-y-2 md:space-y-3 hidden sm:block">
                     {option.features.map((feature, idx) => (
                       <motion.li 
                         key={idx} 
@@ -487,7 +487,7 @@ const UserTypeSelection = () => {
           
           {/* Footer info */}
           <motion.div 
-            className="text-center mt-16 text-sm text-muted-foreground"
+            className="text-center mt-6 md:mt-16 text-sm text-muted-foreground"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.8 }}
