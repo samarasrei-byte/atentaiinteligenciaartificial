@@ -57,8 +57,8 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.email) {
-      toast({ variant: 'destructive', title: 'Campos obrigatórios', description: 'Preencha nome e email para continuar.' });
+    if (!formData.fullName || !formData.email || !formData.cpf) {
+      toast({ variant: 'destructive', title: 'Campos obrigatórios', description: 'Preencha nome, email e CPF para continuar.' });
       return;
     }
 
