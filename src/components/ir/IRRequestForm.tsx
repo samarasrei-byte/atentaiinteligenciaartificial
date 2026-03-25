@@ -67,7 +67,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
       return;
     }
 
-    if (formData.cpf && !cpfValid) {
+    if (!cpfValid) {
       toast({ variant: 'destructive', title: 'CPF inválido', description: 'Informe um CPF válido para continuar.' });
       return;
     }
