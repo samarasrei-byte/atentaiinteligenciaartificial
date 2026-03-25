@@ -389,7 +389,7 @@ export default function ChatCesar() {
           
           {/* Chat Container */}
           <ChatContainer className="h-[calc(100dvh-180px)] min-h-[400px]">
-            {/* Header - Violet/Indigo gradient for César */}
+            {/* Header - Violet/Indigo gradient for BI */}
             <ChatHeader
               avatar={
                 <div className="h-12 w-12 rounded-full bg-white/20 flex items-center justify-center">
