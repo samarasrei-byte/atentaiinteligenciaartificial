@@ -388,6 +388,31 @@ const serviceConfigs: ServiceCardConfig[] = [
     isFree: false,
     isSubscription: true,
   },
+  // ===== CONTADOR IA (DESTAQUE) =====
+  {
+    key: 'contador_ia',
+    name: 'Contador IA — Imposto de Renda',
+    description: 'Envie seus documentos e a IA mais avançada do Brasil faz sua declaração de IR em minutos.',
+    targetAudience: 'Para quem quer declarar sem complicação',
+    features: [
+      'Análise automática de documentos',
+      'Extração de dados por IA',
+      'Cálculo automático de imposto',
+      'Dicas de otimização fiscal',
+      'Alertas de inconsistências',
+    ],
+    guarantees: ['IA de última geração', '97% de precisão'],
+    basePrice: 4990, // R$ 49,90
+    discountPercent: 0,
+    badge: 'new' as const,
+    cta: 'Fazer minha declaração',
+    color: 'purple' as const,
+    icon: Brain,
+    serviceType: 'contador_ia',
+    checkoutRoute: '/contador-ia',
+    category: 'declaracoes',
+    isFree: false,
+  },
   // ===== PLANOS ATENTAI BI =====
   // Atentai Clarity - R$ 1.497/mês
   {
