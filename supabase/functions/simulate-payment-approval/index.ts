@@ -17,11 +17,11 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'credit_repair': { chatType: 'guilherme', specialist: 'Guilherme' },
   'contador_premium': { chatType: 'guilherme', specialist: 'Guilherme' },
   'analise_fiscal': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'clarity': { chatType: 'cesar', specialist: 'César' },
-  'control': { chatType: 'cesar', specialist: 'César' },
-  'ir_simples': { chatType: 'cesar', specialist: 'César' },
-  'ir_completo': { chatType: 'cesar', specialist: 'César' },
-  'bi_contabilidade': { chatType: 'cesar', specialist: 'César' },
+  'clarity': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'control': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'ir_simples': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'ir_completo': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'bi_contabilidade': { chatType: 'guilherme', specialist: 'Guilherme' },
 };
 
 function getWelcomeMessage(serviceType: string, serviceName: string, userName: string, cpf?: string | null): string {

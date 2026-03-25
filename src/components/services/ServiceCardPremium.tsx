@@ -133,7 +133,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
     // Services that route to chat/onboarding (no direct payment)
     const CHAT_ROUTES: Record<string, string> = {
       'fiscal_analysis': '/modulo-fiscal/onboarding',
-      'performance': '/chat/cesar?servico=bi-performance&plano=performance',
+      'performance': '/chat/guilherme?servico=bi-performance&plano=performance',
     };
 
     // Check if service routes to chat/onboarding

@@ -40,7 +40,7 @@ export const getResponsiblePerson = (serviceType: ServiceType): 'guilherme' | 'c
     case 'ir':
       return 'guilherme';
     case 'bi-contabilidade':
-      return 'cesar';
+      return 'guilherme';
     default:
       return 'guilherme';
   }
@@ -72,14 +72,14 @@ export const createServiceNotifications = async (
     await supabase.from('service_notifications').insert({
       user_id: userId,
       title: `🎉 Solicitação Enviada: ${serviceName}`,
-      message: `Sua solicitação de ${serviceName} foi recebida! O especialista ${responsible === 'guilherme' ? 'Guilherme' : 'César'} entrará em contato em breve.`,
+      message: `Sua solicitação de ${serviceName} foi recebida! Nosso especialista entrará em contato em breve.`,
       notification_type: 'service_created',
       service_type: serviceType,
       metadata: { requestId, responsible },
     });
   }
   
-  // Create notification for admin (Guilherme/César)
+  // Create notification for admin
   // In production, this would target the actual admin user IDs
   console.log(`[Notification] New ${serviceType} request from ${userName} (ID: ${requestId})`);
 };

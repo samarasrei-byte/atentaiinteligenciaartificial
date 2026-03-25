@@ -72,10 +72,10 @@ const SPECIALISTS = {
   bi: {
     // UUID real do especialista (receiver_id)
     id: '6307fc12-d37c-43f5-ab78-c62cf29dffd9',
-    name: 'César',
-    role: 'Especialista BI+ Inteligência',
-    avatar: '/cesar-avatar.png',
-    initials: 'CB',
+    name: 'Guilherme Mesquita',
+    role: 'Especialista Fiscal',
+    avatar: '/guilherme-avatar.png',
+    initials: 'GM',
   },
 };
 
