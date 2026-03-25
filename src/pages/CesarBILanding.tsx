@@ -439,7 +439,7 @@ const OfferSection = () => {
       description: 'Mentoria exclusiva para crescimento acelerado e captura de valor.',
       price: 'Sob Consulta',
       originalPrice: null,
-      features: ['Mentoria Mensal Exclusiva', 'Estratégia de M&A/IPO', 'Governança Corporativa', 'Acesso VIP ao César'],
+      features: ['Mentoria Mensal Exclusiva', 'Estratégia de M&A/IPO', 'Governança Corporativa', 'Acesso VIP ao Especialista'],
       highlighted: false,
       cta: 'Solicitar Proposta'
     }

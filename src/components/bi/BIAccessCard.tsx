@@ -242,7 +242,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
         </Button>
         
         <p className="text-xs text-center text-muted-foreground">
-          Após contratação, você será direcionado ao César para onboarding
+          Após contratação, você será direcionado ao nosso especialista para onboarding
         </p>
       </CardContent>
     </Card>
