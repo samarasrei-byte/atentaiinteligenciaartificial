@@ -228,7 +228,7 @@ const UserTypeSelection = () => {
           </motion.div>
 
           {/* Options Grid */}
-          <div className="grid md:grid-cols-3 gap-6 md:gap-8 mb-10">
+          <div className="grid grid-cols-3 gap-3 md:gap-8 mb-6 md:mb-10">
             {userTypeOptions.map((option, index) => {
               const Icon = option.icon;
               const isSelected = selectedType === option.type;
