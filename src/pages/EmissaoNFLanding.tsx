@@ -325,10 +325,10 @@ const EmissaoNFLanding = () => {
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-5xl mx-auto">
             {[
-              { icon: Clock, title: 'Economize horas', desc: 'Pare de emitir nota manualmente toda semana.', accent: 'emerald' },
-              { icon: DollarSign, title: 'Nunca esqueça de cobrar', desc: 'Envio automático de cobrança para o cliente.', accent: 'blue' },
-              { icon: BarChart3, title: 'Controle total', desc: 'Dashboard com tudo em tempo real.', accent: 'violet' },
-              { icon: Zap, title: 'Cresça sem trabalho', desc: 'Escale seu faturamento sem aumentar esforço.', accent: 'amber' },
+              { icon: Clock, title: 'Economize horas', desc: 'Pare de emitir nota manualmente toda semana.', bgClass: 'bg-emerald-500/10 group-hover:bg-emerald-500/20', iconClass: 'text-emerald-400' },
+              { icon: DollarSign, title: 'Nunca esqueça de cobrar', desc: 'Envio automático de cobrança para o cliente.', bgClass: 'bg-blue-500/10 group-hover:bg-blue-500/20', iconClass: 'text-blue-400' },
+              { icon: BarChart3, title: 'Controle total', desc: 'Dashboard com tudo em tempo real.', bgClass: 'bg-violet-500/10 group-hover:bg-violet-500/20', iconClass: 'text-violet-400' },
+              { icon: Zap, title: 'Cresça sem trabalho', desc: 'Escale seu faturamento sem aumentar esforço.', bgClass: 'bg-amber-500/10 group-hover:bg-amber-500/20', iconClass: 'text-amber-400' },
             ].map((item, i) => (
               <motion.div
                 key={i}
@@ -338,8 +338,8 @@ const EmissaoNFLanding = () => {
                 transition={{ delay: i * 0.1 }}
                 className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 hover:border-emerald-500/20 transition-all group"
               >
-                <div className={`w-12 h-12 rounded-xl bg-${item.accent}-500/10 flex items-center justify-center mb-4 group-hover:bg-${item.accent}-500/20 transition-colors`}>
-                  <item.icon className={`w-6 h-6 text-${item.accent}-400`} />
+                <div className={`w-12 h-12 rounded-xl ${item.bgClass} flex items-center justify-center mb-4 transition-colors`}>
+                  <item.icon className={`w-6 h-6 ${item.iconClass}`} />
                 </div>
                 <h3 className="font-bold mb-2 text-white text-lg">{item.title}</h3>
                 <p className="text-sm text-white/40 leading-relaxed">{item.desc}</p>
