@@ -104,17 +104,21 @@ const ContadorIADashboard = () => {
     
     // Auto-select first on initial load, or refresh active declaration data
     if (decls.length > 0) {
-      if (!initializedRef.current) {
+      const prevId = activeDeclaration?.id;
+      if (!initializedRef.current || !prevId) {
         initializedRef.current = true;
         setActiveDeclaration(decls[0]);
         loadDocuments(decls[0].id);
       } else {
         // Refresh active declaration with fresh data
-        setActiveDeclaration(prev => {
-          if (!prev) return decls[0];
-          const updated = decls.find(d => d.id === prev.id);
-          return updated || decls[0];
-        });
+        const updated = decls.find(d => d.id === prevId);
+        if (updated) {
+          setActiveDeclaration(updated);
+        } else {
+          // Previously selected was deleted or user changed
+          setActiveDeclaration(decls[0]);
+          loadDocuments(decls[0].id);
+        }
       }
     }
     setIsLoading(false);
