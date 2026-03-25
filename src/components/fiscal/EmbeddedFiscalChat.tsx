@@ -63,7 +63,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
   const createAutoRequest = async () => {
     if (!user?.id || activeRequest || isCreating) return;
     
-    // IMPORTANTE: Especialistas (Guilherme/César) NÃO devem criar solicitações para si mesmos
+    // IMPORTANTE: Especialistas NÃO devem criar solicitações para si mesmos
     if (SPECIALIST_IDS.includes(user.id)) {
       console.log('[EmbeddedFiscalChat] Especialista detectado, não criando solicitação automática:', user.id);
       return;
