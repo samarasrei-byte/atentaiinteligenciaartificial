@@ -79,7 +79,7 @@ export const createServiceNotifications = async (
     });
   }
   
-  // Create notification for admin (Guilherme/César)
+  // Create notification for admin
   // In production, this would target the actual admin user IDs
   console.log(`[Notification] New ${serviceType} request from ${userName} (ID: ${requestId})`);
 };

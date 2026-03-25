@@ -420,7 +420,7 @@ const UserPanelBI = () => {
                     <h3 className="text-lg font-semibold text-slate-900">BI+ Contabilidade™</h3>
                     <p className="text-slate-600 mt-1">
                       Suas solicitações são analisadas com inteligência artificial de ponta, mas todas as decisões 
-                      importantes são validadas por <strong>César</strong>, nosso especialista humano. 
+                      importantes são validadas por nosso time de especialistas humanos. 
                       Isso garante precisão, segurança e conformidade legal.
                     </p>
                     <div className="flex items-center gap-4 mt-4">
