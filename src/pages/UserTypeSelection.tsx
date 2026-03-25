@@ -335,8 +335,8 @@ const UserTypeSelection = () => {
                   {/* Icon */}
                   <motion.div 
                     className={cn(
-                      "w-20 h-20 rounded-2xl flex items-center justify-center mb-6",
-                      "shadow-xl transition-all duration-300",
+                      "w-12 h-12 md:w-20 md:h-20 rounded-xl md:rounded-2xl flex items-center justify-center mb-3 md:mb-6",
+                      "shadow-lg md:shadow-xl transition-all duration-300",
                       option.iconBg
                     )}
                     animate={{
