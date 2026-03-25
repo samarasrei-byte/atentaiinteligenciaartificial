@@ -103,7 +103,7 @@ const PartnerGuilhermePanel = lazy(() => import("./pages/PartnerGuilhermePanel")
 const MarketplaceServicePage = lazy(() => import("./pages/MarketplaceServicePage"));
 const SobrePage = lazy(() => import("./pages/SobrePage"));
 const SuportePage = lazy(() => import("./pages/SuportePage"));
-// BI/César routes hidden - kept imports commented for future reactivation
+// BI routes hidden - kept imports commented for future reactivation
 // const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
 // const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
 // const CesarBILanding = lazy(() => import("./pages/CesarBILanding"));
