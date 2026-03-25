@@ -232,7 +232,7 @@ const App = () => (
               <Route path="/modulo-fiscal/checkout" element={<ModuloFiscal />} />
               <Route path="/modulo-fiscal/onboarding" element={<FiscalAnalysisOnboarding />} />
               <Route path="/modulo-fiscal/sucesso" element={<FiscalSuccessPage />} />
-              {/* BI/César routes hidden */}
+              {/* BI routes hidden */}
               <Route path="/bi-contabilidade" element={<Navigate to="/" replace />} />
               <Route path="/bi-contabilidade/onboarding" element={<Navigate to="/" replace />} />
               <Route path="/bi-contabilidade/cesar" element={<Navigate to="/" replace />} />
