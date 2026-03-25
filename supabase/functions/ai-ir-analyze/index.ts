@@ -6,6 +6,33 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+async function getDocumentContent(supabase: any, filePath: string, mimeType: string): Promise<string | null> {
+  try {
+    const { data, error } = await supabase.storage
+      .from('ir-ai-documents')
+      .download(filePath);
+    
+    if (error || !data) {
+      console.error("Error downloading file:", error);
+      return null;
+    }
+
+    // For PDFs and images, convert to base64
+    const arrayBuffer = await data.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    let binary = '';
+    for (let i = 0; i < uint8Array.length; i++) {
+      binary += String.fromCharCode(uint8Array[i]);
+    }
+    const base64 = btoa(binary);
+    
+    return base64;
+  } catch (e) {
+    console.error("Error processing document:", e);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
@@ -27,8 +54,31 @@ serve(async (req) => {
     const { declarationId, documentId, documentType, action } = await req.json();
 
     if (action === "analyze_document") {
-      // Update document status
+      // Get document info
+      const { data: docRecord } = await supabase
+        .from("ir_ai_documents")
+        .select("*")
+        .eq("id", documentId)
+        .single();
+
+      if (!docRecord) throw new Error("Document not found");
+
+      // Verify ownership
+      if (docRecord.user_id !== user.id) throw new Error("Unauthorized");
+
+      // Update status
       await supabase.from("ir_ai_documents").update({ ai_status: "processing" }).eq("id", documentId);
+
+      // Download and read the actual document
+      const fileMimeType = docRecord.mime_type || "application/pdf";
+      const fileContent = await getDocumentContent(supabase, docRecord.file_path, fileMimeType);
+
+      if (!fileContent) {
+        await supabase.from("ir_ai_documents").update({ ai_status: "error" }).eq("id", documentId);
+        return new Response(JSON.stringify({ error: "Não foi possível ler o documento." }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       const systemPrompt = `Você é o maior contador do Brasil, especialista em Imposto de Renda Pessoa Física (IRPF).
 Analise o documento enviado e extraia TODAS as informações relevantes para a declaração de IR.
@@ -42,7 +92,38 @@ Tipos de documento e o que extrair:
 - recibo_aluguel: endereço, locador, CPF/CNPJ, valor mensal, período
 - nota_corretagem: ativo, quantidade, valor compra/venda, data, corretora
 - darf: código receita, período apuração, valor pago, data pagamento
-- other: extraia qualquer informação financeira/fiscal relevante`;
+- other: extraia qualquer informação financeira/fiscal relevante
+
+IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500,00 = 150000`;
+
+      // Determine the media type for the content
+      const isImage = fileMimeType.startsWith("image/");
+      const isPdf = fileMimeType === "application/pdf";
+
+      // Build the user message with the actual document content
+      const userContent: any[] = [
+        { 
+          type: "text", 
+          text: `Analise este documento do tipo "${documentType}" (arquivo: ${docRecord.file_name}). Extraia todos os dados fiscais relevantes para a declaração de Imposto de Renda.` 
+        },
+      ];
+
+      if (isImage) {
+        userContent.push({
+          type: "image_url",
+          image_url: {
+            url: `data:${fileMimeType};base64,${fileContent}`,
+          },
+        });
+      } else if (isPdf) {
+        // For PDFs, send as inline data (Gemini supports this)
+        userContent.push({
+          type: "image_url",
+          image_url: {
+            url: `data:application/pdf;base64,${fileContent}`,
+          },
+        });
+      }
 
       const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -51,10 +132,10 @@ Tipos de documento e o que extrair:
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
-            { role: "user", content: `Analise este documento do tipo "${documentType}". Extraia todos os dados fiscais relevantes para a declaração de Imposto de Renda.` },
+            { role: "user", content: userContent },
           ],
           tools: [{
             type: "function",
@@ -97,15 +178,14 @@ Tipos de documento e o que extrair:
       if (!response.ok) {
         const errText = await response.text();
         console.error("AI gateway error:", response.status, errText);
+        await supabase.from("ir_ai_documents").update({ ai_status: "error" }).eq("id", documentId);
         
         if (response.status === 429) {
-          await supabase.from("ir_ai_documents").update({ ai_status: "error" }).eq("id", documentId);
           return new Response(JSON.stringify({ error: "Rate limited, tente novamente em instantes." }), {
             status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
         }
         if (response.status === 402) {
-          await supabase.from("ir_ai_documents").update({ ai_status: "error" }).eq("id", documentId);
           return new Response(JSON.stringify({ error: "Créditos insuficientes." }), {
             status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
           });
@@ -134,7 +214,15 @@ Tipos de documento e o que extrair:
     }
 
     if (action === "generate_summary") {
-      // Get all documents for declaration
+      // Verify declaration ownership
+      const { data: decl } = await supabase
+        .from("ir_ai_declarations")
+        .select("user_id")
+        .eq("id", declarationId)
+        .single();
+      
+      if (!decl || decl.user_id !== user.id) throw new Error("Unauthorized");
+
       const { data: docs } = await supabase
         .from("ir_ai_documents")
         .select("*")
@@ -162,7 +250,7 @@ Tipos de documento e o que extrair:
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "google/gemini-2.5-pro",
+          model: "google/gemini-2.5-flash",
           messages: [
             {
               role: "system",
@@ -180,7 +268,9 @@ Use a tabela progressiva do IRPF 2025:
 - De R$ 2.259,21 até R$ 2.826,65: 7,5% (dedução R$ 169,44)
 - De R$ 2.826,66 até R$ 3.751,05: 15% (dedução R$ 381,44)
 - De R$ 3.751,06 até R$ 4.664,68: 22,5% (dedução R$ 662,77)
-- Acima de R$ 4.664,68: 27,5% (dedução R$ 896,00)`,
+- Acima de R$ 4.664,68: 27,5% (dedução R$ 896,00)
+
+IMPORTANTE: Todos os valores devem ser em centavos.`,
             },
             {
               role: "user",
