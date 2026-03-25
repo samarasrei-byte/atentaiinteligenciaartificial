@@ -411,7 +411,7 @@ const App = () => (
                 </ProtectedRoute>
               } />
               
-              {/* Capassi Panel - Exclusive for César */}
+              {/* Capassi Panel - Exclusive access */}
               <Route path="/capassi" element={
                 <CapassiGuardLazy>
                   <CapassiLayoutLazy />
