@@ -224,17 +224,17 @@ export const SUBSCRIBER_DISCOUNTS = {
   ir_simples: {
     name: 'Declaração IR Simples',
     description: 'Para CLT sem investimentos',
-    basePrice: 20000, // cents (R$200,00)
-    discount: 0.20, // 20% para assinantes
-    discountedPrice: 16000, // R$160,00
+    basePrice: 20000,
+    discount: 0,
+    discountedPrice: 20000,
     icon: 'FileText',
   },
   ir_completo: {
     name: 'Declaração IR Completo',
     description: 'Para autônomos e investidores',
-    basePrice: 42000, // cents (R$420,00)
-    discount: 0.20, // 20% para assinantes
-    discountedPrice: 33600, // R$336,00
+    basePrice: 42000,
+    discount: 0,
+    discountedPrice: 42000,
     icon: 'FileSpreadsheet',
   },
   fiscal_analysis: {
