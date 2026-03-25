@@ -282,7 +282,7 @@ export const AdminIRManagement: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
               <div className={`p-3 rounded-lg ${diagnostics.staleProcessing > 0 ? 'bg-red-500/10 border border-red-500/20' : 'bg-muted/30'}`}>
                 <div className="flex items-center gap-2 mb-1">
                   <AlertTriangle className={`h-4 w-4 ${diagnostics.staleProcessing > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
@@ -290,7 +290,7 @@ export const AdminIRManagement: React.FC = () => {
                 </div>
                 <p className="text-2xl font-bold">{diagnostics.staleProcessing}</p>
                 {diagnostics.staleProcessing > 0 && (
-                  <p className="text-[10px] text-red-500 mt-1">⚠️ Pode indicar erro na edge function</p>
+                  <p className="text-[10px] text-red-500 mt-1">⚠️ Edge function pode ter falhado</p>
                 )}
               </div>
               <div className={`p-3 rounded-lg ${stats.errors > 0 ? 'bg-red-500/10 border border-red-500/20' : 'bg-muted/30'}`}>
@@ -314,9 +314,19 @@ export const AdminIRManagement: React.FC = () => {
                 </div>
                 <p className="text-2xl font-bold">{diagnostics.lowConfidence}</p>
               </div>
+              <div className={`p-3 rounded-lg ${diagnostics.draftNoAction > 0 ? 'bg-amber-500/10 border border-amber-500/20' : 'bg-muted/30'}`}>
+                <div className="flex items-center gap-2 mb-1">
+                  <Clock className={`h-4 w-4 ${diagnostics.draftNoAction > 0 ? 'text-amber-500' : 'text-muted-foreground'}`} />
+                  <p className="text-xs font-medium">Sem ação (+24h)</p>
+                </div>
+                <p className="text-2xl font-bold">{diagnostics.draftNoAction}</p>
+                {diagnostics.draftNoAction > 0 && (
+                  <p className="text-[10px] text-amber-500 mt-1">Usuários pagaram mas não enviaram docs</p>
+                )}
+              </div>
             </div>
             <p className="text-[10px] text-muted-foreground mt-3">
-              💡 Expandir uma declaração mostra documentos detalhados. Docs com status "error" indicam falha na análise da IA (PDF corrompido, imagem ilegível, etc).
+              💡 Expandir declaração mostra docs detalhados. "Sem ação +24h" indica usuários que pagaram e não retornaram — considere enviar lembrete.
             </p>
           </CardContent>
         </Card>
