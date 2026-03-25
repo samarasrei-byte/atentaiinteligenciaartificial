@@ -71,7 +71,7 @@ const serviceConfigs: Record<string, {
       'Envio à Receita Federal',
       'Recibo de entrega garantido',
     ],
-    basePriceCents: 20000, // R$ 200,00 FIXED
+    basePriceCents: 8900, // R$ 89,00 FIXED
     successUrl: '/payment-success?type=ir',
     serviceType: 'ir_simples',
   },
