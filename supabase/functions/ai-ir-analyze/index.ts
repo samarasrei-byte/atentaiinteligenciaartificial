@@ -504,6 +504,12 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         ];
       }
 
+      // CRITICAL: Sync corrected values back into typedAnalysis so email & ai_analysis JSON are consistent
+      (typedAnalysis as any).total_deductions_cents = totalDeductions;
+      (typedAnalysis as any).tax_due_cents = taxDue;
+      (typedAnalysis as any).refund_cents = refund;
+      (typedAnalysis as any).total_income_cents = totalIncome;
+
       console.log(`[ai-ir-analyze] Fiscal validation: ${validationAlerts.length} corrections applied`, validationAlerts);
 
       await supabase.from("ir_ai_declarations").update({
