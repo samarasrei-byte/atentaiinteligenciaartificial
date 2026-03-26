@@ -454,7 +454,7 @@ export const AdminIRManagement: React.FC = () => {
                             {config.label}
                           </Badge>
                           <Badge variant="secondary" className="text-[10px]">
-                            {decl.declaration_type === 'completa' ? 'Completa' : 'Simples'}
+                            {decl.declaration_type === 'completo' ? 'Completa' : 'Simples'}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             Ano: {decl.fiscal_year}
@@ -525,7 +525,7 @@ export const AdminIRManagement: React.FC = () => {
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Tipo</p>
-                            <p>{decl.declaration_type === 'completa' ? 'Completa' : 'Simplificada'}</p>
+                            <p>{decl.declaration_type === 'completo' ? 'Completa' : 'Simplificada'}</p>
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Confiança IA</p>
