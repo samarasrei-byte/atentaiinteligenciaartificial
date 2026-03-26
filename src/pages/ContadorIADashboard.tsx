@@ -936,6 +936,44 @@ const ContadorIADashboard = () => {
                     </Card>
                   )}
 
+                  {/* Malha Fina Risk */}
+                  {analysis.malha_fina_risk && (
+                    <Card className={`border ${
+                      analysis.malha_fina_risk === 'alto' ? 'bg-red-500/5 border-red-500/20' :
+                      analysis.malha_fina_risk === 'medio' ? 'bg-amber-500/5 border-amber-500/20' :
+                      'bg-emerald-500/5 border-emerald-500/20'
+                    }`}>
+                      <CardContent className="p-5">
+                        <div className="flex items-start gap-3">
+                          <Shield className={`w-5 h-5 mt-0.5 ${
+                            analysis.malha_fina_risk === 'alto' ? 'text-red-400' :
+                            analysis.malha_fina_risk === 'medio' ? 'text-amber-400' :
+                            'text-emerald-400'
+                          }`} />
+                          <div>
+                            <p className="font-medium">
+                              Risco de Malha Fina: <span className={`capitalize ${
+                                analysis.malha_fina_risk === 'alto' ? 'text-red-400' :
+                                analysis.malha_fina_risk === 'medio' ? 'text-amber-400' :
+                                'text-emerald-400'
+                              }`}>{analysis.malha_fina_risk}</span>
+                            </p>
+                            {analysis.malha_fina_reasons?.length > 0 && (
+                              <ul className="mt-2 space-y-1">
+                                {analysis.malha_fina_reasons.map((reason: string, i: number) => (
+                                  <li key={i} className="text-sm text-muted-foreground flex items-start gap-2">
+                                    <AlertCircle className="w-3 h-3 mt-1 shrink-0" />
+                                    {reason}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
+
                   {/* Disclaimer */}
                   <Card className="bg-muted/20 border-border">
                     <CardContent className="p-4 flex items-start gap-3">
