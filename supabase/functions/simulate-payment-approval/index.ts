@@ -19,8 +19,8 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'analise_fiscal': { chatType: 'guilherme', specialist: 'Guilherme' },
   'clarity': { chatType: 'guilherme', specialist: 'Guilherme' },
   'control': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'ir_simples': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'ir_completo': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'ir_simples': { chatType: 'ia', specialist: 'Contador IA' },
+  'ir_completo': { chatType: 'ia', specialist: 'Contador IA' },
   'bi_contabilidade': { chatType: 'guilherme', specialist: 'Guilherme' },
 };
 
@@ -167,6 +167,20 @@ serve(async (req) => {
         current_period_end: periodEnd.toISOString(),
       }, { onConflict: 'user_id' });
       log("Subscription created (TEST)", { planType: plan.planType });
+    } else if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
+      // IR services - create AI declaration automatically (same as process-approved-payment)
+      const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
+      const irCpf = metadata?.cpf || null;
+      const irFiscalYear = metadata?.fiscal_year ? parseInt(metadata.fiscal_year) : new Date().getFullYear() - 1;
+      const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
+        user_id: userId,
+        fiscal_year: irFiscalYear,
+        declaration_type: declarationType,
+        status: 'pending_documents',
+        full_name: fullName || '',
+        cpf: irCpf,
+      }).select('id').single();
+      log("IR AI declaration created (TEST)", { declarationId: newDecl?.id, type: declarationType });
     }
 
     // 3. Fetch CPF if available
@@ -221,8 +235,13 @@ serve(async (req) => {
     }
 
     // 5. Build redirect URL
-    const serviceParam = serviceType.startsWith('credit_repair') ? 'limpanome' : serviceType;
-    const redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
+    let redirectPath: string;
+    if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
+      redirectPath = '/contador-ia';
+    } else {
+      const serviceParam = serviceType.startsWith('credit_repair') ? 'limpanome' : serviceType;
+      redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
+    }
 
     log("Simulation complete", { userId, isNewUser, redirectPath });
 
