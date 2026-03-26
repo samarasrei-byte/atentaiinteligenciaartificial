@@ -310,16 +310,19 @@ gere um resumo completo da declaração de IR incluindo:
 - Alertas de inconsistências
 - Risco de malha fina (se deduções médicas > 30% da renda, alertar)
 
-Use a tabela progressiva do IRPF 2025:
-- Até R$ 2.259,20: isento
-- De R$ 2.259,21 até R$ 2.826,65: 7,5% (dedução R$ 169,44)
-- De R$ 2.826,66 até R$ 3.751,05: 15% (dedução R$ 381,44)
-- De R$ 3.751,06 até R$ 4.664,68: 22,5% (dedução R$ 662,77)
-- Acima de R$ 4.664,68: 27,5% (dedução R$ 896,00)
+Use a tabela progressiva ANUAL do IRPF 2025 (exercício 2024):
+- Até R$ 26.963,20 (anual): isento (0%)
+- De R$ 26.963,21 até R$ 33.919,80: 7,5% (dedução R$ 2.033,28)
+- De R$ 33.919,81 até R$ 45.012,60: 15% (dedução R$ 4.577,28)
+- De R$ 45.012,61 até R$ 55.976,16: 22,5% (dedução R$ 7.953,24)
+- Acima de R$ 55.976,16: 27,5% (dedução R$ 10.752,00)
 
-Dedução por dependente: R$ 2.275,08/ano
-Limite PGBL: 12% da renda bruta tributável
-Desconto simplificado: 20% da renda tributável, limitado a R$ 16.754,34
+ATENÇÃO: Estes são valores ANUAIS. NÃO use a tabela mensal. O cálculo é sobre a BASE DE CÁLCULO ANUAL (rendimentos tributáveis - deduções).
+
+Dedução por dependente: R$ 2.275,08/ano por dependente
+Limite PGBL: 12% da renda bruta tributável anual
+Desconto simplificado: 20% da renda tributável anual, limitado a R$ 16.754,34
+Limite dedução educação: R$ 3.561,50/ano por pessoa
 
 IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
             },
