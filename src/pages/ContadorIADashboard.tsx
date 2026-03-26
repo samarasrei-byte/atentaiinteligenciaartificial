@@ -11,6 +11,7 @@ import {
   LogOut, Loader2, Eye, FileUp, Trash2, BarChart3, Zap,
   Star, Lock
 } from 'lucide-react';
+import IRPreAnalysisChecklist, { type ChecklistAnswers } from '@/components/contador-ia/IRPreAnalysisChecklist';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
@@ -79,6 +80,8 @@ const ContadorIADashboard = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzingDocId, setAnalyzingDocId] = useState<string | null>(null);
   const [selectedDocType, setSelectedDocType] = useState('informe_rendimentos');
+  const [showChecklist, setShowChecklist] = useState(false);
+  const [checklistCompleted, setChecklistCompleted] = useState(false);
   const initializedRef = useRef(false);
 
   const loadDocuments = useCallback(async (declarationId: string) => {
@@ -254,13 +257,52 @@ const ContadorIADashboard = () => {
     if (activeDeclaration) loadDocuments(activeDeclaration.id);
   };
 
+  // Save checklist and generate summary
+  const handleChecklistComplete = async (answers: ChecklistAnswers) => {
+    if (!activeDeclaration) return;
+    setChecklistCompleted(true);
+    setShowChecklist(false);
+
+    // Save checklist answers to declaration
+    await supabase.from('ir_ai_declarations').update({
+      checklist_completed: true,
+      has_dependents: answers.has_dependents,
+      dependents_count: answers.dependents_count,
+      dependents_info: answers.dependents_info,
+      has_assets: answers.has_assets,
+      assets_info: answers.assets_info,
+      has_private_pension: answers.has_private_pension,
+      pension_type: answers.pension_type,
+      pension_annual_cents: answers.pension_annual_cents,
+      has_exempt_income: answers.has_exempt_income,
+      exempt_income_types: answers.exempt_income_types,
+      had_carne_leao: answers.had_carne_leao,
+      sold_assets: answers.sold_assets,
+      has_crypto: answers.has_crypto,
+      checklist_answers: answers,
+    } as any).eq('id', activeDeclaration.id);
+
+    toast.success('Checklist salvo! Gerando análise...');
+    await generateSummary(answers);
+  };
+
+  const handleSkipChecklist = async () => {
+    setShowChecklist(false);
+    setChecklistCompleted(true);
+    await generateSummary();
+  };
+
   // Generate full summary
-  const generateSummary = async () => {
+  const generateSummary = async (checklistData?: ChecklistAnswers) => {
     if (!activeDeclaration) return;
     setIsAnalyzing(true);
     try {
       const { error } = await supabase.functions.invoke('ai-ir-analyze', {
-        body: { declarationId: activeDeclaration.id, action: 'generate_summary' },
+        body: {
+          declarationId: activeDeclaration.id,
+          action: 'generate_summary',
+          checklistData: checklistData || null,
+        },
       });
       if (error) throw error;
       toast.success('Declaração analisada! Revise os dados.');
@@ -429,7 +471,7 @@ const ContadorIADashboard = () => {
                           <Button onClick={() => setActiveTab('documents')} variant="outline" size="sm" className="rounded-full border-red-500/30 text-red-400 hover:bg-red-500/10">
                             <Upload className="w-3 h-3 mr-1" /> Reenviar documentos
                           </Button>
-                          <Button onClick={generateSummary} disabled={isAnalyzing || extractedDocs.length === 0} size="sm" className="rounded-full bg-purple-500 hover:bg-purple-600">
+                          <Button onClick={() => generateSummary()} disabled={isAnalyzing || extractedDocs.length === 0} size="sm" className="rounded-full bg-purple-500 hover:bg-purple-600">
                             {isAnalyzing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Brain className="w-3 h-3 mr-1" />}
                             Tentar novamente
                           </Button>
@@ -651,18 +693,43 @@ const ContadorIADashboard = () => {
                   </Card>
                 ) : (
                   <>
-                    <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
-                      <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                          <h3 className="font-bold">{extractedDocs.length} documentos analisados</h3>
-                          <p className="text-sm text-muted-foreground">Gere o resumo completo da declaração</p>
-                        </div>
-                        <Button onClick={generateSummary} disabled={isAnalyzing} className="bg-purple-500 hover:bg-purple-600 rounded-full">
-                          {isAnalyzing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                          Gerar declaração
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    {/* Show checklist or generate button */}
+                    {showChecklist ? (
+                      <IRPreAnalysisChecklist
+                        onComplete={handleChecklistComplete}
+                        onSkip={handleSkipChecklist}
+                        isLoading={isAnalyzing}
+                      />
+                    ) : (
+                      <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-bold">{extractedDocs.length} documentos analisados</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {checklistCompleted
+                                  ? 'Checklist concluído! Gere o resumo completo.'
+                                  : 'Responda o checklist fiscal para uma análise mais precisa'}
+                              </p>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                if (checklistCompleted) {
+                                  generateSummary();
+                                } else {
+                                  setShowChecklist(true);
+                                }
+                              }}
+                              disabled={isAnalyzing}
+                              className="bg-purple-500 hover:bg-purple-600 rounded-full"
+                            >
+                              {isAnalyzing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                              {checklistCompleted ? 'Gerar declaração' : 'Iniciar checklist fiscal'}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
                     {extractedDocs.map((doc) => (
                       <Card key={doc.id} className="bg-card border-border">

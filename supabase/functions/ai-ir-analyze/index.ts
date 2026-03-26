@@ -52,7 +52,7 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { declarationId, documentId, documentType, action } = await req.json();
+    const { declarationId, documentId, documentType, action, checklistData } = await req.json();
 
     if (action === "analyze_document") {
       // Get document info
@@ -239,11 +239,35 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
 
       await supabase.from("ir_ai_declarations").update({ status: "ai_analysis" }).eq("id", declarationId);
 
+      // Fetch checklist data from declaration
+      const { data: declChecklist } = await supabase
+        .from("ir_ai_declarations")
+        .select("checklist_answers, has_dependents, dependents_info, has_assets, has_private_pension, pension_type, pension_annual_cents, has_exempt_income, exempt_income_types, had_carne_leao, sold_assets, has_crypto")
+        .eq("id", declarationId)
+        .single();
+
+      const checklistInfo = checklistData || declChecklist?.checklist_answers || {};
+
       const extractedDataSummary = docs.map(d => ({
         type: d.document_type,
         file: d.file_name,
         data: d.ai_extracted_data,
       }));
+
+      // Build checklist context for the AI
+      let checklistContext = "";
+      if (checklistInfo && Object.keys(checklistInfo).length > 0) {
+        checklistContext = `\n\nINFORMAÇÕES ADICIONAIS DO CONTRIBUINTE (Checklist pré-análise):
+${checklistInfo.has_dependents ? `- TEM ${checklistInfo.dependents_count || 0} DEPENDENTE(S): ${JSON.stringify(checklistInfo.dependents_info || [])}` : '- NÃO tem dependentes'}
+${checklistInfo.has_assets ? `- POSSUI bens e direitos: ${JSON.stringify(checklistInfo.assets_info || [])}` : '- NÃO declarou bens'}
+${checklistInfo.has_private_pension ? `- Previdência privada: ${checklistInfo.pension_type || 'não especificado'}, valor anual: R$ ${((checklistInfo.pension_annual_cents || 0) / 100).toFixed(2)}` : '- SEM previdência privada'}
+${checklistInfo.has_exempt_income ? `- Rendimentos isentos: ${(checklistInfo.exempt_income_types || []).join(', ')}` : '- SEM rendimentos isentos declarados'}
+${checklistInfo.had_carne_leao ? '- TEVE carnê-leão (recebeu de PF)' : '- SEM carnê-leão'}
+${checklistInfo.sold_assets ? '- VENDEU bens em 2024 (verificar ganho de capital)' : '- NÃO vendeu bens'}
+${checklistInfo.has_crypto ? '- POSSUI/NEGOCIOU criptomoedas' : '- SEM criptomoedas'}
+
+IMPORTANTE: Considere estes dados na análise. Se tem dependentes, inclua as deduções por dependente (R$ 2.275,08/ano). Se tem PGBL, verifique o limite de 12% da renda tributável. Se vendeu bens, alerte sobre ganho de capital.`;
+      }
 
       const summaryResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
@@ -259,11 +283,12 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
               content: `Você é o maior contador do Brasil. Com base nos dados extraídos dos documentos, 
 gere um resumo completo da declaração de IR incluindo:
 - Total de rendimentos tributáveis
-- Total de deduções
+- Total de deduções (incluindo dependentes se houver)
 - Imposto devido estimado
 - Restituição estimada
 - Recomendações de otimização fiscal
 - Alertas de inconsistências
+- Risco de malha fina (se deduções médicas > 30% da renda, alertar)
 
 Use a tabela progressiva do IRPF 2025:
 - Até R$ 2.259,20: isento
@@ -272,7 +297,11 @@ Use a tabela progressiva do IRPF 2025:
 - De R$ 3.751,06 até R$ 4.664,68: 22,5% (dedução R$ 662,77)
 - Acima de R$ 4.664,68: 27,5% (dedução R$ 896,00)
 
-IMPORTANTE: Todos os valores devem ser em centavos.`,
+Dedução por dependente: R$ 2.275,08/ano
+Limite PGBL: 12% da renda bruta tributável
+Desconto simplificado: 20% da renda tributável, limitado a R$ 16.754,34
+
+IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
             },
             {
               role: "user",
@@ -317,10 +346,14 @@ IMPORTANTE: Todos os valores devem ser em centavos.`,
                       },
                     },
                   },
-                  alerts: { type: "array", items: { type: "string" } },
-                  optimization_tips: { type: "array", items: { type: "string" } },
-                },
-                required: ["total_income_cents", "total_deductions_cents", "tax_due_cents", "refund_cents", "confidence_percent"],
+                   alerts: { type: "array", items: { type: "string" } },
+                   optimization_tips: { type: "array", items: { type: "string" } },
+                   malha_fina_risk: { type: "string", enum: ["baixo", "medio", "alto"], description: "Risco de cair na malha fina" },
+                   malha_fina_reasons: { type: "array", items: { type: "string" }, description: "Motivos do risco de malha fina" },
+                   dependents_deduction_cents: { type: "number", description: "Dedução por dependentes" },
+                   pension_deduction_cents: { type: "number", description: "Dedução PGBL" },
+                 },
+                 required: ["total_income_cents", "total_deductions_cents", "tax_due_cents", "refund_cents", "confidence_percent"],
               },
             },
           }],
