@@ -482,18 +482,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         }
       }
 
-      // 5. Fiscal consistency: tax_due and refund cannot both be positive
-      if (taxDue > 0 && refund > 0) {
-        // IRRF retido > imposto = restituição; IRRF retido < imposto = imposto a pagar
-        // Since we don't have IRRF separately, keep the larger one and zero the other
-        if (refund > taxDue) {
-          taxDue = 0;
-          validationAlerts.push(`Inconsistência fiscal corrigida: imposto devido zerado (restituição prevalece)`);
-        } else {
-          refund = 0;
-          validationAlerts.push(`Inconsistência fiscal corrigida: restituição zerada (há imposto a pagar)`);
-        }
-      }
+      // 5. (Moved to after tax recalculation — step 8)
 
       // 6. Ensure non-negative values
       if (totalDeductions < 0) { totalDeductions = 0; }
