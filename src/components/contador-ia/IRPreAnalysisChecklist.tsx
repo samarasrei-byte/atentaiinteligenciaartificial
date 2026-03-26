@@ -54,6 +54,8 @@ const exemptIncomeOptions = [
   { id: 'heranca', label: 'Herança / Doação' },
 ];
 
+const exemptIncomeOptionIds = new Set(exemptIncomeOptions.map(option => option.id));
+
 const assetTypes = [
   { id: 'imovel', label: 'Imóvel' },
   { id: 'veiculo', label: 'Veículo' },
@@ -66,6 +68,12 @@ const assetTypes = [
 const relationOptions = [
   'Filho(a)', 'Cônjuge / Companheiro(a)', 'Pai / Mãe', 'Enteado(a)', 'Outro'
 ];
+
+const parseCurrencyToCents = (rawValue: string): number => {
+  const parsed = Number.parseFloat(rawValue.replace(',', '.'));
+  if (!Number.isFinite(parsed) || parsed <= 0) return 0;
+  return Math.round(parsed * 100);
+};
 
 type Props = {
   onComplete: (answers: ChecklistAnswers) => void;
@@ -129,7 +137,9 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
   const sanitizeAnswers = (raw: ChecklistAnswers): ChecklistAnswers => {
     const sanitized = { ...raw };
 
-    sanitized.dependents_info = sanitized.dependents_info.filter(dep => dep.name.trim().length > 0);
+    sanitized.dependents_info = sanitized.dependents_info.filter(dep =>
+      dep.name.trim().length > 0 && dep.relation.trim().length > 0
+    );
     sanitized.dependents_count = sanitized.dependents_info.length;
     if (sanitized.dependents_count === 0) {
       sanitized.has_dependents = false;
@@ -143,7 +153,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
       sanitized.has_assets = false;
     }
 
-    sanitized.exempt_income_types = sanitized.exempt_income_types.filter(Boolean);
+    sanitized.exempt_income_types = sanitized.exempt_income_types.filter(type => exemptIncomeOptionIds.has(type));
     if (sanitized.exempt_income_types.length === 0) {
       sanitized.has_exempt_income = false;
     }
@@ -321,8 +331,13 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
                 <Input placeholder="Descrição (ex: Apartamento 2Q, Bairro X)" value={asset.description} onChange={e => updateAsset(idx, 'description', e.target.value)} className="h-8 text-sm bg-background" />
                 <div>
                   <Label className="text-xs text-muted-foreground">Valor estimado (R$)</Label>
-                  <Input type="number" placeholder="0,00" className="h-8 text-sm bg-background mt-1"
-                    onChange={e => updateAsset(idx, 'value_cents', Math.round(parseFloat(e.target.value || '0') * 100))} />
+                  <Input
+                    type="number"
+                    placeholder="0,00"
+                    className="h-8 text-sm bg-background mt-1"
+                    value={asset.value_cents > 0 ? (asset.value_cents / 100).toString() : ''}
+                    onChange={e => updateAsset(idx, 'value_cents', parseCurrencyToCents(e.target.value))}
+                  />
                 </div>
               </div>
             ))}
@@ -344,8 +359,13 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
             </div>
             <div>
               <Label className="text-xs text-muted-foreground">Valor contribuído em {year} (R$)</Label>
-              <Input type="number" placeholder="0,00" className="h-8 text-sm bg-background mt-1"
-                onChange={e => setAnswers(prev => ({ ...prev, pension_annual_cents: Math.round(parseFloat(e.target.value || '0') * 100) }))} />
+              <Input
+                type="number"
+                placeholder="0,00"
+                className="h-8 text-sm bg-background mt-1"
+                value={answers.pension_annual_cents > 0 ? (answers.pension_annual_cents / 100).toString() : ''}
+                onChange={e => setAnswers(prev => ({ ...prev, pension_annual_cents: parseCurrencyToCents(e.target.value) }))}
+              />
             </div>
           </div>
         );
