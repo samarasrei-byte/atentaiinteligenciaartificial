@@ -83,6 +83,12 @@ const ContadorIADashboard = () => {
   const [showChecklist, setShowChecklist] = useState(false);
   const [checklistCompleted, setChecklistCompleted] = useState(false);
   const initializedRef = useRef(false);
+  const activeDeclarationIdRef = useRef<string | null>(null);
+
+  // Keep ref in sync for realtime callback
+  React.useEffect(() => {
+    activeDeclarationIdRef.current = activeDeclaration?.id || null;
+  }, [activeDeclaration?.id]);
 
   // Sync checklistCompleted from DB when active declaration changes
   React.useEffect(() => {
@@ -145,6 +151,13 @@ const ContadorIADashboard = () => {
 
   React.useEffect(() => { loadDeclarations(); }, [loadDeclarations]);
 
+  // Auth guard — redirect unauthenticated users
+  React.useEffect(() => {
+    if (!user && !isLoading) {
+      navigate('/auth');
+    }
+  }, [user, isLoading, navigate]);
+
   // Realtime: auto-refresh when declarations or documents change
   React.useEffect(() => {
     if (!user) return;
@@ -162,7 +175,8 @@ const ContadorIADashboard = () => {
         table: 'ir_ai_documents',
         filter: `user_id=eq.${user.id}`,
       }, () => {
-        if (activeDeclaration) loadDocuments(activeDeclaration.id);
+        const currentId = activeDeclarationIdRef.current;
+        if (currentId) loadDocuments(currentId);
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
