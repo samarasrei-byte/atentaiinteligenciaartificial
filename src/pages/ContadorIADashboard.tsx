@@ -257,13 +257,52 @@ const ContadorIADashboard = () => {
     if (activeDeclaration) loadDocuments(activeDeclaration.id);
   };
 
+  // Save checklist and generate summary
+  const handleChecklistComplete = async (answers: ChecklistAnswers) => {
+    if (!activeDeclaration) return;
+    setChecklistCompleted(true);
+    setShowChecklist(false);
+
+    // Save checklist answers to declaration
+    await supabase.from('ir_ai_declarations').update({
+      checklist_completed: true,
+      has_dependents: answers.has_dependents,
+      dependents_count: answers.dependents_count,
+      dependents_info: answers.dependents_info,
+      has_assets: answers.has_assets,
+      assets_info: answers.assets_info,
+      has_private_pension: answers.has_private_pension,
+      pension_type: answers.pension_type,
+      pension_annual_cents: answers.pension_annual_cents,
+      has_exempt_income: answers.has_exempt_income,
+      exempt_income_types: answers.exempt_income_types,
+      had_carne_leao: answers.had_carne_leao,
+      sold_assets: answers.sold_assets,
+      has_crypto: answers.has_crypto,
+      checklist_answers: answers,
+    } as any).eq('id', activeDeclaration.id);
+
+    toast.success('Checklist salvo! Gerando análise...');
+    await generateSummary(answers);
+  };
+
+  const handleSkipChecklist = async () => {
+    setShowChecklist(false);
+    setChecklistCompleted(true);
+    await generateSummary();
+  };
+
   // Generate full summary
-  const generateSummary = async () => {
+  const generateSummary = async (checklistData?: ChecklistAnswers) => {
     if (!activeDeclaration) return;
     setIsAnalyzing(true);
     try {
       const { error } = await supabase.functions.invoke('ai-ir-analyze', {
-        body: { declarationId: activeDeclaration.id, action: 'generate_summary' },
+        body: {
+          declarationId: activeDeclaration.id,
+          action: 'generate_summary',
+          checklistData: checklistData || null,
+        },
       });
       if (error) throw error;
       toast.success('Declaração analisada! Revise os dados.');
