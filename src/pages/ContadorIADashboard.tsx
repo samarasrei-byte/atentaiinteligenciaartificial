@@ -272,11 +272,9 @@ const ContadorIADashboard = () => {
   // Save checklist and generate summary
   const handleChecklistComplete = async (answers: ChecklistAnswers) => {
     if (!activeDeclaration) return;
-    setChecklistCompleted(true);
-    setShowChecklist(false);
 
     // Save checklist answers to declaration
-    await supabase.from('ir_ai_declarations').update({
+    const { error: saveError } = await supabase.from('ir_ai_declarations').update({
       checklist_completed: true,
       has_dependents: answers.has_dependents,
       dependents_count: answers.dependents_count,
@@ -294,6 +292,14 @@ const ContadorIADashboard = () => {
       checklist_answers: answers,
     } as any).eq('id', activeDeclaration.id);
 
+    if (saveError) {
+      toast.error('Erro ao salvar checklist. Tente novamente.');
+      console.error('Checklist save error:', saveError);
+      return;
+    }
+
+    setChecklistCompleted(true);
+    setShowChecklist(false);
     toast.success('Checklist salvo! Gerando análise...');
     await generateSummary(answers);
   };
