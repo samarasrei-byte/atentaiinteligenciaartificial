@@ -196,13 +196,32 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
       }
 
       const aiData = await response.json();
-      let extractedData = {};
+      let extractedData: Record<string, unknown> = {};
+      let docParseFailed = false;
       
       const toolCall = aiData.choices?.[0]?.message?.tool_calls?.[0];
       if (toolCall?.function?.arguments) {
         try {
           extractedData = JSON.parse(toolCall.function.arguments);
-        } catch { extractedData = { raw: toolCall.function.arguments }; }
+        } catch { docParseFailed = true; }
+      } else {
+        docParseFailed = true;
+      }
+
+      // Validate: must have items array with at least 1 entry and confidence
+      const hasItems = Array.isArray(extractedData.items) && (extractedData.items as unknown[]).length > 0;
+      const hasConfidence = typeof extractedData.confidence_percent === 'number';
+
+      if (docParseFailed || !hasItems) {
+        console.error("[ai-ir-analyze] Document extraction failed/empty for doc:", documentId);
+        await supabase.from("ir_ai_documents").update({
+          ai_status: "error",
+          ai_extracted_data: { error: "A IA não conseguiu extrair dados deste documento. Verifique a qualidade do arquivo." },
+        }).eq("id", documentId);
+
+        return new Response(JSON.stringify({ error: "Não foi possível extrair dados do documento. Verifique a qualidade e tente novamente." }), {
+          status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
 
       await supabase.from("ir_ai_documents").update({
