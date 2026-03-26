@@ -313,12 +313,18 @@ gere um resumo completo da declaração de IR incluindo:
 - Alertas de inconsistências
 - Risco de malha fina (se deduções médicas > 30% da renda, alertar)
 
-Use a tabela progressiva ANUAL do IRPF 2025 (exercício 2024):
+ANO-BASE: ${fiscalYear} (Declaração IRPF ${exerciseYear}, exercício ${fiscalYear})
+
+Use a tabela progressiva ANUAL do IRPF ${exerciseYear} (exercício ${fiscalYear}).
+Se o ano-base for 2024, use estas faixas:
 - Até R$ 26.963,20 (anual): isento (0%)
 - De R$ 26.963,21 até R$ 33.919,80: 7,5% (dedução R$ 2.033,28)
 - De R$ 33.919,81 até R$ 45.012,60: 15% (dedução R$ 4.577,28)
 - De R$ 45.012,61 até R$ 55.976,16: 22,5% (dedução R$ 7.953,24)
 - Acima de R$ 55.976,16: 27,5% (dedução R$ 10.752,00)
+
+Se o ano-base for 2025, use as faixas atualizadas conforme legislação vigente.
+Caso não conheça as faixas exatas do ano informado, use as faixas de 2024 como base e alerte o contribuinte.
 
 ATENÇÃO: Estes são valores ANUAIS. NÃO use a tabela mensal. O cálculo é sobre a BASE DE CÁLCULO ANUAL (rendimentos tributáveis - deduções).
 
