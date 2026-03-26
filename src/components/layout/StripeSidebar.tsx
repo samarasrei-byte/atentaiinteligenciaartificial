@@ -375,7 +375,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   const isEquipeGuilherme = hasRole('equipe_guilherme') && !hasRole('admin');
   
   // Groups that equipe_guilherme can access (chat groups only)
-  const chatOnlyGroupIds = ['guilherme', 'cesar'];
+  const chatOnlyGroupIds = ['guilherme'];
   
   const getGroups = () => {
     let baseGroups: SidebarGroup[];
