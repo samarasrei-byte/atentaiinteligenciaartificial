@@ -285,7 +285,7 @@ ${checklistInfo.has_assets ? `- POSSUI bens e direitos: ${JSON.stringify(checkli
 ${checklistInfo.has_private_pension ? `- Previdência privada: ${checklistInfo.pension_type || 'não especificado'}, valor anual: R$ ${((checklistInfo.pension_annual_cents || 0) / 100).toFixed(2)}` : '- SEM previdência privada'}
 ${checklistInfo.has_exempt_income ? `- Rendimentos isentos: ${(checklistInfo.exempt_income_types || []).join(', ')}` : '- SEM rendimentos isentos declarados'}
 ${checklistInfo.had_carne_leao ? '- TEVE carnê-leão (recebeu de PF)' : '- SEM carnê-leão'}
-${checklistInfo.sold_assets ? '- VENDEU bens em 2024 (verificar ganho de capital)' : '- NÃO vendeu bens'}
+${checklistInfo.sold_assets ? `- VENDEU bens em ${fiscalYear} (verificar ganho de capital)` : '- NÃO vendeu bens'}
 ${checklistInfo.has_crypto ? '- POSSUI/NEGOCIOU criptomoedas' : '- SEM criptomoedas'}
 ${checklistInfo.multiple_income_sources ? '- TEVE MÚLTIPLAS FONTES DE RENDA (verificar imposto complementar)' : '- Fonte única de renda'}
 
