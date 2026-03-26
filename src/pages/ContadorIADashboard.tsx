@@ -299,6 +299,12 @@ const ContadorIADashboard = () => {
   const handleSkipChecklist = async () => {
     setShowChecklist(false);
     setChecklistCompleted(true);
+    // Persist skip to DB so it survives page refresh
+    if (activeDeclaration) {
+      await supabase.from('ir_ai_declarations').update({
+        checklist_completed: true,
+      } as any).eq('id', activeDeclaration.id);
+    }
     await generateSummary();
   };
 

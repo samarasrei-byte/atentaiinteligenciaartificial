@@ -265,8 +265,9 @@ ${checklistInfo.has_exempt_income ? `- Rendimentos isentos: ${(checklistInfo.exe
 ${checklistInfo.had_carne_leao ? '- TEVE carnê-leão (recebeu de PF)' : '- SEM carnê-leão'}
 ${checklistInfo.sold_assets ? '- VENDEU bens em 2024 (verificar ganho de capital)' : '- NÃO vendeu bens'}
 ${checklistInfo.has_crypto ? '- POSSUI/NEGOCIOU criptomoedas' : '- SEM criptomoedas'}
+${checklistInfo.multiple_income_sources ? '- TEVE MÚLTIPLAS FONTES DE RENDA (verificar imposto complementar)' : '- Fonte única de renda'}
 
-IMPORTANTE: Considere estes dados na análise. Se tem dependentes, inclua as deduções por dependente (R$ 2.275,08/ano). Se tem PGBL, verifique o limite de 12% da renda tributável. Se vendeu bens, alerte sobre ganho de capital.`;
+IMPORTANTE: Considere estes dados na análise. Se tem dependentes, inclua as deduções por dependente (R$ 2.275,08/ano). Se tem PGBL, verifique o limite de 12% da renda tributável. Se vendeu bens, alerte sobre ganho de capital. Se tem múltiplas fontes, calcule o ajuste na tabela progressiva considerando a soma dos rendimentos.`;
       }
 
       const summaryResponse = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
@@ -383,6 +384,8 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         total_deductions_cents: (typedAnalysis.total_deductions_cents as number) || 0,
         tax_due_cents: (typedAnalysis.tax_due_cents as number) || 0,
         refund_cents: (typedAnalysis.refund_cents as number) || 0,
+        malha_fina_risk: (typedAnalysis.malha_fina_risk as string) || 'baixo',
+        malha_fina_reasons: (typedAnalysis.malha_fina_reasons as string[]) || [],
       }).eq("id", declarationId);
 
       // Send email notification to user
