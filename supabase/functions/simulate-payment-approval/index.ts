@@ -168,19 +168,30 @@ serve(async (req) => {
       }, { onConflict: 'user_id' });
       log("Subscription created (TEST)", { planType: plan.planType });
     } else if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
-      // IR services - create AI declaration automatically (same as process-approved-payment)
       const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
       const irCpf = metadata?.cpf || null;
       const irFiscalYear = metadata?.fiscal_year ? parseInt(metadata.fiscal_year) : new Date().getFullYear() - 1;
-      const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
-        user_id: userId,
-        fiscal_year: irFiscalYear,
-        declaration_type: declarationType,
-        status: 'pending_documents',
-        full_name: fullName || '',
-        cpf: irCpf,
-      }).select('id').single();
-      log("IR AI declaration created (TEST)", { declarationId: newDecl?.id, type: declarationType });
+
+      // Prevent duplicate declarations (webhook retries / double clicks)
+      const { data: existingDecl } = await supabaseAdmin.from('ir_ai_declarations')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('fiscal_year', irFiscalYear)
+        .maybeSingle();
+
+      if (existingDecl) {
+        log("IR declaration already exists, skipping (TEST)", { existingId: existingDecl.id });
+      } else {
+        const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
+          user_id: userId,
+          fiscal_year: irFiscalYear,
+          declaration_type: declarationType,
+          status: 'pending_documents',
+          full_name: fullName || '',
+          cpf: irCpf,
+        }).select('id').single();
+        log("IR AI declaration created (TEST)", { declarationId: newDecl?.id, type: declarationType });
+      }
     }
 
     // 3. Fetch CPF if available
