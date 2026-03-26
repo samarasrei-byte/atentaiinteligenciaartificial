@@ -235,14 +235,17 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
     }
 
     if (action === "generate_summary") {
-      // Verify declaration ownership
+      // Verify declaration ownership AND get fiscal_year
       const { data: decl } = await supabase
         .from("ir_ai_declarations")
-        .select("user_id")
+        .select("user_id, fiscal_year")
         .eq("id", declarationId)
         .single();
       
       if (!decl || decl.user_id !== user.id) throw new Error("Unauthorized");
+
+      const fiscalYear = decl.fiscal_year || new Date().getFullYear() - 1;
+      const exerciseYear = fiscalYear + 1; // Declaração entregue no ano seguinte
 
       const { data: docs } = await supabase
         .from("ir_ai_documents")
