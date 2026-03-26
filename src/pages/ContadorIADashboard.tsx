@@ -454,6 +454,35 @@ const ContadorIADashboard = () => {
           </motion.div>
         )}
 
+        {/* Declaration Selector (when multiple) */}
+        {declarations.length > 1 && (
+          <div className="mb-6">
+            <p className="text-xs text-muted-foreground mb-2">Suas declarações:</p>
+            <div className="flex flex-wrap gap-2">
+              {declarations.map((decl) => {
+                const s = statusMap[decl.status] || statusMap.error;
+                const isActive = activeDeclaration?.id === decl.id;
+                return (
+                  <Button
+                    key={decl.id}
+                    size="sm"
+                    variant={isActive ? 'default' : 'outline'}
+                    onClick={() => {
+                      activeDeclarationRef.current = decl.id;
+                      setActiveDeclaration(decl);
+                      loadDocuments(decl.id);
+                    }}
+                    className={`rounded-full text-xs ${isActive ? 'bg-purple-500 hover:bg-purple-600' : 'border-border text-muted-foreground'}`}
+                  >
+                    IR {decl.fiscal_year} ({decl.declaration_type === 'completo' ? 'Completo' : 'Simples'})
+                    <Badge className={`ml-2 ${s.color} border-0 text-[10px]`}>{s.label}</Badge>
+                  </Button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Active declaration */}
         {activeDeclaration && (
           <Tabs value={activeTab} onValueChange={setActiveTab}>

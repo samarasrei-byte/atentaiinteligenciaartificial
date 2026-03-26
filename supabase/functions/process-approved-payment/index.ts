@@ -364,16 +364,18 @@ serve(async (req) => {
       const irCpf = metadata?.cpf || null;
       const irFiscalYear = metadata?.fiscal_year ? parseInt(metadata.fiscal_year) : new Date().getFullYear() - 1;
 
-      // CRITICAL: Check for existing declaration to prevent duplicates (webhook retries)
+      // Check for existing declaration with SAME type + year to prevent webhook retries
       const { data: existingDecl } = await supabaseAdmin.from('ir_ai_declarations')
-        .select('id')
+        .select('id, declaration_type')
         .eq('user_id', userId)
         .eq('fiscal_year', irFiscalYear)
+        .eq('declaration_type', declarationType)
         .maybeSingle();
 
       if (existingDecl) {
-        log("IR declaration already exists, skipping duplicate creation", { existingId: existingDecl.id, fiscalYear: irFiscalYear });
+        log("IR declaration already exists (same type+year), skipping duplicate", { existingId: existingDecl.id, fiscalYear: irFiscalYear });
       } else {
+        // Allow upgrade: user may have ir_simples and now buys ir_completo (or vice-versa)
         const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
           user_id: userId,
           fiscal_year: irFiscalYear,
