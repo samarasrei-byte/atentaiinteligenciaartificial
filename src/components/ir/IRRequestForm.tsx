@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMPCheckout } from '@/contexts/MPCheckoutContext';
 import { Button } from '@/components/ui/button';
@@ -37,7 +36,6 @@ interface IRRequestFormProps {
 export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   const { user } = useAuth();
   const { openCheckout } = useMPCheckout();
-  const navigate = useNavigate();
   const { toast } = useToast();
   
   const [irType, setIrType] = useState<'simples' | 'completo'>('simples');
@@ -56,6 +54,25 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
   });
   
   const [cpfValid, setCpfValid] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (user?.email && !formData.email) {
+      setFormData((prev) => ({ ...prev, email: user.email || '' }));
+    }
+  }, [user?.email, formData.email]);
+
+  useEffect(() => {
+    if (irType === 'simples') {
+      setFormData((prev) => ({
+        ...prev,
+        hasInvestments: false,
+        hasRentalIncome: false,
+        hasForeignIncome: false,
+        incomeSourcesCount: 1,
+      }));
+    }
+  }, [irType]);
 
   const serviceKey = irType === 'simples' ? 'ir_simples' : 'ir_completo';
   const service = SUBSCRIBER_DISCOUNTS[serviceKey];
@@ -63,6 +80,10 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isSubmitting) return;
+
+    const normalizedCpf = formData.cpf.replace(/\D/g, '');
 
     if (!formData.fullName || !formData.email || !formData.cpf) {
       toast({ variant: 'destructive', title: 'Campos obrigatórios', description: 'Preencha nome, email e CPF para continuar.' });
@@ -74,39 +95,55 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
       return;
     }
 
-    if (!cpfValid) {
+    if (!cpfValid || normalizedCpf.length !== 11) {
       toast({ variant: 'destructive', title: 'CPF inválido', description: 'Informe um CPF válido para continuar.' });
       return;
     }
 
-    openCheckout({
-      amountCents: finalPrice,
-      serviceName: service.name,
-      serviceType: serviceKey,
-      description: `${service.description} - Ano ${formData.fiscalYear}`,
-      gradient: 'from-violet-600 to-purple-700',
-      icon: irType === 'simples' ? FileText : FileSpreadsheet,
-      metadata: {
-        ir_type: irType,
-        fiscal_year: String(formData.fiscalYear),
-        full_name: formData.fullName,
-        cpf: formData.cpf,
-        phone: formData.phone,
-        email: formData.email,
-        has_investments: String(formData.hasInvestments),
-        has_rental_income: String(formData.hasRentalIncome),
-        has_foreign_income: String(formData.hasForeignIncome),
-        income_sources_count: String(formData.incomeSourcesCount),
-        notes: formData.notes || '',
-      },
-      guestEmail: formData.email,
-      guestName: formData.fullName,
-      requireGuestInfo: !user,
-      onSuccess: () => {
-        toast({ title: 'Pagamento aprovado! ✅', description: 'Sua declaração será processada em breve.' });
-        onSuccess?.();
-      },
-    });
+    if (irType === 'simples' && (formData.hasInvestments || formData.hasRentalIncome || formData.hasForeignIncome || formData.incomeSourcesCount > 1)) {
+      toast({
+        variant: 'destructive',
+        title: 'Perfil incompatível com IR Simples',
+        description: 'Seu cenário exige IR Completo. Ajustamos isso para evitar erro fiscal.',
+      });
+      setIrType('completo');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      openCheckout({
+        amountCents: finalPrice,
+        serviceName: service.name,
+        serviceType: serviceKey,
+        description: `${service.description} - Ano ${formData.fiscalYear}`,
+        gradient: 'from-violet-600 to-purple-700',
+        icon: irType === 'simples' ? FileText : FileSpreadsheet,
+        metadata: {
+          ir_type: irType,
+          fiscal_year: String(formData.fiscalYear),
+          full_name: formData.fullName,
+          cpf: normalizedCpf,
+          phone: formData.phone,
+          email: formData.email,
+          has_investments: String(formData.hasInvestments),
+          has_rental_income: String(formData.hasRentalIncome),
+          has_foreign_income: String(formData.hasForeignIncome),
+          income_sources_count: String(formData.incomeSourcesCount),
+          notes: formData.notes || '',
+        },
+        guestEmail: formData.email,
+        guestName: formData.fullName,
+        requireGuestInfo: !user,
+        onSuccess: () => {
+          toast({ title: 'Pagamento aprovado! ✅', description: 'Sua declaração será processada em breve.' });
+          onSuccess?.();
+        },
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -256,8 +293,9 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                 <p className="text-sm text-muted-foreground">Total a pagar:</p>
                 <p className="text-2xl font-bold text-foreground">{formatPrice(finalPrice)}</p>
               </div>
-              <Button type="submit" size="lg">
-                Ir para Pagamento
+              <Button type="submit" size="lg" disabled={isSubmitting}>
+                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                {isSubmitting ? 'Abrindo pagamento...' : 'Ir para Pagamento'}
               </Button>
             </div>
           </form>
