@@ -509,26 +509,8 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       if (totalDeductions < 0) { totalDeductions = 0; }
 
       // ============================================================
-      // 7. CRITICAL: Recalculate tax using progressive table after
-      //    deduction corrections. Without this, corrected deductions
-      //    produce INCONSISTENT tax (calculated with old deduction values).
+      // 7. Tax recalculation now handled in dual-model comparison (7b)
       // ============================================================
-      const baseCalculo = Math.max(0, totalIncome - totalDeductions);
-
-      // Progressive annual table IRPF 2025 (exercício 2024)
-      let calculatedTax = 0;
-      if (baseCalculo <= 2696320) {
-        calculatedTax = 0;
-      } else if (baseCalculo <= 3391980) {
-        calculatedTax = Math.round(baseCalculo * 0.075 - 203328);
-      } else if (baseCalculo <= 4501260) {
-        calculatedTax = Math.round(baseCalculo * 0.15 - 457728);
-      } else if (baseCalculo <= 5597616) {
-        calculatedTax = Math.round(baseCalculo * 0.225 - 795324);
-      } else {
-        calculatedTax = Math.round(baseCalculo * 0.275 - 1075200);
-      }
-      calculatedTax = Math.max(0, calculatedTax);
 
       // Estimate IRRF retained from income sources
       const incomeSources = (typedAnalysis.income_sources as any[]) || [];
@@ -537,6 +519,89 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         if (src.irrf_cents && typeof src.irrf_cents === 'number') {
           totalIRRF += src.irrf_cents;
         }
+      }
+
+      // CRITICAL FALLBACK: If AI summary didn't populate irrf_cents per source,
+      // recover IRRF from the original extracted documents (tax_withheld_cents)
+      if (totalIRRF === 0 && docs && docs.length > 0) {
+        for (const doc of docs) {
+          const extracted = doc.ai_extracted_data as any;
+          if (extracted?.tax_withheld_cents && typeof extracted.tax_withheld_cents === 'number') {
+            totalIRRF += extracted.tax_withheld_cents;
+          }
+          // Also check inside items for any IRRF-like entries
+          if (Array.isArray(extracted?.items)) {
+            for (const item of extracted.items) {
+              if (item.category === 'irrf' || item.description?.toLowerCase().includes('irrf') || item.description?.toLowerCase().includes('retido')) {
+                if (item.value_cents && typeof item.value_cents === 'number' && item.value_cents > 0) {
+                  totalIRRF += item.value_cents;
+                }
+              }
+            }
+          }
+        }
+        if (totalIRRF > 0) {
+          validationAlerts.push(`IRRF recuperado dos documentos originais: R$ ${(totalIRRF / 100).toFixed(2)} (não constava no resumo da IA)`);
+        }
+      }
+
+      // ============================================================
+      // 7b. DUAL MODEL COMPARISON — A senior accountant ALWAYS
+      //     calculates both simplified and complete models to recommend
+      //     the one with lower tax burden.
+      // ============================================================
+      const simplifiedDeduction = Math.min(Math.round(totalIncome * 0.20), SIMPLIFIED_CAP_CENTS);
+      const baseCalculoSimplificado = Math.max(0, totalIncome - simplifiedDeduction);
+      const baseCalculoCompleto = Math.max(0, totalIncome - totalDeductions);
+
+      const calcProgressiveTax = (base: number): number => {
+        let tax = 0;
+        if (base <= 2696320) {
+          tax = 0;
+        } else if (base <= 3391980) {
+          tax = Math.round(base * 0.075 - 203328);
+        } else if (base <= 4501260) {
+          tax = Math.round(base * 0.15 - 457728);
+        } else if (base <= 5597616) {
+          tax = Math.round(base * 0.225 - 795324);
+        } else {
+          tax = Math.round(base * 0.275 - 1075200);
+        }
+        return Math.max(0, tax);
+      };
+
+      const taxSimplificado = calcProgressiveTax(baseCalculoSimplificado);
+      const taxCompleto = calcProgressiveTax(baseCalculoCompleto);
+
+      // Determine which model is better and override if AI chose wrong
+      const bestModel = taxSimplificado <= taxCompleto ? 'simplificado' : 'completo';
+      const currentModel = (typedAnalysis.declaration_model as string) || 'simplificado';
+
+      if (bestModel !== currentModel) {
+        validationAlerts.push(
+          `Modelo otimizado: ${bestModel === 'simplificado' ? 'Simplificado' : 'Completo'} economiza R$ ${(Math.abs(taxSimplificado - taxCompleto) / 100).toFixed(2)} vs ${currentModel}`
+        );
+        (typedAnalysis as any).recommended_model = bestModel;
+        (typedAnalysis as any).recommendation_reason = 
+          `${bestModel === 'simplificado' ? 'Simplificado' : 'Completo'} resulta em menor imposto. ` +
+          `Simplificado: R$ ${(taxSimplificado / 100).toFixed(2)} | Completo: R$ ${(taxCompleto / 100).toFixed(2)}`;
+      }
+
+      // Store comparison data for the user
+      (typedAnalysis as any).model_comparison = {
+        simplificado: { deductions_cents: simplifiedDeduction, base_cents: baseCalculoSimplificado, tax_cents: taxSimplificado },
+        completo: { deductions_cents: totalDeductions, base_cents: baseCalculoCompleto, tax_cents: taxCompleto },
+        best: bestModel,
+        savings_cents: Math.abs(taxSimplificado - taxCompleto),
+      };
+
+      // Use the best model's base for final calculation
+      const baseCalculo = bestModel === 'simplificado' ? baseCalculoSimplificado : baseCalculoCompleto;
+      const calculatedTax = bestModel === 'simplificado' ? taxSimplificado : taxCompleto;
+
+      // If best model differs from what was used for deductions, update
+      if (bestModel === 'simplificado' && typedAnalysis.declaration_model !== 'simplificado') {
+        totalDeductions = simplifiedDeduction;
       }
 
       // If we have IRRF data, calculate refund/tax properly
@@ -548,17 +613,14 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
           taxDue = calculatedTax - totalIRRF;
           refund = 0;
         }
-        if (calculatedTax !== (typedAnalysis.tax_due_cents as number)) {
-          validationAlerts.push(`Imposto recalculado pela tabela progressiva: R$ ${(calculatedTax / 100).toFixed(2)} (base de cálculo: R$ ${(baseCalculo / 100).toFixed(2)})`);
-        }
+        validationAlerts.push(`Imposto calculado pela tabela progressiva: R$ ${(calculatedTax / 100).toFixed(2)} | IRRF retido: R$ ${(totalIRRF / 100).toFixed(2)} | ${refund > 0 ? `Restituição: R$ ${(refund / 100).toFixed(2)}` : `A pagar: R$ ${(taxDue / 100).toFixed(2)}`}`);
       } else {
-        // No IRRF info — use AI values but enforce consistency
-        // Only override if deductions were corrected (which changes base)
+        // No IRRF info — recalculate tax but set refund to 0 (can't compute without IRRF)
+        taxDue = calculatedTax;
+        refund = 0;
         if (validationAlerts.length > 0) {
-          taxDue = calculatedTax;
-          validationAlerts.push(`Imposto recalculado: R$ ${(calculatedTax / 100).toFixed(2)} (base: R$ ${(baseCalculo / 100).toFixed(2)})`);
+          validationAlerts.push(`Imposto recalculado: R$ ${(calculatedTax / 100).toFixed(2)} (sem dados de IRRF retido para calcular restituição)`);
         }
-        // Keep refund from AI if no IRRF to compute against
       }
 
       // 8. Final consistency: tax_due and refund cannot both be positive
