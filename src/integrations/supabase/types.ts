@@ -2469,17 +2469,33 @@ export type Database = {
         Row: {
           ai_analysis: Json | null
           ai_confidence_percent: number | null
+          assets_info: Json | null
+          checklist_answers: Json | null
+          checklist_completed: boolean | null
           completed_at: string | null
           cpf: string | null
           created_at: string
           declaration_type: string
+          dependents_count: number | null
+          dependents_info: Json | null
+          exempt_income_types: string[] | null
           fiscal_year: number
           full_name: string | null
+          had_carne_leao: boolean | null
+          has_assets: boolean | null
+          has_crypto: boolean | null
+          has_dependents: boolean | null
+          has_exempt_income: boolean | null
+          has_private_pension: boolean | null
           human_reviewed: boolean | null
           id: string
+          multiple_income_sources: boolean | null
           notes: string | null
+          pension_annual_cents: number | null
+          pension_type: string | null
           refund_cents: number | null
           reviewed_at: string | null
+          sold_assets: boolean | null
           status: string
           tax_due_cents: number | null
           total_deductions_cents: number | null
@@ -2490,17 +2506,33 @@ export type Database = {
         Insert: {
           ai_analysis?: Json | null
           ai_confidence_percent?: number | null
+          assets_info?: Json | null
+          checklist_answers?: Json | null
+          checklist_completed?: boolean | null
           completed_at?: string | null
           cpf?: string | null
           created_at?: string
           declaration_type?: string
+          dependents_count?: number | null
+          dependents_info?: Json | null
+          exempt_income_types?: string[] | null
           fiscal_year?: number
           full_name?: string | null
+          had_carne_leao?: boolean | null
+          has_assets?: boolean | null
+          has_crypto?: boolean | null
+          has_dependents?: boolean | null
+          has_exempt_income?: boolean | null
+          has_private_pension?: boolean | null
           human_reviewed?: boolean | null
           id?: string
+          multiple_income_sources?: boolean | null
           notes?: string | null
+          pension_annual_cents?: number | null
+          pension_type?: string | null
           refund_cents?: number | null
           reviewed_at?: string | null
+          sold_assets?: boolean | null
           status?: string
           tax_due_cents?: number | null
           total_deductions_cents?: number | null
@@ -2511,17 +2543,33 @@ export type Database = {
         Update: {
           ai_analysis?: Json | null
           ai_confidence_percent?: number | null
+          assets_info?: Json | null
+          checklist_answers?: Json | null
+          checklist_completed?: boolean | null
           completed_at?: string | null
           cpf?: string | null
           created_at?: string
           declaration_type?: string
+          dependents_count?: number | null
+          dependents_info?: Json | null
+          exempt_income_types?: string[] | null
           fiscal_year?: number
           full_name?: string | null
+          had_carne_leao?: boolean | null
+          has_assets?: boolean | null
+          has_crypto?: boolean | null
+          has_dependents?: boolean | null
+          has_exempt_income?: boolean | null
+          has_private_pension?: boolean | null
           human_reviewed?: boolean | null
           id?: string
+          multiple_income_sources?: boolean | null
           notes?: string | null
+          pension_annual_cents?: number | null
+          pension_type?: string | null
           refund_cents?: number | null
           reviewed_at?: string | null
+          sold_assets?: boolean | null
           status?: string
           tax_due_cents?: number | null
           total_deductions_cents?: number | null
