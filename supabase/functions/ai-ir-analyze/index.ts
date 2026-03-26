@@ -458,7 +458,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       const hasIncome = typeof typedAnalysis.total_income_cents === 'number' && typedAnalysis.total_income_cents > 0;
       const hasConfidence = typeof typedAnalysis.confidence_percent === 'number' && typedAnalysis.confidence_percent > 0;
 
-      if (parseFailed || (!hasIncome && !hasConfidence)) {
+      if (parseFailed || !hasIncome || !hasConfidence) {
         console.error("[ai-ir-analyze] AI returned empty/invalid analysis:", JSON.stringify(analysis));
         await supabase.from("ir_ai_declarations").update({
           status: "error",
