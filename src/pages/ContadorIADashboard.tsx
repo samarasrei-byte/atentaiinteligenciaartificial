@@ -693,18 +693,43 @@ const ContadorIADashboard = () => {
                   </Card>
                 ) : (
                   <>
-                    <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
-                      <CardContent className="p-6 flex items-center justify-between">
-                        <div>
-                          <h3 className="font-bold">{extractedDocs.length} documentos analisados</h3>
-                          <p className="text-sm text-muted-foreground">Gere o resumo completo da declaração</p>
-                        </div>
-                        <Button onClick={generateSummary} disabled={isAnalyzing} className="bg-purple-500 hover:bg-purple-600 rounded-full">
-                          {isAnalyzing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                          Gerar declaração
-                        </Button>
-                      </CardContent>
-                    </Card>
+                    {/* Show checklist or generate button */}
+                    {showChecklist ? (
+                      <IRPreAnalysisChecklist
+                        onComplete={handleChecklistComplete}
+                        onSkip={handleSkipChecklist}
+                        isLoading={isAnalyzing}
+                      />
+                    ) : (
+                      <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
+                        <CardContent className="p-6">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="font-bold">{extractedDocs.length} documentos analisados</h3>
+                              <p className="text-sm text-muted-foreground">
+                                {checklistCompleted
+                                  ? 'Checklist concluído! Gere o resumo completo.'
+                                  : 'Responda o checklist fiscal para uma análise mais precisa'}
+                              </p>
+                            </div>
+                            <Button
+                              onClick={() => {
+                                if (checklistCompleted) {
+                                  generateSummary();
+                                } else {
+                                  setShowChecklist(true);
+                                }
+                              }}
+                              disabled={isAnalyzing}
+                              className="bg-purple-500 hover:bg-purple-600 rounded-full"
+                            >
+                              {isAnalyzing ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                              {checklistCompleted ? 'Gerar declaração' : 'Iniciar checklist fiscal'}
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    )}
 
                     {extractedDocs.map((doc) => (
                       <Card key={doc.id} className="bg-card border-border">
