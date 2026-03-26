@@ -71,6 +71,7 @@ type Props = {
   onComplete: (answers: ChecklistAnswers) => void;
   onSkip: () => void;
   isLoading?: boolean;
+  fiscalYear?: number;
 };
 
 type QuestionStep = {
@@ -81,15 +82,15 @@ type QuestionStep = {
   alertText?: string;
 };
 
-const questions: QuestionStep[] = [
+const getQuestions = (year: number): QuestionStep[] => [
   { id: 'dependents', icon: Users, title: 'Dependentes', description: 'Você tem dependentes (filhos, cônjuge, pais)?' },
   { id: 'assets', icon: Home, title: 'Bens e Direitos', description: 'Possui imóveis, veículos, investimentos ou contas bancárias > R$ 140?', alertText: 'A Receita cruza dados com cartórios, DETRAN e B3' },
-  { id: 'pension', icon: Landmark, title: 'Previdência Privada', description: 'Contribuiu para PGBL ou VGBL em 2024?', alertText: 'PGBL pode deduzir até 12% da renda tributável' },
+  { id: 'pension', icon: Landmark, title: 'Previdência Privada', description: `Contribuiu para PGBL ou VGBL em ${year}?`, alertText: 'PGBL pode deduzir até 12% da renda tributável' },
   { id: 'exempt', icon: DollarSign, title: 'Rendimentos Isentos', description: 'Recebeu FGTS, seguro-desemprego, poupança, dividendos ou herança?' },
   { id: 'carne_leao', icon: Briefcase, title: 'Carnê-Leão', description: 'Recebeu pagamentos de pessoas físicas (aluguel, freelance, etc.)?', alertText: 'Autônomos com renda de PF precisam do carnê-leão' },
-  { id: 'sold_assets', icon: TrendingUp, title: 'Venda de Bens', description: 'Vendeu imóvel, veículo ou ações em 2024?', alertText: 'Ganho de capital pode ter imposto específico' },
+  { id: 'sold_assets', icon: TrendingUp, title: 'Venda de Bens', description: `Vendeu imóvel, veículo ou ações em ${year}?`, alertText: 'Ganho de capital pode ter imposto específico' },
   { id: 'crypto', icon: Bitcoin, title: 'Criptomoedas', description: 'Possui ou negociou criptomoedas (Bitcoin, ETH, etc.)?', alertText: 'Obrigatório declarar acima de R$ 5.000' },
-  { id: 'multiple_income', icon: Briefcase, title: 'Múltiplas Fontes de Renda', description: 'Teve mais de uma fonte pagadora em 2024 (CLT + freelance, dois empregos, etc.)?', alertText: 'Múltiplas fontes podem gerar imposto complementar' },
+  { id: 'multiple_income', icon: Briefcase, title: 'Múltiplas Fontes de Renda', description: `Teve mais de uma fonte pagadora em ${year} (CLT + freelance, dois empregos, etc.)?`, alertText: 'Múltiplas fontes podem gerar imposto complementar' },
 ];
 
 // Track which questions have been answered (null = not yet answered)
