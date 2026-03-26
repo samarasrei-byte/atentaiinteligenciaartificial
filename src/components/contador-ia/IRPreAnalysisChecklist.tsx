@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import {
   Users, Home, Landmark, DollarSign, Briefcase, TrendingUp,
   Bitcoin, CheckCircle2, AlertTriangle, ArrowRight, ShieldCheck,
-  Plus, Minus, X
+  Plus, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -91,17 +91,38 @@ const questions: QuestionStep[] = [
   { id: 'crypto', icon: Bitcoin, title: 'Criptomoedas', description: 'Possui ou negociou criptomoedas (Bitcoin, ETH, etc.)?', alertText: 'Obrigatório declarar acima de R$ 5.000' },
 ];
 
+// Track which questions have been answered (null = not yet answered)
+type AnswerState = Record<string, boolean | null>;
+
 const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading }) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<ChecklistAnswers>(defaultAnswers);
+  const [answered, setAnswered] = useState<AnswerState>(() => {
+    const init: AnswerState = {};
+    questions.forEach(q => { init[q.id] = null; });
+    return init;
+  });
 
   const question = questions[currentStep];
   const progress = ((currentStep + 1) / questions.length) * 100;
 
+  const getBoolField = (): keyof ChecklistAnswers => {
+    const map: Record<string, keyof ChecklistAnswers> = {
+      dependents: 'has_dependents',
+      assets: 'has_assets',
+      pension: 'has_private_pension',
+      exempt: 'has_exempt_income',
+      carne_leao: 'had_carne_leao',
+      sold_assets: 'sold_assets',
+      crypto: 'has_crypto',
+    };
+    return map[question.id];
+  };
+
   const handleYesNo = (field: keyof ChecklistAnswers, value: boolean) => {
     setAnswers(prev => ({ ...prev, [field]: value }));
+    setAnswered(prev => ({ ...prev, [question.id]: value }));
     if (!value) {
-      // Auto-advance on "No"
       setTimeout(() => advance(), 300);
     }
   };
@@ -150,6 +171,30 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     }));
   };
 
+  const addAsset = (type: string) => {
+    setAnswers(prev => ({
+      ...prev,
+      assets_info: [...prev.assets_info, { type, description: '', value_cents: 0 }],
+    }));
+  };
+
+  const removeAsset = (idx: number) => {
+    setAnswers(prev => ({
+      ...prev,
+      assets_info: prev.assets_info.filter((_, i) => i !== idx),
+    }));
+  };
+
+  const updateAsset = (idx: number, field: string, value: string | number) => {
+    setAnswers(prev => ({
+      ...prev,
+      assets_info: prev.assets_info.map((a, i) => i === idx ? { ...a, [field]: value } : a),
+    }));
+  };
+
+  // Current answer for this question (null = not answered yet)
+  const currentAnswered = answered[question.id];
+
   const renderDetails = () => {
     switch (question.id) {
       case 'dependents':
@@ -180,6 +225,40 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
             <Button size="sm" variant="outline" onClick={addDependent} className="rounded-full text-xs border-dashed">
               <Plus className="w-3 h-3 mr-1" /> Adicionar dependente
             </Button>
+          </div>
+        );
+
+      case 'assets':
+        if (!answers.has_assets) return null;
+        return (
+          <div className="mt-4 space-y-3">
+            <div className="flex flex-wrap gap-2">
+              {assetTypes.map(at => (
+                <Button key={at.id} size="sm" variant="outline"
+                  onClick={() => addAsset(at.id)}
+                  className="rounded-full text-xs border-border">
+                  <Plus className="w-3 h-3 mr-1" /> {at.label}
+                </Button>
+              ))}
+            </div>
+            {answers.assets_info.map((asset, idx) => (
+              <div key={idx} className="p-3 rounded-lg bg-muted/30 border border-border space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-muted-foreground">
+                    {assetTypes.find(a => a.id === asset.type)?.label || asset.type}
+                  </span>
+                  <Button size="sm" variant="ghost" onClick={() => removeAsset(idx)} className="h-6 w-6 p-0 text-red-400">
+                    <X className="w-3 h-3" />
+                  </Button>
+                </div>
+                <Input placeholder="Descrição (ex: Apartamento 2Q, Bairro X)" value={asset.description} onChange={e => updateAsset(idx, 'description', e.target.value)} className="h-8 text-sm bg-background" />
+                <div>
+                  <Label className="text-xs text-muted-foreground">Valor estimado (R$)</Label>
+                  <Input type="number" placeholder="0,00" className="h-8 text-sm bg-background mt-1"
+                    onChange={e => updateAsset(idx, 'value_cents', Math.round(parseFloat(e.target.value || '0') * 100))} />
+                </div>
+              </div>
+            ))}
           </div>
         );
 
@@ -224,24 +303,8 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     }
   };
 
-  const getBoolField = (): keyof ChecklistAnswers => {
-    const map: Record<string, keyof ChecklistAnswers> = {
-      dependents: 'has_dependents',
-      assets: 'has_assets',
-      pension: 'has_private_pension',
-      exempt: 'has_exempt_income',
-      carne_leao: 'had_carne_leao',
-      sold_assets: 'sold_assets',
-      crypto: 'has_crypto',
-    };
-    return map[question.id];
-  };
-
-  const currentValue = answers[getBoolField()] as boolean;
-
   return (
     <Card className="bg-card border-border overflow-hidden">
-      {/* Progress bar */}
       <div className="h-1 bg-muted">
         <motion.div className="h-full bg-purple-500" animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
       </div>
@@ -278,23 +341,22 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
               </div>
             )}
 
-            {/* Yes / No buttons */}
+            {/* Yes / No buttons — null = not answered yet */}
             <div className="flex gap-3 mb-2">
               <Button
                 onClick={() => handleYesNo(getBoolField(), true)}
-                className={`flex-1 rounded-full h-10 ${currentValue === true ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+                className={`flex-1 rounded-full h-10 ${currentAnswered === true ? 'bg-purple-500 hover:bg-purple-600 text-white' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
               >
                 Sim
               </Button>
               <Button
                 onClick={() => handleYesNo(getBoolField(), false)}
-                className={`flex-1 rounded-full h-10 ${currentValue === false ? 'bg-muted/80 text-foreground border border-border' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
+                className={`flex-1 rounded-full h-10 ${currentAnswered === false ? 'bg-muted/80 text-foreground border border-border' : 'bg-muted text-muted-foreground hover:text-foreground'}`}
               >
                 Não
               </Button>
             </div>
 
-            {/* Details section */}
             {renderDetails()}
           </motion.div>
         </AnimatePresence>
