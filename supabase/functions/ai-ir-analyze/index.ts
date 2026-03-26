@@ -52,7 +52,48 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { declarationId, documentId, documentType, action, checklistData } = await req.json();
+    const payload = await req.json().catch(() => null);
+    if (!payload || typeof payload !== 'object') {
+      return new Response(JSON.stringify({ error: "Payload inválido." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { declarationId, documentId, documentType, action, checklistData } = payload as Record<string, unknown>;
+    const validActions = new Set(["analyze_document", "generate_summary"]);
+
+    if (typeof action !== 'string' || !validActions.has(action)) {
+      return new Response(JSON.stringify({ error: "Ação inválida." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (typeof declarationId !== 'string' || declarationId.length < 10 || declarationId.length > 64) {
+      return new Response(JSON.stringify({ error: "declarationId inválido." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "analyze_document") {
+      if (typeof documentId !== 'string' || documentId.length < 10 || documentId.length > 64) {
+        return new Response(JSON.stringify({ error: "documentId inválido." }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (typeof documentType !== 'string' || documentType.trim().length === 0 || documentType.length > 60) {
+        return new Response(JSON.stringify({ error: "documentType inválido." }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const safeChecklistData = checklistData && typeof checklistData === 'object' ? checklistData : null;
 
     if (action === "analyze_document") {
       // Get document info
