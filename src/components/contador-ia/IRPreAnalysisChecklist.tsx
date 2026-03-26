@@ -116,6 +116,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
       carne_leao: 'had_carne_leao',
       sold_assets: 'sold_assets',
       crypto: 'has_crypto',
+      multiple_income: 'multiple_income_sources',
     };
     return map[question.id];
   };
