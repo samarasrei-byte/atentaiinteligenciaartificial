@@ -17,7 +17,7 @@ const PricingSection = lazy(() => import("@/components/sections/PricingSection")
 const TestimonialsSection = lazy(() => import("@/components/sections/TestimonialsSection").then(m => ({ default: m.TestimonialsSection })));
 const LimpaNomeSection = lazy(() => import("@/components/sections/LimpaNomeSection").then(m => ({ default: m.LimpaNomeSection })));
 const FiscalModuleSection = lazy(() => import("@/components/sections/FiscalModuleSection").then(m => ({ default: m.FiscalModuleSection })));
-const FiscalTestimonialsSection = lazy(() => import("@/components/sections/FiscalTestimonialsSection").then(m => ({ default: m.FiscalTestimonialsSection })));
+import { FiscalTestimonialsSection } from "@/components/sections/FiscalTestimonialsSection";
 const FAQSection = lazy(() => import("@/components/sections/FAQSection").then(m => ({ default: m.FAQSection })));
 const SuccessCasesSection = lazy(() => import("@/components/sections/SuccessCasesSection").then(m => ({ default: m.SuccessCasesSection })));
 
