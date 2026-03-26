@@ -208,6 +208,7 @@ const ContadorIADashboard = () => {
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !activeDeclaration || !user) return;
     setIsUploading(true);
+    let uploadedCount = 0;
 
     for (const file of Array.from(e.target.files)) {
       // Validate file size
@@ -216,7 +217,17 @@ const ContadorIADashboard = () => {
         continue;
       }
 
-      const filePath = `${user.id}/${activeDeclaration.id}/${Date.now()}_${file.name}`;
+      // Validate MIME type
+      const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'image/webp'];
+      if (!allowedTypes.includes(file.type)) {
+        toast.error(`"${file.name}" não é um formato suportado (PDF, JPG, PNG, WEBP).`);
+        continue;
+      }
+
+      // Sanitize file name — remove path traversal and special chars
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 100);
+      const filePath = `${user.id}/${activeDeclaration.id}/${Date.now()}_${safeName}`;
+
       const { error: uploadError } = await supabase.storage
         .from('ir-ai-documents')
         .upload(filePath, file);
@@ -235,9 +246,12 @@ const ContadorIADashboard = () => {
         file_size_bytes: file.size,
         mime_type: file.type,
       });
+      uploadedCount++;
     }
 
-    toast.success('Documentos enviados!');
+    if (uploadedCount > 0) {
+      toast.success(`${uploadedCount} documento(s) enviado(s)!`);
+    }
     loadDocuments(activeDeclaration.id);
     setIsUploading(false);
     e.target.value = '';
