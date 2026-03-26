@@ -22,7 +22,7 @@ const IRPage = () => {
           <div className="text-center mb-8">
             <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">
               <FileText className="w-3 h-3 mr-1" />
-              Imposto de Renda {new Date().getFullYear() - 1}
+              Exercício {new Date().getFullYear()} — Ano-Base {new Date().getFullYear() - 1}
             </Badge>
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-2">
               Declaração de Imposto de Renda
