@@ -19,8 +19,8 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'analise_fiscal': { chatType: 'guilherme', specialist: 'Guilherme' },
   'clarity': { chatType: 'guilherme', specialist: 'Guilherme' },
   'control': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'ir_simples': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'ir_completo': { chatType: 'guilherme', specialist: 'Guilherme' },
+  'ir_simples': { chatType: 'ia', specialist: 'Contador IA' },
+  'ir_completo': { chatType: 'ia', specialist: 'Contador IA' },
   'bi_contabilidade': { chatType: 'guilherme', specialist: 'Guilherme' },
 };
 
