@@ -125,23 +125,35 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     return map[question.id];
   };
 
-  // Sanitize answers before submission — prevent "has_X = true" with empty data
+  // Sanitize answers before submission — prevent "has_X = true" with empty/invalid data
   const sanitizeAnswers = (raw: ChecklistAnswers): ChecklistAnswers => {
     const sanitized = { ...raw };
-    if (sanitized.has_dependents && sanitized.dependents_info.length === 0) {
-      sanitized.has_dependents = false;
-      sanitized.dependents_count = 0;
-    }
+
+    sanitized.dependents_info = sanitized.dependents_info.filter(dep => dep.name.trim().length > 0);
     sanitized.dependents_count = sanitized.dependents_info.length;
-    if (sanitized.has_assets && sanitized.assets_info.length === 0) {
+    if (sanitized.dependents_count === 0) {
+      sanitized.has_dependents = false;
+    }
+
+    sanitized.assets_info = sanitized.assets_info.filter(asset =>
+      asset.type.trim().length > 0 &&
+      (asset.description.trim().length > 0 || asset.value_cents > 0)
+    );
+    if (sanitized.assets_info.length === 0) {
       sanitized.has_assets = false;
     }
-    if (sanitized.has_exempt_income && sanitized.exempt_income_types.length === 0) {
+
+    sanitized.exempt_income_types = sanitized.exempt_income_types.filter(Boolean);
+    if (sanitized.exempt_income_types.length === 0) {
       sanitized.has_exempt_income = false;
     }
-    if (sanitized.has_private_pension && !sanitized.pension_type && sanitized.pension_annual_cents === 0) {
+
+    if (!sanitized.pension_type || sanitized.pension_annual_cents <= 0) {
       sanitized.has_private_pension = false;
+      sanitized.pension_type = '';
+      sanitized.pension_annual_cents = 0;
     }
+
     return sanitized;
   };
 
@@ -168,9 +180,11 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     if (answered[question.id] !== true) return true; // "Não" or not answered — no details needed
     switch (question.id) {
       case 'dependents':
-        return answers.dependents_info.length > 0 && answers.dependents_info.every(d => d.name.trim() !== '');
+        return answers.dependents_info.length > 0 &&
+          answers.dependents_info.every(d => d.name.trim().length > 0 && d.relation.trim().length > 0);
       case 'assets':
-        return answers.assets_info.length > 0;
+        return answers.assets_info.length > 0 &&
+          answers.assets_info.every(a => a.type.trim().length > 0 && (a.description.trim().length > 0 || a.value_cents > 0));
       case 'pension':
         return !!answers.pension_type && answers.pension_annual_cents > 0;
       case 'exempt':

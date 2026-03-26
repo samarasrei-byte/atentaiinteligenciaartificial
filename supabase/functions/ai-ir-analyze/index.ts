@@ -52,7 +52,48 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { declarationId, documentId, documentType, action, checklistData } = await req.json();
+    const payload = await req.json().catch(() => null);
+    if (!payload || typeof payload !== 'object') {
+      return new Response(JSON.stringify({ error: "Payload inválido." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const { declarationId, documentId, documentType, action, checklistData } = payload as Record<string, unknown>;
+    const validActions = new Set(["analyze_document", "generate_summary"]);
+
+    if (typeof action !== 'string' || !validActions.has(action)) {
+      return new Response(JSON.stringify({ error: "Ação inválida." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (typeof declarationId !== 'string' || declarationId.length < 10 || declarationId.length > 64) {
+      return new Response(JSON.stringify({ error: "declarationId inválido." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (action === "analyze_document") {
+      if (typeof documentId !== 'string' || documentId.length < 10 || documentId.length > 64) {
+        return new Response(JSON.stringify({ error: "documentId inválido." }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      if (typeof documentType !== 'string' || documentType.trim().length === 0 || documentType.length > 60) {
+        return new Response(JSON.stringify({ error: "documentType inválido." }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const safeChecklistData = checklistData && typeof checklistData === 'object' ? checklistData : null;
 
     if (action === "analyze_document") {
       // Get document info
@@ -268,7 +309,7 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
         .eq("id", declarationId)
         .single();
 
-      const checklistInfo = checklistData || declChecklist?.checklist_answers || {};
+      const checklistInfo = safeChecklistData || declChecklist?.checklist_answers || {};
 
       const extractedDataSummary = docs.map(d => ({
         type: d.document_type,
@@ -367,7 +408,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
                         irrf_cents: { type: "number", description: "IRRF retido na fonte em centavos (OBRIGATÓRIO se disponível no informe)" },
                         type: { type: "string", description: "Tipo: salario, pro_labore, aluguel, autonomo, etc" },
                       },
-                      required: ["source", "value_cents", "irrf_cents"],
+                      required: ["source", "cnpj", "value_cents", "irrf_cents"],
                     },
                   },
                   deduction_items: {
@@ -417,7 +458,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       const hasIncome = typeof typedAnalysis.total_income_cents === 'number' && typedAnalysis.total_income_cents > 0;
       const hasConfidence = typeof typedAnalysis.confidence_percent === 'number' && typedAnalysis.confidence_percent > 0;
 
-      if (parseFailed || (!hasIncome && !hasConfidence)) {
+      if (parseFailed || !hasIncome || !hasConfidence) {
         console.error("[ai-ir-analyze] AI returned empty/invalid analysis:", JSON.stringify(analysis));
         await supabase.from("ir_ai_declarations").update({
           status: "error",
@@ -564,24 +605,38 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       const baseCalculoSimplificado = Math.max(0, totalIncome - simplifiedDeduction);
       const baseCalculoCompleto = Math.max(0, totalIncome - totalDeductions);
 
-      const calcProgressiveTax = (base: number): number => {
-        let tax = 0;
-        if (base <= 2696320) {
-          tax = 0;
-        } else if (base <= 3391980) {
-          tax = Math.round(base * 0.075 - 203328);
-        } else if (base <= 4501260) {
-          tax = Math.round(base * 0.15 - 457728);
-        } else if (base <= 5597616) {
-          tax = Math.round(base * 0.225 - 795324);
-        } else {
-          tax = Math.round(base * 0.275 - 1075200);
-        }
+      type AnnualBracket = { limit: number; rate: number; deduction: number };
+      const annualBracketsByFiscalYear: Record<number, AnnualBracket[]> = {
+        2024: [
+          { limit: 2696320, rate: 0, deduction: 0 },
+          { limit: 3391980, rate: 0.075, deduction: 203328 },
+          { limit: 4501260, rate: 0.15, deduction: 457728 },
+          { limit: 5597616, rate: 0.225, deduction: 795324 },
+          { limit: Number.POSITIVE_INFINITY, rate: 0.275, deduction: 1075200 },
+        ],
+        2025: [
+          { limit: 2696320, rate: 0, deduction: 0 },
+          { limit: 3391980, rate: 0.075, deduction: 203328 },
+          { limit: 4501260, rate: 0.15, deduction: 457728 },
+          { limit: 5597616, rate: 0.225, deduction: 795324 },
+          { limit: Number.POSITIVE_INFINITY, rate: 0.275, deduction: 1075200 },
+        ],
+      };
+
+      const selectedBrackets = annualBracketsByFiscalYear[fiscalYear] ?? annualBracketsByFiscalYear[2024];
+      if (!annualBracketsByFiscalYear[fiscalYear]) {
+        validationAlerts.push(`Tabela anual de ${fiscalYear} não cadastrada no motor fiscal. Aplicada tabela de 2024 como fallback técnico.`);
+      }
+
+      const calcProgressiveTax = (base: number, brackets: AnnualBracket[]): number => {
+        const normalizedBase = Math.max(0, base);
+        const bracket = brackets.find((b) => normalizedBase <= b.limit) ?? brackets[brackets.length - 1];
+        const tax = Math.round(normalizedBase * bracket.rate - bracket.deduction);
         return Math.max(0, tax);
       };
 
-      const taxSimplificado = calcProgressiveTax(baseCalculoSimplificado);
-      const taxCompleto = calcProgressiveTax(baseCalculoCompleto);
+      const taxSimplificado = calcProgressiveTax(baseCalculoSimplificado, selectedBrackets);
+      const taxCompleto = calcProgressiveTax(baseCalculoCompleto, selectedBrackets);
 
       // Determine which model is better and override if AI chose wrong
       const bestModel = taxSimplificado <= taxCompleto ? 'simplificado' : 'completo';
