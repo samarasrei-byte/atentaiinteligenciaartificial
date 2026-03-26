@@ -24,13 +24,14 @@ import { formatCurrency, parseCurrencyInput, formatCurrencyInput } from '@/lib/t
 import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Cronograma oficial da Reforma Tributária (EC 132/2023 e LC 214/2025)
+// Alinhado com YearSelector.tsx
 const TRANSITION_DATA = [
   { 
     year: 2025, 
     cbs: 0, 
     ibs: 0, 
-    pis_cofins: 9.25, // PIS 1.65% + COFINS 7.6%
-    icms_iss: 22, // média
+    pis_cofins: 9.25,
+    icms_iss: 22,
     total: 31.25,
     phase: 'Sistema Atual',
     description: 'Sistema tributário atual vigente'
@@ -57,53 +58,53 @@ const TRANSITION_DATA = [
   },
   { 
     year: 2028, 
-    cbs: 8.8, 
-    ibs: 8.0, 
-    pis_cofins: 0,
+    cbs: 0.9, 
+    ibs: 0.1, 
+    pis_cofins: 9.25,
     icms_iss: 22,
-    total: 38.8,
-    phase: 'PIS/COFINS Zerado',
-    description: 'CBS plena, IBS parcial, fim do PIS/COFINS'
+    total: 32.25,
+    phase: 'Coexistência',
+    description: 'Fase de testes mantida - CBS e IBS em teste'
   },
   { 
     year: 2029, 
-    cbs: 8.8, 
-    ibs: 11.0, 
-    pis_cofins: 0,
-    icms_iss: 17.5,
-    total: 37.3,
-    phase: 'Redução ICMS/ISS',
-    description: 'Início da redução gradual ICMS/ISS (-10%)'
+    cbs: 0.88, 
+    ibs: 1.77, 
+    pis_cofins: 8.33,
+    icms_iss: 19.8,
+    total: 30.78,
+    phase: 'Transição 10%',
+    description: '10% do novo sistema implementado, redução de 10% ICMS/ISS'
   },
   { 
     year: 2030, 
-    cbs: 8.8, 
-    ibs: 13.0, 
-    pis_cofins: 0,
-    icms_iss: 13,
-    total: 34.8,
-    phase: 'Redução ICMS/ISS',
-    description: 'Continuação da redução ICMS/ISS (-25%)'
+    cbs: 1.76, 
+    ibs: 3.54, 
+    pis_cofins: 7.4,
+    icms_iss: 17.6,
+    total: 30.3,
+    phase: 'Transição 20%',
+    description: '20% do novo sistema, redução de 20% ICMS/ISS'
   },
   { 
     year: 2031, 
-    cbs: 8.8, 
-    ibs: 15.0, 
-    pis_cofins: 0,
-    icms_iss: 8.5,
-    total: 32.3,
-    phase: 'Redução ICMS/ISS',
-    description: 'Redução ICMS/ISS (-50%)'
+    cbs: 3.52, 
+    ibs: 7.08, 
+    pis_cofins: 5.55,
+    icms_iss: 13.2,
+    total: 29.35,
+    phase: 'Transição 40%',
+    description: '40% do novo sistema, redução de 40% ICMS/ISS'
   },
   { 
     year: 2032, 
-    cbs: 8.8, 
-    ibs: 16.5, 
-    pis_cofins: 0,
-    icms_iss: 4.25,
-    total: 29.55,
-    phase: 'Redução ICMS/ISS',
-    description: 'Redução ICMS/ISS (-75%)'
+    cbs: 6.16, 
+    ibs: 12.39, 
+    pis_cofins: 2.78,
+    icms_iss: 6.6,
+    total: 27.93,
+    phase: 'Transição 70%',
+    description: '70% do novo sistema, redução de 70% ICMS/ISS'
   },
   { 
     year: 2033, 
