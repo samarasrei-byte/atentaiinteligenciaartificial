@@ -509,26 +509,8 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       if (totalDeductions < 0) { totalDeductions = 0; }
 
       // ============================================================
-      // 7. CRITICAL: Recalculate tax using progressive table after
-      //    deduction corrections. Without this, corrected deductions
-      //    produce INCONSISTENT tax (calculated with old deduction values).
+      // 7. Tax recalculation now handled in dual-model comparison (7b)
       // ============================================================
-      const baseCalculo = Math.max(0, totalIncome - totalDeductions);
-
-      // Progressive annual table IRPF 2025 (exercício 2024)
-      let calculatedTax = 0;
-      if (baseCalculo <= 2696320) {
-        calculatedTax = 0;
-      } else if (baseCalculo <= 3391980) {
-        calculatedTax = Math.round(baseCalculo * 0.075 - 203328);
-      } else if (baseCalculo <= 4501260) {
-        calculatedTax = Math.round(baseCalculo * 0.15 - 457728);
-      } else if (baseCalculo <= 5597616) {
-        calculatedTax = Math.round(baseCalculo * 0.225 - 795324);
-      } else {
-        calculatedTax = Math.round(baseCalculo * 0.275 - 1075200);
-      }
-      calculatedTax = Math.max(0, calculatedTax);
 
       // Estimate IRRF retained from income sources
       const incomeSources = (typedAnalysis.income_sources as any[]) || [];
