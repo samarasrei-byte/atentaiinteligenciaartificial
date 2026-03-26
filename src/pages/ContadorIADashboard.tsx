@@ -168,7 +168,8 @@ const ContadorIADashboard = () => {
         table: 'ir_ai_documents',
         filter: `user_id=eq.${user.id}`,
       }, () => {
-        if (activeDeclaration) loadDocuments(activeDeclaration.id);
+        const currentId = activeDeclarationIdRef.current;
+        if (currentId) loadDocuments(currentId);
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
