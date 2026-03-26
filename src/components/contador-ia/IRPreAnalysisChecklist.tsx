@@ -89,6 +89,7 @@ const questions: QuestionStep[] = [
   { id: 'carne_leao', icon: Briefcase, title: 'Carnê-Leão', description: 'Recebeu pagamentos de pessoas físicas (aluguel, freelance, etc.)?', alertText: 'Autônomos com renda de PF precisam do carnê-leão' },
   { id: 'sold_assets', icon: TrendingUp, title: 'Venda de Bens', description: 'Vendeu imóvel, veículo ou ações em 2024?', alertText: 'Ganho de capital pode ter imposto específico' },
   { id: 'crypto', icon: Bitcoin, title: 'Criptomoedas', description: 'Possui ou negociou criptomoedas (Bitcoin, ETH, etc.)?', alertText: 'Obrigatório declarar acima de R$ 5.000' },
+  { id: 'multiple_income', icon: Briefcase, title: 'Múltiplas Fontes de Renda', description: 'Teve mais de uma fonte pagadora em 2024 (CLT + freelance, dois empregos, etc.)?', alertText: 'Múltiplas fontes podem gerar imposto complementar' },
 ];
 
 // Track which questions have been answered (null = not yet answered)
