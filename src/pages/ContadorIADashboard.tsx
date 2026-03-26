@@ -556,6 +556,28 @@ const ContadorIADashboard = () => {
                         </span>
                       </Button>
                     </label>
+
+                    {/* Dicas para melhor resultado */}
+                    <div className="mt-6 p-4 rounded-xl bg-muted/40 border border-border text-left max-w-lg mx-auto">
+                      <p className="text-xs font-semibold text-foreground mb-2 flex items-center gap-1.5">
+                        <AlertCircle className="w-3.5 h-3.5 text-amber-400" />
+                        Dicas para melhor resultado
+                      </p>
+                      <ul className="space-y-1.5 text-xs text-muted-foreground">
+                        <li className="flex items-start gap-2">
+                          <span className="text-amber-400 mt-0.5">•</span>
+                          <span>PDFs escaneados com <strong className="text-foreground">baixa qualidade</strong> podem ter extração imprecisa. Prefira documentos digitais ou fotos nítidas.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-red-400 mt-0.5">•</span>
+                          <span>Documentos <strong className="text-foreground">protegidos por senha</strong> não podem ser processados. Remova a senha antes de enviar.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="text-purple-400 mt-0.5">•</span>
+                          <span>A IA exibe um <strong className="text-foreground">índice de confiança</strong> para cada extração. Se estiver abaixo de 70%, revise os dados manualmente.</span>
+                        </li>
+                      </ul>
+                    </div>
                   </CardContent>
                 </Card>
 
