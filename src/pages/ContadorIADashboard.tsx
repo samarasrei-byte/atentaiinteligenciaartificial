@@ -11,6 +11,7 @@ import {
   LogOut, Loader2, Eye, FileUp, Trash2, BarChart3, Zap,
   Star, Lock
 } from 'lucide-react';
+import IRPreAnalysisChecklist, { type ChecklistAnswers } from '@/components/contador-ia/IRPreAnalysisChecklist';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
