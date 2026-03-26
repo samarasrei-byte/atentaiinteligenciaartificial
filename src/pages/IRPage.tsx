@@ -32,7 +32,7 @@ const IRPage = () => {
             </p>
           </div>
 
-          <IRRequestForm onSuccess={() => navigate('/dashboard')} />
+          <IRRequestForm onSuccess={() => navigate('/contador-ia')} />
         </div>
       </main>
 
