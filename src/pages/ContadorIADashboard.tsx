@@ -616,8 +616,11 @@ const ContadorIADashboard = () => {
                   <CardContent className="p-8 text-center">
                     <Upload className="w-12 h-12 text-purple-400 mx-auto mb-4" />
                     <h3 className="text-lg font-bold mb-2">Envie seus documentos</h3>
-                    <p className="text-muted-foreground text-sm mb-4 max-w-md mx-auto">
+                    <p className="text-muted-foreground text-sm mb-1 max-w-md mx-auto">
                       Informes de rendimentos, comprovantes médicos, recibos de educação, notas de corretagem e mais
+                    </p>
+                    <p className="text-xs text-amber-400 mb-4">
+                      ⚠️ Selecione o tipo correto abaixo antes de enviar cada documento
                     </p>
 
                     <div className="flex flex-wrap items-center justify-center gap-2 mb-4">
