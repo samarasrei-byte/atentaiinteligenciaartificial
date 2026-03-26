@@ -783,6 +783,8 @@ const ContadorIADashboard = () => {
                         onComplete={handleChecklistComplete}
                         onSkip={handleSkipChecklist}
                         isLoading={isAnalyzing}
+                        fiscalYear={activeDeclaration.fiscal_year}
+                      />
                       />
                     ) : (
                       <Card className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border-purple-500/20">
