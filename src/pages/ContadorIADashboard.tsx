@@ -84,6 +84,16 @@ const ContadorIADashboard = () => {
   const [checklistCompleted, setChecklistCompleted] = useState(false);
   const initializedRef = useRef(false);
 
+  // Sync checklistCompleted from DB when active declaration changes
+  React.useEffect(() => {
+    if (activeDeclaration) {
+      const declAny = activeDeclaration as any;
+      if (declAny.checklist_completed) {
+        setChecklistCompleted(true);
+      }
+    }
+  }, [activeDeclaration?.id]);
+
   const loadDocuments = useCallback(async (declarationId: string) => {
     const { data } = await supabase
       .from('ir_ai_documents')
