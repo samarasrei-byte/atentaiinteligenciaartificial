@@ -522,26 +522,36 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       }
 
       // CRITICAL FALLBACK: If AI summary didn't populate irrf_cents per source,
-      // recover IRRF from the original extracted documents (tax_withheld_cents)
+      // recover IRRF from the original extracted documents.
+      // BUG FIX: Use ONLY tax_withheld_cents (document-level) first.
+      // Only scan items if tax_withheld_cents is also absent, to prevent double-counting.
       if (totalIRRF === 0 && docs && docs.length > 0) {
+        let docLevelIRRF = 0;
+        let itemLevelIRRF = 0;
         for (const doc of docs) {
           const extracted = doc.ai_extracted_data as any;
           if (extracted?.tax_withheld_cents && typeof extracted.tax_withheld_cents === 'number') {
-            totalIRRF += extracted.tax_withheld_cents;
+            docLevelIRRF += extracted.tax_withheld_cents;
           }
-          // Also check inside items for any IRRF-like entries
-          if (Array.isArray(extracted?.items)) {
-            for (const item of extracted.items) {
-              if (item.category === 'irrf' || item.description?.toLowerCase().includes('irrf') || item.description?.toLowerCase().includes('retido')) {
-                if (item.value_cents && typeof item.value_cents === 'number' && item.value_cents > 0) {
-                  totalIRRF += item.value_cents;
+        }
+        // Only scan items if no document-level IRRF was found (avoid double-counting)
+        if (docLevelIRRF === 0) {
+          for (const doc of docs) {
+            const extracted = doc.ai_extracted_data as any;
+            if (Array.isArray(extracted?.items)) {
+              for (const item of extracted.items) {
+                if (item.category === 'irrf' || item.description?.toLowerCase().includes('irrf') || item.description?.toLowerCase().includes('retido')) {
+                  if (item.value_cents && typeof item.value_cents === 'number' && item.value_cents > 0) {
+                    itemLevelIRRF += item.value_cents;
+                  }
                 }
               }
             }
           }
         }
+        totalIRRF = docLevelIRRF > 0 ? docLevelIRRF : itemLevelIRRF;
         if (totalIRRF > 0) {
-          validationAlerts.push(`IRRF recuperado dos documentos originais: R$ ${(totalIRRF / 100).toFixed(2)} (não constava no resumo da IA)`);
+          validationAlerts.push(`IRRF recuperado dos documentos originais: R$ ${(totalIRRF / 100).toFixed(2)} (fonte: ${docLevelIRRF > 0 ? 'tax_withheld_cents' : 'itens extraídos'})`);
         }
       }
 

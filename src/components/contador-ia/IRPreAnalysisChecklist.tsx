@@ -163,6 +163,23 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     }
   };
 
+  // Check if current "Sim" answer has required detail data filled
+  const isDetailComplete = (): boolean => {
+    if (answered[question.id] !== true) return true; // "Não" or not answered — no details needed
+    switch (question.id) {
+      case 'dependents':
+        return answers.dependents_info.length > 0 && answers.dependents_info.every(d => d.name.trim() !== '');
+      case 'assets':
+        return answers.assets_info.length > 0;
+      case 'pension':
+        return !!answers.pension_type && answers.pension_annual_cents > 0;
+      case 'exempt':
+        return answers.exempt_income_types.length > 0;
+      default:
+        return true; // binary questions (carne_leao, sold_assets, crypto, multiple_income)
+    }
+  };
+
   const advance = () => {
     if (currentStep < questions.length - 1) {
       setCurrentStep(prev => prev + 1);
@@ -402,7 +419,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
           <Button variant="ghost" size="sm" onClick={goBack} disabled={currentStep === 0} className="text-xs text-muted-foreground">
             ← Voltar
           </Button>
-          <Button onClick={advance} disabled={isLoading || isAutoAdvancing || answered[question.id] === null}
+          <Button onClick={advance} disabled={isLoading || isAutoAdvancing || answered[question.id] === null || !isDetailComplete()}
             className="bg-purple-500 hover:bg-purple-600 rounded-full h-9 px-6 text-sm disabled:opacity-40">
             {currentStep === questions.length - 1 ? (
               <>
