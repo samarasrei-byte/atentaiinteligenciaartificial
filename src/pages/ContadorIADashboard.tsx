@@ -275,7 +275,7 @@ const ContadorIADashboard = () => {
   const analyzeDocument = async (doc: DocFile) => {
     setAnalyzingDocId(doc.id);
     try {
-      const { error } = await supabase.functions.invoke('ai-ir-analyze', {
+      const { data, error } = await supabase.functions.invoke('ai-ir-analyze', {
         body: {
           declarationId: activeDeclaration?.id,
           documentId: doc.id,
@@ -284,10 +284,19 @@ const ContadorIADashboard = () => {
         },
       });
       if (error) throw error;
+      // Check if API returned an error message in body (e.g. 422 extraction failure)
+      if (data?.error) {
+        toast.error(data.error);
+        if (activeDeclaration) loadDocuments(activeDeclaration.id);
+        setAnalyzingDocId(null);
+        return;
+      }
       toast.success(`"${doc.file_name}" analisado!`);
       if (activeDeclaration) loadDocuments(activeDeclaration.id);
     } catch (err: any) {
       toast.error(err?.message || 'Erro na análise');
+      // Refresh to show error status on the document
+      if (activeDeclaration) loadDocuments(activeDeclaration.id);
     }
     setAnalyzingDocId(null);
   };
