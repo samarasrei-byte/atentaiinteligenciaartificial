@@ -96,12 +96,14 @@ const getQuestions = (year: number): QuestionStep[] => [
 // Track which questions have been answered (null = not yet answered)
 type AnswerState = Record<string, boolean | null>;
 
-const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading }) => {
+const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading, fiscalYear }) => {
+  const year = fiscalYear || new Date().getFullYear() - 1;
+  const questions = getQuestions(year);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<ChecklistAnswers>(defaultAnswers);
   const [answered, setAnswered] = useState<AnswerState>(() => {
     const init: AnswerState = {};
-    questions.forEach(q => { init[q.id] = null; });
+    getQuestions(year).forEach(q => { init[q.id] = null; });
     return init;
   });
 
