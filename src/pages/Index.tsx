@@ -5,21 +5,19 @@ import { AIDemoSection } from "@/components/sections/AIDemoSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { StatsSection } from "@/components/sections/StatsSection";
 import { ServicesHubModern } from "@/components/dashboard/ServicesHubModern";
-
-import { useEffect, lazy, Suspense } from "react";
-import { Helmet } from "react-helmet-async";
-
-// Lazy load below-the-fold sections for performance
-const SimulatorSection = lazy(() => import("@/components/sections/SimulatorSection").then(m => ({ default: m.SimulatorSection })));
-const AISection = lazy(() => import("@/components/sections/AISection").then(m => ({ default: m.AISection })));
-const ProfilesSection = lazy(() => import("@/components/sections/ProfilesSection").then(m => ({ default: m.ProfilesSection })));
-const PricingSection = lazy(() => import("@/components/sections/PricingSection").then(m => ({ default: m.PricingSection })));
-const TestimonialsSection = lazy(() => import("@/components/sections/TestimonialsSection").then(m => ({ default: m.TestimonialsSection })));
-const LimpaNomeSection = lazy(() => import("@/components/sections/LimpaNomeSection").then(m => ({ default: m.LimpaNomeSection })));
-const FiscalModuleSection = lazy(() => import("@/components/sections/FiscalModuleSection").then(m => ({ default: m.FiscalModuleSection })));
+import { SimulatorSection } from "@/components/sections/SimulatorSection";
+import { AISection } from "@/components/sections/AISection";
+import { ProfilesSection } from "@/components/sections/ProfilesSection";
+import { PricingSection } from "@/components/sections/PricingSection";
+import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
+import { LimpaNomeSection } from "@/components/sections/LimpaNomeSection";
+import { FiscalModuleSection } from "@/components/sections/FiscalModuleSection";
 import { FiscalTestimonialsSection } from "@/components/sections/FiscalTestimonialsSection";
-const FAQSection = lazy(() => import("@/components/sections/FAQSection").then(m => ({ default: m.FAQSection })));
-const SuccessCasesSection = lazy(() => import("@/components/sections/SuccessCasesSection").then(m => ({ default: m.SuccessCasesSection })));
+import { FAQSection } from "@/components/sections/FAQSection";
+import { SuccessCasesSection } from "@/components/sections/SuccessCasesSection";
+
+import { useEffect } from "react";
+import { Helmet } from "react-helmet-async";
 
 const Index = () => {
   // Scroll to top on page load
@@ -45,12 +43,6 @@ const Index = () => {
       });
     }
   };
-
-  const SectionFallback = () => (
-    <div className="py-20 flex items-center justify-center">
-      <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-    </div>
-  );
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -93,10 +85,7 @@ const Index = () => {
         <FeaturesSection />
         <StatsSection />
 
-        {/* Below the fold - lazy loaded */}
-        <Suspense fallback={<SectionFallback />}>
-          <ProfilesSection />
-        </Suspense>
+        <ProfilesSection />
         
         <section id="servicos" className="py-20 relative overflow-hidden bg-gradient-to-b from-background via-muted/30 to-background">
           <div className="absolute inset-0 pointer-events-none">
@@ -109,23 +98,21 @@ const Index = () => {
           </div>
         </section>
         
-        <Suspense fallback={<SectionFallback />}>
-          <section id="fiscal">
-            <FiscalModuleSection />
-          </section>
-          <FiscalTestimonialsSection />
-          <section id="limpa-nome">
-            <LimpaNomeSection />
-          </section>
-          <SuccessCasesSection />
-          <SimulatorSection />
-          <AISection />
-          <section id="pricing">
-            <PricingSection />
-          </section>
-          <FAQSection />
-          <TestimonialsSection />
-        </Suspense>
+        <section id="fiscal">
+          <FiscalModuleSection />
+        </section>
+        <FiscalTestimonialsSection />
+        <section id="limpa-nome">
+          <LimpaNomeSection />
+        </section>
+        <SuccessCasesSection />
+        <SimulatorSection />
+        <AISection />
+        <section id="pricing">
+          <PricingSection />
+        </section>
+        <FAQSection />
+        <TestimonialsSection />
       </main>
 
       <Footer onNavigate={scrollToSection} />
