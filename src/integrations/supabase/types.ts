@@ -2489,6 +2489,8 @@ export type Database = {
           has_private_pension: boolean | null
           human_reviewed: boolean | null
           id: string
+          malha_fina_reasons: string[] | null
+          malha_fina_risk: string | null
           multiple_income_sources: boolean | null
           notes: string | null
           pension_annual_cents: number | null
@@ -2526,6 +2528,8 @@ export type Database = {
           has_private_pension?: boolean | null
           human_reviewed?: boolean | null
           id?: string
+          malha_fina_reasons?: string[] | null
+          malha_fina_risk?: string | null
           multiple_income_sources?: boolean | null
           notes?: string | null
           pension_annual_cents?: number | null
@@ -2563,6 +2567,8 @@ export type Database = {
           has_private_pension?: boolean | null
           human_reviewed?: boolean | null
           id?: string
+          malha_fina_reasons?: string[] | null
+          malha_fina_risk?: string | null
           multiple_income_sources?: boolean | null
           notes?: string | null
           pension_annual_cents?: number | null
