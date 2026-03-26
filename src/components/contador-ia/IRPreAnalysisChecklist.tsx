@@ -137,11 +137,36 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     }
   };
 
+  // Sanitize answers before submission — prevent "has_X = true" with empty data
+  const sanitizeAnswers = (raw: ChecklistAnswers): ChecklistAnswers => {
+    const sanitized = { ...raw };
+    // If user said "Sim" to dependents but added none, correct to false
+    if (sanitized.has_dependents && sanitized.dependents_info.length === 0) {
+      sanitized.has_dependents = false;
+      sanitized.dependents_count = 0;
+    }
+    // Sync dependents_count with actual array length
+    sanitized.dependents_count = sanitized.dependents_info.length;
+    // If user said "Sim" to assets but added none, correct to false
+    if (sanitized.has_assets && sanitized.assets_info.length === 0) {
+      sanitized.has_assets = false;
+    }
+    // If user said "Sim" to exempt income but selected none, correct to false
+    if (sanitized.has_exempt_income && sanitized.exempt_income_types.length === 0) {
+      sanitized.has_exempt_income = false;
+    }
+    // If user said "Sim" to pension but didn't select type or amount, correct to false
+    if (sanitized.has_private_pension && !sanitized.pension_type && sanitized.pension_annual_cents === 0) {
+      sanitized.has_private_pension = false;
+    }
+    return sanitized;
+  };
+
   const advance = () => {
     if (currentStep < questions.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      onComplete(answers);
+      onComplete(sanitizeAnswers(answers));
     }
   };
 
