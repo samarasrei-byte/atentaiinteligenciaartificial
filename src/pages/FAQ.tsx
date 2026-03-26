@@ -239,7 +239,7 @@ const faqData: FAQItem[] = [
   {
     id: "conta-1",
     question: "Quais são os planos disponíveis?",
-    answer: "Oferecemos três planos: Gratuito (simulador básico e 3 perguntas por dia à IA), Simulador (R$ 29/mês com simulador ilimitado e comparador de regimes) e Atente AI (R$ 49/mês com IA ilimitada, Piloto Automático e consultoria com contador). Você pode fazer upgrade a qualquer momento.",
+    answer: "Oferecemos quatro planos: Gratuito (simulador básico e 3 perguntas por dia à IA), Simulador (R$ 39,99/mês com simulador ilimitado e comparador de regimes), Autônomo (R$ 65/mês) e Premium (R$ 98/mês com IA ilimitada e suporte prioritário). Você pode fazer upgrade a qualquer momento.",
     category: "Conta e Planos",
     icon: <Settings className="h-5 w-5" />,
   },
