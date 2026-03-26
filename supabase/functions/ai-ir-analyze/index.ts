@@ -425,8 +425,6 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         total_deductions_cents: (typedAnalysis.total_deductions_cents as number) || 0,
         tax_due_cents: (typedAnalysis.tax_due_cents as number) || 0,
         refund_cents: (typedAnalysis.refund_cents as number) || 0,
-        malha_fina_risk: (typedAnalysis.malha_fina_risk as string) || 'baixo',
-        malha_fina_reasons: (typedAnalysis.malha_fina_reasons as string[]) || [],
       }).eq("id", declarationId);
 
       // Send email notification to user
