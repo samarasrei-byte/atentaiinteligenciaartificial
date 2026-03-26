@@ -171,12 +171,24 @@ const ContadorIADashboard = () => {
   // Create new declaration
   const createDeclaration = async () => {
     if (!user) return;
+    const targetYear = new Date().getFullYear() - 1;
+
+    // Block duplicate fiscal year
+    const existing = declarations.find(d => d.fiscal_year === targetYear);
+    if (existing) {
+      toast.error(`Você já tem uma declaração para ${targetYear}. Acesse-a na lista.`);
+      activeDeclarationRef.current = existing.id;
+      setActiveDeclaration(existing);
+      loadDocuments(existing.id);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('ir_ai_declarations')
       .insert({
         user_id: user.id,
         full_name: profile?.full_name || '',
-        fiscal_year: new Date().getFullYear() - 1,
+        fiscal_year: targetYear,
       })
       .select()
       .single();
