@@ -315,6 +315,7 @@ const ContadorIADashboard = () => {
       has_exempt_income: answers.has_exempt_income,
       exempt_income_types: answers.exempt_income_types,
       had_carne_leao: answers.had_carne_leao,
+      multiple_income_sources: answers.multiple_income_sources,
       sold_assets: answers.sold_assets,
       has_crypto: answers.has_crypto,
       checklist_answers: answers,
