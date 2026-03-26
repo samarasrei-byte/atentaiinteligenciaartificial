@@ -235,8 +235,13 @@ serve(async (req) => {
     }
 
     // 5. Build redirect URL
-    const serviceParam = serviceType.startsWith('credit_repair') ? 'limpanome' : serviceType;
-    const redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
+    let redirectPath: string;
+    if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
+      redirectPath = '/contador-ia';
+    } else {
+      const serviceParam = serviceType.startsWith('credit_repair') ? 'limpanome' : serviceType;
+      redirectPath = `/chat/${specialist.chatType}?servico=${serviceParam}`;
+    }
 
     log("Simulation complete", { userId, isNewUser, redirectPath });
 
