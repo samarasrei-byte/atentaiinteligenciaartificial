@@ -586,7 +586,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         // Don't throw - email failure shouldn't block the response
       }
 
-      return new Response(JSON.stringify({ success: true, analysis }), {
+      return new Response(JSON.stringify({ success: true, analysis: typedAnalysis }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
