@@ -120,22 +120,7 @@ const serviceConfigs: Record<string, {
     successUrl: '/payment-success?type=certificate',
     serviceType: 'certificate',
   },
-  'bi-contabilidade': {
-    name: 'BI+ Contabilidade™',
-    description: 'Inteligência artificial com análise humana especializada',
-    icon: Briefcase,
-    color: 'purple',
-    features: [
-      'Diagnóstico fiscal completo',
-      'Análise por especialista dedicado',
-      'Relatórios personalizados',
-      'Acompanhamento contínuo',
-    ],
-    basePriceCents: 0,
-    successUrl: '/bi-contabilidade/sucesso',
-    serviceType: 'bi_contabilidade',
-    isCustomPricing: true,
-  },
+  // bi-contabilidade removed - hidden from public
   'simulador': {
     name: 'Simulador Tributário',
     description: 'Simule o impacto da reforma tributária na sua empresa com IA',
