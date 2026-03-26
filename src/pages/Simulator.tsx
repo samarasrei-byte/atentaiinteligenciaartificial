@@ -287,7 +287,7 @@ const Simulator = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {state && (
+                  {state && state !== 'default' && stateICMSRates[state] && (
                     <p className="text-xs text-cyan-400">
                       Alíquota de ICMS para {brazilianStates.find(s => s.value === state)?.label}: {stateICMSRates[state]}%
                     </p>
@@ -399,10 +399,13 @@ const Simulator = () => {
                     Novo Sistema ({selectedYear}) - {TRANSITION_RATES[selectedYear].phase}
                   </h4>
                   {(() => {
+                    const companyData = companyTypes.find(c => c.value === companyType);
+                    const creditFactor = companyData?.creditFactor || 0;
+                    const multiplier = companyData?.multiplier || 1;
                     const yearTaxes = calculateTransitionTax(
-                      parseCurrencyInput(revenue),
+                      parseCurrencyInput(revenue) * multiplier,
                       selectedYear,
-                      0 // No credit factor for now
+                      creditFactor
                     );
                     return (
                       <>
