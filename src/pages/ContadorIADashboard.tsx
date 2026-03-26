@@ -441,8 +441,8 @@ const ContadorIADashboard = () => {
                   Envie seus documentos e a inteligência artificial mais avançada do Brasil 
                   vai fazer sua declaração de IR automaticamente.
                 </p>
-                <Button onClick={createDeclaration} className="bg-purple-500 hover:bg-purple-600 rounded-full px-8 h-11">
-                  <Sparkles className="w-4 h-4 mr-2" /> Iniciar minha declaração
+                <Button onClick={goToIRPayment} className="bg-purple-500 hover:bg-purple-600 rounded-full px-8 h-11">
+                  <Sparkles className="w-4 h-4 mr-2" /> Contratar Declaração de IR
                 </Button>
                 <div className="flex items-center justify-center gap-6 mt-8 text-xs text-muted-foreground">
                   <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Dados protegidos</span>
