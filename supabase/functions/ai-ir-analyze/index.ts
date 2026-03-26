@@ -235,14 +235,17 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
     }
 
     if (action === "generate_summary") {
-      // Verify declaration ownership
+      // Verify declaration ownership AND get fiscal_year
       const { data: decl } = await supabase
         .from("ir_ai_declarations")
-        .select("user_id")
+        .select("user_id, fiscal_year")
         .eq("id", declarationId)
         .single();
       
       if (!decl || decl.user_id !== user.id) throw new Error("Unauthorized");
+
+      const fiscalYear = decl.fiscal_year || new Date().getFullYear() - 1;
+      const exerciseYear = fiscalYear + 1; // Declaração entregue no ano seguinte
 
       const { data: docs } = await supabase
         .from("ir_ai_documents")
@@ -282,7 +285,7 @@ ${checklistInfo.has_assets ? `- POSSUI bens e direitos: ${JSON.stringify(checkli
 ${checklistInfo.has_private_pension ? `- Previdência privada: ${checklistInfo.pension_type || 'não especificado'}, valor anual: R$ ${((checklistInfo.pension_annual_cents || 0) / 100).toFixed(2)}` : '- SEM previdência privada'}
 ${checklistInfo.has_exempt_income ? `- Rendimentos isentos: ${(checklistInfo.exempt_income_types || []).join(', ')}` : '- SEM rendimentos isentos declarados'}
 ${checklistInfo.had_carne_leao ? '- TEVE carnê-leão (recebeu de PF)' : '- SEM carnê-leão'}
-${checklistInfo.sold_assets ? '- VENDEU bens em 2024 (verificar ganho de capital)' : '- NÃO vendeu bens'}
+${checklistInfo.sold_assets ? `- VENDEU bens em ${fiscalYear} (verificar ganho de capital)` : '- NÃO vendeu bens'}
 ${checklistInfo.has_crypto ? '- POSSUI/NEGOCIOU criptomoedas' : '- SEM criptomoedas'}
 ${checklistInfo.multiple_income_sources ? '- TEVE MÚLTIPLAS FONTES DE RENDA (verificar imposto complementar)' : '- Fonte única de renda'}
 
@@ -310,12 +313,18 @@ gere um resumo completo da declaração de IR incluindo:
 - Alertas de inconsistências
 - Risco de malha fina (se deduções médicas > 30% da renda, alertar)
 
-Use a tabela progressiva ANUAL do IRPF 2025 (exercício 2024):
+ANO-BASE: ${fiscalYear} (Declaração IRPF ${exerciseYear}, exercício ${fiscalYear})
+
+Use a tabela progressiva ANUAL do IRPF ${exerciseYear} (exercício ${fiscalYear}).
+Se o ano-base for 2024, use estas faixas:
 - Até R$ 26.963,20 (anual): isento (0%)
 - De R$ 26.963,21 até R$ 33.919,80: 7,5% (dedução R$ 2.033,28)
 - De R$ 33.919,81 até R$ 45.012,60: 15% (dedução R$ 4.577,28)
 - De R$ 45.012,61 até R$ 55.976,16: 22,5% (dedução R$ 7.953,24)
 - Acima de R$ 55.976,16: 27,5% (dedução R$ 10.752,00)
+
+Se o ano-base for 2025, use as faixas atualizadas conforme legislação vigente.
+Caso não conheça as faixas exatas do ano informado, use as faixas de 2024 como base e alerte o contribuinte.
 
 ATENÇÃO: Estes são valores ANUAIS. NÃO use a tabela mensal. O cálculo é sobre a BASE DE CÁLCULO ANUAL (rendimentos tributáveis - deduções).
 
