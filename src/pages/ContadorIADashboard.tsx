@@ -171,12 +171,24 @@ const ContadorIADashboard = () => {
   // Create new declaration
   const createDeclaration = async () => {
     if (!user) return;
+    const targetYear = new Date().getFullYear() - 1;
+
+    // Block duplicate fiscal year
+    const existing = declarations.find(d => d.fiscal_year === targetYear);
+    if (existing) {
+      toast.error(`Você já tem uma declaração para ${targetYear}. Acesse-a na lista.`);
+      activeDeclarationRef.current = existing.id;
+      setActiveDeclaration(existing);
+      loadDocuments(existing.id);
+      return;
+    }
+
     const { data, error } = await supabase
       .from('ir_ai_declarations')
       .insert({
         user_id: user.id,
         full_name: profile?.full_name || '',
-        fiscal_year: new Date().getFullYear() - 1,
+        fiscal_year: targetYear,
       })
       .select()
       .single();
@@ -191,11 +203,19 @@ const ContadorIADashboard = () => {
   };
 
   // Upload document
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !activeDeclaration || !user) return;
     setIsUploading(true);
 
     for (const file of Array.from(e.target.files)) {
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`"${file.name}" excede 10MB. Reduza o tamanho e tente novamente.`);
+        continue;
+      }
+
       const filePath = `${user.id}/${activeDeclaration.id}/${Date.now()}_${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from('ir-ai-documents')
@@ -272,11 +292,9 @@ const ContadorIADashboard = () => {
   // Save checklist and generate summary
   const handleChecklistComplete = async (answers: ChecklistAnswers) => {
     if (!activeDeclaration) return;
-    setChecklistCompleted(true);
-    setShowChecklist(false);
 
     // Save checklist answers to declaration
-    await supabase.from('ir_ai_declarations').update({
+    const { error: saveError } = await supabase.from('ir_ai_declarations').update({
       checklist_completed: true,
       has_dependents: answers.has_dependents,
       dependents_count: answers.dependents_count,
@@ -294,6 +312,14 @@ const ContadorIADashboard = () => {
       checklist_answers: answers,
     } as any).eq('id', activeDeclaration.id);
 
+    if (saveError) {
+      toast.error('Erro ao salvar checklist. Tente novamente.');
+      console.error('Checklist save error:', saveError);
+      return;
+    }
+
+    setChecklistCompleted(true);
+    setShowChecklist(false);
     toast.success('Checklist salvo! Gerando análise...');
     await generateSummary(answers);
   };
