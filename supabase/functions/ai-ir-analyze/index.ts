@@ -605,24 +605,38 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       const baseCalculoSimplificado = Math.max(0, totalIncome - simplifiedDeduction);
       const baseCalculoCompleto = Math.max(0, totalIncome - totalDeductions);
 
-      const calcProgressiveTax = (base: number): number => {
-        let tax = 0;
-        if (base <= 2696320) {
-          tax = 0;
-        } else if (base <= 3391980) {
-          tax = Math.round(base * 0.075 - 203328);
-        } else if (base <= 4501260) {
-          tax = Math.round(base * 0.15 - 457728);
-        } else if (base <= 5597616) {
-          tax = Math.round(base * 0.225 - 795324);
-        } else {
-          tax = Math.round(base * 0.275 - 1075200);
-        }
+      type AnnualBracket = { limit: number; rate: number; deduction: number };
+      const annualBracketsByFiscalYear: Record<number, AnnualBracket[]> = {
+        2024: [
+          { limit: 2696320, rate: 0, deduction: 0 },
+          { limit: 3391980, rate: 0.075, deduction: 203328 },
+          { limit: 4501260, rate: 0.15, deduction: 457728 },
+          { limit: 5597616, rate: 0.225, deduction: 795324 },
+          { limit: Number.POSITIVE_INFINITY, rate: 0.275, deduction: 1075200 },
+        ],
+        2025: [
+          { limit: 2696320, rate: 0, deduction: 0 },
+          { limit: 3391980, rate: 0.075, deduction: 203328 },
+          { limit: 4501260, rate: 0.15, deduction: 457728 },
+          { limit: 5597616, rate: 0.225, deduction: 795324 },
+          { limit: Number.POSITIVE_INFINITY, rate: 0.275, deduction: 1075200 },
+        ],
+      };
+
+      const selectedBrackets = annualBracketsByFiscalYear[fiscalYear] ?? annualBracketsByFiscalYear[2024];
+      if (!annualBracketsByFiscalYear[fiscalYear]) {
+        validationAlerts.push(`Tabela anual de ${fiscalYear} não cadastrada no motor fiscal. Aplicada tabela de 2024 como fallback técnico.`);
+      }
+
+      const calcProgressiveTax = (base: number, brackets: AnnualBracket[]): number => {
+        const normalizedBase = Math.max(0, base);
+        const bracket = brackets.find((b) => normalizedBase <= b.limit) ?? brackets[brackets.length - 1];
+        const tax = Math.round(normalizedBase * bracket.rate - bracket.deduction);
         return Math.max(0, tax);
       };
 
-      const taxSimplificado = calcProgressiveTax(baseCalculoSimplificado);
-      const taxCompleto = calcProgressiveTax(baseCalculoCompleto);
+      const taxSimplificado = calcProgressiveTax(baseCalculoSimplificado, selectedBrackets);
+      const taxCompleto = calcProgressiveTax(baseCalculoCompleto, selectedBrackets);
 
       // Determine which model is better and override if AI chose wrong
       const bestModel = taxSimplificado <= taxCompleto ? 'simplificado' : 'completo';
