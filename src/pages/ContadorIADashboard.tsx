@@ -182,38 +182,9 @@ const ContadorIADashboard = () => {
     return () => { supabase.removeChannel(channel); };
   }, [user, activeDeclaration?.id, loadDeclarations, loadDocuments]);
 
-  // Create new declaration
-  const createDeclaration = async () => {
-    if (!user) return;
-    const targetYear = new Date().getFullYear() - 1;
-
-    // Block duplicate fiscal year
-    const existing = declarations.find(d => d.fiscal_year === targetYear);
-    if (existing) {
-      toast.error(`Você já tem uma declaração para ${targetYear}. Acesse-a na lista.`);
-      activeDeclarationRef.current = existing.id;
-      setActiveDeclaration(existing);
-      loadDocuments(existing.id);
-      return;
-    }
-
-    const { data, error } = await supabase
-      .from('ir_ai_declarations')
-      .insert({
-        user_id: user.id,
-        full_name: profile?.full_name || '',
-        fiscal_year: targetYear,
-      })
-      .select()
-      .single();
-    if (error) { toast.error('Erro ao criar declaração'); return; }
-    toast.success('Declaração criada! Envie seus documentos.');
-    const newDecl = data as Declaration;
-    activeDeclarationRef.current = newDecl.id;
-    setActiveDeclaration(newDecl);
-    setDocuments([]);
-    setActiveTab('documents');
-    loadDeclarations();
+  // Redirect to payment page — declarations must be created via payment flow only
+  const goToIRPayment = () => {
+    navigate('/ir');
   };
 
   // Upload document
