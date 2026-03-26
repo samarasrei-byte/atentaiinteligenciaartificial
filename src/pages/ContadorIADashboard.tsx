@@ -80,6 +80,8 @@ const ContadorIADashboard = () => {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [analyzingDocId, setAnalyzingDocId] = useState<string | null>(null);
   const [selectedDocType, setSelectedDocType] = useState('informe_rendimentos');
+  const [showChecklist, setShowChecklist] = useState(false);
+  const [checklistCompleted, setChecklistCompleted] = useState(false);
   const initializedRef = useRef(false);
 
   const loadDocuments = useCallback(async (declarationId: string) => {
