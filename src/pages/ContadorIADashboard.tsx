@@ -203,11 +203,19 @@ const ContadorIADashboard = () => {
   };
 
   // Upload document
+  const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
   const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || !activeDeclaration || !user) return;
     setIsUploading(true);
 
     for (const file of Array.from(e.target.files)) {
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`"${file.name}" excede 10MB. Reduza o tamanho e tente novamente.`);
+        continue;
+      }
+
       const filePath = `${user.id}/${activeDeclaration.id}/${Date.now()}_${file.name}`;
       const { error: uploadError } = await supabase.storage
         .from('ir-ai-documents')
