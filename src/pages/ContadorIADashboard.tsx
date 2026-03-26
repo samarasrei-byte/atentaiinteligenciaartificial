@@ -151,6 +151,13 @@ const ContadorIADashboard = () => {
 
   React.useEffect(() => { loadDeclarations(); }, [loadDeclarations]);
 
+  // Auth guard — redirect unauthenticated users
+  React.useEffect(() => {
+    if (!user && !isLoading) {
+      navigate('/auth');
+    }
+  }, [user, isLoading, navigate]);
+
   // Realtime: auto-refresh when declarations or documents change
   React.useEffect(() => {
     if (!user) return;
