@@ -440,10 +440,11 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       // 1. Cap simplified discount at R$ 16.754,34 (1675434 cents)
       const SIMPLIFIED_CAP_CENTS = 1675434;
       if (typedAnalysis.declaration_model === 'simplificado') {
-        const simplifiedDiscount = Math.round(totalIncome * 0.20);
-        if (totalDeductions > SIMPLIFIED_CAP_CENTS && totalDeductions === simplifiedDiscount) {
-          totalDeductions = SIMPLIFIED_CAP_CENTS;
-          validationAlerts.push(`Desconto simplificado limitado ao teto legal de R$ 16.754,34`);
+        // In simplified model, deduction is ALWAYS 20% of income, capped at R$ 16.754,34
+        const simplifiedDiscount = Math.min(Math.round(totalIncome * 0.20), SIMPLIFIED_CAP_CENTS);
+        if (totalDeductions !== simplifiedDiscount) {
+          validationAlerts.push(`Desconto simplificado recalculado: 20% da renda = R$ ${(Math.round(totalIncome * 0.20) / 100).toFixed(2)}, limitado ao teto legal de R$ 16.754,34`);
+          totalDeductions = simplifiedDiscount;
         }
       }
 
