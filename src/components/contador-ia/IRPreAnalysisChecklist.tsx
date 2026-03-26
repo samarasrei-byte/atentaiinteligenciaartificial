@@ -150,12 +150,15 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     setAnswers(updatedAnswers);
     setAnswered(prev => ({ ...prev, [question.id]: value }));
     if (!value) {
+      // Auto-advance on "No" — block Próximo button during transition
+      setIsAutoAdvancing(true);
       setTimeout(() => {
         if (currentStep < questions.length - 1) {
           setCurrentStep(prev => prev + 1);
         } else {
           onComplete(sanitizeAnswers(updatedAnswers));
         }
+        setIsAutoAdvancing(false);
       }, 300);
     }
   };
