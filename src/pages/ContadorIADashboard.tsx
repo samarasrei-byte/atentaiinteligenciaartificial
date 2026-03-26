@@ -180,7 +180,7 @@ const ContadorIADashboard = () => {
       })
       .subscribe();
     return () => { supabase.removeChannel(channel); };
-  }, [user, activeDeclaration?.id, loadDeclarations, loadDocuments]);
+  }, [user, loadDeclarations, loadDocuments]);
 
   // Redirect to payment page — declarations must be created via payment flow only
   const goToIRPayment = () => {

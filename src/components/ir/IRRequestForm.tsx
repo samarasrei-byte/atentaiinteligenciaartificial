@@ -10,6 +10,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import { Badge } from '@/components/ui/badge';
 import { MaskedInput } from '@/components/ui/masked-input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
 import { 
