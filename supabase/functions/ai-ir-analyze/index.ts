@@ -648,11 +648,17 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
 
       const taxSimplificado = calcProgressiveTax(baseCalculoSimplificado, selectedBrackets);
       const taxCompleto = calcProgressiveTax(baseCalculoCompleto, selectedBrackets);
+      const completeModelDeductions = totalDeductions;
 
       // Determine which model is better and override if AI chose wrong
       const bestModel = taxSimplificado <= taxCompleto ? 'simplificado' : 'completo';
       const currentModel = (typedAnalysis.declaration_model as string) || 'simplificado';
       (typedAnalysis as any).recommended_model = bestModel;
+
+      // CRITICAL: Keep deductions consistent with the selected model.
+      // Previous logic compared against already-overwritten declaration_model,
+      // causing simplified deductions to never be persisted.
+      totalDeductions = bestModel === 'simplificado' ? simplifiedDeduction : completeModelDeductions;
       (typedAnalysis as any).declaration_model = bestModel;
 
       if (bestModel !== currentModel) {
@@ -670,7 +676,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       // Store comparison data for the user
       (typedAnalysis as any).model_comparison = {
         simplificado: { deductions_cents: simplifiedDeduction, base_cents: baseCalculoSimplificado, tax_cents: taxSimplificado },
-        completo: { deductions_cents: totalDeductions, base_cents: baseCalculoCompleto, tax_cents: taxCompleto },
+        completo: { deductions_cents: completeModelDeductions, base_cents: baseCalculoCompleto, tax_cents: taxCompleto },
         best: bestModel,
         savings_cents: Math.abs(taxSimplificado - taxCompleto),
       };
@@ -678,11 +684,6 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       // Use the best model's base for final calculation
       const baseCalculo = bestModel === 'simplificado' ? baseCalculoSimplificado : baseCalculoCompleto;
       const calculatedTax = bestModel === 'simplificado' ? taxSimplificado : taxCompleto;
-
-      // If best model differs from what was used for deductions, update
-      if (bestModel === 'simplificado' && typedAnalysis.declaration_model !== 'simplificado') {
-        totalDeductions = simplifiedDeduction;
-      }
 
       // If we have IRRF data, calculate refund/tax properly
       if (totalIRRF > 0) {
