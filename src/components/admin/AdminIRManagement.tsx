@@ -525,7 +525,7 @@ export const AdminIRManagement: React.FC = () => {
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Tipo</p>
-                            <p>{decl.declaration_type === 'completa' ? 'Completa' : 'Simplificada'}</p>
+                            <p>{decl.declaration_type === 'completo' ? 'Completa' : 'Simplificada'}</p>
                           </div>
                           <div>
                             <p className="text-muted-foreground/60 text-xs">Confiança IA</p>
