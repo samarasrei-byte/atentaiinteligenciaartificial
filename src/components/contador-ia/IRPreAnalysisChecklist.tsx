@@ -122,10 +122,18 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
   };
 
   const handleYesNo = (field: keyof ChecklistAnswers, value: boolean) => {
-    setAnswers(prev => ({ ...prev, [field]: value }));
+    const updatedAnswers = { ...answers, [field]: value };
+    setAnswers(updatedAnswers);
     setAnswered(prev => ({ ...prev, [question.id]: value }));
     if (!value) {
-      setTimeout(() => advance(), 300);
+      // Use updatedAnswers directly to avoid stale closure
+      setTimeout(() => {
+        if (currentStep < questions.length - 1) {
+          setCurrentStep(prev => prev + 1);
+        } else {
+          onComplete(updatedAnswers);
+        }
+      }, 300);
     }
   };
 
