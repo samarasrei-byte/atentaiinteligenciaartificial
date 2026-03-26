@@ -309,7 +309,7 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
         .eq("id", declarationId)
         .single();
 
-      const checklistInfo = checklistData || declChecklist?.checklist_answers || {};
+      const checklistInfo = safeChecklistData || declChecklist?.checklist_answers || {};
 
       const extractedDataSummary = docs.map(d => ({
         type: d.document_type,
