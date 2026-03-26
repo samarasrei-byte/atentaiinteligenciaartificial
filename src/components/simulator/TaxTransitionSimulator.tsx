@@ -409,7 +409,7 @@ const TaxTransitionSimulator: React.FC<TransitionSimulatorProps> = ({ embedded =
             {/* 2025 */}
             <div className="text-center p-4 bg-background rounded-xl">
               <p className="text-sm text-muted-foreground mb-1">Sistema Atual (2025)</p>
-              <p className="text-2xl font-bold text-foreground">{formatCurrency(tax2025.annualTax)}</p>
+              <p className="text-2xl font-bold text-foreground">{formatCurrency(tax2025Annual)}</p>
               <p className="text-sm text-muted-foreground">por ano</p>
             </div>
 

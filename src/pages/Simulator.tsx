@@ -287,7 +287,7 @@ const Simulator = () => {
                       ))}
                     </SelectContent>
                   </Select>
-                  {state && (
+                  {state && state !== 'default' && stateICMSRates[state] && (
                     <p className="text-xs text-cyan-400">
                       Alíquota de ICMS para {brazilianStates.find(s => s.value === state)?.label}: {stateICMSRates[state]}%
                     </p>
