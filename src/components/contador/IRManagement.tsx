@@ -2,10 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import {
   Table,
   TableBody,
@@ -39,80 +37,79 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Upload,
-  RefreshCw
+  RefreshCw,
+  Brain
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
-interface IRRequest {
+interface IRDeclaration {
   id: string;
   user_id: string;
-  ir_type: string;
   fiscal_year: number;
-  full_name: string;
-  cpf: string | null;
-  email: string | null;
-  phone: string | null;
-  has_investments: boolean;
-  has_rental_income: boolean;
-  has_foreign_income: boolean;
-  income_sources_count: number;
-  notes: string | null;
-  base_price_cents: number;
-  final_price_cents: number;
-  discount_applied: boolean;
+  declaration_type: string;
   status: string;
-  payment_status: string;
+  full_name: string | null;
+  cpf: string | null;
+  total_income_cents: number | null;
+  total_deductions_cents: number | null;
+  tax_due_cents: number | null;
+  refund_cents: number | null;
+  ai_confidence_percent: number | null;
+  ai_analysis: any;
   created_at: string;
   completed_at: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; icon: React.ElementType }> = {
-  pending: { label: 'Aguardando Pagamento', color: 'bg-yellow-500/20 text-yellow-600', icon: Clock },
-  paid: { label: 'Pago - Aguardando', color: 'bg-blue-500/20 text-blue-600', icon: Clock },
-  in_progress: { label: 'Em Andamento', color: 'bg-primary/20 text-primary', icon: RefreshCw },
-  documents_pending: { label: 'Docs Pendentes', color: 'bg-orange-500/20 text-orange-600', icon: AlertCircle },
-  completed: { label: 'Concluído', color: 'bg-success/20 text-success', icon: CheckCircle },
-  cancelled: { label: 'Cancelado', color: 'bg-destructive/20 text-destructive', icon: AlertCircle },
+  draft: { label: 'Rascunho', color: 'bg-muted text-muted-foreground', icon: Clock },
+  pending_documents: { label: 'Aguardando Docs', color: 'bg-amber-500/20 text-amber-600', icon: Clock },
+  processing: { label: 'Processando', color: 'bg-blue-500/20 text-blue-600', icon: RefreshCw },
+  ai_analysis: { label: 'IA Analisando', color: 'bg-purple-500/20 text-purple-600', icon: Brain },
+  review: { label: 'Em Revisão', color: 'bg-primary/20 text-primary', icon: Eye },
+  completed: { label: 'Concluído', color: 'bg-emerald-500/20 text-emerald-600', icon: CheckCircle },
+  error: { label: 'Erro', color: 'bg-destructive/20 text-destructive', icon: AlertCircle },
 };
+
+const formatCurrency = (cents: number) =>
+  `R$ ${(cents / 100).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
 
 export function IRManagement() {
   const { user } = useAuth();
   const { toast } = useToast();
   
-  const [requests, setRequests] = useState<IRRequest[]>([]);
+  const [declarations, setDeclarations] = useState<IRDeclaration[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedRequest, setSelectedRequest] = useState<IRRequest | null>(null);
+  const [selectedDecl, setSelectedDecl] = useState<IRDeclaration | null>(null);
   const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [newStatus, setNewStatus] = useState('');
 
   useEffect(() => {
     if (user) {
-      fetchRequests();
+      fetchDeclarations();
     }
   }, [user]);
 
-  const fetchRequests = async () => {
+  const fetchDeclarations = async () => {
     try {
+      // Query the ACTUAL table used by the IR flow
       const { data, error } = await supabase
-        .from('ir_requests')
+        .from('ir_ai_declarations')
         .select('*')
-        .eq('contador_id', user?.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setRequests(data || []);
+      setDeclarations((data as IRDeclaration[]) || []);
     } catch (error) {
-      console.error('Error fetching IR requests:', error);
+      console.error('Error fetching IR declarations:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleUpdateStatus = async () => {
-    if (!selectedRequest || !newStatus) return;
+    if (!selectedDecl || !newStatus) return;
 
     setIsUpdating(true);
     try {
@@ -123,9 +120,9 @@ export function IRManagement() {
       }
 
       const { error } = await supabase
-        .from('ir_requests')
+        .from('ir_ai_declarations')
         .update(updateData)
-        .eq('id', selectedRequest.id);
+        .eq('id', selectedDecl.id);
 
       if (error) throw error;
 
@@ -134,7 +131,7 @@ export function IRManagement() {
         description: 'O status da declaração foi atualizado com sucesso.',
       });
 
-      fetchRequests();
+      fetchDeclarations();
       setShowDetailsDialog(false);
     } catch (error: any) {
       toast({
@@ -147,9 +144,9 @@ export function IRManagement() {
     }
   };
 
-  const openDetails = (request: IRRequest) => {
-    setSelectedRequest(request);
-    setNewStatus(request.status);
+  const openDetails = (decl: IRDeclaration) => {
+    setSelectedDecl(decl);
+    setNewStatus(decl.status);
     setShowDetailsDialog(true);
   };
 
@@ -165,27 +162,40 @@ export function IRManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold">Declarações de IR</h2>
-          <p className="text-muted-foreground">Gerencie as solicitações de Imposto de Renda</p>
+          <h2 className="text-2xl font-bold">Declarações de IR (Contador IA)</h2>
+          <p className="text-muted-foreground">Gerencie as declarações processadas por IA</p>
         </div>
-        <Button variant="outline" onClick={fetchRequests}>
+        <Button variant="outline" onClick={fetchDeclarations}>
           <RefreshCw className="h-4 w-4 mr-2" />
           Atualizar
         </Button>
       </div>
 
-      {/* Enhanced Stats Dashboard */}
+      {/* Stats */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card className="bg-gradient-to-br from-amber-500/10 to-transparent border-amber-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-2xl font-bold text-amber-600">
-                  {requests.filter(r => r.payment_status === 'paid' && r.status !== 'completed' && r.status !== 'in_progress').length}
+                  {declarations.filter(r => r.status === 'pending_documents').length}
                 </div>
-                <p className="text-sm text-muted-foreground">Aguardando Início</p>
+                <p className="text-sm text-muted-foreground">Aguardando Docs</p>
               </div>
               <Clock className="h-8 w-8 text-amber-500/50" />
+            </div>
+          </CardContent>
+        </Card>
+        <Card className="bg-gradient-to-br from-purple-500/10 to-transparent border-purple-500/20">
+          <CardContent className="pt-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-2xl font-bold text-purple-600">
+                  {declarations.filter(r => r.status === 'ai_analysis' || r.status === 'processing').length}
+                </div>
+                <p className="text-sm text-muted-foreground">IA Processando</p>
+              </div>
+              <Brain className="h-8 w-8 text-purple-500/50" />
             </div>
           </CardContent>
         </Card>
@@ -194,11 +204,11 @@ export function IRManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-2xl font-bold text-blue-600">
-                  {requests.filter(r => r.status === 'in_progress').length}
+                  {declarations.filter(r => r.status === 'review').length}
                 </div>
-                <p className="text-sm text-muted-foreground">Em Andamento</p>
+                <p className="text-sm text-muted-foreground">Em Revisão</p>
               </div>
-              <RefreshCw className="h-8 w-8 text-blue-500/50" />
+              <Eye className="h-8 w-8 text-blue-500/50" />
             </div>
           </CardContent>
         </Card>
@@ -207,7 +217,7 @@ export function IRManagement() {
             <div className="flex items-center justify-between">
               <div>
                 <div className="text-2xl font-bold text-emerald-600">
-                  {requests.filter(r => r.status === 'completed').length}
+                  {declarations.filter(r => r.status === 'completed').length}
                 </div>
                 <p className="text-sm text-muted-foreground">Concluídas</p>
               </div>
@@ -215,51 +225,23 @@ export function IRManagement() {
             </div>
           </CardContent>
         </Card>
-        <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
+        <Card className="bg-gradient-to-br from-red-500/10 to-transparent border-red-500/20">
           <CardContent className="pt-4">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-2xl font-bold text-primary">
-                  {requests.filter(r => r.ir_type === 'simples').length} / {requests.filter(r => r.ir_type === 'completo').length}
+                <div className="text-2xl font-bold text-red-600">
+                  {declarations.filter(r => r.status === 'error').length}
                 </div>
-                <p className="text-sm text-muted-foreground">Simples / Completo</p>
+                <p className="text-sm text-muted-foreground">Com Erro</p>
               </div>
-              <FileSpreadsheet className="h-8 w-8 text-primary/50" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="bg-gradient-to-br from-success/10 to-transparent border-success/20">
-          <CardContent className="pt-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-2xl font-bold text-success">
-                  {formatPrice(
-                    requests
-                      .filter(r => r.payment_status === 'paid')
-                      .reduce((sum, r) => sum + r.final_price_cents * 0.85, 0)
-                  )}
-                </div>
-                <p className="text-sm text-muted-foreground">Receita Total (85%)</p>
-              </div>
-            </div>
-            <div className="mt-2 text-xs text-muted-foreground">
-              {requests.filter(r => r.status === 'completed').length > 0 && (
-                <span>
-                  Média: {formatPrice(
-                    requests
-                      .filter(r => r.payment_status === 'paid')
-                      .reduce((sum, r) => sum + r.final_price_cents * 0.85, 0) / 
-                    Math.max(requests.filter(r => r.status === 'completed').length, 1)
-                  )}/declaração
-                </span>
-              )}
+              <AlertCircle className="h-8 w-8 text-red-500/50" />
             </div>
           </CardContent>
         </Card>
       </div>
 
-      {/* Year breakdown card */}
-      {requests.length > 0 && (
+      {/* Year breakdown */}
+      {declarations.length > 0 && (
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
@@ -269,14 +251,14 @@ export function IRManagement() {
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-4">
-              {Array.from(new Set(requests.map(r => r.fiscal_year))).sort((a, b) => b - a).map(year => {
-                const yearRequests = requests.filter(r => r.fiscal_year === year);
-                const completed = yearRequests.filter(r => r.status === 'completed').length;
+              {Array.from(new Set(declarations.map(r => r.fiscal_year))).sort((a, b) => b - a).map(year => {
+                const yearDecls = declarations.filter(r => r.fiscal_year === year);
+                const completed = yearDecls.filter(r => r.status === 'completed').length;
                 return (
                   <div key={year} className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
                     <div className="text-2xl font-bold text-primary">{year}</div>
                     <div className="text-sm">
-                      <p><strong>{yearRequests.length}</strong> declarações</p>
+                      <p><strong>{yearDecls.length}</strong> declarações</p>
                       <p className="text-muted-foreground">{completed} concluídas</p>
                     </div>
                   </div>
@@ -287,63 +269,68 @@ export function IRManagement() {
         </Card>
       )}
 
-      {/* Requests Table */}
+      {/* Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Solicitações</CardTitle>
+          <CardTitle>Declarações</CardTitle>
         </CardHeader>
         <CardContent>
-          {requests.length === 0 ? (
+          {declarations.length === 0 ? (
             <div className="text-center py-8 text-muted-foreground">
               <FileText className="h-12 w-12 mx-auto mb-4 opacity-50" />
-              <p>Nenhuma solicitação de IR atribuída a você.</p>
+              <p>Nenhuma declaração de IR encontrada.</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Cliente</TableHead>
+                  <TableHead>Contribuinte</TableHead>
                   <TableHead>Tipo</TableHead>
                   <TableHead>Ano</TableHead>
-                  <TableHead>Valor</TableHead>
+                  <TableHead>Rendimentos</TableHead>
+                  <TableHead>Confiança IA</TableHead>
                   <TableHead>Status</TableHead>
                   <TableHead>Data</TableHead>
                   <TableHead className="text-right">Ações</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {requests.map((request) => {
-                  const status = statusConfig[request.status] || statusConfig.pending;
+                {declarations.map((decl) => {
+                  const status = statusConfig[decl.status] || statusConfig.error;
                   const StatusIcon = status.icon;
                   
                   return (
-                    <TableRow key={request.id}>
+                    <TableRow key={decl.id}>
                       <TableCell>
                         <div>
-                          <p className="font-medium">{request.full_name}</p>
-                          <p className="text-sm text-muted-foreground">{request.email}</p>
+                          <p className="font-medium">{decl.full_name || 'Não informado'}</p>
+                          <p className="text-sm text-muted-foreground">{decl.cpf || '-'}</p>
                         </div>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          {request.ir_type === 'simples' ? (
+                          {decl.declaration_type === 'simples' ? (
                             <FileText className="h-4 w-4 text-primary" />
                           ) : (
                             <FileSpreadsheet className="h-4 w-4 text-primary" />
                           )}
-                          <span className="capitalize">{request.ir_type}</span>
+                          <span className="capitalize">{decl.declaration_type}</span>
                         </div>
                       </TableCell>
-                      <TableCell>{request.fiscal_year}</TableCell>
+                      <TableCell>{decl.fiscal_year}</TableCell>
                       <TableCell>
-                        <div>
-                          <p>{formatPrice(request.final_price_cents)}</p>
-                          {request.discount_applied && (
-                            <Badge variant="outline" className="text-xs">
-                              Com desconto
-                            </Badge>
-                          )}
-                        </div>
+                        {decl.total_income_cents ? formatCurrency(decl.total_income_cents) : '-'}
+                      </TableCell>
+                      <TableCell>
+                        {decl.ai_confidence_percent != null ? (
+                          <Badge className={
+                            decl.ai_confidence_percent >= 80 ? 'bg-emerald-500/20 text-emerald-600' :
+                            decl.ai_confidence_percent >= 60 ? 'bg-amber-500/20 text-amber-600' :
+                            'bg-red-500/20 text-red-600'
+                          }>
+                            {decl.ai_confidence_percent}%
+                          </Badge>
+                        ) : '-'}
                       </TableCell>
                       <TableCell>
                         <Badge className={status.color}>
@@ -352,13 +339,13 @@ export function IRManagement() {
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {format(new Date(request.created_at), 'dd/MM/yyyy', { locale: ptBR })}
+                        {format(new Date(decl.created_at), 'dd/MM/yyyy', { locale: ptBR })}
                       </TableCell>
                       <TableCell className="text-right">
                         <Button 
                           variant="ghost" 
                           size="sm"
-                          onClick={() => openDetails(request)}
+                          onClick={() => openDetails(decl)}
                         >
                           <Eye className="h-4 w-4 mr-1" />
                           Ver
@@ -379,65 +366,80 @@ export function IRManagement() {
           <DialogHeader>
             <DialogTitle>Detalhes da Declaração</DialogTitle>
             <DialogDescription>
-              IR {selectedRequest?.ir_type?.toUpperCase()} - Ano {selectedRequest?.fiscal_year}
+              IR {selectedDecl?.declaration_type?.toUpperCase()} - Ano {selectedDecl?.fiscal_year}
             </DialogDescription>
           </DialogHeader>
 
-          {selectedRequest && (
+          {selectedDecl && (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="text-sm text-muted-foreground">Nome</label>
-                  <p className="font-medium">{selectedRequest.full_name}</p>
+                  <p className="font-medium">{selectedDecl.full_name || '-'}</p>
                 </div>
                 <div>
                   <label className="text-sm text-muted-foreground">CPF</label>
-                  <p className="font-medium">{selectedRequest.cpf || '-'}</p>
+                  <p className="font-medium">{selectedDecl.cpf || '-'}</p>
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Email</label>
-                  <p className="font-medium">{selectedRequest.email || '-'}</p>
+                  <label className="text-sm text-muted-foreground">Confiança IA</label>
+                  <p className="font-medium">
+                    {selectedDecl.ai_confidence_percent != null ? `${selectedDecl.ai_confidence_percent}%` : 'Não analisado'}
+                  </p>
                 </div>
                 <div>
-                  <label className="text-sm text-muted-foreground">Telefone</label>
-                  <p className="font-medium">{selectedRequest.phone || '-'}</p>
+                  <label className="text-sm text-muted-foreground">Status Atual</label>
+                  <p className="font-medium capitalize">{statusConfig[selectedDecl.status]?.label || selectedDecl.status}</p>
                 </div>
               </div>
 
-              {selectedRequest.ir_type === 'completo' && (
+              {/* Financial Summary */}
+              {(selectedDecl.total_income_cents || selectedDecl.total_deductions_cents) && (
                 <div className="p-4 bg-muted/50 rounded-lg">
-                  <h4 className="font-medium mb-2">Informações Adicionais</h4>
-                  <div className="grid grid-cols-2 gap-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      <span>Investimentos:</span>
-                      <Badge variant={selectedRequest.has_investments ? 'default' : 'outline'}>
-                        {selectedRequest.has_investments ? 'Sim' : 'Não'}
-                      </Badge>
+                  <h4 className="font-medium mb-3">Resumo Financeiro</h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <span className="text-muted-foreground">Rendimentos:</span>
+                      <p className="font-medium">{formatCurrency(selectedDecl.total_income_cents || 0)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span>Aluguéis:</span>
-                      <Badge variant={selectedRequest.has_rental_income ? 'default' : 'outline'}>
-                        {selectedRequest.has_rental_income ? 'Sim' : 'Não'}
-                      </Badge>
+                    <div>
+                      <span className="text-muted-foreground">Deduções:</span>
+                      <p className="font-medium text-emerald-600">{formatCurrency(selectedDecl.total_deductions_cents || 0)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span>Renda exterior:</span>
-                      <Badge variant={selectedRequest.has_foreign_income ? 'default' : 'outline'}>
-                        {selectedRequest.has_foreign_income ? 'Sim' : 'Não'}
-                      </Badge>
+                    <div>
+                      <span className="text-muted-foreground">Imposto Devido:</span>
+                      <p className="font-medium text-amber-600">{formatCurrency(selectedDecl.tax_due_cents || 0)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span>Fontes de renda:</span>
-                      <Badge variant="outline">{selectedRequest.income_sources_count}</Badge>
+                    <div>
+                      <span className="text-muted-foreground">Restituição:</span>
+                      <p className="font-medium text-emerald-600">{formatCurrency(selectedDecl.refund_cents || 0)}</p>
                     </div>
                   </div>
                 </div>
               )}
 
-              {selectedRequest.notes && (
-                <div>
-                  <label className="text-sm text-muted-foreground">Observações</label>
-                  <p className="p-2 bg-muted/50 rounded">{selectedRequest.notes}</p>
+              {/* AI Analysis extras */}
+              {selectedDecl.ai_analysis?.recommended_model && (
+                <div className="p-4 bg-purple-500/5 rounded-lg border border-purple-500/20">
+                  <h4 className="font-medium mb-2 flex items-center gap-2">
+                    <Brain className="h-4 w-4 text-purple-500" />
+                    Recomendação IA
+                  </h4>
+                  <p className="text-sm">
+                    Modelo: <strong className="capitalize">{selectedDecl.ai_analysis.recommended_model}</strong>
+                  </p>
+                  {selectedDecl.ai_analysis.recommendation_reason && (
+                    <p className="text-sm text-muted-foreground mt-1">{selectedDecl.ai_analysis.recommendation_reason}</p>
+                  )}
+                  {selectedDecl.ai_analysis.malha_fina_risk && (
+                    <p className="text-sm mt-2">
+                      Risco Malha Fina: <Badge className={
+                        selectedDecl.ai_analysis.malha_fina_risk === 'alto' ? 'bg-red-500/20 text-red-600' :
+                        selectedDecl.ai_analysis.malha_fina_risk === 'medio' ? 'bg-amber-500/20 text-amber-600' :
+                        'bg-emerald-500/20 text-emerald-600'
+                      }>{selectedDecl.ai_analysis.malha_fina_risk}</Badge>
+                    </p>
+                  )}
                 </div>
               )}
 
@@ -448,11 +450,12 @@ export function IRManagement() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="paid">Pago - Aguardando</SelectItem>
-                    <SelectItem value="in_progress">Em Andamento</SelectItem>
-                    <SelectItem value="documents_pending">Documentos Pendentes</SelectItem>
+                    <SelectItem value="pending_documents">Aguardando Documentos</SelectItem>
+                    <SelectItem value="processing">Processando</SelectItem>
+                    <SelectItem value="ai_analysis">IA Analisando</SelectItem>
+                    <SelectItem value="review">Em Revisão</SelectItem>
                     <SelectItem value="completed">Concluído</SelectItem>
-                    <SelectItem value="cancelled">Cancelado</SelectItem>
+                    <SelectItem value="error">Erro</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
