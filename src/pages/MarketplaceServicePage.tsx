@@ -83,7 +83,7 @@ const serviceConfigs: Record<string, ServiceConfig> = {
   'declaracao-ir-simples': {
     key: 'ir_simples',
     title: 'Declaração IR Simples',
-    description: 'Sua declaração feita por contador especializado, enviada corretamente à Receita e com comprovante.',
+    description: 'Sua declaração processada 100% por IA, enviada corretamente à Receita e com comprovante.',
     price: 8900,
     priceLabel: 'R$ 89,00',
     icon: FileText,
