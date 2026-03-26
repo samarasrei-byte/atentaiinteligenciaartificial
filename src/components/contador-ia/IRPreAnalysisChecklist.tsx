@@ -122,10 +122,18 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
   };
 
   const handleYesNo = (field: keyof ChecklistAnswers, value: boolean) => {
-    setAnswers(prev => ({ ...prev, [field]: value }));
+    const updatedAnswers = { ...answers, [field]: value };
+    setAnswers(updatedAnswers);
     setAnswered(prev => ({ ...prev, [question.id]: value }));
     if (!value) {
-      setTimeout(() => advance(), 300);
+      // Use updatedAnswers directly to avoid stale closure
+      setTimeout(() => {
+        if (currentStep < questions.length - 1) {
+          setCurrentStep(prev => prev + 1);
+        } else {
+          onComplete(updatedAnswers);
+        }
+      }, 300);
     }
   };
 
@@ -368,8 +376,8 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
           <Button variant="ghost" size="sm" onClick={goBack} disabled={currentStep === 0} className="text-xs text-muted-foreground">
             ← Voltar
           </Button>
-          <Button onClick={advance} disabled={isLoading}
-            className="bg-purple-500 hover:bg-purple-600 rounded-full h-9 px-6 text-sm">
+          <Button onClick={advance} disabled={isLoading || answered[question.id] === null}
+            className="bg-purple-500 hover:bg-purple-600 rounded-full h-9 px-6 text-sm disabled:opacity-40">
             {currentStep === questions.length - 1 ? (
               <>
                 <CheckCircle2 className="w-4 h-4 mr-1" /> Concluir e analisar
