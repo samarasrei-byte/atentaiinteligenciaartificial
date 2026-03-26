@@ -197,10 +197,8 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
               </div>
             </div>
 
-            {irType === 'completo' && (
-              <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
-                <h4 className="font-medium">Informações Adicionais</h4>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Fiscal Year Selector — always visible */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="fiscalYear">Ano-Base (Exercício) *</Label>
                 <Select
@@ -222,6 +220,12 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+
+            {irType === 'completo' && (
+              <div className="space-y-4 p-4 bg-muted/50 rounded-lg">
+                <h4 className="font-medium">Informações Adicionais</h4>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="flex items-center justify-between">
                     <Label htmlFor="hasInvestments">Possui investimentos?</Label>
                     <Switch id="hasInvestments" checked={formData.hasInvestments} onCheckedChange={(checked) => setFormData({ ...formData, hasInvestments: checked })} />
