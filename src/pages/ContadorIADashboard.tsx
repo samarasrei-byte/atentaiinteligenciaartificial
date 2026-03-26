@@ -88,9 +88,11 @@ const ContadorIADashboard = () => {
   React.useEffect(() => {
     if (activeDeclaration) {
       const declAny = activeDeclaration as any;
-      if (declAny.checklist_completed) {
-        setChecklistCompleted(true);
-      }
+      setChecklistCompleted(!!declAny.checklist_completed);
+      setShowChecklist(false);
+    } else {
+      setChecklistCompleted(false);
+      setShowChecklist(false);
     }
   }, [activeDeclaration?.id]);
 
