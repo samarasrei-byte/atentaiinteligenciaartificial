@@ -121,17 +121,36 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     return map[question.id];
   };
 
+  // Sanitize answers before submission — prevent "has_X = true" with empty data
+  const sanitizeAnswers = (raw: ChecklistAnswers): ChecklistAnswers => {
+    const sanitized = { ...raw };
+    if (sanitized.has_dependents && sanitized.dependents_info.length === 0) {
+      sanitized.has_dependents = false;
+      sanitized.dependents_count = 0;
+    }
+    sanitized.dependents_count = sanitized.dependents_info.length;
+    if (sanitized.has_assets && sanitized.assets_info.length === 0) {
+      sanitized.has_assets = false;
+    }
+    if (sanitized.has_exempt_income && sanitized.exempt_income_types.length === 0) {
+      sanitized.has_exempt_income = false;
+    }
+    if (sanitized.has_private_pension && !sanitized.pension_type && sanitized.pension_annual_cents === 0) {
+      sanitized.has_private_pension = false;
+    }
+    return sanitized;
+  };
+
   const handleYesNo = (field: keyof ChecklistAnswers, value: boolean) => {
     const updatedAnswers = { ...answers, [field]: value };
     setAnswers(updatedAnswers);
     setAnswered(prev => ({ ...prev, [question.id]: value }));
     if (!value) {
-      // Use updatedAnswers directly to avoid stale closure
       setTimeout(() => {
         if (currentStep < questions.length - 1) {
           setCurrentStep(prev => prev + 1);
         } else {
-          onComplete(updatedAnswers);
+          onComplete(sanitizeAnswers(updatedAnswers));
         }
       }, 300);
     }
@@ -141,7 +160,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     if (currentStep < questions.length - 1) {
       setCurrentStep(prev => prev + 1);
     } else {
-      onComplete(answers);
+      onComplete(sanitizeAnswers(answers));
     }
   };
 
