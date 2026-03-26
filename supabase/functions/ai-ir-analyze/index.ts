@@ -452,25 +452,33 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       }
 
       // 2. Validate deduction items — cap education at R$ 3.561,50/person
+      //    AND recalculate totalDeductions from corrected items (CRITICAL FIX)
       const EDUCATION_CAP_CENTS = 356150;
       const deductionItems = (typedAnalysis.deduction_items as any[]) || [];
+      let deductionCorrection = 0; // Track total cents removed by caps
       for (const item of deductionItems) {
         if (item.category === 'educacao' || item.category === 'educação' || item.category === 'education') {
           if (item.value_cents > EDUCATION_CAP_CENTS) {
-            validationAlerts.push(`Dedução educação "${item.description}" excedia limite legal (R$ 3.561,50). Ajustado.`);
+            const excess = item.value_cents - EDUCATION_CAP_CENTS;
+            deductionCorrection += excess;
+            validationAlerts.push(`Dedução educação "${item.description}" excedia limite legal (R$ 3.561,50). Reduzido R$ ${(excess / 100).toFixed(2)}`);
             item.value_cents = EDUCATION_CAP_CENTS;
           }
         }
       }
 
       // 3. Validate PGBL deduction — max 12% of gross taxable income
+      //    AND apply correction to totalDeductions (CRITICAL FIX)
       const PGBL_MAX_PERCENT = 0.12;
       const pgblMaxCents = Math.round(totalIncome * PGBL_MAX_PERCENT);
       const pensionDeduction = (typedAnalysis.pension_deduction_cents as number) || 0;
       let validatedPensionDeduction = pensionDeduction;
       if (pensionDeduction > pgblMaxCents && pgblMaxCents > 0) {
+        const pgblExcess = pensionDeduction - pgblMaxCents;
+        deductionCorrection += pgblExcess;
         validatedPensionDeduction = pgblMaxCents;
         validationAlerts.push(`Dedução PGBL excedia 12% da renda bruta. Limitada a R$ ${(pgblMaxCents / 100).toFixed(2)}`);
+        (typedAnalysis as any).pension_deduction_cents = validatedPensionDeduction;
       }
 
       // 4. Validate dependent deduction — must be exactly R$ 2.275,08/dependent
@@ -479,10 +487,20 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       if (dependentsDeduction > 0) {
         const impliedCount = Math.round(dependentsDeduction / DEPENDENT_DEDUCTION_CENTS);
         const expectedDeduction = impliedCount * DEPENDENT_DEDUCTION_CENTS;
-        if (Math.abs(dependentsDeduction - expectedDeduction) > 100) { // tolerance of R$ 1
+        if (Math.abs(dependentsDeduction - expectedDeduction) > 100) {
+          const depDiff = dependentsDeduction - expectedDeduction;
+          if (depDiff > 0) deductionCorrection += depDiff;
+          else deductionCorrection -= Math.abs(depDiff); // AI underestimated
           validationAlerts.push(`Dedução por dependentes ajustada: ${impliedCount} dependente(s) × R$ 2.275,08 = R$ ${(expectedDeduction / 100).toFixed(2)}`);
           (typedAnalysis as any).dependents_deduction_cents = expectedDeduction;
         }
+      }
+
+      // CRITICAL: Apply accumulated deduction corrections to totalDeductions
+      // (only for "completo" model — simplified was already recalculated in step 1)
+      if (typedAnalysis.declaration_model !== 'simplificado' && deductionCorrection !== 0) {
+        totalDeductions = Math.max(0, totalDeductions - deductionCorrection);
+        validationAlerts.push(`Total de deduções ajustado: redução de R$ ${(deductionCorrection / 100).toFixed(2)} por limites legais`);
       }
 
       // 5. (Moved to after tax recalculation — step 8)
