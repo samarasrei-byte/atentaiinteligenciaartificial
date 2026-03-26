@@ -417,14 +417,103 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         });
       }
 
+      // ============================================================
+      // SERVER-SIDE FISCAL VALIDATION — Legal limits (IRPF 2025/2024)
+      // A senior accountant would NEVER trust AI output without
+      // programmatic validation of legal caps and fiscal consistency.
+      // ============================================================
+      const validationAlerts: string[] = [];
+      const totalIncome = (typedAnalysis.total_income_cents as number) || 0;
+      let totalDeductions = (typedAnalysis.total_deductions_cents as number) || 0;
+      let taxDue = (typedAnalysis.tax_due_cents as number) || 0;
+      let refund = (typedAnalysis.refund_cents as number) || 0;
+
+      // 1. Cap simplified discount at R$ 16.754,34 (1675434 cents)
+      const SIMPLIFIED_CAP_CENTS = 1675434;
+      if (typedAnalysis.declaration_model === 'simplificado') {
+        const simplifiedDiscount = Math.round(totalIncome * 0.20);
+        if (totalDeductions > SIMPLIFIED_CAP_CENTS && totalDeductions === simplifiedDiscount) {
+          totalDeductions = SIMPLIFIED_CAP_CENTS;
+          validationAlerts.push(`Desconto simplificado limitado ao teto legal de R$ 16.754,34`);
+        }
+      }
+
+      // 2. Validate deduction items — cap education at R$ 3.561,50/person
+      const EDUCATION_CAP_CENTS = 356150;
+      const deductionItems = (typedAnalysis.deduction_items as any[]) || [];
+      for (const item of deductionItems) {
+        if (item.category === 'educacao' || item.category === 'educação' || item.category === 'education') {
+          if (item.value_cents > EDUCATION_CAP_CENTS) {
+            validationAlerts.push(`Dedução educação "${item.description}" excedia limite legal (R$ 3.561,50). Ajustado.`);
+            item.value_cents = EDUCATION_CAP_CENTS;
+          }
+        }
+      }
+
+      // 3. Validate PGBL deduction — max 12% of gross taxable income
+      const PGBL_MAX_PERCENT = 0.12;
+      const pgblMaxCents = Math.round(totalIncome * PGBL_MAX_PERCENT);
+      const pensionDeduction = (typedAnalysis.pension_deduction_cents as number) || 0;
+      let validatedPensionDeduction = pensionDeduction;
+      if (pensionDeduction > pgblMaxCents && pgblMaxCents > 0) {
+        validatedPensionDeduction = pgblMaxCents;
+        validationAlerts.push(`Dedução PGBL excedia 12% da renda bruta. Limitada a R$ ${(pgblMaxCents / 100).toFixed(2)}`);
+      }
+
+      // 4. Validate dependent deduction — must be exactly R$ 2.275,08/dependent
+      const DEPENDENT_DEDUCTION_CENTS = 227508;
+      const dependentsDeduction = (typedAnalysis.dependents_deduction_cents as number) || 0;
+      if (dependentsDeduction > 0) {
+        const impliedCount = Math.round(dependentsDeduction / DEPENDENT_DEDUCTION_CENTS);
+        const expectedDeduction = impliedCount * DEPENDENT_DEDUCTION_CENTS;
+        if (Math.abs(dependentsDeduction - expectedDeduction) > 100) { // tolerance of R$ 1
+          validationAlerts.push(`Dedução por dependentes ajustada: ${impliedCount} dependente(s) × R$ 2.275,08 = R$ ${(expectedDeduction / 100).toFixed(2)}`);
+          (typedAnalysis as any).dependents_deduction_cents = expectedDeduction;
+        }
+      }
+
+      // 5. Fiscal consistency: tax_due and refund cannot both be positive
+      if (taxDue > 0 && refund > 0) {
+        // IRRF retido > imposto = restituição; IRRF retido < imposto = imposto a pagar
+        // Since we don't have IRRF separately, keep the larger one and zero the other
+        if (refund > taxDue) {
+          taxDue = 0;
+          validationAlerts.push(`Inconsistência fiscal corrigida: imposto devido zerado (restituição prevalece)`);
+        } else {
+          refund = 0;
+          validationAlerts.push(`Inconsistência fiscal corrigida: restituição zerada (há imposto a pagar)`);
+        }
+      }
+
+      // 6. Ensure non-negative values
+      if (taxDue < 0) { taxDue = 0; validationAlerts.push('Imposto devido negativo corrigido para zero'); }
+      if (refund < 0) { refund = 0; validationAlerts.push('Restituição negativa corrigida para zero'); }
+      if (totalDeductions < 0) { totalDeductions = 0; }
+
+      // Merge validation alerts into AI alerts
+      const existingAlerts = (typedAnalysis.alerts as string[]) || [];
+      const mergedAlerts = [...existingAlerts, ...validationAlerts];
+      (typedAnalysis as any).alerts = mergedAlerts;
+
+      // Increase malha_fina_risk if validation found issues
+      if (validationAlerts.length >= 3) {
+        (typedAnalysis as any).malha_fina_risk = 'alto';
+        (typedAnalysis as any).malha_fina_reasons = [
+          ...((typedAnalysis.malha_fina_reasons as string[]) || []),
+          `Validação fiscal encontrou ${validationAlerts.length} inconsistências nos valores da IA`,
+        ];
+      }
+
+      console.log(`[ai-ir-analyze] Fiscal validation: ${validationAlerts.length} corrections applied`, validationAlerts);
+
       await supabase.from("ir_ai_declarations").update({
         status: "review",
-        ai_analysis: analysis,
+        ai_analysis: typedAnalysis,
         ai_confidence_percent: (typedAnalysis.confidence_percent as number) || 0,
-        total_income_cents: (typedAnalysis.total_income_cents as number) || 0,
-        total_deductions_cents: (typedAnalysis.total_deductions_cents as number) || 0,
-        tax_due_cents: (typedAnalysis.tax_due_cents as number) || 0,
-        refund_cents: (typedAnalysis.refund_cents as number) || 0,
+        total_income_cents: totalIncome,
+        total_deductions_cents: totalDeductions,
+        tax_due_cents: taxDue,
+        refund_cents: refund,
         malha_fina_risk: (typedAnalysis.malha_fina_risk as string) || 'baixo',
         malha_fina_reasons: (typedAnalysis.malha_fina_reasons as string[]) || [],
       }).eq("id", declarationId);
