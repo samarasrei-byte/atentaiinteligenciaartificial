@@ -251,9 +251,12 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
 
       // Validate: must have items array with at least 1 entry and confidence
       const hasItems = Array.isArray(extractedData.items) && (extractedData.items as unknown[]).length > 0;
-      const hasConfidence = typeof extractedData.confidence_percent === 'number';
+      const hasConfidence =
+        typeof extractedData.confidence_percent === 'number' &&
+        Number.isFinite(extractedData.confidence_percent) &&
+        extractedData.confidence_percent >= 0;
 
-      if (docParseFailed || !hasItems) {
+      if (docParseFailed || !hasItems || !hasConfidence) {
         console.error("[ai-ir-analyze] Document extraction failed/empty for doc:", documentId);
         await supabase.from("ir_ai_documents").update({
           ai_status: "error",
@@ -305,7 +308,7 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
       // Fetch checklist data from declaration
       const { data: declChecklist } = await supabase
         .from("ir_ai_declarations")
-        .select("checklist_answers, has_dependents, dependents_info, has_assets, has_private_pension, pension_type, pension_annual_cents, has_exempt_income, exempt_income_types, had_carne_leao, sold_assets, has_crypto")
+        .select("checklist_answers, has_dependents, dependents_info, has_assets, has_private_pension, pension_type, pension_annual_cents, has_exempt_income, exempt_income_types, had_carne_leao, multiple_income_sources, sold_assets, has_crypto")
         .eq("id", declarationId)
         .single();
 
@@ -455,10 +458,18 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       const typedAnalysis = analysis as Record<string, unknown>;
 
       // CRITICAL: Validate that AI returned meaningful data before marking as "review"
-      const hasIncome = typeof typedAnalysis.total_income_cents === 'number' && typedAnalysis.total_income_cents > 0;
-      const hasConfidence = typeof typedAnalysis.confidence_percent === 'number' && typedAnalysis.confidence_percent > 0;
+      const hasIncomeField = typeof typedAnalysis.total_income_cents === 'number' && Number.isFinite(typedAnalysis.total_income_cents);
+      const hasConfidence =
+        typeof typedAnalysis.confidence_percent === 'number' &&
+        Number.isFinite(typedAnalysis.confidence_percent) &&
+        typedAnalysis.confidence_percent >= 0;
+      const hasAnyFiscalSignal =
+        ((typedAnalysis.total_income_cents as number) || 0) > 0 ||
+        ((typedAnalysis.total_deductions_cents as number) || 0) > 0 ||
+        (Array.isArray(typedAnalysis.income_sources) && typedAnalysis.income_sources.length > 0) ||
+        (Array.isArray(typedAnalysis.deduction_items) && typedAnalysis.deduction_items.length > 0);
 
-      if (parseFailed || !hasIncome || !hasConfidence) {
+      if (parseFailed || !hasIncomeField || !hasConfidence || !hasAnyFiscalSignal) {
         console.error("[ai-ir-analyze] AI returned empty/invalid analysis:", JSON.stringify(analysis));
         await supabase.from("ir_ai_declarations").update({
           status: "error",
@@ -641,15 +652,19 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       // Determine which model is better and override if AI chose wrong
       const bestModel = taxSimplificado <= taxCompleto ? 'simplificado' : 'completo';
       const currentModel = (typedAnalysis.declaration_model as string) || 'simplificado';
+      (typedAnalysis as any).recommended_model = bestModel;
+      (typedAnalysis as any).declaration_model = bestModel;
 
       if (bestModel !== currentModel) {
         validationAlerts.push(
           `Modelo otimizado: ${bestModel === 'simplificado' ? 'Simplificado' : 'Completo'} economiza R$ ${(Math.abs(taxSimplificado - taxCompleto) / 100).toFixed(2)} vs ${currentModel}`
         );
-        (typedAnalysis as any).recommended_model = bestModel;
         (typedAnalysis as any).recommendation_reason = 
           `${bestModel === 'simplificado' ? 'Simplificado' : 'Completo'} resulta em menor imposto. ` +
           `Simplificado: R$ ${(taxSimplificado / 100).toFixed(2)} | Completo: R$ ${(taxCompleto / 100).toFixed(2)}`;
+      } else if (!(typedAnalysis as any).recommendation_reason) {
+        (typedAnalysis as any).recommendation_reason =
+          `Modelo ${bestModel} mantido por menor carga tributária estimada.`;
       }
 
       // Store comparison data for the user
@@ -683,9 +698,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
         // No IRRF info — recalculate tax but set refund to 0 (can't compute without IRRF)
         taxDue = calculatedTax;
         refund = 0;
-        if (validationAlerts.length > 0) {
-          validationAlerts.push(`Imposto recalculado: R$ ${(calculatedTax / 100).toFixed(2)} (sem dados de IRRF retido para calcular restituição)`);
-        }
+        validationAlerts.push(`Imposto recalculado: R$ ${(calculatedTax / 100).toFixed(2)} (sem dados de IRRF retido para calcular restituição)`);
       }
 
       // 8. Final consistency: tax_due and refund cannot both be positive
