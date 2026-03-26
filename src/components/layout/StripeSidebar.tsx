@@ -105,18 +105,6 @@ const adminGroups: SidebarGroup[] = [
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
     ],
   },
-  {
-    id: 'cesar',
-    label: 'Emissão NF',
-    icon: Brain,
-    defaultOpen: true,
-    isPerson: true,
-    personGradient: 'from-violet-500 to-indigo-600',
-    items: [
-      { icon: MessageCircle, label: 'Chat', tabId: 'cesar-chat', isLive: true, chatBadge: 'cesar' },
-      { icon: BarChart3, label: 'BI Completo', tabId: 'bi-accounting', isLive: true },
-    ],
-  },
   // REMOVIDO: Central de Documentos - documentos agora ficam dentro de cada serviço
   {
     id: 'servicos',
@@ -125,7 +113,6 @@ const adminGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
-      { icon: BarChart3, label: 'BI Contabilidade', tabId: 'bi-accounting' },
     ],
   },
   {
@@ -193,7 +180,6 @@ const autonomoGroups: SidebarGroup[] = [
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
       { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
-      { icon: MessageCircle, label: 'Chat Emissão NF', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
     ],
   },
   {
@@ -292,7 +278,6 @@ const empresaGroups: SidebarGroup[] = [
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
       { icon: MessageCircle, label: 'Chat Guilherme', tabId: 'chat-guilherme', isLive: true, chatBadge: 'guilherme' },
-      { icon: MessageCircle, label: 'Chat Emissão NF', tabId: 'chat-cesar', isLive: true, chatBadge: 'cesar' },
     ],
   },
   {
@@ -313,7 +298,6 @@ const empresaGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'analise-fiscal' },
-      { icon: BarChart3, label: 'BI', tabId: 'bi' },
     ],
   },
   {
@@ -391,7 +375,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   const isEquipeGuilherme = hasRole('equipe_guilherme') && !hasRole('admin');
   
   // Groups that equipe_guilherme can access (chat groups only)
-  const chatOnlyGroupIds = ['guilherme', 'cesar'];
+  const chatOnlyGroupIds = ['guilherme'];
   
   const getGroups = () => {
     let baseGroups: SidebarGroup[];

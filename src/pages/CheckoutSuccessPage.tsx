@@ -64,7 +64,7 @@ export default function CheckoutSuccessPage() {
       return '/chat/guilherme';
     }
     if (serviceType === 'company_opening' || serviceType.includes('bi')) {
-      return '/chat/cesar';
+      return '/chat/guilherme';
     }
     return '/dashboard';
   };

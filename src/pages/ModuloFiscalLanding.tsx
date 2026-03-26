@@ -211,7 +211,7 @@ export default function ModuloFiscalLanding() {
             <motion.div variants={itemVariants} className="flex justify-center mb-10 sm:mb-12 px-4">
               <Button 
                 size="lg" 
-                onClick={() => navigate('/bi-contabilidade/onboarding')}
+                onClick={() => navigate('/modulo-fiscal/onboarding')}
                 className="bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600 text-white font-bold text-base sm:text-lg px-8 sm:px-10 py-6 sm:py-7 rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-emerald-500/40 transition-all duration-300 group"
               >
                 <Users className="h-5 w-5 mr-2" />

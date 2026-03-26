@@ -89,7 +89,7 @@ const sidebarGroups: SidebarGroup[] = [
       { icon: Target, label: 'Análise Cohort', tabId: 'cohort' },
     ],
   },
-  // 2️⃣ COMUNICAÇÃO - Central de atendimento (Guilherme) + Chat BI (César) + Notificações + Alertas
+  // 2️⃣ COMUNICAÇÃO - Central de atendimento (Guilherme) + Notificações + Alertas
   {
     id: 'comunicacao',
     label: 'Comunicação',
