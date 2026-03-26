@@ -279,7 +279,7 @@ const Simulator = () => {
                       <SelectValue placeholder="Selecione o estado (opcional)" />
                     </SelectTrigger>
                     <SelectContent className="bg-slate-800 border-slate-700 max-h-60 z-[200]">
-                      <SelectItem value="">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
+                      <SelectItem value="default">Usar alíquota padrão ({selectedSector?.icms}%)</SelectItem>
                       {brazilianStates.map((s) => (
                         <SelectItem key={s.value} value={s.value}>
                           {s.label} ({stateICMSRates[s.value]}%)
