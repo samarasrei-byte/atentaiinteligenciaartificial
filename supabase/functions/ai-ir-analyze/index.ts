@@ -369,12 +369,31 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
 
       const summaryData = await summaryResponse.json();
       let analysis = {};
+      let parseFailed = false;
       const tc = summaryData.choices?.[0]?.message?.tool_calls?.[0];
       if (tc?.function?.arguments) {
-        try { analysis = JSON.parse(tc.function.arguments); } catch { analysis = {}; }
+        try { analysis = JSON.parse(tc.function.arguments); } catch { parseFailed = true; }
+      } else {
+        parseFailed = true;
       }
 
       const typedAnalysis = analysis as Record<string, unknown>;
+
+      // CRITICAL: Validate that AI returned meaningful data before marking as "review"
+      const hasIncome = typeof typedAnalysis.total_income_cents === 'number' && typedAnalysis.total_income_cents > 0;
+      const hasConfidence = typeof typedAnalysis.confidence_percent === 'number' && typedAnalysis.confidence_percent > 0;
+
+      if (parseFailed || (!hasIncome && !hasConfidence)) {
+        console.error("[ai-ir-analyze] AI returned empty/invalid analysis:", JSON.stringify(analysis));
+        await supabase.from("ir_ai_declarations").update({
+          status: "error",
+          ai_analysis: { error: "A IA não conseguiu gerar um resumo válido. Tente novamente.", raw: analysis },
+        }).eq("id", declarationId);
+
+        return new Response(JSON.stringify({ error: "A IA não retornou dados válidos. Tente reenviar os documentos ou gerar novamente." }), {
+          status: 422, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
 
       await supabase.from("ir_ai_declarations").update({
         status: "review",
