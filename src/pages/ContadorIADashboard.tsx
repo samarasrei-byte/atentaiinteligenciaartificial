@@ -401,7 +401,7 @@ const ContadorIADashboard = () => {
             </Badge>
           </div>
           <div className="flex items-center gap-3">
-            <Button onClick={createDeclaration} className="bg-emerald-500 hover:bg-emerald-600 rounded-full h-9 px-4 text-sm">
+            <Button onClick={goToIRPayment} className="bg-emerald-500 hover:bg-emerald-600 rounded-full h-9 px-4 text-sm">
               <Sparkles className="w-4 h-4 mr-1" /> Nova Declaração
             </Button>
             <Button variant="ghost" size="icon" onClick={() => { signOut(); navigate('/'); }} className="text-muted-foreground hover:text-foreground">
