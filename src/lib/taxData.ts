@@ -138,7 +138,7 @@ export function calculateTaxes(input: SimulationInput): SimulationResult {
   const creditFactor = companyData.creditFactor;
 
   // Determina alíquota de ICMS (usa estado se fornecido, senão usa do setor)
-  const icmsRate = state && sectorData.icms > 0 
+  const icmsRate = state && state !== 'default' && sectorData.icms > 0 
     ? stateICMSRates[state] || sectorData.icms 
     : sectorData.icms;
 
