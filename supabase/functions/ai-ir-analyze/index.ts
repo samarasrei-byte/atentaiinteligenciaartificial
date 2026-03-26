@@ -408,7 +408,7 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
                         irrf_cents: { type: "number", description: "IRRF retido na fonte em centavos (OBRIGATÓRIO se disponível no informe)" },
                         type: { type: "string", description: "Tipo: salario, pro_labore, aluguel, autonomo, etc" },
                       },
-                      required: ["source", "value_cents", "irrf_cents"],
+                      required: ["source", "cnpj", "value_cents", "irrf_cents"],
                     },
                   },
                   deduction_items: {
