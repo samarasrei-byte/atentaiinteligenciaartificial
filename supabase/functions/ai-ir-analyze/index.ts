@@ -52,7 +52,7 @@ serve(async (req) => {
     const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     if (authError || !user) throw new Error("Unauthorized");
 
-    const { declarationId, documentId, documentType, action } = await req.json();
+    const { declarationId, documentId, documentType, action, checklistData } = await req.json();
 
     if (action === "analyze_document") {
       // Get document info
