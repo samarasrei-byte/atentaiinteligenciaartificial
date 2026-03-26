@@ -239,6 +239,15 @@ IMPORTANTE: Os valores devem ser em centavos (multiplique por 100). Ex: R$ 1.500
 
       await supabase.from("ir_ai_declarations").update({ status: "ai_analysis" }).eq("id", declarationId);
 
+      // Fetch checklist data from declaration
+      const { data: declChecklist } = await supabase
+        .from("ir_ai_declarations")
+        .select("checklist_answers, has_dependents, dependents_info, has_assets, has_private_pension, pension_type, pension_annual_cents, has_exempt_income, exempt_income_types, had_carne_leao, sold_assets, has_crypto")
+        .eq("id", declarationId)
+        .single();
+
+      const checklistInfo = checklistData || declChecklist?.checklist_answers || {};
+
       const extractedDataSummary = docs.map(d => ({
         type: d.document_type,
         file: d.file_name,
