@@ -101,6 +101,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
   const questions = getQuestions(year);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<ChecklistAnswers>(defaultAnswers);
+  const [isAutoAdvancing, setIsAutoAdvancing] = useState(false);
   const [answered, setAnswered] = useState<AnswerState>(() => {
     const init: AnswerState = {};
     getQuestions(year).forEach(q => { init[q.id] = null; });
