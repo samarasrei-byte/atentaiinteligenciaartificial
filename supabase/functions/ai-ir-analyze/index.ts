@@ -496,9 +496,74 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
       }
 
       // 6. Ensure non-negative values
+      if (totalDeductions < 0) { totalDeductions = 0; }
+
+      // ============================================================
+      // 7. CRITICAL: Recalculate tax using progressive table after
+      //    deduction corrections. Without this, corrected deductions
+      //    produce INCONSISTENT tax (calculated with old deduction values).
+      // ============================================================
+      const baseCalculo = Math.max(0, totalIncome - totalDeductions);
+
+      // Progressive annual table IRPF 2025 (exercício 2024)
+      let calculatedTax = 0;
+      if (baseCalculo <= 2696320) {
+        calculatedTax = 0;
+      } else if (baseCalculo <= 3391980) {
+        calculatedTax = Math.round(baseCalculo * 0.075 - 203328);
+      } else if (baseCalculo <= 4501260) {
+        calculatedTax = Math.round(baseCalculo * 0.15 - 457728);
+      } else if (baseCalculo <= 5597616) {
+        calculatedTax = Math.round(baseCalculo * 0.225 - 795324);
+      } else {
+        calculatedTax = Math.round(baseCalculo * 0.275 - 1075200);
+      }
+      calculatedTax = Math.max(0, calculatedTax);
+
+      // Estimate IRRF retained from income sources
+      const incomeSources = (typedAnalysis.income_sources as any[]) || [];
+      let totalIRRF = 0;
+      for (const src of incomeSources) {
+        if (src.irrf_cents && typeof src.irrf_cents === 'number') {
+          totalIRRF += src.irrf_cents;
+        }
+      }
+
+      // If we have IRRF data, calculate refund/tax properly
+      if (totalIRRF > 0) {
+        if (totalIRRF >= calculatedTax) {
+          refund = totalIRRF - calculatedTax;
+          taxDue = 0;
+        } else {
+          taxDue = calculatedTax - totalIRRF;
+          refund = 0;
+        }
+        if (calculatedTax !== (typedAnalysis.tax_due_cents as number)) {
+          validationAlerts.push(`Imposto recalculado pela tabela progressiva: R$ ${(calculatedTax / 100).toFixed(2)} (base de cálculo: R$ ${(baseCalculo / 100).toFixed(2)})`);
+        }
+      } else {
+        // No IRRF info — use AI values but enforce consistency
+        // Only override if deductions were corrected (which changes base)
+        if (validationAlerts.length > 0) {
+          taxDue = calculatedTax;
+          validationAlerts.push(`Imposto recalculado: R$ ${(calculatedTax / 100).toFixed(2)} (base: R$ ${(baseCalculo / 100).toFixed(2)})`);
+        }
+        // Keep refund from AI if no IRRF to compute against
+      }
+
+      // 8. Final consistency: tax_due and refund cannot both be positive
+      if (taxDue > 0 && refund > 0) {
+        if (refund > taxDue) {
+          taxDue = 0;
+          validationAlerts.push('Inconsistência fiscal corrigida: imposto zerado (restituição prevalece)');
+        } else {
+          refund = 0;
+          validationAlerts.push('Inconsistência fiscal corrigida: restituição zerada (há imposto a pagar)');
+        }
+      }
+
       if (taxDue < 0) { taxDue = 0; validationAlerts.push('Imposto devido negativo corrigido para zero'); }
       if (refund < 0) { refund = 0; validationAlerts.push('Restituição negativa corrigida para zero'); }
-      if (totalDeductions < 0) { totalDeductions = 0; }
 
       // Merge validation alerts into AI alerts
       const existingAlerts = (typedAnalysis.alerts as string[]) || [];
