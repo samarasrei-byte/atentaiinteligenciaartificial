@@ -308,7 +308,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
               ))}
             </div>
             <div>
-              <Label className="text-xs text-muted-foreground">Valor contribuído em 2024 (R$)</Label>
+              <Label className="text-xs text-muted-foreground">Valor contribuído em {year} (R$)</Label>
               <Input type="number" placeholder="0,00" className="h-8 text-sm bg-background mt-1"
                 onChange={e => setAnswers(prev => ({ ...prev, pension_annual_cents: Math.round(parseFloat(e.target.value || '0') * 100) }))} />
             </div>
