@@ -454,7 +454,7 @@ export const AdminIRManagement: React.FC = () => {
                             {config.label}
                           </Badge>
                           <Badge variant="secondary" className="text-[10px]">
-                            {decl.declaration_type === 'completa' ? 'Completa' : 'Simples'}
+                            {decl.declaration_type === 'completo' ? 'Completa' : 'Simples'}
                           </Badge>
                           <span className="text-xs text-muted-foreground">
                             Ano: {decl.fiscal_year}
