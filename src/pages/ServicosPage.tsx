@@ -126,7 +126,7 @@ const aiServices: ServiceCardConfig[] = [
       'Alertas de inconsistências',
     ],
     guarantees: ['IA de última geração', '97% de precisão'],
-    basePrice: 4990,
+    basePrice: 8900,
     discountPercent: 0,
     badge: 'new' as const,
     cta: 'Fazer minha declaração',
