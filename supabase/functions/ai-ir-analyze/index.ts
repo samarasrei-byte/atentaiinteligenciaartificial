@@ -361,10 +361,13 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
                     items: {
                       type: "object",
                       properties: {
-                        source: { type: "string" },
-                        value_cents: { type: "number" },
-                        type: { type: "string" },
+                        source: { type: "string", description: "Nome da fonte pagadora" },
+                        cnpj: { type: "string", description: "CNPJ da fonte pagadora" },
+                        value_cents: { type: "number", description: "Rendimentos tributáveis em centavos" },
+                        irrf_cents: { type: "number", description: "IRRF retido na fonte em centavos (OBRIGATÓRIO se disponível no informe)" },
+                        type: { type: "string", description: "Tipo: salario, pro_labore, aluguel, autonomo, etc" },
                       },
+                      required: ["source", "value_cents", "irrf_cents"],
                     },
                   },
                   deduction_items: {
