@@ -435,27 +435,43 @@ const Simulator = () => {
                   })()}
                 </div>
 
-                {/* Difference */}
-                <div className={`p-4 rounded-lg ${result.difference < 0 ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
-                  <div className="flex items-center justify-between">
-                    <span className="text-slate-300">Diferença:</span>
-                    <div className="flex items-center gap-2">
-                      {result.difference < 0 ? (
-                        <TrendingDown className="h-5 w-5 text-green-400" />
-                      ) : (
-                        <TrendingUp className="h-5 w-5 text-red-400" />
-                      )}
-                      <span className={`text-xl font-bold ${result.difference < 0 ? 'text-green-400' : 'text-red-400'}`}>
-                        {result.difference < 0 ? '-' : '+'}{formatCurrency(Math.abs(result.difference))}
-                      </span>
+                {/* Difference - recalculated for selected year */}
+                {(() => {
+                  const companyData = companyTypes.find(c => c.value === companyType);
+                  const creditFactor = companyData?.creditFactor || 0;
+                  const multiplier = companyData?.multiplier || 1;
+                  const yearTaxes = calculateTransitionTax(
+                    parseCurrencyInput(revenue) * multiplier,
+                    selectedYear,
+                    creditFactor
+                  );
+                  const yearTotal = yearTaxes.total + (result.afterTaxes.is || 0);
+                  const yearDiff = yearTotal - result.beforeTaxes.total;
+                  const yearPercent = result.beforeTaxes.total > 0 ? (yearDiff / result.beforeTaxes.total) * 100 : 0;
+                  
+                  return (
+                    <div className={`p-4 rounded-lg ${yearDiff < 0 ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-300">Diferença ({selectedYear}):</span>
+                        <div className="flex items-center gap-2">
+                          {yearDiff < 0 ? (
+                            <TrendingDown className="h-5 w-5 text-green-400" />
+                          ) : (
+                            <TrendingUp className="h-5 w-5 text-red-400" />
+                          )}
+                          <span className={`text-xl font-bold ${yearDiff < 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {yearDiff < 0 ? '-' : '+'}{formatCurrency(Math.abs(yearDiff))}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="text-center mt-2">
+                        <span className={`text-sm ${yearDiff < 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {yearPercent > 0 ? '+' : ''}{yearPercent.toFixed(1)}% em relação ao atual
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                  <div className="text-center mt-2">
-                    <span className={`text-sm ${result.difference < 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {result.percentChange > 0 ? '+' : ''}{result.percentChange.toFixed(1)}% em relação ao atual
-                    </span>
-                  </div>
-                </div>
+                  );
+                })()}
               </CardContent>
             </Card>
           )}
