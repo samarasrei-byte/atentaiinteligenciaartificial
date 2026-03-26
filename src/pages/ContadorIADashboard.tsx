@@ -471,7 +471,7 @@ const ContadorIADashboard = () => {
                           <Button onClick={() => setActiveTab('documents')} variant="outline" size="sm" className="rounded-full border-red-500/30 text-red-400 hover:bg-red-500/10">
                             <Upload className="w-3 h-3 mr-1" /> Reenviar documentos
                           </Button>
-                          <Button onClick={generateSummary} disabled={isAnalyzing || extractedDocs.length === 0} size="sm" className="rounded-full bg-purple-500 hover:bg-purple-600">
+                          <Button onClick={() => generateSummary()} disabled={isAnalyzing || extractedDocs.length === 0} size="sm" className="rounded-full bg-purple-500 hover:bg-purple-600">
                             {isAnalyzing ? <Loader2 className="w-3 h-3 mr-1 animate-spin" /> : <Brain className="w-3 h-3 mr-1" />}
                             Tentar novamente
                           </Button>
