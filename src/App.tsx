@@ -63,7 +63,10 @@ const LimpaNomeStatusPage = lazy(() => import("./pages/LimpaNomeStatusPage"));
 const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const IRPage = lazy(() => import("./pages/IRPage"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
-const ServicosPage = lazy(() => import("./pages/ServicosPage"));
+const ServicosPage = lazy(() => import("./pages/ServicosPage").catch(() => {
+  window.location.reload();
+  return import("./pages/ServicosPage");
+}));
 const FiscalDocumentsPage = lazy(() => import("./pages/FiscalDocumentsPage"));
 const FiscalSuccessPage = lazy(() => import("./pages/FiscalSuccessPage"));
 const ModuloFiscal = lazy(() => import("./pages/ModuloFiscal"));
