@@ -8,7 +8,7 @@ export const sectors = [
   { value: "alimentacao", label: "Alimentação", icms: 12, iss: 0, pis: 0.65, cofins: 3, ipi: 0 },
   { value: "saude", label: "Saúde", icms: 0, iss: 3, pis: 0.65, cofins: 3, ipi: 0 },
   { value: "agronegocio", label: "Agronegócio", icms: 7, iss: 0, pis: 0.65, cofins: 3, ipi: 0 },
-  { value: "construcao", label: "Construção Civil", icms: 18, iss: 5, pis: 0.65, cofins: 3, ipi: 5 },
+  { value: "construcao", label: "Construção Civil", icms: 0, iss: 5, pis: 0.65, cofins: 3, ipi: 0 },
   { value: "transporte", label: "Transporte", icms: 12, iss: 0, pis: 0.65, cofins: 3, ipi: 0 },
   { value: "educacao", label: "Educação", icms: 0, iss: 2, pis: 0.65, cofins: 3, ipi: 0 },
 ];
@@ -138,7 +138,7 @@ export function calculateTaxes(input: SimulationInput): SimulationResult {
   const creditFactor = companyData.creditFactor;
 
   // Determina alíquota de ICMS (usa estado se fornecido, senão usa do setor)
-  const icmsRate = state && sectorData.icms > 0 
+  const icmsRate = state && state !== 'default' && sectorData.icms > 0 
     ? stateICMSRates[state] || sectorData.icms 
     : sectorData.icms;
 
