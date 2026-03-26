@@ -46,6 +46,49 @@ const statusMap: Record<string, { label: string; color: string; icon: React.Elem
 
 const methodIcons: Record<string, string> = { pix: '⚡', card: '💳', boleto: '📄' };
 
+const onlyDigits = (value: string) => value.replace(/\D/g, '');
+
+const isValidCPF = (value: string): boolean => {
+  const cpf = onlyDigits(value);
+  if (cpf.length !== 11 || /^(\d)\1+$/.test(cpf)) return false;
+
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += Number(cpf[i]) * (10 - i);
+  let check = (sum * 10) % 11;
+  if (check === 10) check = 0;
+  if (check !== Number(cpf[9])) return false;
+
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += Number(cpf[i]) * (11 - i);
+  check = (sum * 10) % 11;
+  if (check === 10) check = 0;
+
+  return check === Number(cpf[10]);
+};
+
+const isValidCNPJ = (value: string): boolean => {
+  const cnpj = onlyDigits(value);
+  if (cnpj.length !== 14 || /^(\d)\1+$/.test(cnpj)) return false;
+
+  const calcCheck = (base: string, factors: number[]) => {
+    const total = factors.reduce((acc, factor, idx) => acc + Number(base[idx]) * factor, 0);
+    const remainder = total % 11;
+    return remainder < 2 ? 0 : 11 - remainder;
+  };
+
+  const check1 = calcCheck(cnpj.slice(0, 12), [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+  const check2 = calcCheck(cnpj.slice(0, 13), [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
+
+  return check1 === Number(cnpj[12]) && check2 === Number(cnpj[13]);
+};
+
+const isValidCpfCnpj = (value: string): boolean => {
+  const digits = onlyDigits(value);
+  if (digits.length === 11) return isValidCPF(digits);
+  if (digits.length === 14) return isValidCNPJ(digits);
+  return false;
+};
+
 const EmissaoNFDashboard = () => {
   const navigate = useNavigate();
   const { signOut, profile } = useAuth();
@@ -54,18 +97,62 @@ const EmissaoNFDashboard = () => {
   const [chargeAmount, setChargeAmount] = useState('');
   const [chargeMethod, setChargeMethod] = useState('');
   const [chargeClient, setChargeClient] = useState('');
+  const [chargeClientDocument, setChargeClientDocument] = useState('');
+  const [chargeServiceCode, setChargeServiceCode] = useState('');
+  const [chargeMunicipality, setChargeMunicipality] = useState('');
+  const [chargeDescription, setChargeDescription] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const parsedChargeAmount = Number.parseFloat(chargeAmount.replace(',', '.'));
+  const isChargeAmountValid = Number.isFinite(parsedChargeAmount) && parsedChargeAmount > 0;
+  const isChargeFormValid =
+    isChargeAmountValid &&
+    !!chargeMethod &&
+    chargeClient.trim().length > 0 &&
+    isValidCpfCnpj(chargeClientDocument) &&
+    chargeServiceCode.trim().length > 0 &&
+    chargeMunicipality.trim().length > 0 &&
+    chargeDescription.trim().length > 0;
+
   const handleCreateCharge = () => {
-    if (!chargeAmount || !chargeMethod) {
-      toast.error('Preencha valor e método de pagamento');
+    if (!isChargeAmountValid) {
+      toast.error('Informe um valor de cobrança válido');
       return;
     }
-    toast.success('Cobrança criada com sucesso! Link enviado ao cliente.');
+    if (!chargeMethod) {
+      toast.error('Selecione o método de pagamento');
+      return;
+    }
+    if (!chargeClient.trim()) {
+      toast.error('Informe o nome do cliente para emissão da NF');
+      return;
+    }
+    if (!isValidCpfCnpj(chargeClientDocument)) {
+      toast.error('CPF/CNPJ inválido — ajuste para continuar');
+      return;
+    }
+    if (!chargeServiceCode.trim()) {
+      toast.error('Informe o código de serviço tributável');
+      return;
+    }
+    if (!chargeMunicipality.trim()) {
+      toast.error('Informe o município de incidência para cálculo do ISS');
+      return;
+    }
+    if (!chargeDescription.trim()) {
+      toast.error('Descreva o serviço/produto para evitar rejeição fiscal');
+      return;
+    }
+
+    toast.success('Cobrança criada com validação fiscal crítica ✅');
     setShowNewCharge(false);
     setChargeAmount('');
     setChargeMethod('');
     setChargeClient('');
+    setChargeClientDocument('');
+    setChargeServiceCode('');
+    setChargeMunicipality('');
+    setChargeDescription('');
   };
 
   const metrics = [
@@ -405,11 +492,47 @@ const EmissaoNFDashboard = () => {
               </Select>
             </div>
             <div>
-              <Label className="text-white/60 text-sm">Cliente (opcional)</Label>
+              <Label className="text-white/60 text-sm">Cliente (obrigatório)</Label>
               <Input
                 placeholder="Nome ou email"
                 value={chargeClient}
                 onChange={(e) => setChargeClient(e.target.value)}
+                className="bg-white/[0.05] border-white/[0.1] text-white mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-white/60 text-sm">CPF/CNPJ do cliente</Label>
+              <Input
+                placeholder="Somente números ou formatado"
+                value={chargeClientDocument}
+                onChange={(e) => setChargeClientDocument(e.target.value)}
+                className="bg-white/[0.05] border-white/[0.1] text-white mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-white/60 text-sm">Código do serviço fiscal</Label>
+              <Input
+                placeholder="Ex: 17.05"
+                value={chargeServiceCode}
+                onChange={(e) => setChargeServiceCode(e.target.value)}
+                className="bg-white/[0.05] border-white/[0.1] text-white mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-white/60 text-sm">Município de incidência (ISS)</Label>
+              <Input
+                placeholder="Ex: São Paulo - SP"
+                value={chargeMunicipality}
+                onChange={(e) => setChargeMunicipality(e.target.value)}
+                className="bg-white/[0.05] border-white/[0.1] text-white mt-1"
+              />
+            </div>
+            <div>
+              <Label className="text-white/60 text-sm">Descrição fiscal da operação</Label>
+              <Input
+                placeholder="Ex: Consultoria tributária mensal"
+                value={chargeDescription}
+                onChange={(e) => setChargeDescription(e.target.value)}
                 className="bg-white/[0.05] border-white/[0.1] text-white mt-1"
               />
             </div>
@@ -418,7 +541,7 @@ const EmissaoNFDashboard = () => {
             <Button variant="ghost" onClick={() => setShowNewCharge(false)} className="text-white/40">
               Cancelar
             </Button>
-            <Button onClick={handleCreateCharge} className="bg-emerald-500 hover:bg-emerald-600">
+            <Button onClick={handleCreateCharge} disabled={!isChargeFormValid} className="bg-emerald-500 hover:bg-emerald-600 disabled:opacity-40">
               Criar cobrança
             </Button>
           </DialogFooter>
