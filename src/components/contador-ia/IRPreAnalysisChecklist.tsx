@@ -402,7 +402,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
           <Button variant="ghost" size="sm" onClick={goBack} disabled={currentStep === 0} className="text-xs text-muted-foreground">
             ← Voltar
           </Button>
-          <Button onClick={advance} disabled={isLoading || answered[question.id] === null}
+          <Button onClick={advance} disabled={isLoading || isAutoAdvancing || answered[question.id] === null}
             className="bg-purple-500 hover:bg-purple-600 rounded-full h-9 px-6 text-sm disabled:opacity-40">
             {currentStep === questions.length - 1 ? (
               <>
