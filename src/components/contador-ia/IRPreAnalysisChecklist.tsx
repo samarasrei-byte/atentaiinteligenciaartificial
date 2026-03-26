@@ -131,7 +131,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
         if (currentStep < questions.length - 1) {
           setCurrentStep(prev => prev + 1);
         } else {
-          onComplete(updatedAnswers);
+          onComplete(sanitizeAnswers(updatedAnswers));
         }
       }, 300);
     }
