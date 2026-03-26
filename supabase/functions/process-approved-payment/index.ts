@@ -363,15 +363,27 @@ serve(async (req) => {
       const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
       const irCpf = metadata?.cpf || null;
       const irFiscalYear = metadata?.fiscal_year ? parseInt(metadata.fiscal_year) : new Date().getFullYear() - 1;
-      const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
-        user_id: userId,
-        fiscal_year: irFiscalYear,
-        declaration_type: declarationType,
-        status: 'pending_documents',
-        full_name: fullName || '',
-        cpf: irCpf,
-      }).select('id').single();
-      log("IR AI declaration created", { declarationId: newDecl?.id, type: declarationType, hasCpf: !!irCpf });
+
+      // CRITICAL: Check for existing declaration to prevent duplicates (webhook retries)
+      const { data: existingDecl } = await supabaseAdmin.from('ir_ai_declarations')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('fiscal_year', irFiscalYear)
+        .maybeSingle();
+
+      if (existingDecl) {
+        log("IR declaration already exists, skipping duplicate creation", { existingId: existingDecl.id, fiscalYear: irFiscalYear });
+      } else {
+        const { data: newDecl } = await supabaseAdmin.from('ir_ai_declarations').insert({
+          user_id: userId,
+          fiscal_year: irFiscalYear,
+          declaration_type: declarationType,
+          status: 'pending_documents',
+          full_name: fullName || '',
+          cpf: irCpf,
+        }).select('id').single();
+        log("IR AI declaration created", { declarationId: newDecl?.id, type: declarationType, hasCpf: !!irCpf });
+      }
     } else if (serviceType === 'certificate') {
       // Certificate services - create a record for tracking
       log("Certificate service paid", { serviceType, userId });
