@@ -172,13 +172,16 @@ const TaxTransitionSimulator: React.FC<TransitionSimulatorProps> = ({ embedded =
     };
   });
 
-  // Comparação 2025 vs 2033
+  // Comparação 2025 vs 2033 - sistema atual vs novo
+  // Em 2025 usa-se a carga total (PIS/COFINS + ICMS/ISS), não IBS+CBS que são 0
   const comparison2025 = TRANSITION_DATA[0];
   const comparison2033 = TRANSITION_DATA[8];
-  const tax2025 = calculateTaxForYear(comparison2025);
+  const currentSystemRate2025 = (comparison2025.pis_cofins + comparison2025.icms_iss) / 100;
+  const adjustedCurrentRate = currentSystemRate2025 * (1 - sectorData.reduction);
+  const tax2025Annual = revenue * adjustedCurrentRate * 12;
   const tax2033 = calculateTaxForYear(comparison2033);
-  const savingsPercent = ((tax2025.annualTax - tax2033.annualTax) / tax2025.annualTax * 100);
-  const savingsAmount = tax2025.annualTax - tax2033.annualTax;
+  const savingsAmount = tax2025Annual - tax2033.annualTax;
+  const savingsPercent = tax2025Annual > 0 ? (savingsAmount / tax2025Annual * 100) : 0;
 
   return (
     <div className={`space-y-6 ${embedded ? '' : 'p-6'}`}>
