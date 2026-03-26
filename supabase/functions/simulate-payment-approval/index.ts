@@ -168,7 +168,7 @@ serve(async (req) => {
       }, { onConflict: 'user_id' });
       log("Subscription created (TEST)", { planType: plan.planType });
     } else if (serviceType === 'ir_simples' || serviceType === 'ir_completo') {
-      const declarationType = serviceType === 'ir_completo' ? 'completa' : 'simplificada';
+      const declarationType = serviceType === 'ir_completo' ? 'completo' : 'simples';
       const irCpf = metadata?.cpf || null;
       const irFiscalYear = metadata?.fiscal_year ? parseInt(metadata.fiscal_year) : new Date().getFullYear() - 1;
 
