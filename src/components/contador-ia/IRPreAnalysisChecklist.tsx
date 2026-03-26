@@ -101,6 +101,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
   const questions = getQuestions(year);
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<ChecklistAnswers>(defaultAnswers);
+  const [isAutoAdvancing, setIsAutoAdvancing] = useState(false);
   const [answered, setAnswered] = useState<AnswerState>(() => {
     const init: AnswerState = {};
     getQuestions(year).forEach(q => { init[q.id] = null; });
@@ -149,12 +150,15 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
     setAnswers(updatedAnswers);
     setAnswered(prev => ({ ...prev, [question.id]: value }));
     if (!value) {
+      // Auto-advance on "No" — block Próximo button during transition
+      setIsAutoAdvancing(true);
       setTimeout(() => {
         if (currentStep < questions.length - 1) {
           setCurrentStep(prev => prev + 1);
         } else {
           onComplete(sanitizeAnswers(updatedAnswers));
         }
+        setIsAutoAdvancing(false);
       }, 300);
     }
   };
@@ -398,7 +402,7 @@ const IRPreAnalysisChecklist: React.FC<Props> = ({ onComplete, onSkip, isLoading
           <Button variant="ghost" size="sm" onClick={goBack} disabled={currentStep === 0} className="text-xs text-muted-foreground">
             ← Voltar
           </Button>
-          <Button onClick={advance} disabled={isLoading || answered[question.id] === null}
+          <Button onClick={advance} disabled={isLoading || isAutoAdvancing || answered[question.id] === null}
             className="bg-purple-500 hover:bg-purple-600 rounded-full h-9 px-6 text-sm disabled:opacity-40">
             {currentStep === questions.length - 1 ? (
               <>
