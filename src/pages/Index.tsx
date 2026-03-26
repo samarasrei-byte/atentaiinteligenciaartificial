@@ -91,10 +91,7 @@ const Index = () => {
         <FeaturesSection />
         <StatsSection />
 
-        {/* Below the fold - lazy loaded */}
-        <Suspense fallback={<SectionFallback />}>
-          <ProfilesSection />
-        </Suspense>
+        <ProfilesSection />
         
         <section id="servicos" className="py-20 relative overflow-hidden bg-gradient-to-b from-background via-muted/30 to-background">
           <div className="absolute inset-0 pointer-events-none">
@@ -107,23 +104,21 @@ const Index = () => {
           </div>
         </section>
         
-        <Suspense fallback={<SectionFallback />}>
-          <section id="fiscal">
-            <FiscalModuleSection />
-          </section>
-          <FiscalTestimonialsSection />
-          <section id="limpa-nome">
-            <LimpaNomeSection />
-          </section>
-          <SuccessCasesSection />
-          <SimulatorSection />
-          <AISection />
-          <section id="pricing">
-            <PricingSection />
-          </section>
-          <FAQSection />
-          <TestimonialsSection />
-        </Suspense>
+        <section id="fiscal">
+          <FiscalModuleSection />
+        </section>
+        <FiscalTestimonialsSection />
+        <section id="limpa-nome">
+          <LimpaNomeSection />
+        </section>
+        <SuccessCasesSection />
+        <SimulatorSection />
+        <AISection />
+        <section id="pricing">
+          <PricingSection />
+        </section>
+        <FAQSection />
+        <TestimonialsSection />
       </main>
 
       <Footer onNavigate={scrollToSection} />
