@@ -83,6 +83,12 @@ const ContadorIADashboard = () => {
   const [showChecklist, setShowChecklist] = useState(false);
   const [checklistCompleted, setChecklistCompleted] = useState(false);
   const initializedRef = useRef(false);
+  const activeDeclarationIdRef = useRef<string | null>(null);
+
+  // Keep ref in sync for realtime callback
+  React.useEffect(() => {
+    activeDeclarationIdRef.current = activeDeclaration?.id || null;
+  }, [activeDeclaration?.id]);
 
   // Sync checklistCompleted from DB when active declaration changes
   React.useEffect(() => {
