@@ -406,11 +406,7 @@ const App = () => (
                   <ChatGuilherme />
                 </ProtectedRoute>
               } />
-              <Route path="/chat/cesar" element={
-                <ProtectedRoute>
-                  <ChatCesar />
-                </ProtectedRoute>
-              } />
+              <Route path="/chat/cesar" element={<Navigate to="/chat/guilherme" replace />} />
               
               {/* Capassi Panel - Exclusive access */}
               <Route path="/capassi" element={

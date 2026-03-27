@@ -301,7 +301,7 @@ export const BIReports: React.FC = () => {
             <p className="font-medium text-amber-800">Importante: Validação Humana</p>
             <p className="text-sm text-amber-700 mt-1">
               Todos os relatórios gerados pela IA passam por revisão humana antes de serem enviados. 
-              Nenhum relatório é enviado automaticamente sem a aprovação de César.
+              Nenhum relatório é enviado automaticamente sem a aprovação do especialista.
             </p>
           </div>
         </div>
