@@ -256,7 +256,7 @@ export default function LimpaNomeLanding() {
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold mb-6">
                 <AlertTriangle className="w-4 h-4" /> O PROBLEMA
               </span>
-              <h2 className="text-4xl sm:text-5xl font-black leading-tight">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-black leading-tight">
                 Você sabe o que o{" "}
                 <span className="bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent">nome negativado</span>
                 <br />faz com sua vida?
