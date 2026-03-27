@@ -110,7 +110,7 @@ export const BIReports: React.FC = () => {
   const handleApprove = (id: string) => {
     setReports(prev => prev.map(r => 
       r.id === id 
-        ? { ...r, status: 'approved' as const, approved_by: 'César', approved_at: new Date() } 
+        ? { ...r, status: 'approved' as const, approved_by: 'Guilherme', approved_at: new Date() } 
         : r
     ));
   };
