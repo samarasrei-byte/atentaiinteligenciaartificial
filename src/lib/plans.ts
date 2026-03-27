@@ -17,7 +17,7 @@
   * - IR Completo: R$ 189,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
- * - BI+ Contabilidade: SOB CONSULTA
+ * - Análise Fiscal: GRÁTIS (Success Fee 50%)
  */
 
 // ============================================================
