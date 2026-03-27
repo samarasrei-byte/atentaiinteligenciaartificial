@@ -411,7 +411,7 @@ const ServicosPage = () => {
           <section className="sticky top-0 z-40 bg-background/98 backdrop-blur-xl border-b border-border shadow-sm">
             <div className="container max-w-6xl mx-auto px-4 py-3">
               <div className="flex items-center gap-4">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white whitespace-nowrap hidden sm:block">
+                <h2 className="text-lg font-bold text-foreground whitespace-nowrap hidden sm:block">
                   Marketplace
                 </h2>
                 <div className="relative w-full max-w-sm">
