@@ -40,7 +40,7 @@ export const BIAIChat: React.FC = () => {
     {
       id: '1',
       role: 'assistant',
-      content: '🚨 **A Reforma Tributária já começou!** Com o IBS (17,7%) e CBS (8,8%) entrando em vigor, sua empresa precisa se adaptar.\n\nSou a IA assistente do módulo BI + Contabilidade. Posso ajudar você a:\n\n• Analisar o impacto da reforma no seu negócio\n• Consultar dados financeiros e tendências\n• Gerar insights para decisões estratégicas\n\nLembre-se: minhas sugestões são recomendações - todas as decisões finais são suas, César! 🤝\n\nComo posso ajudar?',
+      content: '🚨 **A Reforma Tributária já começou!** Com o IBS (17,7%) e CBS (8,8%) entrando em vigor, sua empresa precisa se adaptar.\n\nSou a IA assistente do módulo de Emissão de NF. Posso ajudar você a:\n\n• Analisar o impacto da reforma no seu negócio\n• Consultar dados financeiros e tendências\n• Gerar insights para decisões estratégicas\n\nComo posso ajudar?',
       timestamp: new Date(),
     }
   ]);
