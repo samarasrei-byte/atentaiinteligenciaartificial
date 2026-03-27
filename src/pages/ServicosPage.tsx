@@ -479,8 +479,8 @@ const ServicosPage = () => {
                     <Brain className="w-4 h-4 text-purple-500" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Inteligência Artificial</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Serviços automatizados com IA</p>
+                    <h2 className="text-xl font-bold text-foreground">Inteligência Artificial</h2>
+                    <p className="text-xs text-muted-foreground">Serviços automatizados com IA</p>
                   </div>
                 </div>
                 <motion.div variants={containerVariants} initial="hidden" animate="visible" className={`grid gap-6 ${filteredAI.length === 1 ? 'grid-cols-1 max-w-md' : filteredAI.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
