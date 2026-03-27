@@ -105,7 +105,16 @@ const adminGroups: SidebarGroup[] = [
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
     ],
   },
-  // REMOVIDO: Central de Documentos - documentos agora ficam dentro de cada serviço
+  {
+    id: 'cesar',
+    label: 'Emissão NF',
+    icon: FileText,
+    isPerson: true,
+    personGradient: 'from-violet-500 to-indigo-600',
+    items: [
+      { icon: MessageCircle, label: 'Chat NF', tabId: 'cesar-chat', isLive: true, chatBadge: 'cesar' },
+    ],
+  },
   {
     id: 'servicos',
     label: 'Serviços',
@@ -113,6 +122,7 @@ const adminGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
+      { icon: Brain, label: 'Imposto de Renda', tabId: 'ir-management' },
     ],
   },
   {
