@@ -663,44 +663,6 @@ const AdminPanel = () => {
             </Card>
           )}
 
-          {/* =====================================================
-              CHAT CÉSAR - BI & Contabilidade
-              Responsável: César
-              Serviços: BI, Métricas, Contabilidade
-           ===================================================== */}
-          {activeTab === 'cesar-chat' && (
-            <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
-              <CesarChatHub />
-            </div>
-          )}
-
-          {/* Documentos do César (BI & Contábeis) */}
-          {activeTab === 'cesar-docs' && (
-            <DocumentsCentral filter="bi" />
-          )}
-
-          {/* Alertas de Performance do César */}
-          {activeTab === 'cesar-alerts' && (
-            <Card className="bg-card border-border shadow-soft">
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-3 rounded-xl bg-violet-500/10">
-                    <AlertCircle className="h-6 w-6 text-violet-500" />
-                  </div>
-                  <div>
-                    <CardTitle className="flex items-center gap-2">
-                      Alertas de Performance
-                      <Badge variant="outline" className="bg-violet-50 text-violet-600 border-violet-200">César</Badge>
-                    </CardTitle>
-                    <CardDescription>Alertas de KPIs, BI e métricas contábeis</CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <ChurnNotificationSystem />
-              </CardContent>
-            </Card>
-          )}
 
           {/* =====================================================
               CENTRAL DE DOCUMENTOS
