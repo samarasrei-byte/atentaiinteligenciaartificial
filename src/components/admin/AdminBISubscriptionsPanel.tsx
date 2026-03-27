@@ -121,7 +121,7 @@ export function AdminBISubscriptionsPanel() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Assinaturas BI+</h2>
+          <h2 className="text-2xl font-bold text-foreground">Assinaturas</h2>
           <p className="text-muted-foreground">Gerencie todas as assinaturas Atentai</p>
         </div>
         <Button variant="outline" onClick={() => window.location.reload()} className="gap-2">
@@ -218,7 +218,7 @@ export function AdminBISubscriptionsPanel() {
       {/* Subscriptions List */}
       <Card>
         <CardHeader>
-          <CardTitle>Clientes BI+</CardTitle>
+          <CardTitle>Clientes</CardTitle>
           <CardDescription>
             {filteredSubscriptions.length} assinatura(s) encontrada(s)
           </CardDescription>
@@ -277,7 +277,7 @@ export function AdminBISubscriptionsPanel() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => navigate(`/chat/cesar?cliente=${sub.user_id}`)}
+                          onClick={() => navigate(`/chat/guilherme?cliente=${sub.user_id}`)}
                           className="gap-2"
                         >
                           <MessageSquare className="h-4 w-4" />

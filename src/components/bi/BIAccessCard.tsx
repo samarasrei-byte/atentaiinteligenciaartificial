@@ -94,7 +94,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
                 <Button size="sm" onClick={() => navigate('/dashboard/bi')}>
                   Abrir BI
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => navigate('/chat/cesar')}>
+                <Button size="sm" variant="ghost" onClick={() => navigate('/chat/guilherme')}>
                   <MessageSquare className="h-4 w-4" />
                 </Button>
               </div>
@@ -149,7 +149,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate(`/chat/cesar?upgrade=true`)}
+                onClick={() => navigate(`/chat/guilherme?upgrade=true`)}
                 className="gap-2"
               >
                 <Sparkles className="h-3 w-3" />
@@ -170,7 +170,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
           <Lock className="h-4 w-4 text-muted-foreground" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-foreground">BI+ Contabilidade</p>
+          <p className="text-sm font-medium text-foreground">Contabilidade</p>
           <p className="text-xs text-muted-foreground">Não ativo</p>
         </div>
         <Button size="sm" onClick={() => navigate('/bi-contabilidade')}>
@@ -190,7 +190,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
                 <BarChart3 className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">BI+ Contabilidade</p>
+                <p className="font-semibold text-foreground">Contabilidade</p>
                 <p className="text-xs text-muted-foreground">Desbloqueie inteligência fiscal</p>
               </div>
             </div>
@@ -211,7 +211,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-br from-primary to-accent shadow-lg">
           <BarChart3 className="h-8 w-8 text-white" />
         </div>
-        <CardTitle className="text-xl">BI+ Contabilidade™</CardTitle>
+        <CardTitle className="text-xl">Contabilidade Inteligente™</CardTitle>
         <CardDescription>
           Desbloqueie dashboards financeiros, IA analítica e supervisão humana
         </CardDescription>

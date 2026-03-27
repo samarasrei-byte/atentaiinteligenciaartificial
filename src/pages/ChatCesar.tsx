@@ -69,7 +69,7 @@ interface ServiceContext {
 const serviceContexts: Record<string, ServiceContext> = {
   'bi-contabilidade': {
     type: 'bi-contabilidade',
-    label: 'BI+ Contabilidade',
+    label: 'Contabilidade',
     color: 'bg-indigo-500',
     icon: Brain,
   },
@@ -81,13 +81,13 @@ const serviceContexts: Record<string, ServiceContext> = {
   },
   'relatorios': {
     type: 'relatorios',
-    label: 'Relatórios BI',
+    label: 'Relatórios',
     color: 'bg-purple-500',
     icon: BarChart3,
   },
   'geral': {
     type: 'geral',
-    label: 'Atendimento BI',
+    label: 'Atendimento',
     color: 'bg-slate-500',
     icon: MessageCircle,
   },
@@ -222,7 +222,7 @@ export default function ChatCesar() {
     const baseMessages: Message[] = [
       {
         id: 'welcome-1',
-        content: `Olá, ${name}! 👋\n\nSou o especialista em BI e Contabilidade da AtentAI. Recebi sua solicitação de ${serviceContexts[serviceType]?.label || 'serviço contábil'} e estou pronto para te ajudar.`,
+        content: `Olá, ${name}! 👋\n\nSou o especialista em Contabilidade da AtentAI. Recebi sua solicitação de ${serviceContexts[serviceType]?.label || 'serviço contábil'} e estou pronto para te ajudar.`,
         sender: 'specialist',
         timestamp: new Date(),
       },
@@ -231,7 +231,7 @@ export default function ChatCesar() {
     if (serviceType === 'bi-contabilidade') {
       baseMessages.push({
         id: 'welcome-2',
-        content: `📊 **Próximos passos para BI+ Contabilidade:**\n\n1. Análise dos documentos enviados\n2. Processamento com IA\n3. Validação humana dos insights\n4. Entrega do relatório completo\n\n📎 **Documentos recomendados:**\n• Balanço Patrimonial\n• DRE (Demonstração de Resultados)\n• Fluxo de Caixa\n• Extratos bancários\n\nEnvie pelo botão 📎 abaixo!`,
+        content: `📊 **Próximos passos para Contabilidade:**\n\n1. Análise dos documentos enviados\n2. Processamento com IA\n3. Validação humana dos insights\n4. Entrega do relatório completo\n\n📎 **Documentos recomendados:**\n• Balanço Patrimonial\n• DRE (Demonstração de Resultados)\n• Fluxo de Caixa\n• Extratos bancários\n\nEnvie pelo botão 📎 abaixo!`,
         sender: 'specialist',
         timestamp: new Date(Date.now() + 1000),
       });

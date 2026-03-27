@@ -52,7 +52,7 @@ const formatCurrency = (value: number) =>
 const serviceColors: Record<string, string> = {
   'Limpa Nome': '#10b981',
   'Análise Fiscal': '#8b5cf6',
-  'BI Contabilidade': '#3b82f6',
+  'Emissão NF': '#3b82f6',
   'Assinaturas': '#f59e0b',
   'Outros': '#64748b'
 };
@@ -89,7 +89,7 @@ export const FinancialAnalytics: React.FC = () => {
       const serviceRevenue: Record<string, number> = {
         'Limpa Nome': 0,
         'Análise Fiscal': 0,
-        'BI Contabilidade': 0,
+        'Emissão NF': 0,
         'Assinaturas': 0,
         'Outros': 0
       };
@@ -97,7 +97,7 @@ export const FinancialAnalytics: React.FC = () => {
       const serviceCosts: Record<string, number> = {
         'Limpa Nome': 0,
         'Análise Fiscal': 0,
-        'BI Contabilidade': 0,
+        'Emissão NF': 0,
         'Assinaturas': 0,
         'Outros': 0
       };
@@ -107,7 +107,7 @@ export const FinancialAnalytics: React.FC = () => {
         const serviceType = p.service_type || 'Outros';
         if (serviceType.includes('limpa')) serviceRevenue['Limpa Nome'] += p.amount_cents;
         else if (serviceType.includes('fiscal')) serviceRevenue['Análise Fiscal'] += p.amount_cents;
-        else if (serviceType.includes('bi')) serviceRevenue['BI Contabilidade'] += p.amount_cents;
+        else if (serviceType.includes('bi')) serviceRevenue['Emissão NF'] += p.amount_cents;
         else serviceRevenue['Outros'] += p.amount_cents;
       });
 
@@ -121,7 +121,7 @@ export const FinancialAnalytics: React.FC = () => {
         const serviceSlug = c.service_slug || 'outros';
         if (serviceSlug.includes('limpa')) serviceCosts['Limpa Nome'] += c.amount_cents;
         else if (serviceSlug.includes('fiscal')) serviceCosts['Análise Fiscal'] += c.amount_cents;
-        else if (serviceSlug.includes('bi')) serviceCosts['BI Contabilidade'] += c.amount_cents;
+        else if (serviceSlug.includes('bi')) serviceCosts['Emissão NF'] += c.amount_cents;
         else if (serviceSlug.includes('assinatura')) serviceCosts['Assinaturas'] += c.amount_cents;
         else serviceCosts['Outros'] += c.amount_cents;
       });

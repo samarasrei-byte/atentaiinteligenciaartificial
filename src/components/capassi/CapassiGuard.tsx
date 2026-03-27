@@ -3,7 +3,7 @@ import { Navigate, useLocation } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
-const ALLOWED_EMAIL = 'cesar@atentai.com.br';
+const ALLOWED_EMAIL = 'guilherme@atentai.com.br';
 
 interface CapassiGuardProps {
   children: React.ReactNode;
@@ -35,8 +35,8 @@ export function CapassiGuard({ children }: CapassiGuardProps) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Also accept admin or equipe_cesar roles
-  const hasAccess = hasRole('equipe_cesar') || hasRole('admin');
+  // Also accept admin or equipe_guilherme roles
+  const hasAccess = hasRole('equipe_guilherme') || hasRole('admin');
   if (!hasAccess) {
     return <Navigate to="/dashboard" replace />;
   }

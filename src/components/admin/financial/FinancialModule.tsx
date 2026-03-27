@@ -66,7 +66,7 @@ export const FinancialModule: React.FC = () => {
         let name = 'Outros';
         if (service.includes('limpa')) name = 'Limpa Nome';
         else if (service.includes('fiscal')) name = 'Análise Fiscal';
-        else if (service.includes('bi')) name = 'BI Contabilidade';
+        else if (service.includes('bi')) name = 'Emissão NF';
         serviceRevenues[name] = (serviceRevenues[name] || 0) + p.amount_cents;
       });
       serviceRevenues['Assinaturas'] = totalSubscriptions;
@@ -74,7 +74,7 @@ export const FinancialModule: React.FC = () => {
       const colors: Record<string, string> = {
         'Limpa Nome': '#10b981',
         'Análise Fiscal': '#8b5cf6',
-        'BI Contabilidade': '#3b82f6',
+        'Emissão NF': '#3b82f6',
         'Assinaturas': '#f59e0b',
         'Outros': '#64748b'
       };

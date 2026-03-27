@@ -54,7 +54,7 @@ const iconMap: Record<string, React.ElementType> = {
   User,
 };
 
-type ServiceResponsible = 'guilherme' | 'cesar' | 'contador';
+type ServiceResponsible = 'guilherme' | 'contador';
 
 interface AdminService {
   id: string;
@@ -252,7 +252,6 @@ export const ServiceManagement: React.FC = () => {
   const getResponsibleBadge = (responsible: ServiceResponsible) => {
     const config: Record<ServiceResponsible, { label: string; className: string }> = {
       guilherme: { label: 'Guilherme', className: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
-      cesar: { label: 'Guilherme', className: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
       contador: { label: 'Contador', className: 'bg-blue-100 text-blue-700 border-blue-300' },
     };
     const c = config[responsible];

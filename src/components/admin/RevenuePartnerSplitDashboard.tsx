@@ -503,7 +503,7 @@ export function RevenuePartnerSplitDashboard() {
               <ul className="text-sm space-y-1">
                 <li>• Limpa Nome (PF/CNPJ)</li>
                 <li>• Análise Fiscal Inteligente</li>
-                <li>• BI Contabilidade</li>
+                <li>• Emissão de NF</li>
               </ul>
             </div>
             <div className="p-4 rounded-lg border border-blue-500/30 bg-blue-500/5">

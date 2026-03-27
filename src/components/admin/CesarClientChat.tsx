@@ -270,7 +270,7 @@ export function CesarClientChat() {
       const g = greetings[Math.floor(Math.random() * greetings.length)];
       return `${g}, ${name}! Tudo bem? 😊
 
-Aqui é o César, responsável pelo seu BI+ Contabilidade.
+Aqui é o Guilherme, responsável pela sua contabilidade.
 
 Que bom ter você com a gente! Pra começar a montar seu painel financeiro, vou precisar de alguns documentos:
 
@@ -282,7 +282,7 @@ Pode mandar Excel, PDF ou imagem aqui mesmo no chat.
 
 Assim que receber, já começo o diagnóstico financeiro da sua empresa!
 
-César`;
+Guilherme`;
     },
     followUp: (name: string) => {
       return `Oi, ${name}! Passando pra checar se conseguiu separar os documentos contábeis.
@@ -291,7 +291,7 @@ Se tiver dificuldade com algum deles, me avisa que posso te orientar sobre onde 
 
 Estou por aqui!
 
-César`;
+Guilherme`;
     },
     statusUpdate: (name: string) => {
       return `${name}, atualizando sobre sua análise:
@@ -300,7 +300,7 @@ Estou revisando os documentos e montando os primeiros indicadores do seu painel.
 
 Qualquer dúvida, pode chamar!
 
-César`;
+Guilherme`;
     },
     requestDRE: (name: string) => {
       return `Oi, ${name}!
@@ -309,7 +309,7 @@ Pra avançar com a análise, preciso do seu DRE (Demonstração de Resultado do 
 
 Se tiver em Excel fica ainda melhor pra gente trabalhar os dados. Pode mandar aqui mesmo!
 
-César`;
+Guilherme`;
     },
   };
 
@@ -337,7 +337,7 @@ César`;
     
     setNewMessage(`${greeting}, ${firstName}!
 
-Aqui é o César, da equipe de BI e Contabilidade.
+Aqui é o Guilherme, da equipe de contabilidade.
 
 Pra continuar a análise, vou precisar de:
 
@@ -347,7 +347,7 @@ Pode mandar Excel, PDF ou imagem aqui mesmo.
 
 ${closing}
 
-César`);
+Guilherme`);
     setShowDocumentRequest(false);
   };
 
@@ -358,7 +358,7 @@ César`);
     
     try {
       const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
-      const serviceLabel = 'BI+ Inteligência Fiscal';
+      const serviceLabel = 'Análise Fiscal';
       
       // Determine amount: use custom or default
       let amountCents: number;
@@ -409,7 +409,7 @@ Segue o link pro pagamento do **${serviceLabel}**:
 
 Qualquer coisa, só chamar!
 
-César`);
+Guilherme`);
       setShowPaymentRequest(false);
       setCustomPaymentAmount('');
       toast({ title: 'Link de pagamento gerado!', description: 'Mensagem pronta para enviar.' });
@@ -532,7 +532,7 @@ César`);
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-violet-50 text-violet-700 border-violet-200">
-                              BI+
+                              Fiscal
                             </Badge>
                             <span className="text-[10px] text-slate-500">
                               {client.status === 'completed' ? 'Concluído' : client.status === 'pending' ? 'Pendente' : 'Em análise'}
@@ -578,7 +578,7 @@ César`);
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge className="text-xs bg-white/20 text-white border-0">
-                    BI+ Contabilidade
+                    Contabilidade
                   </Badge>
                   <Button 
                     variant="ghost" 
@@ -630,7 +630,7 @@ César`);
                         </div>
                         <div>
                           <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento</h4>
-                          <p className="text-xs text-slate-500">BI+ Inteligência Fiscal • Valor customizável</p>
+                          <p className="text-xs text-slate-500">Análise Fiscal • Valor customizável</p>
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowPaymentRequest(false)}>

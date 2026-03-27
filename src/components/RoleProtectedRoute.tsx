@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
 import { logAuditEvent } from '@/hooks/useAuditLog';
 
-type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate' | 'equipe_guilherme' | 'equipe_cesar';
+type AppRole = 'admin' | 'contador' | 'autonomo' | 'user' | 'affiliate' | 'equipe_guilherme';
 
 interface RoleProtectedRouteProps {
   children: React.ReactNode;
@@ -20,8 +20,7 @@ const roleLabels: Record<AppRole, string> = {
   autonomo: 'Autônomo',
   user: 'Empresa',
   affiliate: 'Afiliado',
-  equipe_guilherme: 'Equipe Guilherme',
-  equipe_cesar: 'Equipe Guilherme'
+  equipe_guilherme: 'Equipe Guilherme'
 };
 
 export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {
