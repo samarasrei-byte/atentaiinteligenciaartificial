@@ -323,7 +323,7 @@ export default function LimpaNomeLanding() {
               Não vendemos milagres. Usamos a lei a seu favor com análise técnica e fundamentação jurídica sólida.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { icon: Scale, title: "Não é milagre", desc: "É direito previsto em lei. Fundamentos legais reais para cada caso específico.", gradient: "from-emerald-500/20 to-emerald-500/5" },
                 { icon: FileText, title: "Baseado na lei", desc: "CDC, Lei do Superendividamento (14.181/21) e jurisprudências consolidadas nos tribunais.", gradient: "from-emerald-500/15 to-emerald-500/5" },
