@@ -211,7 +211,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
         <div className="w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-4 bg-gradient-to-br from-primary to-accent shadow-lg">
           <BarChart3 className="h-8 w-8 text-white" />
         </div>
-        <CardTitle className="text-xl">BI+ Contabilidade™</CardTitle>
+        <CardTitle className="text-xl">Contabilidade Inteligente™</CardTitle>
         <CardDescription>
           Desbloqueie dashboards financeiros, IA analítica e supervisão humana
         </CardDescription>
