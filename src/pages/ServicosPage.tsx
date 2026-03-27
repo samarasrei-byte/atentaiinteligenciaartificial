@@ -552,7 +552,7 @@ const ServicosPage = () => {
 
           {/* CTA — Non-subscribers */}
           {!isSubscriber && (
-            <section className="py-16 bg-gradient-to-br from-primary via-primary/95 to-slate-800">
+            <section className="py-16 bg-gradient-to-br from-primary via-primary/95 to-foreground">
               <div className="container max-w-4xl mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-medium mb-6">
                   <Crown className="w-4 h-4 text-accent" />
