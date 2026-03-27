@@ -64,7 +64,7 @@ serve(async (req) => {
       });
     }
 
-    const systemPrompt = `Você é César, especialista sênior em BI e Contabilidade da AtentAI. Analise o DRE (Demonstração do Resultado do Exercício) fornecido e retorne uma análise completa.
+    const systemPrompt = `Você é Guilherme, especialista sênior em BI e Contabilidade da AtentAI. Analise o DRE (Demonstração do Resultado do Exercício) fornecido e retorne uma análise completa.
 
 IMPORTANTE: Responda usando as ferramentas fornecidas para estruturar sua resposta.
 

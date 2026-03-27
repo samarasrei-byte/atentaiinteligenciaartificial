@@ -252,8 +252,8 @@ serve(async (req) => {
 
     // Select the appropriate system prompt based on persona
     const isCesar = persona === 'cesar' || serviceType === 'bi-contabilidade' || serviceType === 'bi-subscription';
-    const systemPrompt = isCesar ? CESAR_SYSTEM_PROMPT : GUILHERME_SYSTEM_PROMPT;
-    const personaName = isCesar ? 'César' : 'Guilherme';
+    const systemPrompt = isCesar ? FINANCIAL_SYSTEM_PROMPT : GUILHERME_SYSTEM_PROMPT;
+    const personaName = 'Guilherme';
 
     logStep('Persona selected', { persona: personaName, serviceType, currentStep });
 
