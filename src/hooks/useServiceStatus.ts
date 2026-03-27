@@ -69,10 +69,7 @@ const SERVICE_STATUS_MAP: Record<ServiceType, {
       'completed': 5,
     },
   },
-  'bi-contabilidade': {
-    table: 'fiscal_analysis_requests', // Reusing for now
-    statusField: 'status',
-  },
+};
 };
 
 export const useServiceStatus = (

@@ -197,7 +197,7 @@ export const createBIRequest = async (
         status: 'pending',
         notes: JSON.stringify({
           ...request.additionalData,
-          source: 'bi-contabilidade',
+          source: 'emissao-nf',
         }),
       })
       .select()
@@ -205,18 +205,18 @@ export const createBIRequest = async (
     
     if (error) throw error;
     
-    await createServiceNotifications(request.userId, 'bi-contabilidade', data.id, request.fullName);
+    await createServiceNotifications(request.userId, 'emissao-nf', data.id, request.fullName);
     
     return {
       success: true,
       requestId: data.id,
-      chatUrl: getChatUrl('bi-contabilidade', data.id),
+      chatUrl: getChatUrl('emissao-nf', data.id),
     };
   } catch (error: any) {
-    console.error('Error creating BI request:', error);
+    console.error('Error creating NF request:', error);
     return {
       success: false,
-      chatUrl: getChatUrl('bi-contabilidade'),
+      chatUrl: getChatUrl('emissao-nf'),
       error: error.message,
     };
   }
