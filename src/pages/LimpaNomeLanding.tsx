@@ -358,9 +358,9 @@ export default function LimpaNomeLanding() {
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
               {/* Renegociação */}
-              <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-red-500/[0.06] to-transparent border border-red-500/15">
+              <div className="p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-red-500/[0.06] to-transparent border border-red-500/15">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center">
                     <XCircle className="w-6 h-6 text-red-400" />
