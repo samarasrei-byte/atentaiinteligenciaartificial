@@ -223,7 +223,8 @@ const App = () => (
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
-              <Route path="/limpa-nome" element={<LimpaNomeLanding />} />
+              <Route path="/limpanome" element={<LimpaNomeLanding />} />
+              <Route path="/limpa-nome" element={<Navigate to="/limpanome" replace />} />
               <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
               <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
               <Route path="/limpa-nome/sucesso" element={<LimpaNomePaymentSuccess />} />
