@@ -1007,7 +1007,7 @@ Guilherme`);
                         <div>
                           <h4 className="font-medium text-sm text-slate-900">Solicitar Documento</h4>
                           <p className="text-xs text-slate-500">
-                            {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
+                            {serviceThemes[selectedClient.service_type]?.label || 'Serviço'}
                           </p>
                         </div>
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowDocumentRequest(false)}>
