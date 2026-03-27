@@ -571,7 +571,7 @@ export default function LimpaNomeLanding() {
                 <div className="flex items-baseline justify-center gap-2">
                   <span className="text-2xl text-white/50 font-bold">R$</span>
                   <span className="text-7xl sm:text-8xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none">
-                    747
+                    840
                   </span>
                 </div>
                 <p className="text-white/50 mt-4 text-base">
