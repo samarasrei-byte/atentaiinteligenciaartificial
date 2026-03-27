@@ -52,14 +52,14 @@ function Section({ children, className = "", id }: { children: React.ReactNode; 
 
 function CTAButton({ className = "", size = "lg", text = "QUERO ANALISAR MEU CASO AGORA" }: { className?: string; size?: "lg" | "xl"; text?: string }) {
   return (
-    <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group">
+    <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
       <Button
-        className={`relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-1.5 ${size === "xl" ? "text-lg px-12 py-8 rounded-2xl" : "text-base px-8 py-6 rounded-xl"} ${className}`}
+        className={`relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-1.5 w-full sm:w-auto ${size === "xl" ? "text-sm sm:text-base md:text-lg px-6 sm:px-10 md:px-12 py-6 sm:py-7 md:py-8 rounded-2xl" : "text-xs sm:text-sm md:text-base px-5 sm:px-8 py-5 sm:py-6 rounded-xl"} ${className}`}
       >
         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-        <MessageCircle className="w-5 h-5 mr-2" />
-        {text}
-        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
+        <span className="truncate">{text}</span>
+        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
       </Button>
     </a>
   );
@@ -130,7 +130,7 @@ export default function LimpaNomeLanding() {
       <div className="min-h-screen bg-[#030712] text-white overflow-x-hidden selection:bg-emerald-500/30">
 
         {/* ========== HERO ========== */}
-        <section className="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
+        <section className="relative min-h-[100dvh] flex items-center justify-center px-4 py-16 sm:py-20 overflow-hidden">
           {/* Massive BG Effects */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.15),_transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(16,185,129,0.08),_transparent_50%)]" />
@@ -170,7 +170,7 @@ export default function LimpaNomeLanding() {
               animate={heroVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.15 }}
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black leading-[0.95] tracking-tight">
                 <span className="block bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
                   Seu nome pode ser
                 </span>
@@ -178,7 +178,7 @@ export default function LimpaNomeLanding() {
                   limpo pela lei
                 </span>
               </h1>
-              <p className="mt-4 text-2xl sm:text-3xl text-white/40 font-light">
+              <p className="mt-3 sm:mt-4 text-lg sm:text-2xl md:text-3xl text-white/40 font-light">
                 mesmo com dívidas
               </p>
             </motion.div>
@@ -188,7 +188,7 @@ export default function LimpaNomeLanding() {
               initial={{ opacity: 0, y: 30 }}
               animate={heroVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-8 text-lg sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed"
+              className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed px-2"
             >
               Descubra agora se você pode sair da negativação{" "}
               <span className="text-white font-medium">sem precisar quitar tudo imediatamente</span>
@@ -250,13 +250,13 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== SEÇÃO PROBLEMA ========== */}
-        <Section className="px-4 py-24" id="problema">
+        <Section className="px-4 py-14 sm:py-24" id="problema">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold mb-6">
                 <AlertTriangle className="w-4 h-4" /> O PROBLEMA
               </span>
-              <h2 className="text-4xl sm:text-5xl font-black leading-tight">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-black leading-tight">
                 Você sabe o que o{" "}
                 <span className="bg-gradient-to-r from-red-400 to-red-500 bg-clip-text text-transparent">nome negativado</span>
                 <br />faz com sua vida?
@@ -266,7 +266,7 @@ export default function LimpaNomeLanding() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { icon: Ban, title: "Crédito negado", desc: "Cartões, empréstimos e financiamentos recusados automaticamente. Portas fechadas em todos os bancos.", color: "red" },
                 { icon: XCircle, title: "Sem alugar imóvel", desc: "Ficha rejeitada em imobiliárias. O sonho da casa própria ou do aluguel travado indefinidamente.", color: "red" },
@@ -278,7 +278,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15 }}
-                  className="group p-8 rounded-3xl bg-gradient-to-b from-red-500/[0.08] to-transparent border border-red-500/15 hover:border-red-500/30 transition-all duration-500"
+                  className="group p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-red-500/[0.08] to-transparent border border-red-500/15 hover:border-red-500/30 transition-all duration-500"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500">
                     <item.icon className="w-7 h-7 text-red-400" />
@@ -305,14 +305,14 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== SEÇÃO SOLUÇÃO ========== */}
-        <Section className="px-4 py-24 relative" id="solucao">
+        <Section className="px-4 py-14 sm:py-24 relative" id="solucao">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(16,185,129,0.06),_transparent_70%)]" />
           <div className="relative max-w-5xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <Zap className="w-4 h-4" /> A SOLUÇÃO
             </span>
 
-            <h2 className="text-4xl sm:text-5xl font-black leading-tight mb-6">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black leading-tight mb-6">
               Análise jurídica estratégica<br />baseada no{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
                 Código de Defesa do Consumidor
@@ -323,7 +323,7 @@ export default function LimpaNomeLanding() {
               Não vendemos milagres. Usamos a lei a seu favor com análise técnica e fundamentação jurídica sólida.
             </p>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { icon: Scale, title: "Não é milagre", desc: "É direito previsto em lei. Fundamentos legais reais para cada caso específico.", gradient: "from-emerald-500/20 to-emerald-500/5" },
                 { icon: FileText, title: "Baseado na lei", desc: "CDC, Lei do Superendividamento (14.181/21) e jurisprudências consolidadas nos tribunais.", gradient: "from-emerald-500/15 to-emerald-500/5" },
@@ -335,7 +335,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15 }}
-                  className={`group p-8 rounded-3xl bg-gradient-to-b ${item.gradient} border border-emerald-500/15 hover:border-emerald-500/30 transition-all duration-500`}
+                  className={`group p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-b ${item.gradient} border border-emerald-500/15 hover:border-emerald-500/30 transition-all duration-500`}
                 >
                   <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-5 group-hover:scale-110 group-hover:bg-emerald-500/20 transition-all duration-500">
                     <item.icon className="w-7 h-7 text-emerald-400" />
@@ -349,18 +349,18 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== COMPARAÇÃO ========== */}
-        <Section className="px-4 py-24" id="comparacao">
+        <Section className="px-4 py-14 sm:py-24" id="comparacao">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14">
-              <h2 className="text-4xl sm:text-5xl font-black">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-black">
                 Renegociação <span className="text-white/30">vs</span>{" "}
                 <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">Defesa Jurídica</span>
               </h2>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 sm:gap-8">
               {/* Renegociação */}
-              <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-red-500/[0.06] to-transparent border border-red-500/15">
+              <div className="p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-red-500/[0.06] to-transparent border border-red-500/15">
                 <div className="flex items-center gap-3 mb-8">
                   <div className="w-12 h-12 rounded-2xl bg-red-500/10 flex items-center justify-center">
                     <XCircle className="w-6 h-6 text-red-400" />
@@ -383,7 +383,7 @@ export default function LimpaNomeLanding() {
               </div>
 
               {/* Defesa Jurídica */}
-              <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/30 relative shadow-[0_0_60px_rgba(16,185,129,0.1)]">
+              <div className="p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/30 relative shadow-[0_0_60px_rgba(16,185,129,0.1)]">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 bg-emerald-500 text-black text-xs font-black rounded-full uppercase tracking-wider">
                   ✨ Recomendado
                 </div>
@@ -416,18 +416,18 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== COMO FUNCIONA ========== */}
-        <Section className="px-4 py-24 relative" id="como-funciona">
+        <Section className="px-4 py-14 sm:py-24 relative" id="como-funciona">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.06),_transparent_60%)]" />
           <div className="relative max-w-5xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <Target className="w-4 h-4" /> PASSO A PASSO
             </span>
-            <h2 className="text-4xl sm:text-5xl font-black mb-16">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-10 sm:mb-16">
               Como funciona?{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">4 passos simples</span>
             </h2>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
               {[
                 { step: "01", icon: Phone, title: "Contato", desc: "Fale conosco pelo WhatsApp e envie seus dados básicos de forma segura." },
                 { step: "02", icon: FileText, title: "Análise", desc: "Equipe jurídica analisa detalhadamente cada negativação do seu caso." },
@@ -440,7 +440,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.12 }}
-                  className="relative p-8 rounded-3xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-500 group"
+                  className="relative p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-500 group"
                 >
                   <span className="text-6xl font-black text-emerald-500/[0.08] absolute top-4 right-6 group-hover:text-emerald-500/15 transition-colors">
                     {item.step}
@@ -457,19 +457,19 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== PROVA SOCIAL ========== */}
-        <Section className="px-4 py-24" id="depoimentos">
+        <Section className="px-4 py-14 sm:py-24" id="depoimentos">
           <div className="max-w-5xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <Heart className="w-4 h-4" /> DEPOIMENTOS
             </span>
-            <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-4">
               Quem já{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">regularizou</span>{" "}
               recomenda
             </h2>
             <p className="text-white/40 mb-14 text-lg">Histórias reais de quem saiu da negativação</p>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { name: "Ana Paula R.", city: "São Paulo, SP", text: "Fiquei 3 anos negativada e achava que não tinha solução. Em poucas semanas meu nome ficou limpo. O atendimento foi impecável do início ao fim!", rating: 5 },
                 { name: "Carlos Eduardo M.", city: "Belo Horizonte, MG", text: "O Guilherme e a equipe foram incríveis. Transparência total, me explicaram cada passo. Confiança de verdade recomendo sem medo.", rating: 5 },
@@ -481,7 +481,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15 }}
-                  className="p-8 rounded-3xl bg-white/[0.03] border border-white/[0.08] text-left hover:border-emerald-500/20 transition-all duration-500"
+                  className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/[0.03] border border-white/[0.08] text-left hover:border-emerald-500/20 transition-all duration-500"
                 >
                   <div className="flex gap-1 mb-5">
                     {[...Array(d.rating)].map((_, j) => (
@@ -505,10 +505,10 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== AUTORIDADE ========== */}
-        <Section className="px-4 py-24 relative" id="especialista">
+        <Section className="px-4 py-14 sm:py-24 relative" id="especialista">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,_rgba(16,185,129,0.08),_transparent_50%)]" />
           <div className="relative max-w-4xl mx-auto">
-            <div className="p-10 md:p-14 rounded-[2rem] bg-gradient-to-br from-emerald-500/[0.08] via-white/[0.02] to-transparent border border-emerald-500/20 backdrop-blur-sm">
+            <div className="p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-[2rem] bg-gradient-to-br from-emerald-500/[0.08] via-white/[0.02] to-transparent border border-emerald-500/20 backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center gap-10">
                 <div className="relative shrink-0">
                   <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.3)]">
@@ -520,8 +520,8 @@ export default function LimpaNomeLanding() {
                 </div>
 
                 <div className="text-center md:text-left">
-                  <h3 className="text-3xl font-black text-white mb-1">Guilherme Mesquita</h3>
-                  <p className="text-emerald-400 font-semibold text-lg mb-5">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white mb-1">Guilherme Mesquita</h3>
+                  <p className="text-emerald-400 font-semibold text-sm sm:text-lg mb-5">
                     Especialista em Regularização Jurídica • +8 anos de experiência
                   </p>
                   <p className="text-white/60 leading-relaxed text-lg">
@@ -549,18 +549,18 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== OFERTA ========== */}
-        <Section className="px-4 py-24" id="oferta">
+        <Section className="px-4 py-14 sm:py-24" id="oferta">
           <div className="max-w-4xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <CreditCard className="w-4 h-4" /> OFERTA ESPECIAL
             </span>
-            <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-4">
               Regularize seu nome com{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">acompanhamento jurídico</span>
             </h2>
             <p className="text-white/40 mb-12 text-lg">Investimento único que pode mudar sua vida financeira</p>
 
-            <div className="p-10 md:p-14 rounded-[2rem] bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/25 relative shadow-[0_0_80px_rgba(16,185,129,0.1)]">
+            <div className="p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-[2rem] bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/25 relative shadow-[0_0_80px_rgba(16,185,129,0.1)]">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-8 py-2 bg-gradient-to-r from-emerald-400 to-emerald-500 text-black font-black text-sm rounded-full uppercase tracking-wider shadow-lg">
                 🔥 Oferta por Tempo Limitado
               </div>
@@ -570,7 +570,7 @@ export default function LimpaNomeLanding() {
                 <p className="text-white/30 text-xl line-through mb-2">De R$ 1.500,00</p>
                 <div className="flex items-baseline justify-center gap-2">
                   <span className="text-2xl text-white/50 font-bold">R$</span>
-                  <span className="text-7xl sm:text-8xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none">
+                  <span className="text-5xl sm:text-7xl md:text-8xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none">
                     840
                   </span>
                 </div>
@@ -618,21 +618,21 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== FAQ ========== */}
-        <Section className="px-4 py-24" id="faq">
+        <Section className="px-4 py-14 sm:py-24" id="faq">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="text-4xl font-black text-white">Perguntas Frequentes</h2>
+            <div className="text-center mb-10 sm:mb-14">
+              <h2 className="text-2xl sm:text-4xl font-black text-white">Perguntas Frequentes</h2>
             </div>
             <div className="space-y-3">
               {faqs.map((faq, i) => (
                 <motion.button
                   key={i}
                   onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                  className="w-full text-left p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-300"
+                  className="w-full text-left p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-300"
                   layout
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="font-bold text-white text-lg">{faq.q}</span>
+                  <div className="flex items-center justify-between gap-3 sm:gap-4">
+                    <span className="font-bold text-white text-base sm:text-lg">{faq.q}</span>
                     <ChevronDown className={`w-5 h-5 text-emerald-400 shrink-0 transition-transform duration-300 ${activeFaq === i ? "rotate-180" : ""}`} />
                   </div>
                   <AnimatePresence>
@@ -655,11 +655,11 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== URGÊNCIA FINAL ========== */}
-        <Section className="px-4 py-20" id="urgencia">
+        <Section className="px-4 py-14 sm:py-20" id="urgencia">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="p-10 rounded-3xl bg-gradient-to-r from-red-500/[0.08] via-transparent to-emerald-500/[0.08] border border-white/[0.08]">
-              <Clock className="w-12 h-12 text-red-400 mx-auto mb-5" />
-              <h3 className="text-3xl font-black text-white mb-4">
+            <div className="p-6 sm:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-500/[0.08] via-transparent to-emerald-500/[0.08] border border-white/[0.08]">
+              <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-red-400 mx-auto mb-5" />
+              <h3 className="text-xl sm:text-3xl font-black text-white mb-4">
                 Estamos liberando <span className="text-red-400">poucas vagas</span> por semana
               </h3>
               <p className="text-white/50 mb-8 text-lg">
@@ -676,21 +676,22 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== CTA FINAL ========== */}
-        <section className="px-4 py-28 relative overflow-hidden">
+        <section className="px-4 py-16 sm:py-28 pb-32 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.15),_transparent_60%)]" />
           <div className="relative max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight mb-6">
-              Descubra agora se seu nome<br />pode ser{" "}
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6">
+              Descubra agora se seu nome pode ser{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">regularizado</span>
             </h2>
-            <p className="text-white/50 mb-12 text-xl">
+            <p className="text-white/50 mb-8 sm:mb-12 text-base sm:text-xl">
               Converse com nosso especialista gratuitamente. Sem compromisso.
             </p>
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group">
-              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xl px-14 py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2">
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
+              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm sm:text-lg md:text-xl px-6 sm:px-10 md:px-14 py-6 sm:py-8 md:py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2 w-full sm:w-auto">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <MessageCircle className="w-7 h-7 mr-3" />
-                FALAR COM ESPECIALISTA NO WHATSAPP
+                <MessageCircle className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 shrink-0" />
+                <span className="sm:hidden">FALAR NO WHATSAPP</span>
+                <span className="hidden sm:inline">FALAR COM ESPECIALISTA NO WHATSAPP</span>
               </Button>
             </a>
             <p className="mt-8 text-white/25 text-sm">AtentAI • Regularização Jurídica • CNPJ ativo</p>
