@@ -575,7 +575,7 @@ export default function LimpaNomeLanding() {
                   </span>
                 </div>
                 <p className="text-white/50 mt-4 text-base">
-                  ou entrada de <span className="text-white font-bold">R$ 500</span> + 3x de <span className="text-white font-bold">R$ 100</span>
+                  ou entrada de <span className="text-white font-bold">R$ 500</span> + 4x de <span className="text-white font-bold">R$ 85</span>
                 </p>
               </div>
 
