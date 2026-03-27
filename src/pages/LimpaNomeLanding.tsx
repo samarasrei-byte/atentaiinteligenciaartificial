@@ -628,11 +628,11 @@ export default function LimpaNomeLanding() {
                 <motion.button
                   key={i}
                   onClick={() => setActiveFaq(activeFaq === i ? null : i)}
-                  className="w-full text-left p-6 rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-300"
+                  className="w-full text-left p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-300"
                   layout
                 >
-                  <div className="flex items-center justify-between gap-4">
-                    <span className="font-bold text-white text-lg">{faq.q}</span>
+                  <div className="flex items-center justify-between gap-3 sm:gap-4">
+                    <span className="font-bold text-white text-base sm:text-lg">{faq.q}</span>
                     <ChevronDown className={`w-5 h-5 text-emerald-400 shrink-0 transition-transform duration-300 ${activeFaq === i ? "rotate-180" : ""}`} />
                   </div>
                   <AnimatePresence>
