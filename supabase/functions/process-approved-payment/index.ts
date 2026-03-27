@@ -456,9 +456,7 @@ serve(async (req) => {
       ? 'limpanome'
       : serviceType === 'contador_premium'
         ? 'contador-premium'
-        : serviceType === 'clarity' || serviceType === 'control'
-          ? 'bi-contabilidade'
-          : serviceType;
+        : serviceType;
 
     // IR services redirect to Contador IA panel (100% AI, no human chat)
     // All other services redirect to specialist chat

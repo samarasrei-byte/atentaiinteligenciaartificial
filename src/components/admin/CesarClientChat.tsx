@@ -383,7 +383,7 @@ César`);
           clientUserId: selectedClient.user_id,
           amountCents,
           serviceName: serviceLabel,
-          serviceType: 'bi-contabilidade',
+          serviceType: 'analise-fiscal',
           requestId: selectedClient.id,
         },
       });
