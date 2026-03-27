@@ -270,7 +270,7 @@ export function CesarClientChat() {
       const g = greetings[Math.floor(Math.random() * greetings.length)];
       return `${g}, ${name}! Tudo bem? 😊
 
-Aqui é o César, responsável pelo seu BI+ Contabilidade.
+Aqui é o Guilherme, responsável pela sua contabilidade.
 
 Que bom ter você com a gente! Pra começar a montar seu painel financeiro, vou precisar de alguns documentos:
 
@@ -282,7 +282,7 @@ Pode mandar Excel, PDF ou imagem aqui mesmo no chat.
 
 Assim que receber, já começo o diagnóstico financeiro da sua empresa!
 
-César`;
+Guilherme`;
     },
     followUp: (name: string) => {
       return `Oi, ${name}! Passando pra checar se conseguiu separar os documentos contábeis.
