@@ -469,7 +469,7 @@ export default function LimpaNomeLanding() {
             </h2>
             <p className="text-white/40 mb-14 text-lg">Histórias reais de quem saiu da negativação</p>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { name: "Ana Paula R.", city: "São Paulo, SP", text: "Fiquei 3 anos negativada e achava que não tinha solução. Em poucas semanas meu nome ficou limpo. O atendimento foi impecável do início ao fim!", rating: 5 },
                 { name: "Carlos Eduardo M.", city: "Belo Horizonte, MG", text: "O Guilherme e a equipe foram incríveis. Transparência total, me explicaram cada passo. Confiança de verdade recomendo sem medo.", rating: 5 },
