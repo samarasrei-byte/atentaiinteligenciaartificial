@@ -267,7 +267,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
           </div>
 
           {/* Pricing Section */}
-          <div className="py-4 border-t border-slate-100 mb-4">
+          <div className="py-4 border-t border-border mb-4">
             {service.isCustomPricing ? (
               <div>
                 <span className="text-xl font-bold text-purple-600">Sob Consulta</span>
