@@ -416,7 +416,7 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== COMO FUNCIONA ========== */}
-        <Section className="px-4 py-24 relative" id="como-funciona">
+        <Section className="px-4 py-14 sm:py-24 relative" id="como-funciona">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.06),_transparent_60%)]" />
           <div className="relative max-w-5xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
