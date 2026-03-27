@@ -101,7 +101,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'high' as const
         })),
       ];
