@@ -41,7 +41,7 @@ const EmissaoNFLanding = () => {
             <button onClick={() => scrollTo('pricing')} className="hover:text-gray-800 transition-colors">Preço</button>
           </nav>
           <Button
-            onClick={() => navigate('/auth')}
+            onClick={() => { sessionStorage.setItem('postAuthRedirect', '/emissao-nf/dashboard'); navigate('/auth'); }}
             className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full px-6 h-9 text-sm font-medium"
           >
             Começar agora
@@ -89,7 +89,7 @@ const EmissaoNFLanding = () => {
 
             <motion.div variants={fade} custom={4} className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-6">
               <Button
-                onClick={() => navigate('/auth')}
+                onClick={() => { sessionStorage.setItem('postAuthRedirect', '/emissao-nf/dashboard'); navigate('/auth'); }}
                 size="lg"
                 className="bg-emerald-500 hover:bg-emerald-400 text-white rounded-full px-10 h-14 text-lg font-bold shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.4)] transition-all w-full sm:w-auto"
               >
@@ -476,7 +476,7 @@ const EmissaoNFLanding = () => {
                 </div>
 
                 <Button
-                  onClick={() => navigate('/auth')}
+                  onClick={() => { sessionStorage.setItem('postAuthRedirect', '/emissao-nf/dashboard'); navigate('/auth'); }}
                   className="w-full bg-emerald-500 hover:bg-emerald-400 text-white rounded-full h-14 text-lg font-bold shadow-[0_0_40px_rgba(16,185,129,0.25)]"
                 >
                   Ativar agora <ArrowRight className="ml-2 w-5 h-5" />
@@ -564,7 +564,7 @@ const EmissaoNFLanding = () => {
               Automatize seu financeiro hoje.
             </p>
             <Button
-              onClick={() => navigate('/auth')}
+              onClick={() => { sessionStorage.setItem('postAuthRedirect', '/emissao-nf/dashboard'); navigate('/auth'); }}
               size="lg"
               className="bg-emerald-500 hover:bg-emerald-400 text-white rounded-full px-12 h-14 text-lg font-bold shadow-[0_0_40px_rgba(16,185,129,0.3)] hover:shadow-[0_0_60px_rgba(16,185,129,0.4)] transition-all"
             >

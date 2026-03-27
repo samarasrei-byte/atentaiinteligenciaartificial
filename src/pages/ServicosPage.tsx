@@ -177,7 +177,7 @@ const aiServices: ServiceCardConfig[] = [
     color: 'purple' as const,
     icon: Brain,
     serviceType: 'contador_ia',
-    checkoutRoute: '/contador-ia',
+    checkoutRoute: '/ir',
     category: 'declaracoes',
     isFree: false,
   },
