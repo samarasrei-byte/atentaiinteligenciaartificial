@@ -117,13 +117,13 @@ export default function LimpaNomeLanding() {
     { q: "Preciso pagar a dívida toda?", a: "Não necessariamente. Se forem encontradas irregularidades na negativação, é possível buscar a remoção judicial sem quitar o valor total da dívida." },
     { q: "Quanto tempo leva o processo?", a: "A análise inicial é feita em até 48h úteis. O prazo total depende da complexidade do caso, mas mantemos você informado em cada etapa." },
     { q: "Funciona para CNPJ também?", a: "Sim! Atendemos tanto Pessoa Física (CPF) quanto Pessoa Jurídica (CNPJ) em todo o território nacional." },
-    { q: "E se meu caso não tiver viabilidade?", a: "Você é informado antes de qualquer cobrança. Trabalhamos com total transparência — sem surpresas." },
+    { q: "E se meu caso não tiver viabilidade?", a: "Você é informado antes de qualquer cobrança. Trabalhamos com total transparência sem surpresas." },
   ];
 
   return (
     <>
       <Helmet>
-        <title>Limpa Nome AtentAI — Regularize seu CPF ou CNPJ com Análise Jurídica</title>
+        <title>Limpa Nome AtentAI Regularize seu CPF ou CNPJ com Análise Jurídica</title>
         <meta name="description" content="Descubra se seu nome pode ser limpo pela lei. Análise jurídica completa, 100% legal, com atendimento em todo o Brasil. Vagas limitadas." />
       </Helmet>
 
@@ -270,7 +270,7 @@ export default function LimpaNomeLanding() {
               {[
                 { icon: Ban, title: "Crédito negado", desc: "Cartões, empréstimos e financiamentos recusados automaticamente. Portas fechadas em todos os bancos.", color: "red" },
                 { icon: XCircle, title: "Sem alugar imóvel", desc: "Ficha rejeitada em imobiliárias. O sonho da casa própria ou do aluguel travado indefinidamente.", color: "red" },
-                { icon: AlertTriangle, title: "Vida completamente travada", desc: "Emprego, parcerias comerciais, investimentos — tudo bloqueado por uma restrição no seu nome.", color: "red" },
+                { icon: AlertTriangle, title: "Vida completamente travada", desc: "Emprego, parcerias comerciais, investimentos tudo bloqueado por uma restrição no seu nome.", color: "red" },
               ].map((item, i) => (
                 <motion.div
                   key={item.title}
@@ -298,7 +298,7 @@ export default function LimpaNomeLanding() {
               <Sparkles className="w-8 h-8 text-emerald-400 mx-auto mb-4" />
               <p className="text-xl text-white/80 font-medium">
                 <span className="text-emerald-400 font-bold">Muitas negativações no Brasil possuem irregularidades</span>
-                <br /><span className="text-white/50">— e você pode nem saber disso.</span>
+                <br /><span className="text-white/50">e você pode nem saber disso.</span>
               </p>
             </motion.div>
           </div>
@@ -372,7 +372,7 @@ export default function LimpaNomeLanding() {
                     "Precisa pagar a dívida total ou parcial",
                     "Depende da boa vontade do banco/credor",
                     "Mantém histórico negativo no sistema",
-                    "Apenas adia o problema — não resolve",
+                    "Apenas adia o problema não resolve",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-3 text-white/60">
                       <XCircle className="w-5 h-5 text-red-400/70 shrink-0 mt-0.5" />
@@ -398,7 +398,7 @@ export default function LimpaNomeLanding() {
                     "Análise técnica de irregularidades na dívida",
                     "Possibilidade real de remoção da negativação",
                     "Fundamentado no CDC e legislação vigente",
-                    "Resolve a causa raiz — não apenas o sintoma",
+                    "Resolve a causa raiz não apenas o sintoma",
                   ].map((t) => (
                     <li key={t} className="flex items-start gap-3 text-white/90">
                       <CheckCircle className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
@@ -472,7 +472,7 @@ export default function LimpaNomeLanding() {
             <div className="grid md:grid-cols-3 gap-6">
               {[
                 { name: "Ana Paula R.", city: "São Paulo, SP", text: "Fiquei 3 anos negativada e achava que não tinha solução. Em poucas semanas meu nome ficou limpo. O atendimento foi impecável do início ao fim!", rating: 5 },
-                { name: "Carlos Eduardo M.", city: "Belo Horizonte, MG", text: "O Guilherme e a equipe foram incríveis. Transparência total, me explicaram cada passo. Confiança de verdade — recomendo sem medo.", rating: 5 },
+                { name: "Carlos Eduardo M.", city: "Belo Horizonte, MG", text: "O Guilherme e a equipe foram incríveis. Transparência total, me explicaram cada passo. Confiança de verdade recomendo sem medo.", rating: 5 },
                 { name: "Fernanda Lima S.", city: "Curitiba, PR", text: "Minha empresa estava completamente travada pelo CNPJ negativado. Resolveram e agora consegui até linha de crédito. Mudou minha vida!", rating: 5 },
               ].map((d, i) => (
                 <motion.div
