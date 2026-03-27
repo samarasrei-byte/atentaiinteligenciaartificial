@@ -107,7 +107,7 @@ export const FinancialAnalytics: React.FC = () => {
         const serviceType = p.service_type || 'Outros';
         if (serviceType.includes('limpa')) serviceRevenue['Limpa Nome'] += p.amount_cents;
         else if (serviceType.includes('fiscal')) serviceRevenue['Análise Fiscal'] += p.amount_cents;
-        else if (serviceType.includes('bi')) serviceRevenue['BI Contabilidade'] += p.amount_cents;
+        else if (serviceType.includes('bi')) serviceRevenue['Emissão NF'] += p.amount_cents;
         else serviceRevenue['Outros'] += p.amount_cents;
       });
 
