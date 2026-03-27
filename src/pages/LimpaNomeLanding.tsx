@@ -235,17 +235,10 @@ export default function LimpaNomeLanding() {
         {/* ========== SOCIAL PROOF COUNTER BAR ========== */}
         <Section className="py-16 px-4 border-y border-white/[0.06] bg-white/[0.02]">
           <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-            {stats.map((s) => {
-              const { count, ref } = useCounter(s.end);
-              return (
-                <div key={s.label} className="text-center">
-                  <span ref={ref} className="text-4xl sm:text-5xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
-                    {count}{s.suffix}
-                  </span>
-                  <p className="mt-2 text-white/40 text-sm font-medium uppercase tracking-wider">{s.label}</p>
-                </div>
-              );
-            })}
+            <StatItem end={847} suffix="+" label="Casos analisados" />
+            <StatItem end={92} suffix="%" label="Taxa de êxito" />
+            <StatItem end={27} suffix="" label="Estados atendidos" />
+            <StatItem end={8} suffix="+" label="Anos de experiência" />
           </div>
         </Section>
 
