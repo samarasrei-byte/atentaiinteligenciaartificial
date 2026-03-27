@@ -41,7 +41,7 @@ const EmissaoNFLanding = () => {
             <button onClick={() => scrollTo('pricing')} className="hover:text-gray-800 transition-colors">Preço</button>
           </nav>
           <Button
-            onClick={() => navigate('/auth')}
+            onClick={() => { sessionStorage.setItem('postAuthRedirect', '/emissao-nf/dashboard'); navigate('/auth'); }}
             className="bg-emerald-500 hover:bg-emerald-600 text-white rounded-full px-6 h-9 text-sm font-medium"
           >
             Começar agora
