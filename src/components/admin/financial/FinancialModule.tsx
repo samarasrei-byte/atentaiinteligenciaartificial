@@ -66,7 +66,7 @@ export const FinancialModule: React.FC = () => {
         let name = 'Outros';
         if (service.includes('limpa')) name = 'Limpa Nome';
         else if (service.includes('fiscal')) name = 'Análise Fiscal';
-        else if (service.includes('bi')) name = 'BI Contabilidade';
+        else if (service.includes('bi')) name = 'Emissão NF';
         serviceRevenues[name] = (serviceRevenues[name] || 0) + p.amount_cents;
       });
       serviceRevenues['Assinaturas'] = totalSubscriptions;
