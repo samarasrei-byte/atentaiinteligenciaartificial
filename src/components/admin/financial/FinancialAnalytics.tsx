@@ -89,7 +89,7 @@ export const FinancialAnalytics: React.FC = () => {
       const serviceRevenue: Record<string, number> = {
         'Limpa Nome': 0,
         'Análise Fiscal': 0,
-        'BI Contabilidade': 0,
+        'Emissão NF': 0,
         'Assinaturas': 0,
         'Outros': 0
       };
