@@ -448,7 +448,7 @@ export default function CapassiChat() {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-semibold text-white">Chat</h2>
-          <p className="text-sm text-white/40">Atendimento via WhatsApp Business • César</p>
+          <p className="text-sm text-white/40">Atendimento via WhatsApp Business • Guilherme</p>
         </div>
         <div className="flex items-center gap-2">
           <WhatsAppBusinessIcon className="h-6 w-6" connected={true} />
