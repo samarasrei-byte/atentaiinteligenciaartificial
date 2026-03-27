@@ -110,12 +110,7 @@ export default function LimpaNomeLanding() {
     return () => clearInterval(t);
   }, []);
 
-  const stats = [
-    { end: 847, label: "Casos analisados", suffix: "+" },
-    { end: 92, label: "Taxa de êxito", suffix: "%" },
-    { end: 27, label: "Estados atendidos", suffix: "" },
-    { end: 8, label: "Anos de experiência", suffix: "+" },
-  ];
+  // stats rendered via StatItem components
 
   const faqs = [
     { q: "Isso é realmente legal?", a: "100% legal. Utilizamos mecanismos previstos no Código de Defesa do Consumidor (CDC), Lei do Superendividamento e jurisprudências consolidadas nos tribunais brasileiros." },
