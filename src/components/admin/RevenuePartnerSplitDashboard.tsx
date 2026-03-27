@@ -244,16 +244,14 @@ export function RevenuePartnerSplitDashboard() {
 
   const splitComparisonData = [
     {
-      name: "Marketplace (33/33/33)",
+      name: "Marketplace (50/50)",
       guilherme_mesquita: partnerSplits.marketplace.guilherme_mesquita / 100,
       guilherme_baus: partnerSplits.marketplace.guilherme_baus / 100,
-      cesar: partnerSplits.marketplace.cesar / 100,
     },
     {
-      name: "Plataforma (70/15/15)",
+      name: "Plataforma (70/30)",
       guilherme_mesquita: partnerSplits.platform.guilherme_mesquita / 100,
       guilherme_baus: partnerSplits.platform.guilherme_baus / 100,
-      cesar: partnerSplits.platform.cesar / 100,
     },
   ];
 
