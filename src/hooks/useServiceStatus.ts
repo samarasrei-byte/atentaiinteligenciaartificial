@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
 // Define types locally to avoid circular dependencies
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade';
+export type ServiceType = 'limpanome' | 'analise-fiscal';
 
 interface ServiceStep {
   id: string;
@@ -25,14 +25,6 @@ const SERVICE_STEPS: Record<ServiceType, ServiceStep[]> = {
     { id: 'opportunities', label: 'Oportunidades encontradas' },
     { id: 'adjustments', label: 'Ajustes / regularização' },
     { id: 'completed', label: 'Análise concluída' },
-  ],
-  'bi-contabilidade': [
-    { id: 'received', label: 'Solicitação recebida' },
-    { id: 'collecting', label: 'Coleta de documentos' },
-    { id: 'ai_processing', label: 'Processamento com IA' },
-    { id: 'validation', label: 'Validação humana' },
-    { id: 'insights', label: 'Insights prontos' },
-    { id: 'completed', label: 'Relatório entregue' },
   ],
 };
 
@@ -74,18 +66,6 @@ const SERVICE_STATUS_MAP: Record<ServiceType, {
       'in_analysis': 2,
       'opportunities_found': 3,
       'adjustments': 4,
-      'completed': 5,
-    },
-  },
-  'bi-contabilidade': {
-    table: 'fiscal_analysis_requests', // Reusing for now
-    statusField: 'status',
-    statusToStep: {
-      'pending': 0,
-      'collecting_docs': 1,
-      'processing': 2,
-      'validation': 3,
-      'insights_ready': 4,
       'completed': 5,
     },
   },

@@ -252,7 +252,7 @@ export const ServiceManagement: React.FC = () => {
   const getResponsibleBadge = (responsible: ServiceResponsible) => {
     const config: Record<ServiceResponsible, { label: string; className: string }> = {
       guilherme: { label: 'Guilherme', className: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
-      cesar: { label: 'César', className: 'bg-violet-100 text-violet-700 border-violet-300' },
+      cesar: { label: 'Guilherme', className: 'bg-emerald-100 text-emerald-700 border-emerald-300' },
       contador: { label: 'Contador', className: 'bg-blue-100 text-blue-700 border-blue-300' },
     };
     const c = config[responsible];
@@ -518,7 +518,7 @@ export const ServiceManagement: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="guilherme">Guilherme</SelectItem>
-                    <SelectItem value="cesar">César</SelectItem>
+                    <SelectItem value="contador">Contador</SelectItem>
                     <SelectItem value="contador">Contador</SelectItem>
                   </SelectContent>
                 </Select>

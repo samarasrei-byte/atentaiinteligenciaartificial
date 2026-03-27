@@ -104,13 +104,6 @@ export const SERVICE_PRICES = {
     subscriberDiscount: 0,
   },
 
-  // BI+ Inteligência Fiscal - Valor sob consulta
-  BI_INTELIGENCIA_FISCAL: {
-    type: 'custom_pricing',
-    formatted: 'Sob consulta',
-    description: 'Valor definido após análise do especialista',
-    serviceKey: 'bi_contabilidade',
-  },
 } as const;
 
 // Subscription Plans

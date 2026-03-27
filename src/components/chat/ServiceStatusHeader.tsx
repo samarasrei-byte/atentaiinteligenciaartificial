@@ -12,7 +12,7 @@ import {
   BarChart3
 } from 'lucide-react';
 
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade';
+export type ServiceType = 'limpanome' | 'analise-fiscal';
 
 interface ServiceStep {
   id: string;
@@ -36,14 +36,6 @@ const SERVICE_STEPS: Record<ServiceType, ServiceStep[]> = {
     { id: 'adjustments', label: 'Ajustes / regularização' },
     { id: 'completed', label: 'Análise concluída' },
   ],
-  'bi-contabilidade': [
-    { id: 'received', label: 'Solicitação recebida' },
-    { id: 'collecting', label: 'Coleta de documentos' },
-    { id: 'ai_processing', label: 'Processamento com IA' },
-    { id: 'validation', label: 'Validação humana' },
-    { id: 'insights', label: 'Insights prontos' },
-    { id: 'completed', label: 'Relatório entregue' },
-  ],
 };
 
 const SERVICE_CONFIG: Record<ServiceType, { 
@@ -60,11 +52,6 @@ const SERVICE_CONFIG: Record<ServiceType, {
     icon: Scale,
     color: 'text-violet-600',
     bgColor: 'bg-violet-50',
-  },
-  'bi-contabilidade': {
-    icon: BarChart3,
-    color: 'text-indigo-600',
-    bgColor: 'bg-indigo-50',
   },
 };
 

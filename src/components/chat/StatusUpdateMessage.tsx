@@ -9,7 +9,7 @@ import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 
 // Define types locally to avoid circular dependencies
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade';
+export type ServiceType = 'limpanome' | 'analise-fiscal';
 
 interface ServiceStep {
   id: string;
@@ -32,14 +32,6 @@ const SERVICE_STEPS: Record<ServiceType, ServiceStep[]> = {
     { id: 'opportunities', label: 'Oportunidades encontradas' },
     { id: 'adjustments', label: 'Ajustes / regularização' },
     { id: 'completed', label: 'Análise concluída' },
-  ],
-  'bi-contabilidade': [
-    { id: 'received', label: 'Solicitação recebida' },
-    { id: 'collecting', label: 'Coleta de documentos' },
-    { id: 'ai_processing', label: 'Processamento com IA' },
-    { id: 'validation', label: 'Validação humana' },
-    { id: 'insights', label: 'Insights prontos' },
-    { id: 'completed', label: 'Relatório entregue' },
   ],
 };
 

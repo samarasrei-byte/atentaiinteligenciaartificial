@@ -132,7 +132,6 @@ export const FinancialRevenues: React.FC = () => {
     const colors: Record<string, string> = {
       'limpa-nome': 'bg-emerald-500/10 text-emerald-600 border-emerald-500/30',
       'analise-fiscal': 'bg-violet-500/10 text-violet-600 border-violet-500/30',
-      'bi-contabilidade': 'bg-indigo-500/10 text-indigo-600 border-indigo-500/30',
       'assinatura': 'bg-blue-500/10 text-blue-600 border-blue-500/30',
     };
     const key = service.toLowerCase().replace(/\s/g, '-');

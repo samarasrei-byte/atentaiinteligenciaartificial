@@ -21,7 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 interface ServicePaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  serviceType: 'limpanome' | 'fiscal' | 'bi-contabilidade';
+  serviceType: 'limpanome' | 'fiscal';
   servicePriceCents: number;
   onPaymentSuccess?: () => void;
 }
@@ -69,18 +69,6 @@ export const ServicePaywallModal: React.FC<ServicePaywallModalProps> = ({
       ],
       icon: FileCheck,
       gradient: 'from-emerald-500 to-teal-600',
-    },
-    'bi-contabilidade': {
-      name: 'BI+ Contabilidade',
-      description: 'Inteligência financeira completa',
-      features: [
-        'Dashboard em tempo real',
-        'IA + Análise humana',
-        'Insights automáticos',
-        'Suporte especializado',
-      ],
-      icon: Sparkles,
-      gradient: 'from-indigo-500 to-purple-600',
     },
   };
 

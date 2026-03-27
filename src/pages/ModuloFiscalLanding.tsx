@@ -366,7 +366,7 @@ export default function ModuloFiscalLanding() {
                   </div>
 
                   <Button 
-                    onClick={() => navigate('/bi-contabilidade/onboarding')}
+                    onClick={() => navigate('/modulo-fiscal/onboarding')}
                     className="w-full"
                   >
                     <Handshake className="h-5 w-5 mr-2" />
@@ -445,7 +445,7 @@ export default function ModuloFiscalLanding() {
             </p>
             <Button 
               size="lg"
-              onClick={() => navigate('/bi-contabilidade/onboarding')}
+              onClick={() => navigate('/modulo-fiscal/onboarding')}
               className="h-16 px-12 text-lg bg-gradient-to-r from-emerald-500 to-green-500 hover:from-emerald-600 hover:to-green-600"
             >
               <Users className="h-5 w-5 mr-2" />

@@ -7,10 +7,7 @@
  * - Premium: R$ 98,00/mês - Recursos completos
  * - Contador: R$ 198,99/mês - Para contadores
  * 
- * BI PLANS (Atentai - Used only in /bi-contabilidade):
- * - Atentai Clarity: R$ 1.497/mês
- * - Atentai Control: R$ 3.497/mês
- * - Atentai Performance: R$ 8.000+/mês
+ *
  * 
  * MARKETPLACE SERVICES (One-Time Payments):
  * - Limpa Nome PF: R$ 824,50 (PROMOÇÃO)
@@ -20,7 +17,7 @@
   * - IR Completo: R$ 189,00
  * - Abertura de Empresa: R$ 780,00
  * - Análise Fiscal: GRÁTIS (Success Fee 50%)
- * - BI+ Contabilidade: SOB CONSULTA
+ * - Análise Fiscal: GRÁTIS (Success Fee 50%)
  */
 
 // ============================================================
@@ -265,15 +262,6 @@ export const SUBSCRIBER_DISCOUNTS = {
     discountedPrice: 128000,
     icon: 'Building2',
     installments: 4,
-  },
-  bi_contabilidade: {
-    name: 'BI+ Inteligência Fiscal™',
-    description: 'Inteligência artificial com análise humana especializada',
-    basePrice: 0,
-    discount: 0,
-    discountedPrice: 0,
-    icon: 'Brain',
-    customPricing: true,
   },
 } as const;
 

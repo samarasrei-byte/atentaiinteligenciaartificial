@@ -59,7 +59,7 @@ export const BIRequestsInbox: React.FC = () => {
     try {
       setLoading(true);
       
-      // Fetch César's services only (BI + Contabilidade)
+      // Fetch service requests
       const [fiscal, ir, certificates, companyOpening] = await Promise.all([
         supabase.from('fiscal_analysis_requests').select('id, full_name, status, created_at').order('created_at', { ascending: false }).limit(50),
         supabase.from('ir_requests').select('id, full_name, status, created_at').order('created_at', { ascending: false }).limit(50),

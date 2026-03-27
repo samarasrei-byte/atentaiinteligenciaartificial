@@ -24,7 +24,6 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'certificate': { chatType: 'guilherme', specialist: 'Guilherme' },
   'clarity': { chatType: 'guilherme', specialist: 'Guilherme' },
   'control': { chatType: 'guilherme', specialist: 'Guilherme' },
-  'bi_contabilidade': { chatType: 'guilherme', specialist: 'Guilherme' },
   // Platform subscriptions - no specialist chat needed
   'simulator': { chatType: 'guilherme', specialist: 'Guilherme' },
   'autonomo': { chatType: 'guilherme', specialist: 'Guilherme' },
@@ -457,9 +456,7 @@ serve(async (req) => {
       ? 'limpanome'
       : serviceType === 'contador_premium'
         ? 'contador-premium'
-        : serviceType === 'clarity' || serviceType === 'control'
-          ? 'bi-contabilidade'
-          : serviceType;
+        : serviceType;
 
     // IR services redirect to Contador IA panel (100% AI, no human chat)
     // All other services redirect to specialist chat

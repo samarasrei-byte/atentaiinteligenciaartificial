@@ -8,7 +8,7 @@ import { supabase } from '@/integrations/supabase/client';
  * - Cria solicitação → Cria conversa → Dispara notificação → Redireciona para chat
  */
 
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade' | 'abertura-empresa' | 'certidao' | 'ir' | 'emissao-nf';
+export type ServiceType = 'limpanome' | 'analise-fiscal' | 'abertura-empresa' | 'certidao' | 'ir' | 'emissao-nf';
 
 export interface ServiceRequest {
   serviceType: ServiceType;
@@ -31,19 +31,8 @@ export interface ServiceResponse {
 /**
  * Get the responsible person for each service type
  */
-export const getResponsiblePerson = (serviceType: ServiceType): 'guilherme' | 'cesar' => {
-  switch (serviceType) {
-    case 'limpanome':
-    case 'analise-fiscal':
-    case 'abertura-empresa':
-    case 'certidao':
-    case 'ir':
-      return 'guilherme';
-    case 'bi-contabilidade':
-      return 'guilherme';
-    default:
-      return 'guilherme';
-  }
+export const getResponsiblePerson = (serviceType: ServiceType): 'guilherme' => {
+  return 'guilherme';
 };
 
 /**
@@ -91,7 +80,6 @@ export const getServiceDisplayName = (serviceType: ServiceType): string => {
   const names: Record<ServiceType, string> = {
     'limpanome': 'Limpa Nome',
     'analise-fiscal': 'Análise Fiscal',
-    'bi-contabilidade': 'Emissão de NF',
     'abertura-empresa': 'Abertura de Empresa',
     'certidao': 'Emissão de Certidão',
     'ir': 'Declaração de IR',
@@ -209,7 +197,7 @@ export const createBIRequest = async (
         status: 'pending',
         notes: JSON.stringify({
           ...request.additionalData,
-          source: 'bi-contabilidade',
+          source: 'emissao-nf',
         }),
       })
       .select()
@@ -217,18 +205,18 @@ export const createBIRequest = async (
     
     if (error) throw error;
     
-    await createServiceNotifications(request.userId, 'bi-contabilidade', data.id, request.fullName);
+    await createServiceNotifications(request.userId, 'emissao-nf', data.id, request.fullName);
     
     return {
       success: true,
       requestId: data.id,
-      chatUrl: getChatUrl('bi-contabilidade', data.id),
+      chatUrl: getChatUrl('emissao-nf', data.id),
     };
   } catch (error: any) {
-    console.error('Error creating BI request:', error);
+    console.error('Error creating NF request:', error);
     return {
       success: false,
-      chatUrl: getChatUrl('bi-contabilidade'),
+      chatUrl: getChatUrl('emissao-nf'),
       error: error.message,
     };
   }

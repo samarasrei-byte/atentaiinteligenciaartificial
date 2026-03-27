@@ -53,7 +53,6 @@ const formatDate = (date: string) =>
 
 const partnerColors: Record<string, string> = {
   'Guilherme Mesquita': '#10b981',
-  'César': '#8b5cf6',
   'Guilherme Mesquita (Op)': '#3b82f6'
 };
 

@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface PostOnboardingAuthProps {
-  serviceType: 'limpanome' | 'fiscal' | 'bi-contabilidade';
+  serviceType: 'limpanome' | 'fiscal';
   requestId: string;
   prefillData?: {
     fullName?: string;
@@ -49,7 +49,6 @@ export const PostOnboardingAuth: React.FC<PostOnboardingAuthProps> = ({
   const serviceLabels = {
     'limpanome': 'Limpa Nome',
     'fiscal': 'Análise Fiscal',
-    'bi-contabilidade': 'BI+ Contabilidade',
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -120,7 +119,7 @@ export const PostOnboardingAuth: React.FC<PostOnboardingAuthProps> = ({
           .eq('id', requestId);
         if (error) console.error('Error linking limpa nome request:', error);
       } else {
-        // fiscal and bi-contabilidade use fiscal_analysis_requests
+        // fiscal uses fiscal_analysis_requests
         const { error } = await supabase
           .from('fiscal_analysis_requests')
           .update({ user_id: userId })

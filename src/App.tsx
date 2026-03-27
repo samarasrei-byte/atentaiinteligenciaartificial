@@ -109,9 +109,7 @@ const SuportePage = lazy(() => import("./pages/SuportePage"));
 // BI routes hidden - kept imports commented for future reactivation
 // const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
 // const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
-// const CesarBILanding = lazy(() => import("./pages/CesarBILanding"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
-const ChatCesar = lazy(() => import("./pages/ChatCesar"));
 
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
 const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
@@ -408,11 +406,7 @@ const App = () => (
                   <ChatGuilherme />
                 </ProtectedRoute>
               } />
-              <Route path="/chat/cesar" element={
-                <ProtectedRoute>
-                  <ChatCesar />
-                </ProtectedRoute>
-              } />
+              <Route path="/chat/cesar" element={<Navigate to="/chat/guilherme" replace />} />
               
               {/* Capassi Panel - Exclusive access */}
               <Route path="/capassi" element={

@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface WelcomeChat {
   id: string;
-  chat_type: 'guilherme' | 'cesar';
+  chat_type: 'guilherme';
   message_content: string;
   is_read: boolean;
   created_at: string;
@@ -14,10 +14,8 @@ interface WelcomeChat {
 interface UseAutoWelcomeMessagesReturn {
   welcomeChats: WelcomeChat[];
   unreadGuilherme: number;
-  unreadCesar: number;
   totalUnread: number;
-  hasBIAccess: boolean;
-  markAsRead: (chatType: 'guilherme' | 'cesar') => Promise<void>;
+  markAsRead: (chatType: 'guilherme') => Promise<void>;
   isLoading: boolean;
 }
 
@@ -35,15 +33,9 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
   const [welcomeChats, setWelcomeChats] = useState<WelcomeChat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Determine if user has BI access (control/performance plan or specific services)
-  const hasBIAccess = subscription?.plan === 'premium' || subscription?.plan === 'contador' || subscription?.subscribed;
-
   // Welcome messages content
   const getGuilhermeMessage = (userName: string) => 
-    `Oi, ${userName}! 👋\n\nSou o Guilherme e vou te acompanhar em tudo que for análise fiscal, limpa nome e outros serviços.\n\nJá estou por aqui se precisar de algo 😊`;
-
-  const getCesarMessage = (userName: string) =>
-    `Olá, ${userName}!\n\nAqui é o César. Vou cuidar da parte de BI e contabilidade, trazendo análises e organizando suas informações.\n\nSempre que precisar, é só falar por aqui. 📊`;
+    `Oi, ${userName}! 👋\n\nSou o Guilherme e vou te acompanhar em tudo que for análise fiscal, limpa nome, IR e outros serviços.\n\nJá estou por aqui se precisar de algo 😊`;
 
   // Fetch existing welcome chats
   const fetchWelcomeChats = useCallback(async () => {
@@ -67,7 +59,7 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
 
   // Create welcome message for a chat type
   const createWelcomeMessage = useCallback(async (
-    chatType: 'guilherme' | 'cesar',
+    chatType: 'guilherme',
     messageContent: string
   ) => {
     if (!user?.id) return;
@@ -123,11 +115,6 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
         });
       }
 
-      // César messages hidden - BI module temporarily disabled
-      // if (hasBIAccess && !todayTypes.includes('cesar')) {
-      //   await createWelcomeMessage('cesar', getCesarMessage(userName));
-      // }
-
       // Refresh the list
       await fetchWelcomeChats();
     } catch (error) {
@@ -135,10 +122,10 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, profile, hasBIAccess, createWelcomeMessage, fetchWelcomeChats, toast]);
+  }, [user?.id, profile, createWelcomeMessage, fetchWelcomeChats, toast]);
 
   // Mark messages as read for a chat type
-  const markAsRead = useCallback(async (chatType: 'guilherme' | 'cesar') => {
+  const markAsRead = useCallback(async (chatType: 'guilherme') => {
     if (!user?.id) return;
 
     try {
@@ -200,18 +187,12 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
     c => c.chat_type === 'guilherme' && !c.is_read
   ).length;
 
-  const unreadCesar = welcomeChats.filter(
-    c => c.chat_type === 'cesar' && !c.is_read
-  ).length;
-
-  const totalUnread = unreadGuilherme + unreadCesar;
+  const totalUnread = unreadGuilherme;
 
   return {
     welcomeChats,
     unreadGuilherme,
-    unreadCesar,
     totalUnread,
-    hasBIAccess,
     markAsRead,
     isLoading,
   };
