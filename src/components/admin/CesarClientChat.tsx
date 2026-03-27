@@ -337,7 +337,7 @@ Guilherme`;
     
     setNewMessage(`${greeting}, ${firstName}!
 
-Aqui é o César, da equipe de BI e Contabilidade.
+Aqui é o Guilherme, da equipe de contabilidade.
 
 Pra continuar a análise, vou precisar de:
 
