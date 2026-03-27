@@ -74,7 +74,7 @@ export const BIReports: React.FC = () => {
       type: 'tax',
       status: 'sent',
       generated_at: new Date(Date.now() - 172800000),
-      approved_by: 'César',
+      approved_by: 'Guilherme',
       approved_at: new Date(Date.now() - 86400000),
       recipient: 'contabilidade@empresa.com',
       content: 'Consolidação fiscal do trimestre...',
