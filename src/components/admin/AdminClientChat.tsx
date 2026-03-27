@@ -632,10 +632,14 @@ Guilherme`);
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
       pending: 'Aguardando',
+      pending_documents: 'Docs Pendentes',
       in_progress: 'Em Análise',
       analyzing: 'Analisando',
+      processing: 'Processando',
+      review: 'Revisão',
       completed: 'Concluído',
       cancelled: 'Cancelado',
+      error: 'Erro',
     };
     return labels[status] || status;
   };
@@ -644,7 +648,13 @@ Guilherme`);
 
   const limpaNomeCount = clients.filter(c => c.service_type === 'limpa-nome').length;
   const fiscalCount = clients.filter(c => c.service_type === 'fiscal').length;
-  const biCount = clients.filter(c => c.service_type === 'bi').length;
+  const nfCount = clients.filter(c => c.service_type === 'nf' || c.service_type === 'bi').length;
+  const irCount = clients.filter(c => c.service_type === 'ir').length;
+  
+  const pendingLN = clients.filter(c => c.service_type === 'limpa-nome' && c.status !== 'completed').length;
+  const pendingFiscal = clients.filter(c => c.service_type === 'fiscal' && c.status !== 'completed').length;
+  const pendingNF = clients.filter(c => (c.service_type === 'nf' || c.service_type === 'bi') && c.status !== 'completed').length;
+  const pendingIR = clients.filter(c => c.service_type === 'ir' && c.status !== 'completed').length;
 
   // Handle client selection - on mobile, hide list and show chat
   const handleSelectClient = (client: ClientRequest) => {
