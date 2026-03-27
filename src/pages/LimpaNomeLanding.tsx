@@ -618,10 +618,10 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== FAQ ========== */}
-        <Section className="px-4 py-24" id="faq">
+        <Section className="px-4 py-14 sm:py-24" id="faq">
           <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-14">
-              <h2 className="text-4xl font-black text-white">Perguntas Frequentes</h2>
+            <div className="text-center mb-10 sm:mb-14">
+              <h2 className="text-2xl sm:text-4xl font-black text-white">Perguntas Frequentes</h2>
             </div>
             <div className="space-y-3">
               {faqs.map((faq, i) => (
