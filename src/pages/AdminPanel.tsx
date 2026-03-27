@@ -149,7 +149,7 @@ const AdminPanel = () => {
   const hasAnyAdminAccess = hasAdminAccess || hasEquipeAccess;
 
   // equipe_guilherme can ONLY access chat tabs
-  const chatOnlyTabs = ['chat', 'chat-fiscal', 'chat-bi', 'chat-limpa-nome'];
+  const chatOnlyTabs = ['chat', 'chat-fiscal', 'chat-limpa-nome'];
   const isAllowedTab = hasAdminAccess || chatOnlyTabs.includes(activeTab);
 
   useEffect(() => {

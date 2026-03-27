@@ -209,7 +209,7 @@ export const ServiceCheckoutModal: React.FC<ServiceCheckoutModalProps> = ({
         toast.success('Solicitação enviada! Redirecionando para o chat...');
         onSuccess?.();
         onClose();
-        const chatTab = config.id === 'analise-fiscal' ? 'chat-fiscal' : 'chat-bi';
+        const chatTab = 'chat-fiscal';
         navigate(`/empresa?tab=${chatTab}`);
       } catch (error: any) {
         console.error('Service action error:', error);

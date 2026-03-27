@@ -531,8 +531,7 @@ const EmpresaPanel = () => {
         return <EmbeddedChatContador />;
       case 'chat-fiscal':
         return <EmbeddedFiscalChat variant="empresa" serviceType="fiscal" />;
-      case 'chat-bi':
-        return <EmbeddedFiscalChat variant="empresa" serviceType="bi" />;
+      // chat-bi removed
       case 'profile':
         return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
       case 'glossary':
