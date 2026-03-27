@@ -35,8 +35,8 @@ export function CapassiGuard({ children }: CapassiGuardProps) {
     return <Navigate to="/auth" state={{ from: location }} replace />;
   }
 
-  // Also accept admin or equipe_cesar roles
-  const hasAccess = hasRole('equipe_cesar') || hasRole('admin');
+  // Also accept admin or equipe_guilherme roles
+  const hasAccess = hasRole('equipe_guilherme') || hasRole('admin');
   if (!hasAccess) {
     return <Navigate to="/dashboard" replace />;
   }
