@@ -340,7 +340,7 @@ const ServicosPage = () => {
       <div className="min-h-screen bg-gradient-to-b from-muted/50 to-background">
         <main>
           {/* Hero — Emissão de NF (produto core) */}
-          <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground">
             <div className="absolute inset-0 overflow-hidden">
               <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-emerald-500/15 rounded-full blur-[150px]" />
               <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/15 rounded-full blur-[120px]" />
