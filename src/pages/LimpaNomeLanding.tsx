@@ -655,11 +655,11 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== URGÊNCIA FINAL ========== */}
-        <Section className="px-4 py-20" id="urgencia">
+        <Section className="px-4 py-14 sm:py-20" id="urgencia">
           <div className="max-w-3xl mx-auto text-center">
-            <div className="p-10 rounded-3xl bg-gradient-to-r from-red-500/[0.08] via-transparent to-emerald-500/[0.08] border border-white/[0.08]">
-              <Clock className="w-12 h-12 text-red-400 mx-auto mb-5" />
-              <h3 className="text-3xl font-black text-white mb-4">
+            <div className="p-6 sm:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-r from-red-500/[0.08] via-transparent to-emerald-500/[0.08] border border-white/[0.08]">
+              <Clock className="w-10 h-10 sm:w-12 sm:h-12 text-red-400 mx-auto mb-5" />
+              <h3 className="text-xl sm:text-3xl font-black text-white mb-4">
                 Estamos liberando <span className="text-red-400">poucas vagas</span> por semana
               </h3>
               <p className="text-white/50 mb-8 text-lg">
