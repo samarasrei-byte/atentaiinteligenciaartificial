@@ -33,7 +33,7 @@ export const ServicePaywallBanner: React.FC<ServicePaywallBannerProps> = ({
   const serviceLabels = {
     'limpanome': 'Limpa Nome',
     'fiscal': 'Análise Fiscal',
-    'bi-contabilidade': 'BI+ Contabilidade',
+    'emissao-nf': 'Emissão de NF',
   };
 
   const priceFormatted = (servicePriceCents / 100).toLocaleString('pt-BR', {
