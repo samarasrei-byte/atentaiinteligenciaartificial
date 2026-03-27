@@ -131,7 +131,7 @@ export const BIAnomalies: React.FC = () => {
           change: 45,
           detected_at: new Date(Date.now() - 86400000),
           status: 'reviewed',
-          reviewed_by: 'César',
+          reviewed_by: 'Equipe',
         }
       );
 
