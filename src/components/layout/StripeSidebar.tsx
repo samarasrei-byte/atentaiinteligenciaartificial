@@ -370,7 +370,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
 }) => {
   const navigate = useNavigate();
   const { user, profile, signOut, hasRole } = useAuth();
-  const { unreadGuilherme, unreadCesar, markAsRead, hasBIAccess } = useAutoWelcomeMessages();
+  const { unreadGuilherme, markAsRead } = useAutoWelcomeMessages();
   
   // Check if user is equipe_guilherme (restricted to chat only)
   const isEquipeGuilherme = hasRole('equipe_guilherme') && !hasRole('admin');
