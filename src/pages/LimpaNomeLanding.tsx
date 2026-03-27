@@ -422,7 +422,7 @@ export default function LimpaNomeLanding() {
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <Target className="w-4 h-4" /> PASSO A PASSO
             </span>
-            <h2 className="text-4xl sm:text-5xl font-black mb-16">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-10 sm:mb-16">
               Como funciona?{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">4 passos simples</span>
             </h2>
