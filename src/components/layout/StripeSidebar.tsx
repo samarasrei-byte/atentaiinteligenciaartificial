@@ -100,9 +100,10 @@ const adminGroups: SidebarGroup[] = [
     isPerson: true,
     personGradient: 'from-emerald-500 to-teal-600',
     items: [
-      { icon: MessageCircle, label: 'Chat', tabId: 'guilherme-chat', isLive: true, chatBadge: 'guilherme' },
+      { icon: MessageCircle, label: 'Chat Unificado', tabId: 'guilherme-chat', isLive: true, chatBadge: 'guilherme' },
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
+      { icon: Brain, label: 'Imposto de Renda', tabId: 'ir-management' },
     ],
   },
   {
