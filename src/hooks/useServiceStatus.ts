@@ -70,7 +70,6 @@ const SERVICE_STATUS_MAP: Record<ServiceType, {
     },
   },
 };
-};
 
 export const useServiceStatus = (
   serviceType: ServiceType,
