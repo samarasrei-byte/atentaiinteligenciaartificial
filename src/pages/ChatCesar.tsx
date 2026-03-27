@@ -105,15 +105,14 @@ export default function ChatCesar() {
   const context = serviceContexts[serviceParam] || serviceContexts['geral'];
   
   // Get status service type (for BI tracking)
-  const statusServiceType: StatusServiceType | null = 
-    serviceParam === 'bi-contabilidade' ? 'bi-contabilidade' : null;
+  const statusServiceType: StatusServiceType | null = null;
   
   // Service status tracking hook
   const { 
     currentStepIndex, 
     lastUpdatedAt, 
   } = useServiceStatus(
-    statusServiceType || 'bi-contabilidade',
+    'analise-fiscal',
     requestId,
     user?.id
   );
