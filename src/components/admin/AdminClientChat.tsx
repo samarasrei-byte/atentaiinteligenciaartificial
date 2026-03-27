@@ -854,7 +854,7 @@ Guilherme`);
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <div className={cn("w-1.5 h-1.5 rounded-full", clientTheme.dot)} />
                             <span className="text-xs text-slate-500">
-                              {client.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
+                              {clientTheme.label}
                             </span>
                           </div>
                         </div>
