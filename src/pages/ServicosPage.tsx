@@ -540,7 +540,7 @@ const ServicosPage = () => {
           {!hasResults && searchTerm && (
             <section className="py-16">
               <div className="container max-w-6xl mx-auto px-4 text-center">
-                <p className="text-slate-500 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Nenhum serviço encontrado para "{searchTerm}"
                 </p>
                 <Button variant="outline" onClick={() => setSearchTerm('')}>
