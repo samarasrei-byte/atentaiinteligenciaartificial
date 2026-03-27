@@ -94,7 +94,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
                 <Button size="sm" onClick={() => navigate('/dashboard/bi')}>
                   Abrir BI
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => navigate('/chat/cesar')}>
+                <Button size="sm" variant="ghost" onClick={() => navigate('/chat/guilherme')}>
                   <MessageSquare className="h-4 w-4" />
                 </Button>
               </div>
