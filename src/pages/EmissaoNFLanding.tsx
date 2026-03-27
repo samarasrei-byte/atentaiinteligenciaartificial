@@ -476,7 +476,7 @@ const EmissaoNFLanding = () => {
                 </div>
 
                 <Button
-                  onClick={() => navigate('/auth')}
+                  onClick={() => { sessionStorage.setItem('postAuthRedirect', '/emissao-nf/dashboard'); navigate('/auth'); }}
                   className="w-full bg-emerald-500 hover:bg-emerald-400 text-white rounded-full h-14 text-lg font-bold shadow-[0_0_40px_rgba(16,185,129,0.25)]"
                 >
                   Ativar agora <ArrowRight className="ml-2 w-5 h-5" />
