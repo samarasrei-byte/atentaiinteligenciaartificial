@@ -26,7 +26,7 @@ import { PlatformAPIGenerator } from './integrations/PlatformAPIGenerator';
  * AdminIntegrationsHub - Central de Integrações do Admin
  * 
  * Gerencia:
- * - WhatsApp API (Instância Guilherme + César) com QR Code
+ * - WhatsApp API (Instância Guilherme) com QR Code
  * - APIs Externas (Asaas, OpenAI, Resend, Stripe)
  * - API da Plataforma com geração de chaves e documentação
  * - Webhooks
