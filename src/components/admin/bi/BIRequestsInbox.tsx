@@ -74,16 +74,16 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'medium' as const
         })),
-        ...(ir.data || []).map(r => ({
+        ...(ir?.data || []).map((r: any) => ({
           id: r.id,
-          type: 'ir' as const,
           client_name: r.full_name,
+          type: 'IR' as const,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'medium' as const
         })),
         ...(certificates.data || []).map(r => ({
