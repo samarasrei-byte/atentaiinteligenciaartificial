@@ -71,7 +71,7 @@ export function UpgradeToEmpresaCard() {
   }
 
   const benefits = [
-    { icon: BarChart3, label: 'BI+ Contabilidade com IA' },
+    { icon: BarChart3, label: 'Dashboards financeiros com IA' },
     { icon: FileText, label: 'Análise Fiscal completa' },
     { icon: Shield, label: 'Limpa Nome CNPJ' },
     { icon: Sparkles, label: 'Dashboard empresarial' },

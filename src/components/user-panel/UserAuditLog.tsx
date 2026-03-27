@@ -92,7 +92,7 @@ export const UserAuditLog: React.FC = () => {
           Histórico de Atividades
         </CardTitle>
         <CardDescription>
-          Registro completo de ações na sua conta - 100% auditável pelo BI+ Contabilidade™
+          Registro completo de ações na sua conta - 100% auditável
         </CardDescription>
       </CardHeader>
       <CardContent>

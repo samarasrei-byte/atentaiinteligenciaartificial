@@ -422,7 +422,6 @@ export function RevenuePartnerSplitDashboard() {
                   <Legend />
                   <Bar dataKey="guilherme_mesquita" name="G. Mesquita" stackId="a" fill={PARTNER_COLORS.guilherme_mesquita} />
                   <Bar dataKey="guilherme_baus" name="G. Baus" stackId="a" fill={PARTNER_COLORS.guilherme_baus} />
-                  <Bar dataKey="cesar" name="César" stackId="a" fill={PARTNER_COLORS.cesar} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

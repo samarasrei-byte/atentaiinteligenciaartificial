@@ -218,9 +218,9 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
                            window.location.pathname.includes('/empresa') ||
                            window.location.pathname.includes('/dashboard');
 
-    // RULE 1: Fiscal/BI inside panel → Navigate to chat tab
-    if (upgradeType === 'service' && isPanelContext && (serviceKey === 'analise-fiscal' || serviceKey === 'bi-contabilidade')) {
-      const tabId = serviceKey === 'bi-contabilidade' ? 'chat-bi' : 'chat-fiscal';
+    // RULE 1: Fiscal inside panel → Navigate to chat tab
+    if (upgradeType === 'service' && isPanelContext && serviceKey === 'analise-fiscal') {
+      const tabId = 'chat-fiscal';
       console.log(`[InPanelModal ROUTING] ${serviceKey} → ?tab=${tabId}`);
       setIsNavigating(true);
       onClose();

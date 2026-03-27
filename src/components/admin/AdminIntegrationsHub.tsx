@@ -48,16 +48,6 @@ export const AdminIntegrationsHub: React.FC = () => {
       bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
       services: ['Limpa Nome', 'Análise Fiscal', 'Atendimento'],
     },
-    {
-      id: 'cesar',
-      name: 'César',
-      phone: '+5511888888888',
-      instanceId: 'cesar-bi-001',
-      status: 'disconnected' as const,
-      color: 'violet',
-      bgColor: 'bg-gradient-to-br from-violet-500 to-indigo-600',
-      services: ['BI', 'Contabilidade', 'Relatórios'],
-    },
   ];
 
   const handleSave = async () => {
