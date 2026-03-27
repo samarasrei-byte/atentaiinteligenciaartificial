@@ -297,7 +297,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                       {formatPrice(service.basePrice)}
                     </span>
                   )}
-                  <span className="text-2xl font-bold text-slate-900">
+                  <span className="text-2xl font-bold text-foreground">
                     {formatPrice(discountedPrice)}
                   </span>
                   {(service.originalPrice || (isSubscriber && service.discountPercent > 0)) && (
