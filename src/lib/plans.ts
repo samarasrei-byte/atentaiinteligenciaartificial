@@ -246,10 +246,10 @@ export const SUBSCRIBER_DISCOUNTS = {
   credit_repair_pf: {
     name: 'Limpa Nome Pessoa Física',
     description: 'Regularize seu CPF e limpe restrições',
-    basePrice: 82450, // cents (R$824,50) PROMOÇÃO
-    originalPrice: 123800, // cents (R$1.238,00) preço original
+    basePrice: 84000, // cents (R$840,00) PROMOÇÃO
+    originalPrice: 150000, // cents (R$1.500,00) preço original
     discount: 0,
-    discountedPrice: 82450,
+    discountedPrice: 84000,
     icon: 'User',
     installments: 4,
   },
