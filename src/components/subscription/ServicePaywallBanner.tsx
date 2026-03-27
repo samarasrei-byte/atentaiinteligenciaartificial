@@ -7,7 +7,7 @@ import {
 import { ServicePaywallModal } from './ServicePaywallModal';
 
 interface ServicePaywallBannerProps {
-  serviceType: 'limpanome' | 'fiscal' | 'bi-contabilidade';
+  serviceType: 'limpanome' | 'fiscal';
   servicePriceCents: number;
   isPaid: boolean;
   onDismiss?: () => void;
