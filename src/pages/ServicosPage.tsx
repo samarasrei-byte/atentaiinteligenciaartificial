@@ -337,7 +337,7 @@ const ServicosPage = () => {
 
   return (
     <PublicLayout>
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+      <div className="min-h-screen bg-gradient-to-b from-muted/50 to-background">
         <main>
           {/* Hero — Emissão de NF (produto core) */}
           <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
