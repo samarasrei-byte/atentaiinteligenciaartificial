@@ -182,7 +182,7 @@ export function AdminClientChat() {
   const [showPaymentRequest, setShowPaymentRequest] = useState(false);
   const [showReceivedDocs, setShowReceivedDocs] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal' | 'bi'>('all');
+  const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal' | 'bi' | 'nf' | 'ir'>('all');
   const [showClientList, setShowClientList] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
