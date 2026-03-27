@@ -170,7 +170,7 @@ export default function LimpaNomeLanding() {
               animate={heroVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.15 }}
             >
-              <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black leading-[0.95] tracking-tight">
+              <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-black leading-[0.95] tracking-tight">
                 <span className="block bg-gradient-to-b from-white to-white/70 bg-clip-text text-transparent">
                   Seu nome pode ser
                 </span>
@@ -178,7 +178,7 @@ export default function LimpaNomeLanding() {
                   limpo pela lei
                 </span>
               </h1>
-              <p className="mt-4 text-2xl sm:text-3xl text-white/40 font-light">
+              <p className="mt-3 sm:mt-4 text-lg sm:text-2xl md:text-3xl text-white/40 font-light">
                 mesmo com dívidas
               </p>
             </motion.div>
