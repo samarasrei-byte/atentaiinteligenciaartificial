@@ -54,7 +54,7 @@ const iconMap: Record<string, React.ElementType> = {
   User,
 };
 
-type ServiceResponsible = 'guilherme' | 'cesar' | 'contador';
+type ServiceResponsible = 'guilherme' | 'contador';
 
 interface AdminService {
   id: string;
