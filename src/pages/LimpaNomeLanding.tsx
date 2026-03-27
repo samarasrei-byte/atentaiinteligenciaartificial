@@ -427,7 +427,7 @@ export default function LimpaNomeLanding() {
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">4 passos simples</span>
             </h2>
 
-            <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-6">
               {[
                 { step: "01", icon: Phone, title: "Contato", desc: "Fale conosco pelo WhatsApp e envie seus dados básicos de forma segura." },
                 { step: "02", icon: FileText, title: "Análise", desc: "Equipe jurídica analisa detalhadamente cada negativação do seu caso." },
