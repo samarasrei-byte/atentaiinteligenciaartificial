@@ -408,7 +408,7 @@ const ServicosPage = () => {
           </section>
 
           {/* Search Bar */}
-          <section className="sticky top-0 z-40 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 shadow-sm">
+          <section className="sticky top-0 z-40 bg-background/98 backdrop-blur-xl border-b border-border shadow-sm">
             <div className="container max-w-6xl mx-auto px-4 py-3">
               <div className="flex items-center gap-4">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white whitespace-nowrap hidden sm:block">
