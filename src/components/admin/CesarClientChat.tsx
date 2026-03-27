@@ -472,7 +472,7 @@ César`);
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input 
-                placeholder="Buscar cliente BI..." 
+                placeholder="Buscar cliente..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
