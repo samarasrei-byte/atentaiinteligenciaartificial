@@ -250,7 +250,7 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== SEÇÃO PROBLEMA ========== */}
-        <Section className="px-4 py-24" id="problema">
+        <Section className="px-4 py-14 sm:py-24" id="problema">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-16">
               <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-red-500/10 border border-red-500/20 text-red-400 text-sm font-semibold mb-6">
