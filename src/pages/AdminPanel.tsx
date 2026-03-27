@@ -45,7 +45,7 @@ import StripeSidebar from '@/components/layout/StripeSidebar';
 import { FinancialModule } from '@/components/admin/financial';
 // Novos componentes centralizados
 import GuilhermeChatHub from '@/components/admin/GuilhermeChatHub';
-import CesarChatHub from '@/components/admin/CesarChatHub';
+
 import DocumentsCentral from '@/components/admin/DocumentsCentral';
 import AdminIntegrationsHub from '@/components/admin/AdminIntegrationsHub';
 import { AdminSubscriptionsPanel } from '@/components/admin/AdminSubscriptionsPanel';
