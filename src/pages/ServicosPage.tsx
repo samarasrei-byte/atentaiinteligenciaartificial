@@ -447,7 +447,7 @@ const ServicosPage = () => {
                 <Badge variant="outline" className="border-primary/30 text-primary text-xs">
                   <Sparkles className="w-3 h-3 mr-1" /> Gratuito
                 </Badge>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ferramentas Gratuitas</h3>
+                <h3 className="text-sm font-semibold text-foreground">Ferramentas Gratuitas</h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {freeTools.map((tool) => (
