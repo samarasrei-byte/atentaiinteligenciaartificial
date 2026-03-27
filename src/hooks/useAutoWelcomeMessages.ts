@@ -187,18 +187,12 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
     c => c.chat_type === 'guilherme' && !c.is_read
   ).length;
 
-  const unreadCesar = welcomeChats.filter(
-    c => c.chat_type === 'cesar' && !c.is_read
-  ).length;
-
-  const totalUnread = unreadGuilherme + unreadCesar;
+  const totalUnread = unreadGuilherme;
 
   return {
     welcomeChats,
     unreadGuilherme,
-    unreadCesar,
     totalUnread,
-    hasBIAccess,
     markAsRead,
     isLoading,
   };

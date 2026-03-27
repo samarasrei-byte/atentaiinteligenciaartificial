@@ -266,15 +266,6 @@ export const SUBSCRIBER_DISCOUNTS = {
     icon: 'Building2',
     installments: 4,
   },
-  bi_contabilidade: {
-    name: 'BI+ Inteligência Fiscal™',
-    description: 'Inteligência artificial com análise humana especializada',
-    basePrice: 0,
-    discount: 0,
-    discountedPrice: 0,
-    icon: 'Brain',
-    customPricing: true,
-  },
 } as const;
 
 // Platform commission on marketplace services

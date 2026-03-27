@@ -34,9 +34,9 @@ export function LimpaNomeUpgradeCard({ className }: LimpaNomeUpgradeCardProps) {
     },
     {
       icon: TrendingUp,
-      title: 'BI + Contabilidade',
-      description: 'Organize suas finanças com inteligência',
-      route: '/bi-contabilidade',
+      title: 'Simulador Tributário',
+      description: 'Simule e compare regimes tributários',
+      route: '/simulador-tributario',
     },
   ];
 
