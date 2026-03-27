@@ -5,7 +5,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface WelcomeChat {
   id: string;
-  chat_type: 'guilherme' | 'cesar';
+  chat_type: 'guilherme';
   message_content: string;
   is_read: boolean;
   created_at: string;
@@ -14,10 +14,8 @@ interface WelcomeChat {
 interface UseAutoWelcomeMessagesReturn {
   welcomeChats: WelcomeChat[];
   unreadGuilherme: number;
-  unreadCesar: number;
   totalUnread: number;
-  hasBIAccess: boolean;
-  markAsRead: (chatType: 'guilherme' | 'cesar') => Promise<void>;
+  markAsRead: (chatType: 'guilherme') => Promise<void>;
   isLoading: boolean;
 }
 
