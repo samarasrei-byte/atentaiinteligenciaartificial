@@ -532,7 +532,7 @@ Guilherme`);
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
                             <Badge variant="outline" className="text-[10px] px-1.5 py-0 bg-violet-50 text-violet-700 border-violet-200">
-                              BI+
+                              Fiscal
                             </Badge>
                             <span className="text-[10px] text-slate-500">
                               {client.status === 'completed' ? 'Concluído' : client.status === 'pending' ? 'Pendente' : 'Em análise'}
