@@ -549,12 +549,12 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== OFERTA ========== */}
-        <Section className="px-4 py-24" id="oferta">
+        <Section className="px-4 py-14 sm:py-24" id="oferta">
           <div className="max-w-4xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <CreditCard className="w-4 h-4" /> OFERTA ESPECIAL
             </span>
-            <h2 className="text-4xl sm:text-5xl font-black mb-4">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-4">
               Regularize seu nome com{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">acompanhamento jurídico</span>
             </h2>
