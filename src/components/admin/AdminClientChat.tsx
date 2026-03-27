@@ -691,14 +691,35 @@ Guilherme`);
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento</h2>
-            <p className="text-xs text-slate-500">{clients.length} clientes • Guilherme</p>
+            <h2 className="text-base font-semibold text-slate-900">Central Unificada</h2>
+            <p className="text-xs text-slate-500">{clients.length} clientes</p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 text-slate-600 border-slate-200">
           <RefreshCw className="h-4 w-4" />
           Atualizar
         </Button>
+      </div>
+
+      {/* Resumo de Pendências */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 bg-slate-50/30 shrink-0 overflow-x-auto">
+        {[
+          { label: 'LN', count: pendingLN, color: 'bg-emerald-500', icon: Shield },
+          { label: 'Fiscal', count: pendingFiscal, color: 'bg-violet-500', icon: Scale },
+          { label: 'NF', count: pendingNF, color: 'bg-blue-500', icon: Receipt },
+          { label: 'IR', count: pendingIR, color: 'bg-amber-500', icon: Brain },
+        ].map(item => (
+          <div key={item.label} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white border border-slate-200 shrink-0">
+            <item.icon className="h-3 w-3 text-slate-500" />
+            <span className="text-[10px] font-medium text-slate-600">{item.label}</span>
+            <span className={cn(
+              "text-[10px] font-bold text-white px-1.5 rounded-full min-w-[18px] text-center",
+              item.count > 0 ? item.color : 'bg-slate-300'
+            )}>
+              {item.count}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* Container Principal */}
@@ -708,7 +729,6 @@ Guilherme`);
         <div className={cn(
           "flex flex-col border-r border-slate-200 bg-white",
           "w-full md:w-72 lg:w-80 md:shrink-0",
-          // On mobile: show/hide based on state
           showClientList ? "flex" : "hidden md:flex"
         )}>
           {/* Busca e Filtros - Fixo */}
@@ -727,38 +747,62 @@ Guilherme`);
               <button
                 onClick={() => setActiveServiceTab('all')}
                 className={cn(
-                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'all' 
                     ? "bg-white text-slate-900 shadow-sm" 
                     : "text-slate-500 hover:text-slate-700"
                 )}
               >
-                <Users className="h-3.5 w-3.5" />
-                Todos
+                <Users className="h-3 w-3" />
+                <span className="hidden lg:inline">Todos</span>
               </button>
               <button
                 onClick={() => setActiveServiceTab('limpa-nome')}
                 className={cn(
-                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'limpa-nome' 
                     ? "bg-emerald-600 text-white shadow-sm" 
                     : "text-slate-500 hover:text-emerald-600"
                 )}
               >
-                <Shield className="h-3.5 w-3.5" />
+                <Shield className="h-3 w-3" />
                 {limpaNomeCount}
               </button>
               <button
                 onClick={() => setActiveServiceTab('fiscal')}
                 className={cn(
-                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'fiscal' 
                     ? "bg-violet-600 text-white shadow-sm" 
                     : "text-slate-500 hover:text-violet-600"
                 )}
               >
-                <Scale className="h-3.5 w-3.5" />
+                <Scale className="h-3 w-3" />
                 {fiscalCount}
+              </button>
+              <button
+                onClick={() => setActiveServiceTab('nf')}
+                className={cn(
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  activeServiceTab === 'nf' 
+                    ? "bg-blue-600 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-blue-600"
+                )}
+              >
+                <Receipt className="h-3 w-3" />
+                {nfCount}
+              </button>
+              <button
+                onClick={() => setActiveServiceTab('ir')}
+                className={cn(
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  activeServiceTab === 'ir' 
+                    ? "bg-amber-600 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-amber-600"
+                )}
+              >
+                <Brain className="h-3 w-3" />
+                {irCount}
               </button>
             </div>
           </div>
