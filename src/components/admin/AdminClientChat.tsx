@@ -950,7 +950,7 @@ Guilherme`);
                           <div>
                             <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento</h4>
                             <p className="text-xs text-slate-500">
-                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal'} • Valor customizável
+                              {serviceThemes[selectedClient.service_type]?.label || 'Serviço'} • Valor customizável
                             </p>
                           </div>
                         </div>
