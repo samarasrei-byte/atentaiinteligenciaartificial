@@ -132,8 +132,7 @@ export const ExternalAPIsConfig: React.FC = () => {
       fields: [
         { key: 'instanceId', label: 'Instance ID (Guilherme)', type: 'text', placeholder: 'INSTANCE_ID_GUI', required: true },
         { key: 'tokenGui', label: 'Token (Guilherme)', type: 'password', placeholder: 'TOKEN_GUI', required: true },
-        { key: 'instanceIdCesar', label: 'Instance ID (César)', type: 'text', placeholder: 'INSTANCE_ID_CESAR' },
-        { key: 'tokenCesar', label: 'Token (César)', type: 'password', placeholder: 'TOKEN_CESAR' },
+        { key: 'webhookUrl', label: 'Webhook URL', type: 'url', placeholder: 'https://...' },
         { key: 'webhookUrl', label: 'Webhook URL', type: 'url', placeholder: 'https://...' },
       ],
     },
