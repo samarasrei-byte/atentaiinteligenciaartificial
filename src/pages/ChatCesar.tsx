@@ -69,7 +69,7 @@ interface ServiceContext {
 const serviceContexts: Record<string, ServiceContext> = {
   'bi-contabilidade': {
     type: 'bi-contabilidade',
-    label: 'BI+ Contabilidade',
+    label: 'Contabilidade',
     color: 'bg-indigo-500',
     icon: Brain,
   },
@@ -81,13 +81,13 @@ const serviceContexts: Record<string, ServiceContext> = {
   },
   'relatorios': {
     type: 'relatorios',
-    label: 'Relatórios BI',
+    label: 'Relatórios',
     color: 'bg-purple-500',
     icon: BarChart3,
   },
   'geral': {
     type: 'geral',
-    label: 'Atendimento BI',
+    label: 'Atendimento',
     color: 'bg-slate-500',
     icon: MessageCircle,
   },
