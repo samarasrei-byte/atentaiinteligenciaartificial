@@ -74,16 +74,16 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'medium' as const
         })),
-        ...(ir.data || []).map(r => ({
+        ...(ir?.data || []).map((r: any) => ({
           id: r.id,
-          type: 'ir' as const,
           client_name: r.full_name,
+          type: 'ir' as const,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'medium' as const
         })),
         ...(certificates.data || []).map(r => ({
@@ -92,7 +92,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: 'Cliente',
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'low' as const
         })),
         ...(companyOpening.data || []).map(r => ({
@@ -101,7 +101,7 @@ export const BIRequestsInbox: React.FC = () => {
           client_name: r.full_name,
           status: r.status,
           created_at: r.created_at,
-          responsible: 'César',
+          responsible: 'Equipe',
           priority: 'high' as const
         })),
       ];
@@ -180,8 +180,8 @@ export const BIRequestsInbox: React.FC = () => {
                 <User className="h-5 w-5 text-violet-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900">César</p>
-                <p className="text-sm text-slate-500">BI • Contabilidade</p>
+                <p className="text-2xl font-bold text-slate-900">Equipe NF</p>
+                <p className="text-sm text-slate-500">Emissão • Notas Fiscais</p>
               </div>
             </div>
           </CardContent>

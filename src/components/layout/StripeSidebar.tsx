@@ -106,16 +106,6 @@ const adminGroups: SidebarGroup[] = [
     ],
   },
   {
-    id: 'cesar',
-    label: 'Emissão NF',
-    icon: FileText,
-    isPerson: true,
-    personGradient: 'from-violet-500 to-indigo-600',
-    items: [
-      { icon: MessageCircle, label: 'Chat NF', tabId: 'cesar-chat', isLive: true, chatBadge: 'cesar' },
-    ],
-  },
-  {
     id: 'servicos',
     label: 'Serviços',
     icon: ShoppingBag,

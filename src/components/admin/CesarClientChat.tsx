@@ -433,7 +433,7 @@ César`);
       <div className="flex items-center justify-center h-[600px] bg-white rounded-xl border border-slate-200">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="h-8 w-8 animate-spin text-violet-600" />
-          <p className="text-slate-500 text-sm">Carregando clientes BI...</p>
+          <p className="text-slate-500 text-sm">Carregando clientes...</p>
         </div>
       </div>
     );
@@ -448,8 +448,8 @@ César`);
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento BI</h2>
-            <p className="text-xs text-slate-500">{clients.length} clientes • César</p>
+            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento NF</h2>
+            <p className="text-xs text-slate-500">{clients.length} clientes</p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 text-slate-600 border-slate-200">
@@ -472,7 +472,7 @@ César`);
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
               <Input 
-                placeholder="Buscar cliente BI..." 
+                placeholder="Buscar cliente..." 
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 h-9 bg-white border-slate-200 text-slate-900 placeholder:text-slate-400"
@@ -481,7 +481,7 @@ César`);
             
             <div className="flex items-center gap-2 px-1">
               <BarChart3 className="h-4 w-4 text-violet-600" />
-              <span className="text-xs text-slate-600 font-medium">Assinantes BI Contabilidade</span>
+              <span className="text-xs text-slate-600 font-medium">Clientes Emissão NF</span>
             </div>
           </div>
 
@@ -490,7 +490,7 @@ César`);
             {filteredClients.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-10 w-10 mx-auto mb-3 text-slate-300" />
-                <p className="text-sm text-slate-500">Nenhum cliente BI</p>
+                <p className="text-sm text-slate-500">Nenhum cliente</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
