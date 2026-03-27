@@ -312,7 +312,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                   </p>
                 )}
                 {service.isSubscription && (
-                  <p className="text-xs text-slate-500 mt-1">/mês</p>
+                  <p className="text-xs text-muted-foreground mt-1">/mês</p>
                 )}
               </div>
             )}
