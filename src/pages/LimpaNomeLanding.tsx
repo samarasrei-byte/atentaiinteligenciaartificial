@@ -570,7 +570,7 @@ export default function LimpaNomeLanding() {
                 <p className="text-white/30 text-xl line-through mb-2">De R$ 1.500,00</p>
                 <div className="flex items-baseline justify-center gap-2">
                   <span className="text-2xl text-white/50 font-bold">R$</span>
-                  <span className="text-7xl sm:text-8xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none">
+                  <span className="text-5xl sm:text-7xl md:text-8xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent leading-none">
                     840
                   </span>
                 </div>
