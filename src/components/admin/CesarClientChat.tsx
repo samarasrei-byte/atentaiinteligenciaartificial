@@ -578,7 +578,7 @@ Guilherme`);
                 </div>
                 <div className="flex items-center gap-2">
                   <Badge className="text-xs bg-white/20 text-white border-0">
-                    BI+ Contabilidade
+                    Contabilidade
                   </Badge>
                   <Button 
                     variant="ghost" 
