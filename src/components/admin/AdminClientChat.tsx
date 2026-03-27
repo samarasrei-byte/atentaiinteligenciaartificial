@@ -28,7 +28,10 @@ import {
   CreditCard,
   Download,
   Image,
-  ArrowLeft
+  ArrowLeft,
+  Receipt,
+  Brain,
+  AlertTriangle
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -56,7 +59,7 @@ interface ClientRequest {
   status: string;
   created_at: string;
   user_id: string;
-  service_type: 'limpa-nome' | 'fiscal' | 'bi';
+  service_type: 'limpa-nome' | 'fiscal' | 'bi' | 'nf' | 'ir';
   debt_amount_cents?: number;
   identified_value_cents?: number;
   cpf?: string;
@@ -83,8 +86,36 @@ const documentTypesFiscal = [
   { id: 'outro', label: 'Outro', icon: Paperclip },
 ];
 
-// Cores: Emerald = Limpa Nome, Violet = Fiscal
-const serviceThemes = {
+const documentTypesNF = [
+  { id: 'nf_servico', label: 'NF de Serviço', icon: Receipt },
+  { id: 'contrato', label: 'Contrato', icon: File },
+  { id: 'comprovante_iss', label: 'Comprov. ISS', icon: FileText },
+  { id: 'alvara', label: 'Alvará', icon: FileCheck },
+  { id: 'outro', label: 'Outro', icon: Paperclip },
+];
+
+const documentTypesIR = [
+  { id: 'informe_rendimentos', label: 'Informe Rendimentos', icon: FileText },
+  { id: 'recibo_medico', label: 'Recibos Médicos', icon: File },
+  { id: 'comprovante_educacao', label: 'Comprov. Educação', icon: FileText },
+  { id: 'extrato_investimentos', label: 'Extrato Investimentos', icon: FileText },
+  { id: 'comprovante_imovel', label: 'Comprov. Imóvel', icon: File },
+  { id: 'outro', label: 'Outro', icon: Paperclip },
+];
+
+type ServiceType = ClientRequest['service_type'];
+
+// Cores por serviço
+const serviceThemes: Record<ServiceType, {
+  primary: string;
+  primaryHover: string;
+  light: string;
+  accent: string;
+  dot: string;
+  border: string;
+  label: string;
+  icon: React.ElementType;
+}> = {
   'limpa-nome': {
     primary: 'bg-emerald-600',
     primaryHover: 'hover:bg-emerald-700',
@@ -92,6 +123,8 @@ const serviceThemes = {
     accent: 'text-emerald-600',
     dot: 'bg-emerald-500',
     border: 'border-emerald-200',
+    label: 'Limpa Nome',
+    icon: Shield,
   },
   'fiscal': {
     primary: 'bg-violet-600',
@@ -100,6 +133,8 @@ const serviceThemes = {
     accent: 'text-violet-600',
     dot: 'bg-violet-500',
     border: 'border-violet-200',
+    label: 'Fiscal',
+    icon: Scale,
   },
   'bi': {
     primary: 'bg-violet-600',
@@ -108,7 +143,29 @@ const serviceThemes = {
     accent: 'text-violet-600',
     dot: 'bg-violet-500',
     border: 'border-violet-200',
-  }
+    label: 'BI',
+    icon: Scale,
+  },
+  'nf': {
+    primary: 'bg-blue-600',
+    primaryHover: 'hover:bg-blue-700',
+    light: 'bg-blue-50',
+    accent: 'text-blue-600',
+    dot: 'bg-blue-500',
+    border: 'border-blue-200',
+    label: 'Emissão NF',
+    icon: Receipt,
+  },
+  'ir': {
+    primary: 'bg-amber-600',
+    primaryHover: 'hover:bg-amber-700',
+    light: 'bg-amber-50',
+    accent: 'text-amber-600',
+    dot: 'bg-amber-500',
+    border: 'border-amber-200',
+    label: 'Imposto de Renda',
+    icon: Brain,
+  },
 };
 
 export function AdminClientChat() {
@@ -125,12 +182,20 @@ export function AdminClientChat() {
   const [showPaymentRequest, setShowPaymentRequest] = useState(false);
   const [showReceivedDocs, setShowReceivedDocs] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal' | 'bi'>('all');
+  const [activeServiceTab, setActiveServiceTab] = useState<'all' | 'limpa-nome' | 'fiscal' | 'bi' | 'nf' | 'ir'>('all');
   const [showClientList, setShowClientList] = useState(true);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const theme = selectedClient ? serviceThemes[selectedClient.service_type] : null;
-  const documentTypes = selectedClient?.service_type === 'limpa-nome' ? documentTypesLimpaNome : documentTypesFiscal;
+  const getDocumentTypes = (type?: ServiceType) => {
+    switch (type) {
+      case 'limpa-nome': return documentTypesLimpaNome;
+      case 'nf': return documentTypesNF;
+      case 'ir': return documentTypesIR;
+      default: return documentTypesFiscal;
+    }
+  };
+  const documentTypes = getDocumentTypes(selectedClient?.service_type);
 
   // Get attachments from messages for quick access
   const receivedAttachments = messages.filter(m => m.attachment_url && m.sender_id !== user?.id);
@@ -155,7 +220,7 @@ export function AdminClientChat() {
   const loadClients = async () => {
     setIsLoading(true);
     try {
-      const [limpaNomeRes, fiscalRes] = await Promise.all([
+      const [limpaNomeRes, fiscalRes, irRes] = await Promise.all([
         supabase
           .from('credit_repair_requests')
           .select('id, full_name, email, phone, status, created_at, user_id, debt_amount_cents, cpf')
@@ -165,7 +230,12 @@ export function AdminClientChat() {
           .from('fiscal_analysis_requests')
           .select('id, full_name, email, phone, status, created_at, user_id, identified_value_cents, cnpj, cpf, notes')
           .order('created_at', { ascending: false })
-          .limit(100)
+          .limit(100),
+        supabase
+          .from('ir_ai_declarations')
+          .select('id, status, created_at, user_id, declaration_type, fiscal_year')
+          .order('created_at', { ascending: false })
+          .limit(100),
       ]);
 
       const limpaNome: ClientRequest[] = (limpaNomeRes.data || []).map(r => ({
@@ -176,14 +246,39 @@ export function AdminClientChat() {
       const fiscal: ClientRequest[] = (fiscalRes.data || []).map((r: any) => {
         const notes: string = r?.notes || '';
         const isBI = typeof notes === 'string' && notes.toUpperCase().startsWith('[BI]');
-        const service_type: ClientRequest['service_type'] = isBI ? 'bi' : 'fiscal';
+        const isNF = typeof notes === 'string' && notes.toUpperCase().startsWith('[NF]');
+        const service_type: ClientRequest['service_type'] = isBI ? 'bi' : isNF ? 'nf' : 'fiscal';
         return {
           ...r,
           service_type,
         };
       });
 
-      const combined = [...limpaNome, ...fiscal].sort((a, b) => 
+      // Load profile names for IR declarations
+      const irUserIds = [...new Set((irRes.data || []).map((r: any) => r.user_id))];
+      let profileMap: Record<string, { full_name: string; email: string }> = {};
+      if (irUserIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, full_name, email')
+          .in('user_id', irUserIds);
+        (profiles || []).forEach((p: any) => {
+          profileMap[p.user_id] = { full_name: p.full_name || 'Cliente IR', email: p.email || '' };
+        });
+      }
+
+      const ir: ClientRequest[] = (irRes.data || []).map((r: any) => ({
+        id: r.id,
+        full_name: profileMap[r.user_id]?.full_name || 'Cliente IR',
+        email: profileMap[r.user_id]?.email || '',
+        status: r.status,
+        created_at: r.created_at,
+        user_id: r.user_id,
+        service_type: 'ir' as const,
+        notes: `${r.declaration_type || ''} ${r.fiscal_year || ''}`,
+      }));
+
+      const combined = [...limpaNome, ...fiscal, ...ir].sort((a, b) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
@@ -389,27 +484,19 @@ Guilherme`;
       },
     },
     'bi': {
-      welcome: (name: string) => {
-        return `Oi, ${name}! Tudo bem?
-
-Aqui é o Guilherme. Recebi sua solicitação de BI e Contabilidade e já estou analisando.
-
-Vou entrar em contato em breve pra dar início à análise!
-
-Guilherme Mesquita`;
-      },
-      followUp: (name: string) => {
-        return `Oi, ${name}! Só passando pra ver se está tudo certo e se precisa de alguma coisa.
-
-Me avisa se tiver dúvida!
-
-Guilherme`;
-      },
-      statusUpdate: (name: string) => {
-        return `${name}, seu processo está sendo acompanhado de perto. Em breve teremos novidades!
-
-Guilherme`;
-      },
+      welcome: (name: string) => `Oi, ${name}! Aqui é o Guilherme. Recebi sua solicitação e já estou analisando.\n\nVou entrar em contato em breve!\n\nGuilherme`,
+      followUp: (name: string) => `Oi, ${name}! Passando pra ver se está tudo certo.\n\nMe avisa se tiver dúvida!\n\nGuilherme`,
+      statusUpdate: (name: string) => `${name}, seu processo está sendo acompanhado. Em breve teremos novidades!\n\nGuilherme`,
+    },
+    'nf': {
+      welcome: (name: string) => `Oi, ${name}! Tudo bem? 😊\n\nAqui é o Guilherme, da equipe de Emissão de NF.\n\nRecebi sua solicitação e vou precisar de alguns dados:\n\n📄 CNPJ da empresa\n📄 Dados do tomador do serviço\n📄 Descrição do serviço prestado\n\nPode enviar direto aqui no chat!\n\nGuilherme`,
+      followUp: (name: string) => `Oi, ${name}! Passando pra checar a emissão da sua NF.\n\nJá tem os dados que preciso? Qualquer dúvida, me chama!\n\nGuilherme`,
+      statusUpdate: (name: string) => `${name}, sua NF está sendo processada. Em breve te envio o PDF!\n\nGuilherme`,
+    },
+    'ir': {
+      welcome: (name: string) => `Oi, ${name}! Tudo bem? 😊\n\nAqui é o Guilherme, da equipe do Imposto de Renda.\n\nSua declaração está em processamento pela IA. Pra garantir a melhor análise, preciso dos seguintes documentos:\n\n📄 Informes de Rendimentos (todos)\n📄 Recibos médicos/educação (se tiver)\n📄 Comprovantes de bens e investimentos\n\nEnvie direto aqui no chat — aceito PDF, foto ou imagem!\n\nGuilherme`,
+      followUp: (name: string) => `Oi, ${name}! Sua declaração de IR está em andamento.\n\nConseguiu enviar todos os informes de rendimentos? Se faltar algum documento, a IA pode não calcular corretamente.\n\nEstou por aqui!\n\nGuilherme`,
+      statusUpdate: (name: string) => `${name}, boas notícias! 🎉\n\nSua declaração de IR foi processada pela IA. Estou fazendo a revisão final e em breve te envio o resumo completo.\n\nGuilherme`,
     },
   };
 
@@ -423,7 +510,8 @@ Guilherme`;
 
   const handleDocumentRequest = (docLabel: string) => {
     const firstName = selectedClient?.full_name?.split(' ')[0] || 'Cliente';
-    const serviceLabel = selectedClient?.service_type === 'limpa-nome' ? 'recuperação de crédito' : 'análise fiscal';
+    const serviceLabelMap: Record<string, string> = { 'limpa-nome': 'recuperação de crédito', 'fiscal': 'análise fiscal', 'nf': 'emissão de NF', 'ir': 'imposto de renda', 'bi': 'contabilidade' };
+    const serviceLabel = serviceLabelMap[selectedClient?.service_type || 'fiscal'] || 'serviço';
     
     // Variações de saudação humanizadas
     const greetings = ['Oi', 'Olá', 'E aí', 'Opa'];
@@ -464,7 +552,7 @@ Guilherme`);
     
     try {
       const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
-      const serviceLabel = selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal';
+      const serviceLabel = serviceThemes[selectedClient.service_type]?.label || 'Serviço';
       
       // Determine amount: use custom or default
       let amountCents: number;
@@ -537,10 +625,14 @@ Guilherme`);
   const getStatusLabel = (status: string) => {
     const labels: Record<string, string> = {
       pending: 'Aguardando',
+      pending_documents: 'Docs Pendentes',
       in_progress: 'Em Análise',
       analyzing: 'Analisando',
+      processing: 'Processando',
+      review: 'Revisão',
       completed: 'Concluído',
       cancelled: 'Cancelado',
+      error: 'Erro',
     };
     return labels[status] || status;
   };
@@ -549,7 +641,13 @@ Guilherme`);
 
   const limpaNomeCount = clients.filter(c => c.service_type === 'limpa-nome').length;
   const fiscalCount = clients.filter(c => c.service_type === 'fiscal').length;
-  const biCount = clients.filter(c => c.service_type === 'bi').length;
+  const nfCount = clients.filter(c => c.service_type === 'nf' || c.service_type === 'bi').length;
+  const irCount = clients.filter(c => c.service_type === 'ir').length;
+  
+  const pendingLN = clients.filter(c => c.service_type === 'limpa-nome' && c.status !== 'completed').length;
+  const pendingFiscal = clients.filter(c => c.service_type === 'fiscal' && c.status !== 'completed').length;
+  const pendingNF = clients.filter(c => (c.service_type === 'nf' || c.service_type === 'bi') && c.status !== 'completed').length;
+  const pendingIR = clients.filter(c => c.service_type === 'ir' && c.status !== 'completed').length;
 
   // Handle client selection - on mobile, hide list and show chat
   const handleSelectClient = (client: ClientRequest) => {
@@ -586,14 +684,35 @@ Guilherme`);
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento</h2>
-            <p className="text-xs text-slate-500">{clients.length} clientes • Guilherme</p>
+            <h2 className="text-base font-semibold text-slate-900">Central Unificada</h2>
+            <p className="text-xs text-slate-500">{clients.length} clientes</p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 text-slate-600 border-slate-200">
           <RefreshCw className="h-4 w-4" />
           Atualizar
         </Button>
+      </div>
+
+      {/* Resumo de Pendências */}
+      <div className="flex items-center gap-2 px-3 py-2 border-b border-slate-100 bg-slate-50/30 shrink-0 overflow-x-auto">
+        {[
+          { label: 'LN', count: pendingLN, color: 'bg-emerald-500', icon: Shield },
+          { label: 'Fiscal', count: pendingFiscal, color: 'bg-violet-500', icon: Scale },
+          { label: 'NF', count: pendingNF, color: 'bg-blue-500', icon: Receipt },
+          { label: 'IR', count: pendingIR, color: 'bg-amber-500', icon: Brain },
+        ].map(item => (
+          <div key={item.label} className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-white border border-slate-200 shrink-0">
+            <item.icon className="h-3 w-3 text-slate-500" />
+            <span className="text-[10px] font-medium text-slate-600">{item.label}</span>
+            <span className={cn(
+              "text-[10px] font-bold text-white px-1.5 rounded-full min-w-[18px] text-center",
+              item.count > 0 ? item.color : 'bg-slate-300'
+            )}>
+              {item.count}
+            </span>
+          </div>
+        ))}
       </div>
 
       {/* Container Principal */}
@@ -603,7 +722,6 @@ Guilherme`);
         <div className={cn(
           "flex flex-col border-r border-slate-200 bg-white",
           "w-full md:w-72 lg:w-80 md:shrink-0",
-          // On mobile: show/hide based on state
           showClientList ? "flex" : "hidden md:flex"
         )}>
           {/* Busca e Filtros - Fixo */}
@@ -622,38 +740,62 @@ Guilherme`);
               <button
                 onClick={() => setActiveServiceTab('all')}
                 className={cn(
-                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'all' 
                     ? "bg-white text-slate-900 shadow-sm" 
                     : "text-slate-500 hover:text-slate-700"
                 )}
               >
-                <Users className="h-3.5 w-3.5" />
-                Todos
+                <Users className="h-3 w-3" />
+                <span className="hidden lg:inline">Todos</span>
               </button>
               <button
                 onClick={() => setActiveServiceTab('limpa-nome')}
                 className={cn(
-                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'limpa-nome' 
                     ? "bg-emerald-600 text-white shadow-sm" 
                     : "text-slate-500 hover:text-emerald-600"
                 )}
               >
-                <Shield className="h-3.5 w-3.5" />
+                <Shield className="h-3 w-3" />
                 {limpaNomeCount}
               </button>
               <button
                 onClick={() => setActiveServiceTab('fiscal')}
                 className={cn(
-                  "flex-1 py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1.5",
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
                   activeServiceTab === 'fiscal' 
                     ? "bg-violet-600 text-white shadow-sm" 
                     : "text-slate-500 hover:text-violet-600"
                 )}
               >
-                <Scale className="h-3.5 w-3.5" />
+                <Scale className="h-3 w-3" />
                 {fiscalCount}
+              </button>
+              <button
+                onClick={() => setActiveServiceTab('nf')}
+                className={cn(
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  activeServiceTab === 'nf' 
+                    ? "bg-blue-600 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-blue-600"
+                )}
+              >
+                <Receipt className="h-3 w-3" />
+                {nfCount}
+              </button>
+              <button
+                onClick={() => setActiveServiceTab('ir')}
+                className={cn(
+                  "py-1.5 px-2 rounded-md text-xs font-medium transition-all flex items-center justify-center gap-1",
+                  activeServiceTab === 'ir' 
+                    ? "bg-amber-600 text-white shadow-sm" 
+                    : "text-slate-500 hover:text-amber-600"
+                )}
+              >
+                <Brain className="h-3 w-3" />
+                {irCount}
               </button>
             </div>
           </div>
@@ -705,7 +847,7 @@ Guilherme`);
                           <div className="flex items-center gap-1.5 mt-0.5">
                             <div className={cn("w-1.5 h-1.5 rounded-full", clientTheme.dot)} />
                             <span className="text-xs text-slate-500">
-                              {client.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
+                              {clientTheme.label}
                             </span>
                           </div>
                         </div>
@@ -801,7 +943,7 @@ Guilherme`);
                           <div>
                             <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento</h4>
                             <p className="text-xs text-slate-500">
-                              {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal'} • Valor customizável
+                              {serviceThemes[selectedClient.service_type]?.label || 'Serviço'} • Valor customizável
                             </p>
                           </div>
                         </div>
@@ -858,7 +1000,7 @@ Guilherme`);
                         <div>
                           <h4 className="font-medium text-sm text-slate-900">Solicitar Documento</h4>
                           <p className="text-xs text-slate-500">
-                            {selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Fiscal'}
+                            {serviceThemes[selectedClient.service_type]?.label || 'Serviço'}
                           </p>
                         </div>
                         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowDocumentRequest(false)}>
