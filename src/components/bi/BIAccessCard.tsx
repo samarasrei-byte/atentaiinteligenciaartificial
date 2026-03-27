@@ -149,7 +149,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => navigate(`/chat/cesar?upgrade=true`)}
+                onClick={() => navigate(`/chat/guilherme?upgrade=true`)}
                 className="gap-2"
               >
                 <Sparkles className="h-3 w-3" />
