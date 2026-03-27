@@ -121,7 +121,7 @@ export const FinancialAnalytics: React.FC = () => {
         const serviceSlug = c.service_slug || 'outros';
         if (serviceSlug.includes('limpa')) serviceCosts['Limpa Nome'] += c.amount_cents;
         else if (serviceSlug.includes('fiscal')) serviceCosts['Análise Fiscal'] += c.amount_cents;
-        else if (serviceSlug.includes('bi')) serviceCosts['BI Contabilidade'] += c.amount_cents;
+        else if (serviceSlug.includes('bi')) serviceCosts['Emissão NF'] += c.amount_cents;
         else if (serviceSlug.includes('assinatura')) serviceCosts['Assinaturas'] += c.amount_cents;
         else serviceCosts['Outros'] += c.amount_cents;
       });

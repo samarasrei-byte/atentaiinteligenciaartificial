@@ -47,7 +47,7 @@ const serviceConfig = {
   },
   bi: { 
     label: '[BI]', 
-    title: 'BI Contabilidade', 
+    title: 'Emissão NF', 
     icon: LayoutDashboard, 
     color: 'indigo',
     bgColor: 'bg-indigo-100',

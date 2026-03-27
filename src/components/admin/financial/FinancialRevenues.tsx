@@ -184,7 +184,7 @@ export const FinancialRevenues: React.FC = () => {
                 <SelectItem value="all">Todos os Serviços</SelectItem>
                 <SelectItem value="limpa-nome">Limpa Nome</SelectItem>
                 <SelectItem value="analise-fiscal">Análise Fiscal</SelectItem>
-                <SelectItem value="bi">BI Contabilidade</SelectItem>
+                <SelectItem value="bi">Emissão NF</SelectItem>
                 <SelectItem value="assinatura">Assinaturas</SelectItem>
               </SelectContent>
             </Select>

@@ -277,7 +277,7 @@ export function AdminBISubscriptionsPanel() {
                         <Button
                           variant="outline"
                           size="sm"
-                          onClick={() => navigate(`/chat/cesar?cliente=${sub.user_id}`)}
+                          onClick={() => navigate(`/chat/guilherme?cliente=${sub.user_id}`)}
                           className="gap-2"
                         >
                           <MessageSquare className="h-4 w-4" />
