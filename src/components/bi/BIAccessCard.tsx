@@ -170,7 +170,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
           <Lock className="h-4 w-4 text-muted-foreground" />
         </div>
         <div className="flex-1">
-          <p className="text-sm font-medium text-foreground">BI+ Contabilidade</p>
+          <p className="text-sm font-medium text-foreground">Contabilidade</p>
           <p className="text-xs text-muted-foreground">Não ativo</p>
         </div>
         <Button size="sm" onClick={() => navigate('/bi-contabilidade')}>
