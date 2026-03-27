@@ -440,7 +440,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.12 }}
-                  className="relative p-8 rounded-3xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-500 group"
+                  className="relative p-4 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/[0.03] border border-white/[0.06] hover:border-emerald-500/20 transition-all duration-500 group"
                 >
                   <span className="text-6xl font-black text-emerald-500/[0.08] absolute top-4 right-6 group-hover:text-emerald-500/15 transition-colors">
                     {item.step}
