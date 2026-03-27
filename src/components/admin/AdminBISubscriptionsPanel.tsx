@@ -218,7 +218,7 @@ export function AdminBISubscriptionsPanel() {
       {/* Subscriptions List */}
       <Card>
         <CardHeader>
-          <CardTitle>Clientes BI+</CardTitle>
+          <CardTitle>Clientes</CardTitle>
           <CardDescription>
             {filteredSubscriptions.length} assinatura(s) encontrada(s)
           </CardDescription>
