@@ -630,7 +630,7 @@ Guilherme`);
                         </div>
                         <div>
                           <h4 className="font-semibold text-sm text-slate-900">Gerar Link de Pagamento</h4>
-                          <p className="text-xs text-slate-500">BI+ Inteligência Fiscal • Valor customizável</p>
+                          <p className="text-xs text-slate-500">Análise Fiscal • Valor customizável</p>
                         </div>
                       </div>
                       <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setShowPaymentRequest(false)}>
