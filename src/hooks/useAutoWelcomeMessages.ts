@@ -33,15 +33,9 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
   const [welcomeChats, setWelcomeChats] = useState<WelcomeChat[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Determine if user has BI access (control/performance plan or specific services)
-  const hasBIAccess = subscription?.plan === 'premium' || subscription?.plan === 'contador' || subscription?.subscribed;
-
   // Welcome messages content
   const getGuilhermeMessage = (userName: string) => 
-    `Oi, ${userName}! 👋\n\nSou o Guilherme e vou te acompanhar em tudo que for análise fiscal, limpa nome e outros serviços.\n\nJá estou por aqui se precisar de algo 😊`;
-
-  const getCesarMessage = (userName: string) =>
-    `Olá, ${userName}!\n\nAqui é o César. Vou cuidar da parte de BI e contabilidade, trazendo análises e organizando suas informações.\n\nSempre que precisar, é só falar por aqui. 📊`;
+    `Oi, ${userName}! 👋\n\nSou o Guilherme e vou te acompanhar em tudo que for análise fiscal, limpa nome, IR e outros serviços.\n\nJá estou por aqui se precisar de algo 😊`;
 
   // Fetch existing welcome chats
   const fetchWelcomeChats = useCallback(async () => {
