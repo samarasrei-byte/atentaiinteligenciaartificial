@@ -559,7 +559,7 @@ Guilherme`);
     
     try {
       const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
-      const serviceLabel = selectedClient.service_type === 'limpa-nome' ? 'Limpa Nome' : 'Análise Fiscal';
+      const serviceLabel = serviceThemes[selectedClient.service_type]?.label || 'Serviço';
       
       // Determine amount: use custom or default
       let amountCents: number;
