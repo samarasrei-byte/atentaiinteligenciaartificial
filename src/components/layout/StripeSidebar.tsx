@@ -46,7 +46,7 @@ interface SidebarItem {
   tabId: string;
   isLive?: boolean;
   badge?: string | number;
-  chatBadge?: 'guilherme' | 'cesar';
+  chatBadge?: 'guilherme';
 }
 
 interface SidebarGroup {
