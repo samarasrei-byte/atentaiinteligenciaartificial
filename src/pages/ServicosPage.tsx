@@ -441,7 +441,7 @@ const ServicosPage = () => {
           </section>
 
           {/* Free Tools — Lead magnets on top */}
-          <section className="py-8 bg-white dark:bg-slate-900">
+          <section className="py-8 bg-background">
             <div className="container max-w-6xl mx-auto px-4">
               <div className="flex items-center gap-3 mb-4">
                 <Badge variant="outline" className="border-primary/30 text-primary text-xs">
