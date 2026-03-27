@@ -6,7 +6,7 @@ import { isQAUser, getQAFlags, QAFlags } from '@/lib/qaMode';
 import { logAuditEvent } from '@/hooks/useAuditLog';
 
 // All app roles including affiliate
-type AppRole = 'admin' | 'contador' | 'user' | 'autonomo' | 'affiliate' | 'equipe_guilherme' | 'equipe_cesar';
+type AppRole = 'admin' | 'contador' | 'user' | 'autonomo' | 'affiliate' | 'equipe_guilherme';
 
 interface SubscriptionInfo {
   subscribed: boolean;

@@ -74,7 +74,7 @@ export const FinancialModule: React.FC = () => {
       const colors: Record<string, string> = {
         'Limpa Nome': '#10b981',
         'Análise Fiscal': '#8b5cf6',
-        'BI Contabilidade': '#3b82f6',
+        'Emissão NF': '#3b82f6',
         'Assinaturas': '#f59e0b',
         'Outros': '#64748b'
       };

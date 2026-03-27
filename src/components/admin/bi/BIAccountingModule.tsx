@@ -129,7 +129,7 @@ export const BIAccountingModule: React.FC = () => {
           <Separator className="my-6" />
           <ServiceDocuments 
             serviceType="bi" 
-            serviceName="BI Contabilidade" 
+            serviceName="Emissão NF" 
             serviceColor="indigo" 
           />
         </TabsContent>

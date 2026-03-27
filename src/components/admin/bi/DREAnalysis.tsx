@@ -833,7 +833,7 @@ const exportPDF = (
     doc.setPage(i);
     doc.setFontSize(8);
     doc.setTextColor(150);
-    doc.text('AtentAI — BI+ Contabilidade™ | IA acelera. Humano decide.', 14, 290);
+    doc.text('AtentAI™ | IA acelera. Humano decide.', 14, 290);
     doc.text(`Página ${i}/${pageCount}`, 180, 290);
   }
   

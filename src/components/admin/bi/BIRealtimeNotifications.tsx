@@ -324,7 +324,7 @@ export const BIRealtimeNotifications: React.FC<BIRealtimeNotificationsProps> = (
               <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-100 to-violet-100 flex items-center justify-center mb-4">
                 <Brain className="h-8 w-8 text-indigo-500" />
               </div>
-              <p className="text-slate-600 font-medium">BI+ Contabilidade™ Ativo</p>
+              <p className="text-slate-600 font-medium">Sistema Ativo</p>
               <p className="text-slate-400 text-sm mt-1">
                 Aguardando novas solicitações...
               </p>
