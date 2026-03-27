@@ -270,8 +270,8 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
           <div className="py-4 border-t border-border mb-4">
             {service.isCustomPricing ? (
               <div>
-                <span className="text-xl font-bold text-purple-600">Sob Consulta</span>
-                <p className="text-xs text-slate-500 mt-1">
+                <span className="text-xl font-bold text-purple-600 dark:text-purple-400">Sob Consulta</span>
+                <p className="text-xs text-muted-foreground mt-1">
                   Fale com um especialista para uma proposta personalizada
                 </p>
               </div>
