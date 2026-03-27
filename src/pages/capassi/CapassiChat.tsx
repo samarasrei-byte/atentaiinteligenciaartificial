@@ -382,11 +382,11 @@ export default function CapassiChat() {
   const quickMessageTemplates = {
     welcome: (name: string) => {
       const g = ['Oi', 'Olá'][Math.floor(Math.random() * 2)];
-      return `${g}, ${name}! Tudo bem? 😊\n\nAqui é o César, responsável pelo seu BI+ Contabilidade.\n\nPra começar a montar seu painel financeiro, vou precisar de alguns documentos:\n\n📄 Balanço Patrimonial mais recente\n📄 DRE (Demonstração de Resultado)\n📄 Fluxo de Caixa dos últimos 3 meses\n\nPode mandar Excel, PDF ou imagem aqui mesmo no chat.\n\nCésar`;
+      return `${g}, ${name}! Tudo bem? 😊\n\nSou o responsável pelo seu painel financeiro.\n\nPra começar a montar seu painel, vou precisar de alguns documentos:\n\n📄 Balanço Patrimonial mais recente\n📄 DRE (Demonstração de Resultado)\n📄 Fluxo de Caixa dos últimos 3 meses\n\nPode mandar Excel, PDF ou imagem aqui mesmo no chat.\n\nGuilherme`;
     },
-    followUp: (name: string) => `Oi, ${name}! Passando pra checar se conseguiu separar os documentos contábeis.\n\nSe tiver dificuldade com algum deles, me avisa que posso te orientar.\n\nEstou por aqui!\n\nCésar`,
-    statusUpdate: (name: string) => `${name}, atualizando sobre sua análise:\n\nEstou revisando os documentos e montando os primeiros indicadores. Em breve compartilho os insights iniciais.\n\nQualquer dúvida, pode chamar!\n\nCésar`,
-    requestDRE: (name: string) => `Oi, ${name}!\n\nPra avançar com a análise, preciso do seu DRE atualizado.\n\nSe tiver em Excel fica ainda melhor. Pode mandar aqui mesmo!\n\nCésar`,
+    followUp: (name: string) => `Oi, ${name}! Passando pra checar se conseguiu separar os documentos contábeis.\n\nSe tiver dificuldade com algum deles, me avisa que posso te orientar.\n\nEstou por aqui!\n\nGuilherme`,
+    statusUpdate: (name: string) => `${name}, atualizando sobre sua análise:\n\nEstou revisando os documentos e montando os primeiros indicadores. Em breve compartilho os insights iniciais.\n\nQualquer dúvida, pode chamar!\n\nGuilherme`,
+    requestDRE: (name: string) => `Oi, ${name}!\n\nPra avançar com a análise, preciso do seu DRE atualizado.\n\nSe tiver em Excel fica ainda melhor. Pode mandar aqui mesmo!\n\nGuilherme`,
   };
 
   const handleQuickMessage = (type: keyof typeof quickMessageTemplates) => {
