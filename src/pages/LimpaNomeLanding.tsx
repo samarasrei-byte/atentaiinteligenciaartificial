@@ -505,10 +505,10 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== AUTORIDADE ========== */}
-        <Section className="px-4 py-24 relative" id="especialista">
+        <Section className="px-4 py-14 sm:py-24 relative" id="especialista">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_left,_rgba(16,185,129,0.08),_transparent_50%)]" />
           <div className="relative max-w-4xl mx-auto">
-            <div className="p-10 md:p-14 rounded-[2rem] bg-gradient-to-br from-emerald-500/[0.08] via-white/[0.02] to-transparent border border-emerald-500/20 backdrop-blur-sm">
+            <div className="p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-[2rem] bg-gradient-to-br from-emerald-500/[0.08] via-white/[0.02] to-transparent border border-emerald-500/20 backdrop-blur-sm">
               <div className="flex flex-col md:flex-row items-center gap-10">
                 <div className="relative shrink-0">
                   <div className="w-32 h-32 rounded-3xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center shadow-[0_0_60px_rgba(16,185,129,0.3)]">
