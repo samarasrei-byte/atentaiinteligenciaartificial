@@ -277,9 +277,9 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
               </div>
             ) : service.isFree ? (
               <div>
-                <span className="text-2xl font-bold text-emerald-600">Gratuito</span>
+                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Gratuito</span>
                 {service.successFee && (
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Pagamento apenas no êxito (50%)
                   </p>
                 )}
