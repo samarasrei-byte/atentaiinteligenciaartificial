@@ -52,14 +52,14 @@ function Section({ children, className = "", id }: { children: React.ReactNode; 
 
 function CTAButton({ className = "", size = "lg", text = "QUERO ANALISAR MEU CASO AGORA" }: { className?: string; size?: "lg" | "xl"; text?: string }) {
   return (
-    <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group">
+    <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
       <Button
-        className={`relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-1.5 ${size === "xl" ? "text-lg px-12 py-8 rounded-2xl" : "text-base px-8 py-6 rounded-xl"} ${className}`}
+        className={`relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-1.5 w-full sm:w-auto ${size === "xl" ? "text-sm sm:text-base md:text-lg px-6 sm:px-10 md:px-12 py-6 sm:py-7 md:py-8 rounded-2xl" : "text-xs sm:text-sm md:text-base px-5 sm:px-8 py-5 sm:py-6 rounded-xl"} ${className}`}
       >
         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-        <MessageCircle className="w-5 h-5 mr-2" />
-        {text}
-        <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+        <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
+        <span className="truncate">{text}</span>
+        <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
       </Button>
     </a>
   );
