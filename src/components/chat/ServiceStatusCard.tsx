@@ -37,14 +37,6 @@ export const SERVICE_STEPS: Record<ServiceType, Omit<ServiceStep, 'status' | 'co
     { id: 'adjustments', label: 'Ajustes / regularização', icon: Wrench },
     { id: 'completed', label: 'Análise concluída', icon: CheckCircle2 },
   ],
-  'bi-contabilidade': [
-    { id: 'received', label: 'Solicitação recebida', icon: FileText },
-    { id: 'collecting_docs', label: 'Coleta de documentos', icon: FileCheck },
-    { id: 'ai_processing', label: 'Processamento com IA', icon: BarChart3 },
-    { id: 'human_validation', label: 'Validação humana', icon: Search },
-    { id: 'insights_ready', label: 'Insights prontos', icon: Lightbulb },
-    { id: 'completed', label: 'Relatório entregue', icon: CheckCircle2 },
-  ],
 };
 
 const SERVICE_COLORS: Record<ServiceType, { bg: string; text: string; progress: string }> = {
@@ -57,11 +49,6 @@ const SERVICE_COLORS: Record<ServiceType, { bg: string; text: string; progress: 
     bg: 'bg-violet-500/10', 
     text: 'text-violet-600',
     progress: 'bg-violet-500'
-  },
-  'bi-contabilidade': { 
-    bg: 'bg-indigo-500/10', 
-    text: 'text-indigo-600',
-    progress: 'bg-indigo-500'
   },
 };
 

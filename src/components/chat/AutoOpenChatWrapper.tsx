@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 
 interface ActiveRequest {
   id: string;
-  type: 'limpanome' | 'fiscal' | 'abertura-empresa' | 'bi-contabilidade';
+  type: 'limpanome' | 'fiscal' | 'abertura-empresa';
   status: string;
 }
 

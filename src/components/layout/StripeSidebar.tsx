@@ -417,7 +417,7 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
     navigate('/');
   };
 
-  const handleItemClick = (tabId: string, chatBadge?: 'guilherme' | 'cesar') => {
+  const handleItemClick = (tabId: string, chatBadge?: 'guilherme') => {
     // Mark chat as read when clicked
     if (chatBadge) {
       markAsRead(chatBadge);
@@ -430,9 +430,9 @@ export const StripeSidebar: React.FC<StripeSidebarProps> = ({
   };
 
   // Get unread count for a chat badge type
-  const getUnreadCount = (chatBadge?: 'guilherme' | 'cesar') => {
+  const getUnreadCount = (chatBadge?: 'guilherme') => {
     if (!chatBadge) return 0;
-    return chatBadge === 'guilherme' ? unreadGuilherme : unreadCesar;
+    return unreadGuilherme;
   };
 
   const SidebarLink = ({ item }: { item: SidebarItem }) => {
