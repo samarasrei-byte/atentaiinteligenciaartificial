@@ -115,11 +115,6 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
         });
       }
 
-      // César messages hidden - BI module temporarily disabled
-      // if (hasBIAccess && !todayTypes.includes('cesar')) {
-      //   await createWelcomeMessage('cesar', getCesarMessage(userName));
-      // }
-
       // Refresh the list
       await fetchWelcomeChats();
     } catch (error) {
@@ -127,7 +122,7 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
     } finally {
       setIsLoading(false);
     }
-  }, [user?.id, profile, hasBIAccess, createWelcomeMessage, fetchWelcomeChats, toast]);
+  }, [user?.id, profile, createWelcomeMessage, fetchWelcomeChats, toast]);
 
   // Mark messages as read for a chat type
   const markAsRead = useCallback(async (chatType: 'guilherme' | 'cesar') => {
