@@ -7,10 +7,7 @@
  * - Premium: R$ 98,00/mês - Recursos completos
  * - Contador: R$ 198,99/mês - Para contadores
  * 
- * BI PLANS (Atentai - Used only in /bi-contabilidade):
- * - Atentai Clarity: R$ 1.497/mês
- * - Atentai Control: R$ 3.497/mês
- * - Atentai Performance: R$ 8.000+/mês
+ *
  * 
  * MARKETPLACE SERVICES (One-Time Payments):
  * - Limpa Nome PF: R$ 824,50 (PROMOÇÃO)
