@@ -188,7 +188,7 @@ export default function LimpaNomeLanding() {
               initial={{ opacity: 0, y: 30 }}
               animate={heroVisible ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.7, delay: 0.35 }}
-              className="mt-8 text-lg sm:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed"
+              className="mt-6 sm:mt-8 text-base sm:text-lg md:text-xl text-white/60 max-w-2xl mx-auto leading-relaxed px-2"
             >
               Descubra agora se você pode sair da negativação{" "}
               <span className="text-white font-medium">sem precisar quitar tudo imediatamente</span>
