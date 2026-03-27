@@ -178,7 +178,7 @@ export const BIAIChat: React.FC = () => {
                           {message.approved ? (
                             <Badge className="bg-emerald-100 text-emerald-700 border-emerald-200 gap-1">
                               <CheckCircle2 className="h-3 w-3" />
-                              Validado por César
+                              Validado
                             </Badge>
                           ) : (
                             <Button 

@@ -180,8 +180,8 @@ export const BIRequestsInbox: React.FC = () => {
                 <User className="h-5 w-5 text-violet-600" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900">César</p>
-                <p className="text-sm text-slate-500">BI • Contabilidade</p>
+                <p className="text-2xl font-bold text-slate-900">Equipe NF</p>
+                <p className="text-sm text-slate-500">Emissão • Notas Fiscais</p>
               </div>
             </div>
           </CardContent>

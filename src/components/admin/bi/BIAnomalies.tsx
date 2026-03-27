@@ -145,7 +145,7 @@ export const BIAnomalies: React.FC = () => {
 
   const handleReview = (id: string, action: 'reviewed' | 'dismissed') => {
     setAnomalies(prev => prev.map(a => 
-      a.id === id ? { ...a, status: action, reviewed_by: 'César' } : a
+      a.id === id ? { ...a, status: action, reviewed_by: 'Equipe' } : a
     ));
   };
 
