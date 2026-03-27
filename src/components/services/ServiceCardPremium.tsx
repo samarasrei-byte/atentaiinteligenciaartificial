@@ -191,12 +191,12 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       transition={{ duration: 0.4 }}
       className="h-full"
     >
-      <Card className={`h-full flex flex-col bg-white border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group relative overflow-hidden rounded-3xl ${
+      <Card className={`h-full flex flex-col bg-card border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group relative overflow-hidden rounded-3xl ${
         service.badge === 'popular' 
           ? `${colors.border} ring-1 ${colors.ring}` 
           : service.badge === 'free'
             ? 'border-emerald-500/50 ring-1 ring-emerald-500/20'
-            : 'border-slate-200 hover:border-slate-300'
+            : 'border-border hover:border-border/80'
       }`}>
         
         {/* Badge */}
@@ -242,17 +242,17 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
           </div>
 
           {/* Target Audience */}
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
             {service.targetAudience}
           </p>
 
           {/* Name */}
-          <h3 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
+          <h3 className="text-xl font-bold text-foreground mb-2 leading-tight">
             {service.name}
           </h3>
 
           {/* Description */}
-          <p className="text-sm text-slate-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {service.description}
           </p>
 
@@ -261,25 +261,25 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
             {service.features.map((feature, i) => (
               <div key={i} className="flex items-start gap-2.5">
                 <Check className={`h-4 w-4 ${colors.icon} flex-shrink-0 mt-0.5`} />
-                <span className="text-sm text-slate-700">{feature}</span>
+                <span className="text-sm text-foreground">{feature}</span>
               </div>
             ))}
           </div>
 
           {/* Pricing Section */}
-          <div className="py-4 border-t border-slate-100 mb-4">
+          <div className="py-4 border-t border-border mb-4">
             {service.isCustomPricing ? (
               <div>
-                <span className="text-xl font-bold text-purple-600">Sob Consulta</span>
-                <p className="text-xs text-slate-500 mt-1">
+                <span className="text-xl font-bold text-purple-600 dark:text-purple-400">Sob Consulta</span>
+                <p className="text-xs text-muted-foreground mt-1">
                   Fale com um especialista para uma proposta personalizada
                 </p>
               </div>
             ) : service.isFree ? (
               <div>
-                <span className="text-2xl font-bold text-emerald-600">Gratuito</span>
+                <span className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">Gratuito</span>
                 {service.successFee && (
-                  <p className="text-xs text-slate-500 mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Pagamento apenas no êxito (50%)
                   </p>
                 )}
@@ -297,7 +297,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                       {formatPrice(service.basePrice)}
                     </span>
                   )}
-                  <span className="text-2xl font-bold text-slate-900">
+                  <span className="text-2xl font-bold text-foreground">
                     {formatPrice(discountedPrice)}
                   </span>
                   {(service.originalPrice || (isSubscriber && service.discountPercent > 0)) && (
@@ -312,7 +312,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
                   </p>
                 )}
                 {service.isSubscription && (
-                  <p className="text-xs text-slate-500 mt-1">/mês</p>
+                  <p className="text-xs text-muted-foreground mt-1">/mês</p>
                 )}
               </div>
             )}
@@ -321,7 +321,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
           {/* Guarantees */}
           <div className="flex flex-wrap gap-2 mb-5">
             {service.guarantees.map((guarantee, i) => (
-              <span key={i} className="text-[10px] text-slate-500 bg-slate-50 px-2 py-1 rounded-full">
+              <span key={i} className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 {guarantee}
               </span>
             ))}

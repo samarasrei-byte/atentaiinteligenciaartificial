@@ -42,6 +42,27 @@ import {
 // ONE-TIME services (serviços avulsos)
 const oneTimeServices: ServiceCardConfig[] = [
   {
+    key: 'company_opening',
+    name: 'Abertura de Empresa',
+    description: 'Abertura completa de CNPJ com suporte especializado e orientação tributária.',
+    targetAudience: 'Para quem quer abrir empresa',
+    features: [
+      'Registro completo do CNPJ',
+      'Escolha do melhor regime tributário',
+      'Contrato social e documentação',
+      'Alvará e inscrições fiscais',
+    ],
+    guarantees: ['Atendimento humano', 'Suporte completo'],
+    basePrice: 78000,
+    discountPercent: 0,
+    badge: 'popular',
+    cta: 'Abrir minha empresa',
+    color: 'primary',
+    icon: Building2,
+    serviceType: 'company_opening',
+    category: 'empresarial',
+  },
+  {
     key: 'credit_repair_pf',
     name: 'Limpa Nome Pessoa Física',
     description: 'Regularização de restrições com análise humana especializada.',
@@ -84,6 +105,26 @@ const oneTimeServices: ServiceCardConfig[] = [
     icon: Building2,
     serviceType: 'credit_repair_pj',
     category: 'empresarial',
+  },
+  {
+    key: 'certificate',
+    name: 'Certidão Negativa de Débitos',
+    description: 'Emissão de certidões fiscais para sua empresa ou pessoa física.',
+    targetAudience: 'Para quem precisa de certidão',
+    features: [
+      'Certidão Federal (RFB)',
+      'Certidão Estadual (SEFAZ)',
+      'Certidão Municipal',
+      'Entrega digital rápida',
+    ],
+    guarantees: ['Entrega ágil', 'Suporte incluso'],
+    basePrice: 8000,
+    discountPercent: 0,
+    cta: 'Solicitar certidão',
+    color: 'blue',
+    icon: FileCheck,
+    serviceType: 'certificate',
+    category: 'documentos',
   },
   {
     key: 'fiscal_analysis',
@@ -512,13 +553,13 @@ const ServicosPage = () => {
               <div className="container max-w-4xl mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-medium mb-6">
                   <Crown className="w-4 h-4 text-accent" />
-                  Economia de até 30%
+                  Acesso completo à plataforma
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-                  Desbloqueie descontos exclusivos
+                  Desbloqueie IA ilimitada e dashboards
                 </h2>
                 <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-                  Assinantes têm acesso a preços especiais em todos os serviços e suporte prioritário.
+                  Assinantes têm acesso ao simulador tributário, dashboards financeiros e suporte prioritário com IA.
                 </p>
                 <Button
                   size="lg"
@@ -527,7 +568,7 @@ const ServicosPage = () => {
                   className="px-8 group"
                 >
                   <Crown className="w-5 h-5 mr-2" />
-                  Ver Planos
+                  Ver Planos a partir de R$ 39,99
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
