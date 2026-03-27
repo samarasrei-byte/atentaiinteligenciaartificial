@@ -281,7 +281,7 @@ export default function CapassiChat() {
         `${summaryText}\n\n` +
         (kpiLines ? `━━━ KPIs Financeiros ━━━\n${kpiLines}\n` : '') +
         (recommendations ? `━━━ Recomendações ━━━\n${recommendations}\n` : '') +
-        `\n🤖 Análise gerada por IA — César BI+`;
+        `\n🤖 Análise gerada por IA — Atendimento Financeiro`;
 
       await supabase.from('capassi_chat_messages' as any).insert({
         organization_id: currentOrg.id,
