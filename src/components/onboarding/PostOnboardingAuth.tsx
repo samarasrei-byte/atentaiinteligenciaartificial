@@ -49,7 +49,6 @@ export const PostOnboardingAuth: React.FC<PostOnboardingAuthProps> = ({
   const serviceLabels = {
     'limpanome': 'Limpa Nome',
     'fiscal': 'Análise Fiscal',
-    'bi-contabilidade': 'BI+ Contabilidade',
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
