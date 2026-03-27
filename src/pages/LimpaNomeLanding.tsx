@@ -179,7 +179,7 @@ export default function LimpaNomeLanding() {
                 </span>
               </h1>
               <p className="mt-4 text-2xl sm:text-3xl text-white/40 font-light">
-                — mesmo com dívidas
+                mesmo com dívidas
               </p>
             </motion.div>
 
