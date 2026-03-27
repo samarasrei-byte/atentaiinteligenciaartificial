@@ -349,7 +349,7 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== COMPARAÇÃO ========== */}
-        <Section className="px-4 py-24" id="comparacao">
+        <Section className="px-4 py-14 sm:py-24" id="comparacao">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14">
               <h2 className="text-4xl sm:text-5xl font-black">
