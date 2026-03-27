@@ -26,7 +26,7 @@ import { PlatformAPIGenerator } from './integrations/PlatformAPIGenerator';
  * AdminIntegrationsHub - Central de Integrações do Admin
  * 
  * Gerencia:
- * - WhatsApp API (Instância Guilherme + César) com QR Code
+ * - WhatsApp API (Instância Guilherme) com QR Code
  * - APIs Externas (Asaas, OpenAI, Resend, Stripe)
  * - API da Plataforma com geração de chaves e documentação
  * - Webhooks
@@ -47,16 +47,6 @@ export const AdminIntegrationsHub: React.FC = () => {
       color: 'emerald',
       bgColor: 'bg-gradient-to-br from-emerald-500 to-teal-600',
       services: ['Limpa Nome', 'Análise Fiscal', 'Atendimento'],
-    },
-    {
-      id: 'cesar',
-      name: 'César',
-      phone: '+5511888888888',
-      instanceId: 'cesar-bi-001',
-      status: 'disconnected' as const,
-      color: 'violet',
-      bgColor: 'bg-gradient-to-br from-violet-500 to-indigo-600',
-      services: ['BI', 'Contabilidade', 'Relatórios'],
     },
   ];
 

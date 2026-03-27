@@ -31,27 +31,23 @@ import { formatCurrency } from "@/lib/servicePricing";
 
 // Partner split configuration
 const MARKETPLACE_SPLIT = {
-  guilherme_mesquita: 33.33,
-  guilherme_baus: 33.33,
-  cesar: 33.34,
+  guilherme_mesquita: 50,
+  guilherme_baus: 50,
 };
 
 const PLATFORM_SPLIT = {
   guilherme_mesquita: 70,
-  guilherme_baus: 15,
-  cesar: 15,
+  guilherme_baus: 30,
 };
 
 const PARTNER_COLORS = {
   guilherme_mesquita: "#10b981",
   guilherme_baus: "#3b82f6", 
-  cesar: "#f59e0b",
 };
 
 const PARTNER_NAMES = {
   guilherme_mesquita: "Guilherme de Mesquita",
   guilherme_baus: "Guilherme Baus",
-  cesar: "César",
 };
 
 export function RevenuePartnerSplitDashboard() {
@@ -210,13 +206,11 @@ export function RevenuePartnerSplitDashboard() {
     const marketplaceSplits = {
       guilherme_mesquita: Math.round(marketplaceRevenue * (MARKETPLACE_SPLIT.guilherme_mesquita / 100)),
       guilherme_baus: Math.round(marketplaceRevenue * (MARKETPLACE_SPLIT.guilherme_baus / 100)),
-      cesar: Math.round(marketplaceRevenue * (MARKETPLACE_SPLIT.cesar / 100)),
     };
 
     const platformSplits = {
       guilherme_mesquita: Math.round(platformRevenue * (PLATFORM_SPLIT.guilherme_mesquita / 100)),
       guilherme_baus: Math.round(platformRevenue * (PLATFORM_SPLIT.guilherme_baus / 100)),
-      cesar: Math.round(platformRevenue * (PLATFORM_SPLIT.cesar / 100)),
     };
 
     return {
@@ -225,7 +219,6 @@ export function RevenuePartnerSplitDashboard() {
       total: {
         guilherme_mesquita: marketplaceSplits.guilherme_mesquita + platformSplits.guilherme_mesquita,
         guilherme_baus: marketplaceSplits.guilherme_baus + platformSplits.guilherme_baus,
-        cesar: marketplaceSplits.cesar + platformSplits.cesar,
       },
     };
   };
@@ -251,16 +244,14 @@ export function RevenuePartnerSplitDashboard() {
 
   const splitComparisonData = [
     {
-      name: "Marketplace (33/33/33)",
+      name: "Marketplace (50/50)",
       guilherme_mesquita: partnerSplits.marketplace.guilherme_mesquita / 100,
       guilherme_baus: partnerSplits.marketplace.guilherme_baus / 100,
-      cesar: partnerSplits.marketplace.cesar / 100,
     },
     {
-      name: "Plataforma (70/15/15)",
+      name: "Plataforma (70/30)",
       guilherme_mesquita: partnerSplits.platform.guilherme_mesquita / 100,
       guilherme_baus: partnerSplits.platform.guilherme_baus / 100,
-      cesar: partnerSplits.platform.cesar / 100,
     },
   ];
 
@@ -431,7 +422,6 @@ export function RevenuePartnerSplitDashboard() {
                   <Legend />
                   <Bar dataKey="guilherme_mesquita" name="G. Mesquita" stackId="a" fill={PARTNER_COLORS.guilherme_mesquita} />
                   <Bar dataKey="guilherme_baus" name="G. Baus" stackId="a" fill={PARTNER_COLORS.guilherme_baus} />
-                  <Bar dataKey="cesar" name="César" stackId="a" fill={PARTNER_COLORS.cesar} />
                 </BarChart>
               </ResponsiveContainer>
             ) : (

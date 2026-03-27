@@ -108,7 +108,7 @@ export function SubscriptionStatusCard({ showUpgrade = true, compact = false }: 
           </CardDescription>
         </CardHeader>
         <CardContent className="text-center">
-          <Button onClick={() => navigate('/bi-contabilidade')} className="gap-2">
+          <Button onClick={() => navigate('/servicos')} className="gap-2">
             Ver Planos Atentai
             <ArrowRight className="h-4 w-4" />
           </Button>

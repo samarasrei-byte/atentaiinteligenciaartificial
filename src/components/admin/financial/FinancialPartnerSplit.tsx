@@ -98,7 +98,7 @@ export const FinancialPartnerSplit: React.FC = () => {
 
       // Calcular totais
       const marketplaceRevenue = (paymentsData || [])
-        .filter((p: any) => ['limpa-nome', 'analise-fiscal', 'bi-contabilidade'].includes(p.payment_type || ''))
+        .filter((p: any) => ['limpa-nome', 'analise-fiscal'].includes(p.payment_type || ''))
         .reduce((sum: number, p: any) => sum + p.amount_cents, 0);
 
       const subscriptionsRevenue = (subscriptionsData || [])

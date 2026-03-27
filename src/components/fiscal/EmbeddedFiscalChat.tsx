@@ -32,7 +32,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
   // Determina o especialista responsável
   const specialistId = serviceType === 'bi' ? CESAR_ADMIN_ID : GUILHERME_ADMIN_ID;
   const specialistName = serviceType === 'bi' ? 'Especialista BI' : 'Guilherme';
-  const serviceName = serviceType === 'bi' ? 'BI+ Inteligência Fiscal' : 'Análise Fiscal';
+  const serviceName = serviceType === 'bi' ? 'Análise Fiscal Avançada' : 'Análise Fiscal';
 
   // Fetch active fiscal request for the user
   const { data: activeRequest, isLoading, refetch } = useQuery({
@@ -122,9 +122,7 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
       const greetings = ['Oi', 'Olá', 'E aí'];
       const greeting = greetings[Math.floor(Math.random() * greetings.length)];
       
-      const welcomeMessage = serviceType === 'bi'
-        ? `${greeting} Especialista! Sou o ${firstName}. Acabei de entrar aqui no BI+ e queria entender melhor como funciona a análise da minha empresa. Me conta o que você precisa pra gente começar?`
-        : `${greeting} Guilherme! Sou o ${firstName}. Quero fazer uma análise fiscal aqui e vi que vocês identificam valores que posso recuperar. O que você precisa de mim pra começar?`;
+      const welcomeMessage = `${greeting} Guilherme! Sou o ${firstName}. Quero fazer uma análise fiscal aqui e vi que vocês identificam valores que posso recuperar. O que você precisa de mim pra começar?`;
 
       await supabase
         .from('fiscal_chat_messages')

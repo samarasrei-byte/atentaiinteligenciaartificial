@@ -53,7 +53,7 @@ const serviceOptions = [
   { value: '', label: 'Nenhum (Geral)' },
   { value: 'limpa-nome', label: 'Limpa Nome' },
   { value: 'analise-fiscal', label: 'Análise Fiscal' },
-  { value: 'bi-contabilidade', label: 'BI Contabilidade' },
+  { value: 'emissao-nf', label: 'Emissão de NF' },
   { value: 'assinaturas', label: 'Assinaturas' },
 ];
 

@@ -132,8 +132,7 @@ export const ExternalAPIsConfig: React.FC = () => {
       fields: [
         { key: 'instanceId', label: 'Instance ID (Guilherme)', type: 'text', placeholder: 'INSTANCE_ID_GUI', required: true },
         { key: 'tokenGui', label: 'Token (Guilherme)', type: 'password', placeholder: 'TOKEN_GUI', required: true },
-        { key: 'instanceIdCesar', label: 'Instance ID (César)', type: 'text', placeholder: 'INSTANCE_ID_CESAR' },
-        { key: 'tokenCesar', label: 'Token (César)', type: 'password', placeholder: 'TOKEN_CESAR' },
+        { key: 'webhookUrl', label: 'Webhook URL', type: 'url', placeholder: 'https://...' },
         { key: 'webhookUrl', label: 'Webhook URL', type: 'url', placeholder: 'https://...' },
       ],
     },
@@ -152,7 +151,6 @@ export const ExternalAPIsConfig: React.FC = () => {
         { key: 'baseUrl', label: 'URL Base', type: 'url', placeholder: 'https://evolution.seudominio.com', required: true },
         { key: 'apiKey', label: 'Global API Key', type: 'password', placeholder: 'sua_api_key', required: true },
         { key: 'instanceGui', label: 'Instance Name (Guilherme)', type: 'text', placeholder: 'guilherme_instance' },
-        { key: 'instanceCesar', label: 'Instance Name (César)', type: 'text', placeholder: 'cesar_instance' },
       ],
     },
     {

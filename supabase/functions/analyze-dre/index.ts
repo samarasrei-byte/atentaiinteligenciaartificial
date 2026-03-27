@@ -39,7 +39,7 @@ serve(async (req) => {
       .select("role")
       .eq("user_id", user.id);
 
-    const hasAccess = roles?.some(r => ["admin", "contador", "equipe_cesar"].includes(r.role));
+    const hasAccess = roles?.some(r => ["admin", "contador", "equipe_guilherme", "equipe_cesar"].includes(r.role));
     if (!hasAccess) {
       return new Response(JSON.stringify({ error: "Acesso negado. Apenas admin/contador." }), {
         status: 403,
@@ -64,7 +64,7 @@ serve(async (req) => {
       });
     }
 
-    const systemPrompt = `Você é César, especialista sênior em BI e Contabilidade da AtentAI. Analise o DRE (Demonstração do Resultado do Exercício) fornecido e retorne uma análise completa.
+    const systemPrompt = `Você é Guilherme, especialista sênior em BI e Contabilidade da AtentAI. Analise o DRE (Demonstração do Resultado do Exercício) fornecido e retorne uma análise completa.
 
 IMPORTANTE: Responda usando as ferramentas fornecidas para estruturar sua resposta.
 

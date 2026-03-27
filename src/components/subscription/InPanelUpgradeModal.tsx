@@ -85,22 +85,6 @@ const SERVICE_CONFIGS: Record<string, ServiceConfig> = {
     successFee: true,
     onboardingRoute: '/modulo-fiscal/onboarding',
   },
-  'bi-contabilidade': {
-    type: 'fiscal_analysis',
-    name: 'BI+ Contabilidade',
-    description: 'Inteligência financeira completa para sua empresa',
-    priceCents: 0,
-    features: [
-      'Dashboard em tempo real',
-      'IA + Análise humana',
-      'Insights automáticos',
-      'Suporte especializado',
-    ],
-    icon: Brain,
-    gradient: 'from-purple-500 to-pink-600',
-    edgeFunction: 'create-fiscal-payment',
-    onboardingRoute: '/bi-contabilidade/onboarding',
-  },
   'abertura-empresa': {
     type: 'company_opening',
     name: 'Abertura de Empresa',
@@ -234,9 +218,9 @@ export const InPanelUpgradeModal: React.FC<InPanelUpgradeModalProps> = ({
                            window.location.pathname.includes('/empresa') ||
                            window.location.pathname.includes('/dashboard');
 
-    // RULE 1: Fiscal/BI inside panel → Navigate to chat tab
-    if (upgradeType === 'service' && isPanelContext && (serviceKey === 'analise-fiscal' || serviceKey === 'bi-contabilidade')) {
-      const tabId = serviceKey === 'bi-contabilidade' ? 'chat-bi' : 'chat-fiscal';
+    // RULE 1: Fiscal inside panel → Navigate to chat tab
+    if (upgradeType === 'service' && isPanelContext && serviceKey === 'analise-fiscal') {
+      const tabId = 'chat-fiscal';
       console.log(`[InPanelModal ROUTING] ${serviceKey} → ?tab=${tabId}`);
       setIsNavigating(true);
       onClose();
