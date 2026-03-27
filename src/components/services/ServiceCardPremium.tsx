@@ -321,7 +321,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
           {/* Guarantees */}
           <div className="flex flex-wrap gap-2 mb-5">
             {service.guarantees.map((guarantee, i) => (
-              <span key={i} className="text-[10px] text-slate-500 bg-slate-50 px-2 py-1 rounded-full">
+              <span key={i} className="text-[10px] text-muted-foreground bg-muted px-2 py-1 rounded-full">
                 {guarantee}
               </span>
             ))}

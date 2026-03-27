@@ -553,13 +553,13 @@ const ServicosPage = () => {
               <div className="container max-w-4xl mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-medium mb-6">
                   <Crown className="w-4 h-4 text-accent" />
-                  Economia de até 30%
+                  Acesso completo à plataforma
                 </div>
                 <h2 className="text-3xl lg:text-4xl font-bold text-white mb-4">
-                  Desbloqueie descontos exclusivos
+                  Desbloqueie IA ilimitada e dashboards
                 </h2>
                 <p className="text-lg text-white/80 mb-8 max-w-2xl mx-auto">
-                  Assinantes têm acesso a preços especiais em todos os serviços e suporte prioritário.
+                  Assinantes têm acesso ao simulador tributário, dashboards financeiros e suporte prioritário com IA.
                 </p>
                 <Button
                   size="lg"
@@ -568,7 +568,7 @@ const ServicosPage = () => {
                   className="px-8 group"
                 >
                   <Crown className="w-5 h-5 mr-2" />
-                  Ver Planos
+                  Ver Planos a partir de R$ 39,99
                   <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </div>
