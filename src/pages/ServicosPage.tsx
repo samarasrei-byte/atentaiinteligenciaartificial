@@ -494,7 +494,7 @@ const ServicosPage = () => {
 
           {/* Section 2: SERVIÇOS AVULSOS */}
           {filteredOneTime.length > 0 && (
-            <section className="py-10 bg-slate-50 dark:bg-slate-900/50">
+            <section className="py-10 bg-muted/50">
               <div className="container max-w-6xl mx-auto px-4">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
