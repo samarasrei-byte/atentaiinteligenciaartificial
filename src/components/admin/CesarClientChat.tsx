@@ -347,7 +347,7 @@ Pode mandar Excel, PDF ou imagem aqui mesmo.
 
 ${closing}
 
-César`);
+Guilherme`);
     setShowDocumentRequest(false);
   };
 
