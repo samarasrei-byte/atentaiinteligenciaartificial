@@ -261,7 +261,7 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
             {service.features.map((feature, i) => (
               <div key={i} className="flex items-start gap-2.5">
                 <Check className={`h-4 w-4 ${colors.icon} flex-shrink-0 mt-0.5`} />
-                <span className="text-sm text-slate-700">{feature}</span>
+                <span className="text-sm text-foreground">{feature}</span>
               </div>
             ))}
           </div>
