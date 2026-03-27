@@ -222,7 +222,7 @@ export default function ChatCesar() {
     const baseMessages: Message[] = [
       {
         id: 'welcome-1',
-        content: `Olá, ${name}! 👋\n\nSou o especialista em BI e Contabilidade da AtentAI. Recebi sua solicitação de ${serviceContexts[serviceType]?.label || 'serviço contábil'} e estou pronto para te ajudar.`,
+        content: `Olá, ${name}! 👋\n\nSou o especialista em Contabilidade da AtentAI. Recebi sua solicitação de ${serviceContexts[serviceType]?.label || 'serviço contábil'} e estou pronto para te ajudar.`,
         sender: 'specialist',
         timestamp: new Date(),
       },
