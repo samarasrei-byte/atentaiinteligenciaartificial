@@ -291,7 +291,7 @@ Se tiver dificuldade com algum deles, me avisa que posso te orientar sobre onde 
 
 Estou por aqui!
 
-César`;
+Guilherme`;
     },
     statusUpdate: (name: string) => {
       return `${name}, atualizando sobre sua análise:
