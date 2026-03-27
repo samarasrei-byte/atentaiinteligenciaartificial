@@ -472,7 +472,7 @@ const ServicosPage = () => {
 
           {/* Section 1: IA-POWERED — featured single card */}
           {filteredAI.length > 0 && (
-            <section className="py-10 bg-gradient-to-b from-purple-50/50 to-white dark:from-purple-950/20 dark:to-slate-900">
+            <section className="py-10 bg-gradient-to-b from-purple-50/50 to-background dark:from-purple-950/20 dark:to-background">
               <div className="container max-w-6xl mx-auto px-4">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
