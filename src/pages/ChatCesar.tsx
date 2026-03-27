@@ -231,7 +231,7 @@ export default function ChatCesar() {
     if (serviceType === 'bi-contabilidade') {
       baseMessages.push({
         id: 'welcome-2',
-        content: `📊 **Próximos passos para BI+ Contabilidade:**\n\n1. Análise dos documentos enviados\n2. Processamento com IA\n3. Validação humana dos insights\n4. Entrega do relatório completo\n\n📎 **Documentos recomendados:**\n• Balanço Patrimonial\n• DRE (Demonstração de Resultados)\n• Fluxo de Caixa\n• Extratos bancários\n\nEnvie pelo botão 📎 abaixo!`,
+        content: `📊 **Próximos passos para Contabilidade:**\n\n1. Análise dos documentos enviados\n2. Processamento com IA\n3. Validação humana dos insights\n4. Entrega do relatório completo\n\n📎 **Documentos recomendados:**\n• Balanço Patrimonial\n• DRE (Demonstração de Resultados)\n• Fluxo de Caixa\n• Extratos bancários\n\nEnvie pelo botão 📎 abaixo!`,
         sender: 'specialist',
         timestamp: new Date(Date.now() + 1000),
       });
