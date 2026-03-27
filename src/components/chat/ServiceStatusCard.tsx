@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
 
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade';
+export type ServiceType = 'limpanome' | 'analise-fiscal';
 
 export interface ServiceStep {
   id: string;
