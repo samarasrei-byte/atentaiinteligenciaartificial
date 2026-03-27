@@ -206,13 +206,11 @@ export function RevenuePartnerSplitDashboard() {
     const marketplaceSplits = {
       guilherme_mesquita: Math.round(marketplaceRevenue * (MARKETPLACE_SPLIT.guilherme_mesquita / 100)),
       guilherme_baus: Math.round(marketplaceRevenue * (MARKETPLACE_SPLIT.guilherme_baus / 100)),
-      cesar: Math.round(marketplaceRevenue * (MARKETPLACE_SPLIT.cesar / 100)),
     };
 
     const platformSplits = {
       guilherme_mesquita: Math.round(platformRevenue * (PLATFORM_SPLIT.guilherme_mesquita / 100)),
       guilherme_baus: Math.round(platformRevenue * (PLATFORM_SPLIT.guilherme_baus / 100)),
-      cesar: Math.round(platformRevenue * (PLATFORM_SPLIT.cesar / 100)),
     };
 
     return {
@@ -221,7 +219,6 @@ export function RevenuePartnerSplitDashboard() {
       total: {
         guilherme_mesquita: marketplaceSplits.guilherme_mesquita + platformSplits.guilherme_mesquita,
         guilherme_baus: marketplaceSplits.guilherme_baus + platformSplits.guilherme_baus,
-        cesar: marketplaceSplits.cesar + platformSplits.cesar,
       },
     };
   };
