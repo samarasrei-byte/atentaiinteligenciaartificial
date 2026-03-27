@@ -300,7 +300,7 @@ Estou revisando os documentos e montando os primeiros indicadores do seu painel.
 
 Qualquer dúvida, pode chamar!
 
-César`;
+Guilherme`;
     },
     requestDRE: (name: string) => {
       return `Oi, ${name}!
