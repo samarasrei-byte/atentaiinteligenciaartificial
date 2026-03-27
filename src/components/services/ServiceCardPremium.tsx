@@ -191,12 +191,12 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       transition={{ duration: 0.4 }}
       className="h-full"
     >
-      <Card className={`h-full flex flex-col bg-white border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group relative overflow-hidden rounded-3xl ${
+      <Card className={`h-full flex flex-col bg-card border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group relative overflow-hidden rounded-3xl ${
         service.badge === 'popular' 
           ? `${colors.border} ring-1 ${colors.ring}` 
           : service.badge === 'free'
             ? 'border-emerald-500/50 ring-1 ring-emerald-500/20'
-            : 'border-slate-200 hover:border-slate-300'
+            : 'border-border hover:border-border/80'
       }`}>
         
         {/* Badge */}
