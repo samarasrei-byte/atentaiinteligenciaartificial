@@ -481,7 +481,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15 }}
-                  className="p-8 rounded-3xl bg-white/[0.03] border border-white/[0.08] text-left hover:border-emerald-500/20 transition-all duration-500"
+                  className="p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-white/[0.03] border border-white/[0.08] text-left hover:border-emerald-500/20 transition-all duration-500"
                 >
                   <div className="flex gap-1 mb-5">
                     {[...Array(d.rating)].map((_, j) => (
