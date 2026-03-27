@@ -520,8 +520,8 @@ export default function LimpaNomeLanding() {
                 </div>
 
                 <div className="text-center md:text-left">
-                  <h3 className="text-3xl font-black text-white mb-1">Guilherme Mesquita</h3>
-                  <p className="text-emerald-400 font-semibold text-lg mb-5">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white mb-1">Guilherme Mesquita</h3>
+                  <p className="text-emerald-400 font-semibold text-sm sm:text-lg mb-5">
                     Especialista em Regularização Jurídica • +8 anos de experiência
                   </p>
                   <p className="text-white/60 leading-relaxed text-lg">
