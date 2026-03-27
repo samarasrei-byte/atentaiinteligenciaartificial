@@ -93,7 +93,7 @@ export const STRIPE_PLANS = PLANS;
 export type PlanType = keyof typeof PLANS;
 
 // ============================================================
-// BI PLANS - Used ONLY in /bi-contabilidade module
+// BI PLANS - Legacy (oculto)
 // ============================================================
 export const BI_PLANS = {
   clarity: {
