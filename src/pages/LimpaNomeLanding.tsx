@@ -130,7 +130,7 @@ export default function LimpaNomeLanding() {
       <div className="min-h-screen bg-[#030712] text-white overflow-x-hidden selection:bg-emerald-500/30">
 
         {/* ========== HERO ========== */}
-        <section className="relative min-h-screen flex items-center justify-center px-4 py-20 overflow-hidden">
+        <section className="relative min-h-[100dvh] flex items-center justify-center px-4 py-16 sm:py-20 overflow-hidden">
           {/* Massive BG Effects */}
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_rgba(16,185,129,0.15),_transparent_60%)]" />
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,_rgba(16,185,129,0.08),_transparent_50%)]" />
