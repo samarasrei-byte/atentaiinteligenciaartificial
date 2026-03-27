@@ -242,17 +242,17 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
           </div>
 
           {/* Target Audience */}
-          <p className="text-xs font-medium text-slate-500 uppercase tracking-wide mb-2">
+          <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-2">
             {service.targetAudience}
           </p>
 
           {/* Name */}
-          <h3 className="text-xl font-bold text-slate-900 mb-2 leading-tight">
+          <h3 className="text-xl font-bold text-foreground mb-2 leading-tight">
             {service.name}
           </h3>
 
           {/* Description */}
-          <p className="text-sm text-slate-600 mb-4">
+          <p className="text-sm text-muted-foreground mb-4">
             {service.description}
           </p>
 
