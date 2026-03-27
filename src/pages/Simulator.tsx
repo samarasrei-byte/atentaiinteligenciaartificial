@@ -26,6 +26,7 @@ import {
   companyTypes,
   brazilianStates,
   stateICMSRates,
+  selectiveTaxRates,
   calculateTaxes,
   formatCurrency,
   formatCurrencyInput,
@@ -106,22 +107,51 @@ const Simulator = () => {
       companyType,
       state: state || undefined,
     });
+
+    const companyData = companyTypes.find(c => c.value === companyType);
+    const multiplier = companyData?.multiplier || 1;
+    const creditFactor = companyData?.creditFactor || 0;
+    const selectiveRate = selectiveTaxRates[sector] || 0;
+
+    const transitionTaxes = calculateTransitionTax(
+      revenueValue * multiplier,
+      selectedYear,
+      creditFactor
+    );
+
+    const selectiveTax = revenueValue * (selectiveRate / 100) * multiplier;
+    const adjustedAfterTotal = transitionTaxes.total + selectiveTax;
+
+    const adjustedResult: SimulationResult = {
+      ...simulationResult,
+      afterTaxes: {
+        ibs: transitionTaxes.ibs,
+        cbs: transitionTaxes.cbs,
+        is: selectiveTax,
+        total: adjustedAfterTotal,
+      },
+      difference: adjustedAfterTotal - simulationResult.beforeTaxes.total,
+      percentChange:
+        simulationResult.beforeTaxes.total > 0
+          ? ((adjustedAfterTotal - simulationResult.beforeTaxes.total) / simulationResult.beforeTaxes.total) * 100
+          : 0,
+    };
     
-    setResult(simulationResult);
+    setResult(adjustedResult);
 
     // Save simulation to database
     await supabase.from('tax_simulations').insert({
       user_id: user!.id,
       revenue_cents: Math.round(revenueValue * 100),
       tax_type: 'comparison',
-      icms_cents: Math.round(simulationResult.beforeTaxes.icms * 100),
-      iss_cents: Math.round(simulationResult.beforeTaxes.iss * 100),
-      pis_cents: Math.round(simulationResult.beforeTaxes.pis * 100),
-      cofins_cents: Math.round(simulationResult.beforeTaxes.cofins * 100),
-      ibs_cents: Math.round(simulationResult.afterTaxes.ibs * 100),
-      cbs_cents: Math.round(simulationResult.afterTaxes.cbs * 100),
-      is_cents: Math.round(simulationResult.afterTaxes.is * 100),
-      total_tax_cents: Math.round(simulationResult.afterTaxes.total * 100),
+      icms_cents: Math.round(adjustedResult.beforeTaxes.icms * 100),
+      iss_cents: Math.round(adjustedResult.beforeTaxes.iss * 100),
+      pis_cents: Math.round(adjustedResult.beforeTaxes.pis * 100),
+      cofins_cents: Math.round(adjustedResult.beforeTaxes.cofins * 100),
+      ibs_cents: Math.round(adjustedResult.afterTaxes.ibs * 100),
+      cbs_cents: Math.round(adjustedResult.afterTaxes.cbs * 100),
+      is_cents: Math.round(adjustedResult.afterTaxes.is * 100),
+      total_tax_cents: Math.round(adjustedResult.afterTaxes.total * 100),
     });
 
     setIsSimulating(false);
@@ -398,83 +428,52 @@ const Simulator = () => {
                   <h4 className="text-sm font-medium text-slate-400 uppercase tracking-wider">
                     Novo Sistema ({selectedYear}) - {TRANSITION_RATES[selectedYear].phase}
                   </h4>
-                  {(() => {
-                    const companyData = companyTypes.find(c => c.value === companyType);
-                    const creditFactor = companyData?.creditFactor || 0;
-                    const multiplier = companyData?.multiplier || 1;
-                    const yearTaxes = calculateTransitionTax(
-                      parseCurrencyInput(revenue) * multiplier,
-                      selectedYear,
-                      creditFactor
-                    );
-                    return (
-                      <>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <span className="text-slate-400">IBS ({TRANSITION_RATES[selectedYear].ibs}%):</span>
-                          <span className="text-white text-right">{formatCurrency(yearTaxes.ibs)}</span>
-                          <span className="text-slate-400">CBS ({TRANSITION_RATES[selectedYear].cbs}%):</span>
-                          <span className="text-white text-right">{formatCurrency(yearTaxes.cbs)}</span>
-                          {result.afterTaxes.is > 0 && (
-                            <>
-                              <span className="text-slate-400">Imp. Seletivo:</span>
-                              <span className="text-white text-right">{formatCurrency(result.afterTaxes.is)}</span>
-                            </>
-                          )}
-                        </div>
-                        <div className="flex justify-between items-center pt-2 border-t border-slate-700">
-                          <span className="font-semibold text-slate-300">Total {selectedYear}:</span>
-                          <span className="text-xl font-bold text-cyan-400">
-                            {formatCurrency(yearTaxes.total + (result.afterTaxes.is || 0))}
-                          </span>
-                        </div>
-                        {TRANSITION_RATES[selectedYear].percentImplemented > 0 && 
-                         TRANSITION_RATES[selectedYear].percentImplemented < 100 && (
-                          <p className="text-xs text-amber-400 text-center">
-                            {TRANSITION_RATES[selectedYear].percentImplemented}% do novo sistema implementado
-                          </p>
-                        )}
-                      </>
-                    );
-                  })()}
+                  <>
+                    <div className="grid grid-cols-2 gap-2 text-sm">
+                      <span className="text-slate-400">IBS ({TRANSITION_RATES[selectedYear].ibs}%):</span>
+                      <span className="text-white text-right">{formatCurrency(result.afterTaxes.ibs)}</span>
+                      <span className="text-slate-400">CBS ({TRANSITION_RATES[selectedYear].cbs}%):</span>
+                      <span className="text-white text-right">{formatCurrency(result.afterTaxes.cbs)}</span>
+                      {result.afterTaxes.is > 0 && (
+                        <>
+                          <span className="text-slate-400">Imp. Seletivo:</span>
+                          <span className="text-white text-right">{formatCurrency(result.afterTaxes.is)}</span>
+                        </>
+                      )}
+                    </div>
+                    <div className="flex justify-between items-center pt-2 border-t border-slate-700">
+                      <span className="font-semibold text-slate-300">Total {selectedYear}:</span>
+                      <span className="text-xl font-bold text-cyan-400">{formatCurrency(result.afterTaxes.total)}</span>
+                    </div>
+                    {TRANSITION_RATES[selectedYear].percentImplemented > 0 &&
+                      TRANSITION_RATES[selectedYear].percentImplemented < 100 && (
+                        <p className="text-xs text-amber-400 text-center">
+                          {TRANSITION_RATES[selectedYear].percentImplemented}% do novo sistema implementado
+                        </p>
+                      )}
+                  </>
                 </div>
 
-                {/* Difference - recalculated for selected year */}
-                {(() => {
-                  const companyData = companyTypes.find(c => c.value === companyType);
-                  const creditFactor = companyData?.creditFactor || 0;
-                  const multiplier = companyData?.multiplier || 1;
-                  const yearTaxes = calculateTransitionTax(
-                    parseCurrencyInput(revenue) * multiplier,
-                    selectedYear,
-                    creditFactor
-                  );
-                  const yearTotal = yearTaxes.total + (result.afterTaxes.is || 0);
-                  const yearDiff = yearTotal - result.beforeTaxes.total;
-                  const yearPercent = result.beforeTaxes.total > 0 ? (yearDiff / result.beforeTaxes.total) * 100 : 0;
-                  
-                  return (
-                    <div className={`p-4 rounded-lg ${yearDiff < 0 ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
-                      <div className="flex items-center justify-between">
-                        <span className="text-slate-300">Diferença ({selectedYear}):</span>
-                        <div className="flex items-center gap-2">
-                          {yearDiff < 0 ? (
-                            <TrendingDown className="h-5 w-5 text-green-400" />
-                          ) : (
-                            <TrendingUp className="h-5 w-5 text-red-400" />
-                          )}
-                          <span className={`text-xl font-bold ${yearDiff < 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {yearDiff < 0 ? '-' : '+'}{formatCurrency(Math.abs(yearDiff))}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-center mt-2">
-                        <span className={`text-sm ${yearDiff < 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {yearPercent > 0 ? '+' : ''}{yearPercent.toFixed(1)}% em relação ao atual
-                        </span>
-                      </div>
+                <div className={`p-4 rounded-lg ${result.difference < 0 ? 'bg-green-900/30' : 'bg-red-900/30'}`}>
+                  <div className="flex items-center justify-between">
+                    <span className="text-slate-300">Diferença ({selectedYear}):</span>
+                    <div className="flex items-center gap-2">
+                      {result.difference < 0 ? (
+                        <TrendingDown className="h-5 w-5 text-green-400" />
+                      ) : (
+                        <TrendingUp className="h-5 w-5 text-red-400" />
+                      )}
+                      <span className={`text-xl font-bold ${result.difference < 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        {result.difference < 0 ? '-' : '+'}{formatCurrency(Math.abs(result.difference))}
+                      </span>
                     </div>
-                  );
-                })()}
+                  </div>
+                  <div className="text-center mt-2">
+                    <span className={`text-sm ${result.difference < 0 ? 'text-green-400' : 'text-red-400'}`}>
+                      {result.percentChange > 0 ? '+' : ''}{result.percentChange.toFixed(1)}% em relação ao atual
+                    </span>
+                  </div>
+                </div>
               </CardContent>
             </Card>
           )}
@@ -483,7 +482,7 @@ const Simulator = () => {
         {/* Charts Section */}
         {result && (
           <div className="mt-8 space-y-8">
-            <TaxComparisonChart result={result} />
+            <TaxComparisonChart result={result} selectedYear={selectedYear} />
             <TransitionDisclaimer />
             <TransitionTimeline result={result} />
             <TaxTransitionTimeline />
