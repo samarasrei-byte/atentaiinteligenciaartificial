@@ -31,27 +31,23 @@ import { formatCurrency } from "@/lib/servicePricing";
 
 // Partner split configuration
 const MARKETPLACE_SPLIT = {
-  guilherme_mesquita: 33.33,
-  guilherme_baus: 33.33,
-  cesar: 33.34,
+  guilherme_mesquita: 50,
+  guilherme_baus: 50,
 };
 
 const PLATFORM_SPLIT = {
   guilherme_mesquita: 70,
-  guilherme_baus: 15,
-  cesar: 15,
+  guilherme_baus: 30,
 };
 
 const PARTNER_COLORS = {
   guilherme_mesquita: "#10b981",
   guilherme_baus: "#3b82f6", 
-  cesar: "#f59e0b",
 };
 
 const PARTNER_NAMES = {
   guilherme_mesquita: "Guilherme de Mesquita",
   guilherme_baus: "Guilherme Baus",
-  cesar: "César",
 };
 
 export function RevenuePartnerSplitDashboard() {
