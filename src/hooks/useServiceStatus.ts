@@ -72,14 +72,6 @@ const SERVICE_STATUS_MAP: Record<ServiceType, {
   'bi-contabilidade': {
     table: 'fiscal_analysis_requests', // Reusing for now
     statusField: 'status',
-    statusToStep: {
-      'pending': 0,
-      'collecting_docs': 1,
-      'processing': 2,
-      'validation': 3,
-      'insights_ready': 4,
-      'completed': 5,
-    },
   },
 };
 

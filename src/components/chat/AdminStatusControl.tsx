@@ -26,7 +26,6 @@ interface AdminStatusControlProps {
 const SERVICE_COLORS: Record<ServiceType, { bg: string; text: string }> = {
   'limpanome': { bg: 'bg-emerald-500/10', text: 'text-emerald-600' },
   'analise-fiscal': { bg: 'bg-violet-500/10', text: 'text-violet-600' },
-  };
 };
 
 export const AdminStatusControl: React.FC<AdminStatusControlProps> = ({
