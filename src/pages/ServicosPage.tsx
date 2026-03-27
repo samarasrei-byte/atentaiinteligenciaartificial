@@ -452,7 +452,7 @@ const ServicosPage = () => {
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {freeTools.map((tool) => (
                   <Link key={tool.key} to={tool.href}>
-                    <Card className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30 hover:bg-white dark:hover:bg-slate-750 transition-all duration-300 hover:shadow-md">
+                    <Card className="bg-muted border-border hover:border-primary/30 hover:bg-background transition-all duration-300 hover:shadow-md">
                       <CardContent className="p-4 flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <tool.icon className="h-5 w-5 text-primary" />
