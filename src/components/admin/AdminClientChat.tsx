@@ -510,7 +510,8 @@ Guilherme`;
 
   const handleDocumentRequest = (docLabel: string) => {
     const firstName = selectedClient?.full_name?.split(' ')[0] || 'Cliente';
-    const serviceLabel = selectedClient?.service_type === 'limpa-nome' ? 'recuperação de crédito' : 'análise fiscal';
+    const serviceLabelMap: Record<string, string> = { 'limpa-nome': 'recuperação de crédito', 'fiscal': 'análise fiscal', 'nf': 'emissão de NF', 'ir': 'imposto de renda', 'bi': 'contabilidade' };
+    const serviceLabel = serviceLabelMap[selectedClient?.service_type || 'fiscal'] || 'serviço';
     
     // Variações de saudação humanizadas
     const greetings = ['Oi', 'Olá', 'E aí', 'Opa'];
