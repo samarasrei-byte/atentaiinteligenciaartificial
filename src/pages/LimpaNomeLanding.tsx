@@ -65,6 +65,18 @@ function CTAButton({ className = "", size = "lg", text = "QUERO ANALISAR MEU CAS
   );
 }
 
+function StatItem({ end, suffix, label }: { end: number; suffix: string; label: string }) {
+  const { count, ref } = useCounter(end);
+  return (
+    <div className="text-center">
+      <span ref={ref} className="text-4xl sm:text-5xl font-black bg-gradient-to-b from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
+        {count}{suffix}
+      </span>
+      <p className="mt-2 text-white/40 text-sm font-medium uppercase tracking-wider">{label}</p>
+    </div>
+  );
+}
+
 function FloatingParticle({ delay = 0, left = "50%" }: { delay?: number; left?: string }) {
   return (
     <motion.div
