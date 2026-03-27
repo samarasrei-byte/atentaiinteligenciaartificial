@@ -425,7 +425,7 @@ const ServicosPage = () => {
                 </div>
                 {user && (
                   <div className="hidden md:flex items-center gap-2 ml-auto">
-                    <span className="text-xs text-slate-500">Acesso rápido:</span>
+                    <span className="text-xs text-muted-foreground">Acesso rápido:</span>
                     {panelAccess.map((panel) => (
                       <Link key={panel.role} to={panel.href}>
                         <Button variant="outline" size="sm" className="text-xs">
