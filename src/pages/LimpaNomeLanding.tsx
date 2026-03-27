@@ -676,21 +676,22 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== CTA FINAL ========== */}
-        <section className="px-4 py-28 relative overflow-hidden">
+        <section className="px-4 py-16 sm:py-28 pb-32 relative overflow-hidden">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.15),_transparent_60%)]" />
           <div className="relative max-w-4xl mx-auto text-center">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black leading-tight mb-6">
-              Descubra agora se seu nome<br />pode ser{" "}
+            <h2 className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-black leading-tight mb-6">
+              Descubra agora se seu nome pode ser{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">regularizado</span>
             </h2>
-            <p className="text-white/50 mb-12 text-xl">
+            <p className="text-white/50 mb-8 sm:mb-12 text-base sm:text-xl">
               Converse com nosso especialista gratuitamente. Sem compromisso.
             </p>
-            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group">
-              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xl px-14 py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2">
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
+              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm sm:text-lg md:text-xl px-6 sm:px-10 md:px-14 py-6 sm:py-8 md:py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2 w-full sm:w-auto">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-                <MessageCircle className="w-7 h-7 mr-3" />
-                FALAR COM ESPECIALISTA NO WHATSAPP
+                <MessageCircle className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 shrink-0" />
+                <span className="sm:hidden">FALAR NO WHATSAPP</span>
+                <span className="hidden sm:inline">FALAR COM ESPECIALISTA NO WHATSAPP</span>
               </Button>
             </a>
             <p className="mt-8 text-white/25 text-sm">AtentAI • Regularização Jurídica • CNPJ ativo</p>
