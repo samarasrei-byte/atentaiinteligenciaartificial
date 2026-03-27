@@ -31,19 +31,8 @@ export interface ServiceResponse {
 /**
  * Get the responsible person for each service type
  */
-export const getResponsiblePerson = (serviceType: ServiceType): 'guilherme' | 'cesar' => {
-  switch (serviceType) {
-    case 'limpanome':
-    case 'analise-fiscal':
-    case 'abertura-empresa':
-    case 'certidao':
-    case 'ir':
-      return 'guilherme';
-    case 'bi-contabilidade':
-      return 'guilherme';
-    default:
-      return 'guilherme';
-  }
+export const getResponsiblePerson = (serviceType: ServiceType): 'guilherme' => {
+  return 'guilherme';
 };
 
 /**
