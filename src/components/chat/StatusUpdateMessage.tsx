@@ -33,14 +33,6 @@ const SERVICE_STEPS: Record<ServiceType, ServiceStep[]> = {
     { id: 'adjustments', label: 'Ajustes / regularização' },
     { id: 'completed', label: 'Análise concluída' },
   ],
-  'bi-contabilidade': [
-    { id: 'received', label: 'Solicitação recebida' },
-    { id: 'collecting', label: 'Coleta de documentos' },
-    { id: 'ai_processing', label: 'Processamento com IA' },
-    { id: 'validation', label: 'Validação humana' },
-    { id: 'insights', label: 'Insights prontos' },
-    { id: 'completed', label: 'Relatório entregue' },
-  ],
 };
 
 type UpdateType = 'status_change' | 'document_received' | 'document_analyzed' | 'milestone' | 'completion';

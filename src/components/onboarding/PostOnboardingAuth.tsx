@@ -12,7 +12,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 interface PostOnboardingAuthProps {
-  serviceType: 'limpanome' | 'fiscal' | 'bi-contabilidade';
+  serviceType: 'limpanome' | 'fiscal';
   requestId: string;
   prefillData?: {
     fullName?: string;

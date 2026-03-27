@@ -21,7 +21,7 @@ import { useAuth } from '@/contexts/AuthContext';
 interface ServicePaywallModalProps {
   isOpen: boolean;
   onClose: () => void;
-  serviceType: 'limpanome' | 'fiscal' | 'bi-contabilidade';
+  serviceType: 'limpanome' | 'fiscal';
   servicePriceCents: number;
   onPaymentSuccess?: () => void;
 }

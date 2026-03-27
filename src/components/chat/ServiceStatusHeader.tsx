@@ -53,11 +53,6 @@ const SERVICE_CONFIG: Record<ServiceType, {
     color: 'text-violet-600',
     bgColor: 'bg-violet-50',
   },
-  'bi-contabilidade': {
-    icon: BarChart3,
-    color: 'text-indigo-600',
-    bgColor: 'bg-indigo-50',
-  },
 };
 
 interface ServiceStatusHeaderProps {
