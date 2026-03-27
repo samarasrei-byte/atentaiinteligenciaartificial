@@ -409,7 +409,7 @@ Segue o link pro pagamento do **${serviceLabel}**:
 
 Qualquer coisa, só chamar!
 
-César`);
+Guilherme`);
       setShowPaymentRequest(false);
       setCustomPaymentAmount('');
       toast({ title: 'Link de pagamento gerado!', description: 'Mensagem pronta para enviar.' });
