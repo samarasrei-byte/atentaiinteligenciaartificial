@@ -264,7 +264,7 @@ export const BIRealtimeNotifications: React.FC<BIRealtimeNotificationsProps> = (
             </div>
             <div>
               <CardTitle className="text-lg flex items-center gap-2">
-                Notificações BI+
+                Notificações
               </CardTitle>
               <CardDescription className="text-xs">
                 Novas solicitações em tempo real
