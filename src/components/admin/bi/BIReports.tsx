@@ -64,7 +64,7 @@ export const BIReports: React.FC = () => {
       type: 'operational',
       status: 'approved',
       generated_at: new Date(Date.now() - 86400000),
-      approved_by: 'César',
+      approved_by: 'Guilherme',
       approved_at: new Date(Date.now() - 3600000),
       content: 'Métricas de desempenho por serviço com recomendações...',
     },
