@@ -190,7 +190,7 @@ export function BIAccessCard({ variant = 'full' }: BIAccessCardProps) {
                 <BarChart3 className="h-5 w-5 text-primary" />
               </div>
               <div>
-                <p className="font-semibold text-foreground">BI+ Contabilidade</p>
+                <p className="font-semibold text-foreground">Contabilidade</p>
                 <p className="text-xs text-muted-foreground">Desbloqueie inteligência fiscal</p>
               </div>
             </div>
