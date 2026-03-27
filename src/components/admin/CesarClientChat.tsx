@@ -490,7 +490,7 @@ César`);
             {filteredClients.length === 0 ? (
               <div className="text-center py-12">
                 <Users className="h-10 w-10 mx-auto mb-3 text-slate-300" />
-                <p className="text-sm text-slate-500">Nenhum cliente BI</p>
+                <p className="text-sm text-slate-500">Nenhum cliente</p>
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
