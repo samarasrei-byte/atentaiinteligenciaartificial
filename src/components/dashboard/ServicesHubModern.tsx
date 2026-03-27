@@ -287,6 +287,23 @@ export const ServicesHubModern: React.FC = () => {
       },
       badge: 'Sem Custo Inicial',
     },
+    {
+      title: 'Contador IA — Imposto de Renda',
+      description: 'Envie seus documentos e a IA faz sua declaração de IR em minutos.',
+      icon: Brain,
+      basePrice: 8900,
+      discountedPrice: 8900,
+      discountPercent: 0,
+      features: [
+        'Extração automática de dados',
+        'Cálculo de imposto por IA',
+        'Alertas de inconsistências',
+      ],
+      gradient: 'from-violet-500/40 to-purple-500/40',
+      iconGradient: 'from-violet-500 to-purple-500',
+      onClick: () => navigate('/ir'),
+      badge: 'NOVO',
+    },
   ];
 
   const containerVariants = {
