@@ -21,7 +21,7 @@ const roleLabels: Record<AppRole, string> = {
   user: 'Empresa',
   affiliate: 'Afiliado',
   equipe_guilherme: 'Equipe Guilherme',
-  equipe_cesar: 'Equipe Emissão NF'
+  equipe_cesar: 'Equipe Guilherme'
 };
 
 export function RoleProtectedRoute({ children, requiredRole }: RoleProtectedRouteProps) {

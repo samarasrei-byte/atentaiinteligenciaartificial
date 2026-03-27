@@ -120,7 +120,7 @@ const serviceConfigs: Record<string, {
     successUrl: '/payment-success?type=certificate',
     serviceType: 'certificate',
   },
-  // bi-contabilidade removed - hidden from public
+  // Legacy services removed
   'simulador': {
     name: 'Simulador Tributário',
     description: 'Simule o impacto da reforma tributária na sua empresa com IA',
