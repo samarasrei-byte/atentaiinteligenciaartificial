@@ -560,7 +560,7 @@ export default function LimpaNomeLanding() {
             </h2>
             <p className="text-white/40 mb-12 text-lg">Investimento único que pode mudar sua vida financeira</p>
 
-            <div className="p-10 md:p-14 rounded-[2rem] bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/25 relative shadow-[0_0_80px_rgba(16,185,129,0.1)]">
+            <div className="p-6 sm:p-10 md:p-14 rounded-2xl sm:rounded-[2rem] bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/25 relative shadow-[0_0_80px_rgba(16,185,129,0.1)]">
               <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-8 py-2 bg-gradient-to-r from-emerald-400 to-emerald-500 text-black font-black text-sm rounded-full uppercase tracking-wider shadow-lg">
                 🔥 Oferta por Tempo Limitado
               </div>
