@@ -266,7 +266,7 @@ export default function LimpaNomeLanding() {
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
               {[
                 { icon: Ban, title: "Crédito negado", desc: "Cartões, empréstimos e financiamentos recusados automaticamente. Portas fechadas em todos os bancos.", color: "red" },
                 { icon: XCircle, title: "Sem alugar imóvel", desc: "Ficha rejeitada em imobiliárias. O sonho da casa própria ou do aluguel travado indefinidamente.", color: "red" },
