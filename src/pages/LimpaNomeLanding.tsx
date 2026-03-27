@@ -312,7 +312,7 @@ export default function LimpaNomeLanding() {
               <Zap className="w-4 h-4" /> A SOLUÇÃO
             </span>
 
-            <h2 className="text-4xl sm:text-5xl font-black leading-tight mb-6">
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black leading-tight mb-6">
               Análise jurídica estratégica<br />baseada no{" "}
               <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">
                 Código de Defesa do Consumidor
