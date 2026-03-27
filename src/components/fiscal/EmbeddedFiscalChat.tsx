@@ -15,7 +15,7 @@ interface EmbeddedFiscalChatProps {
 
 // IDs dos especialistas responsáveis (IDs reais do banco de dados)
 const GUILHERME_ADMIN_ID = '596de7f7-4352-4058-8855-18f9489a0311'; // Análise Fiscal - Guilherme Mesquita
-const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9'; // BI Inteligência Fiscal - Equipe
+const CESAR_ADMIN_ID = '6307fc12-d37c-43f5-ab78-c62cf29dffd9'; // Legacy - unused
 
 // Lista de IDs de especialistas que NÃO devem criar solicitações para si mesmos
 const SPECIALIST_IDS = [GUILHERME_ADMIN_ID, CESAR_ADMIN_ID];
@@ -30,9 +30,9 @@ export const EmbeddedFiscalChat: React.FC<EmbeddedFiscalChatProps> = ({
   const [isCreating, setIsCreating] = useState(false);
 
   // Determina o especialista responsável
-  const specialistId = serviceType === 'bi' ? CESAR_ADMIN_ID : GUILHERME_ADMIN_ID;
-  const specialistName = serviceType === 'bi' ? 'Especialista BI' : 'Guilherme';
-  const serviceName = serviceType === 'bi' ? 'Análise Fiscal Avançada' : 'Análise Fiscal';
+  const specialistId = GUILHERME_ADMIN_ID;
+  const specialistName = 'Guilherme';
+  const serviceName = 'Análise Fiscal';
 
   // Fetch active fiscal request for the user
   const { data: activeRequest, isLoading, refetch } = useQuery({

@@ -588,8 +588,7 @@ const AutonomoPanel: React.FC = () => {
         );
       case 'chat-fiscal':
         return <EmbeddedFiscalChat variant="autonomo" serviceType="fiscal" />;
-      case 'chat-bi':
-        return <EmbeddedFiscalChat variant="autonomo" serviceType="bi" />;
+      // chat-bi removed
       case 'glossary':
         return (
           <div className="space-y-6">
