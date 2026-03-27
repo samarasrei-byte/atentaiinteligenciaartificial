@@ -187,7 +187,15 @@ export function AdminClientChat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const theme = selectedClient ? serviceThemes[selectedClient.service_type] : null;
-  const documentTypes = selectedClient?.service_type === 'limpa-nome' ? documentTypesLimpaNome : documentTypesFiscal;
+  const getDocumentTypes = (type?: ServiceType) => {
+    switch (type) {
+      case 'limpa-nome': return documentTypesLimpaNome;
+      case 'nf': return documentTypesNF;
+      case 'ir': return documentTypesIR;
+      default: return documentTypesFiscal;
+    }
+  };
+  const documentTypes = getDocumentTypes(selectedClient?.service_type);
 
   // Get attachments from messages for quick access
   const receivedAttachments = messages.filter(m => m.attachment_url && m.sender_id !== user?.id);
@@ -212,7 +220,7 @@ export function AdminClientChat() {
   const loadClients = async () => {
     setIsLoading(true);
     try {
-      const [limpaNomeRes, fiscalRes] = await Promise.all([
+      const [limpaNomeRes, fiscalRes, irRes] = await Promise.all([
         supabase
           .from('credit_repair_requests')
           .select('id, full_name, email, phone, status, created_at, user_id, debt_amount_cents, cpf')
@@ -222,7 +230,12 @@ export function AdminClientChat() {
           .from('fiscal_analysis_requests')
           .select('id, full_name, email, phone, status, created_at, user_id, identified_value_cents, cnpj, cpf, notes')
           .order('created_at', { ascending: false })
-          .limit(100)
+          .limit(100),
+        supabase
+          .from('ir_ai_declarations')
+          .select('id, status, created_at, user_id, declaration_type, fiscal_year')
+          .order('created_at', { ascending: false })
+          .limit(100),
       ]);
 
       const limpaNome: ClientRequest[] = (limpaNomeRes.data || []).map(r => ({
@@ -233,14 +246,39 @@ export function AdminClientChat() {
       const fiscal: ClientRequest[] = (fiscalRes.data || []).map((r: any) => {
         const notes: string = r?.notes || '';
         const isBI = typeof notes === 'string' && notes.toUpperCase().startsWith('[BI]');
-        const service_type: ClientRequest['service_type'] = isBI ? 'bi' : 'fiscal';
+        const isNF = typeof notes === 'string' && notes.toUpperCase().startsWith('[NF]');
+        const service_type: ClientRequest['service_type'] = isBI ? 'bi' : isNF ? 'nf' : 'fiscal';
         return {
           ...r,
           service_type,
         };
       });
 
-      const combined = [...limpaNome, ...fiscal].sort((a, b) => 
+      // Load profile names for IR declarations
+      const irUserIds = [...new Set((irRes.data || []).map((r: any) => r.user_id))];
+      let profileMap: Record<string, { full_name: string; email: string }> = {};
+      if (irUserIds.length > 0) {
+        const { data: profiles } = await supabase
+          .from('profiles')
+          .select('user_id, full_name, email')
+          .in('user_id', irUserIds);
+        (profiles || []).forEach((p: any) => {
+          profileMap[p.user_id] = { full_name: p.full_name || 'Cliente IR', email: p.email || '' };
+        });
+      }
+
+      const ir: ClientRequest[] = (irRes.data || []).map((r: any) => ({
+        id: r.id,
+        full_name: profileMap[r.user_id]?.full_name || 'Cliente IR',
+        email: profileMap[r.user_id]?.email || '',
+        status: r.status,
+        created_at: r.created_at,
+        user_id: r.user_id,
+        service_type: 'ir' as const,
+        notes: `${r.declaration_type || ''} ${r.fiscal_year || ''}`,
+      }));
+
+      const combined = [...limpaNome, ...fiscal, ...ir].sort((a, b) => 
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
 
