@@ -518,7 +518,7 @@ export const ServiceManagement: React.FC = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="guilherme">Guilherme</SelectItem>
-                    <SelectItem value="cesar">César</SelectItem>
+                    <SelectItem value="contador">Contador</SelectItem>
                     <SelectItem value="contador">Contador</SelectItem>
                   </SelectContent>
                 </Select>
