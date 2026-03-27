@@ -352,7 +352,7 @@ export default function LimpaNomeLanding() {
         <Section className="px-4 py-14 sm:py-24" id="comparacao">
           <div className="max-w-5xl mx-auto">
             <div className="text-center mb-14">
-              <h2 className="text-4xl sm:text-5xl font-black">
+              <h2 className="text-2xl sm:text-4xl md:text-5xl font-black">
                 Renegociação <span className="text-white/30">vs</span>{" "}
                 <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">Defesa Jurídica</span>
               </h2>
