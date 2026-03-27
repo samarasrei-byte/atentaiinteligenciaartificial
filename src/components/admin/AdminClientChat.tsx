@@ -484,27 +484,19 @@ Guilherme`;
       },
     },
     'bi': {
-      welcome: (name: string) => {
-        return `Oi, ${name}! Tudo bem?
-
-Aqui é o Guilherme. Recebi sua solicitação de BI e Contabilidade e já estou analisando.
-
-Vou entrar em contato em breve pra dar início à análise!
-
-Guilherme Mesquita`;
-      },
-      followUp: (name: string) => {
-        return `Oi, ${name}! Só passando pra ver se está tudo certo e se precisa de alguma coisa.
-
-Me avisa se tiver dúvida!
-
-Guilherme`;
-      },
-      statusUpdate: (name: string) => {
-        return `${name}, seu processo está sendo acompanhado de perto. Em breve teremos novidades!
-
-Guilherme`;
-      },
+      welcome: (name: string) => `Oi, ${name}! Aqui é o Guilherme. Recebi sua solicitação e já estou analisando.\n\nVou entrar em contato em breve!\n\nGuilherme`,
+      followUp: (name: string) => `Oi, ${name}! Passando pra ver se está tudo certo.\n\nMe avisa se tiver dúvida!\n\nGuilherme`,
+      statusUpdate: (name: string) => `${name}, seu processo está sendo acompanhado. Em breve teremos novidades!\n\nGuilherme`,
+    },
+    'nf': {
+      welcome: (name: string) => `Oi, ${name}! Tudo bem? 😊\n\nAqui é o Guilherme, da equipe de Emissão de NF.\n\nRecebi sua solicitação e vou precisar de alguns dados:\n\n📄 CNPJ da empresa\n📄 Dados do tomador do serviço\n📄 Descrição do serviço prestado\n\nPode enviar direto aqui no chat!\n\nGuilherme`,
+      followUp: (name: string) => `Oi, ${name}! Passando pra checar a emissão da sua NF.\n\nJá tem os dados que preciso? Qualquer dúvida, me chama!\n\nGuilherme`,
+      statusUpdate: (name: string) => `${name}, sua NF está sendo processada. Em breve te envio o PDF!\n\nGuilherme`,
+    },
+    'ir': {
+      welcome: (name: string) => `Oi, ${name}! Tudo bem? 😊\n\nAqui é o Guilherme, da equipe do Imposto de Renda.\n\nSua declaração está em processamento pela IA. Pra garantir a melhor análise, preciso dos seguintes documentos:\n\n📄 Informes de Rendimentos (todos)\n📄 Recibos médicos/educação (se tiver)\n📄 Comprovantes de bens e investimentos\n\nEnvie direto aqui no chat — aceito PDF, foto ou imagem!\n\nGuilherme`,
+      followUp: (name: string) => `Oi, ${name}! Sua declaração de IR está em andamento.\n\nConseguiu enviar todos os informes de rendimentos? Se faltar algum documento, a IA pode não calcular corretamente.\n\nEstou por aqui!\n\nGuilherme`,
+      statusUpdate: (name: string) => `${name}, boas notícias! 🎉\n\nSua declaração de IR foi processada pela IA. Estou fazendo a revisão final e em breve te envio o resumo completo.\n\nGuilherme`,
     },
   };
 
