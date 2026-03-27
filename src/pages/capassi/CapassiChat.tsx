@@ -400,7 +400,7 @@ export default function CapassiChat() {
     const g = ['Oi', 'Olá'][Math.floor(Math.random() * 2)];
     const closings = ['Fico no aguardo.', 'Me avisa quando enviar!', 'Qualquer dúvida sobre formato, só perguntar.'];
     const closing = closings[Math.floor(Math.random() * closings.length)];
-    setNewMessage(`${g}, ${firstName}!\n\nPra continuar a análise, vou precisar de:\n\n📄 ${docLabel}\n\nPode mandar Excel, PDF ou imagem aqui mesmo.\n\n${closing}\n\nCésar`);
+    setNewMessage(`${g}, ${firstName}!\n\nPra continuar a análise, vou precisar de:\n\n📄 ${docLabel}\n\nPode mandar Excel, PDF ou imagem aqui mesmo.\n\n${closing}\n\nGuilherme`);
     setShowDocumentRequest(false);
   };
 
