@@ -119,7 +119,7 @@ export const PostOnboardingAuth: React.FC<PostOnboardingAuthProps> = ({
           .eq('id', requestId);
         if (error) console.error('Error linking limpa nome request:', error);
       } else {
-        // fiscal and bi-contabilidade use fiscal_analysis_requests
+        // fiscal uses fiscal_analysis_requests
         const { error } = await supabase
           .from('fiscal_analysis_requests')
           .update({ user_id: userId })
