@@ -420,7 +420,7 @@ const ServicosPage = () => {
                     placeholder="Buscar serviço..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:bg-white dark:focus:bg-slate-700 transition-colors"
+                    className="pl-10 bg-muted border-border focus:bg-background transition-colors"
                   />
                 </div>
                 {user && (
