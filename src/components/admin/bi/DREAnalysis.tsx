@@ -769,7 +769,7 @@ const exportPDF = (
   let y = 20;
   
   doc.setFontSize(18);
-  doc.text('Relatório DRE — BI+ Contabilidade™', 14, y);
+  doc.text('Relatório DRE — AtentAI™', 14, y);
   y += 10;
   
   doc.setFontSize(10);
