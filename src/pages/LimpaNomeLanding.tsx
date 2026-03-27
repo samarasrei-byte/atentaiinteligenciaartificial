@@ -383,7 +383,7 @@ export default function LimpaNomeLanding() {
               </div>
 
               {/* Defesa Jurídica */}
-              <div className="p-8 sm:p-10 rounded-3xl bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/30 relative shadow-[0_0_60px_rgba(16,185,129,0.1)]">
+              <div className="p-5 sm:p-8 md:p-10 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-emerald-500/[0.1] to-transparent border-2 border-emerald-500/30 relative shadow-[0_0_60px_rgba(16,185,129,0.1)]">
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-6 py-1.5 bg-emerald-500 text-black text-xs font-black rounded-full uppercase tracking-wider">
                   ✨ Recomendado
                 </div>
