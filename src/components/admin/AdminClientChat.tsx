@@ -28,7 +28,10 @@ import {
   CreditCard,
   Download,
   Image,
-  ArrowLeft
+  ArrowLeft,
+  Receipt,
+  Brain,
+  AlertTriangle
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -56,7 +59,7 @@ interface ClientRequest {
   status: string;
   created_at: string;
   user_id: string;
-  service_type: 'limpa-nome' | 'fiscal' | 'bi';
+  service_type: 'limpa-nome' | 'fiscal' | 'bi' | 'nf' | 'ir';
   debt_amount_cents?: number;
   identified_value_cents?: number;
   cpf?: string;
@@ -83,8 +86,36 @@ const documentTypesFiscal = [
   { id: 'outro', label: 'Outro', icon: Paperclip },
 ];
 
-// Cores: Emerald = Limpa Nome, Violet = Fiscal
-const serviceThemes = {
+const documentTypesNF = [
+  { id: 'nf_servico', label: 'NF de Serviço', icon: Receipt },
+  { id: 'contrato', label: 'Contrato', icon: File },
+  { id: 'comprovante_iss', label: 'Comprov. ISS', icon: FileText },
+  { id: 'alvara', label: 'Alvará', icon: FileCheck },
+  { id: 'outro', label: 'Outro', icon: Paperclip },
+];
+
+const documentTypesIR = [
+  { id: 'informe_rendimentos', label: 'Informe Rendimentos', icon: FileText },
+  { id: 'recibo_medico', label: 'Recibos Médicos', icon: File },
+  { id: 'comprovante_educacao', label: 'Comprov. Educação', icon: FileText },
+  { id: 'extrato_investimentos', label: 'Extrato Investimentos', icon: FileText },
+  { id: 'comprovante_imovel', label: 'Comprov. Imóvel', icon: File },
+  { id: 'outro', label: 'Outro', icon: Paperclip },
+];
+
+type ServiceType = ClientRequest['service_type'];
+
+// Cores por serviço
+const serviceThemes: Record<ServiceType, {
+  primary: string;
+  primaryHover: string;
+  light: string;
+  accent: string;
+  dot: string;
+  border: string;
+  label: string;
+  icon: React.ElementType;
+}> = {
   'limpa-nome': {
     primary: 'bg-emerald-600',
     primaryHover: 'hover:bg-emerald-700',
@@ -92,6 +123,8 @@ const serviceThemes = {
     accent: 'text-emerald-600',
     dot: 'bg-emerald-500',
     border: 'border-emerald-200',
+    label: 'Limpa Nome',
+    icon: Shield,
   },
   'fiscal': {
     primary: 'bg-violet-600',
@@ -100,6 +133,8 @@ const serviceThemes = {
     accent: 'text-violet-600',
     dot: 'bg-violet-500',
     border: 'border-violet-200',
+    label: 'Fiscal',
+    icon: Scale,
   },
   'bi': {
     primary: 'bg-violet-600',
@@ -108,7 +143,29 @@ const serviceThemes = {
     accent: 'text-violet-600',
     dot: 'bg-violet-500',
     border: 'border-violet-200',
-  }
+    label: 'BI',
+    icon: Scale,
+  },
+  'nf': {
+    primary: 'bg-blue-600',
+    primaryHover: 'hover:bg-blue-700',
+    light: 'bg-blue-50',
+    accent: 'text-blue-600',
+    dot: 'bg-blue-500',
+    border: 'border-blue-200',
+    label: 'Emissão NF',
+    icon: Receipt,
+  },
+  'ir': {
+    primary: 'bg-amber-600',
+    primaryHover: 'hover:bg-amber-700',
+    light: 'bg-amber-50',
+    accent: 'text-amber-600',
+    dot: 'bg-amber-500',
+    border: 'border-amber-200',
+    label: 'Imposto de Renda',
+    icon: Brain,
+  },
 };
 
 export function AdminClientChat() {
