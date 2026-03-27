@@ -337,10 +337,10 @@ const ServicosPage = () => {
 
   return (
     <PublicLayout>
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white dark:from-slate-950 dark:to-slate-900">
+      <div className="min-h-screen bg-gradient-to-b from-muted/50 to-background">
         <main>
           {/* Hero — Emissão de NF (produto core) */}
-          <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+          <section className="relative py-16 lg:py-24 overflow-hidden bg-gradient-to-br from-foreground via-foreground/95 to-foreground">
             <div className="absolute inset-0 overflow-hidden">
               <div className="absolute top-1/4 left-1/3 w-[500px] h-[500px] bg-emerald-500/15 rounded-full blur-[150px]" />
               <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-blue-500/15 rounded-full blur-[120px]" />
@@ -408,24 +408,24 @@ const ServicosPage = () => {
           </section>
 
           {/* Search Bar */}
-          <section className="sticky top-0 z-40 bg-white/98 dark:bg-slate-900/98 backdrop-blur-xl border-b border-slate-200 dark:border-slate-700 shadow-sm">
+          <section className="sticky top-0 z-40 bg-background/98 backdrop-blur-xl border-b border-border shadow-sm">
             <div className="container max-w-6xl mx-auto px-4 py-3">
               <div className="flex items-center gap-4">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white whitespace-nowrap hidden sm:block">
+                <h2 className="text-lg font-bold text-foreground whitespace-nowrap hidden sm:block">
                   Marketplace
                 </h2>
                 <div className="relative w-full max-w-sm">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Buscar serviço..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-600 focus:bg-white dark:focus:bg-slate-700 transition-colors"
+                    className="pl-10 bg-muted border-border focus:bg-background transition-colors"
                   />
                 </div>
                 {user && (
                   <div className="hidden md:flex items-center gap-2 ml-auto">
-                    <span className="text-xs text-slate-500">Acesso rápido:</span>
+                    <span className="text-xs text-muted-foreground">Acesso rápido:</span>
                     {panelAccess.map((panel) => (
                       <Link key={panel.role} to={panel.href}>
                         <Button variant="outline" size="sm" className="text-xs">
@@ -441,27 +441,27 @@ const ServicosPage = () => {
           </section>
 
           {/* Free Tools — Lead magnets on top */}
-          <section className="py-8 bg-white dark:bg-slate-900">
+          <section className="py-8 bg-background">
             <div className="container max-w-6xl mx-auto px-4">
               <div className="flex items-center gap-3 mb-4">
                 <Badge variant="outline" className="border-primary/30 text-primary text-xs">
                   <Sparkles className="w-3 h-3 mr-1" /> Gratuito
                 </Badge>
-                <h3 className="text-sm font-semibold text-slate-700 dark:text-slate-300">Ferramentas Gratuitas</h3>
+                <h3 className="text-sm font-semibold text-foreground">Ferramentas Gratuitas</h3>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {freeTools.map((tool) => (
                   <Link key={tool.key} to={tool.href}>
-                    <Card className="bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:border-primary/30 hover:bg-white dark:hover:bg-slate-750 transition-all duration-300 hover:shadow-md">
+                    <Card className="bg-muted border-border hover:border-primary/30 hover:bg-background transition-all duration-300 hover:shadow-md">
                       <CardContent className="p-4 flex items-center gap-3">
                         <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
                           <tool.icon className="h-5 w-5 text-primary" />
                         </div>
                         <div className="min-w-0">
-                          <h4 className="font-semibold text-slate-900 dark:text-white text-sm">{tool.name}</h4>
-                          <p className="text-xs text-slate-500 dark:text-slate-400">{tool.description}</p>
+                          <h4 className="font-semibold text-foreground text-sm">{tool.name}</h4>
+                          <p className="text-xs text-muted-foreground">{tool.description}</p>
                         </div>
-                        <ArrowRight className="w-4 h-4 text-slate-400 ml-auto shrink-0" />
+                        <ArrowRight className="w-4 h-4 text-muted-foreground ml-auto shrink-0" />
                       </CardContent>
                     </Card>
                   </Link>
@@ -472,15 +472,15 @@ const ServicosPage = () => {
 
           {/* Section 1: IA-POWERED — featured single card */}
           {filteredAI.length > 0 && (
-            <section className="py-10 bg-gradient-to-b from-purple-50/50 to-white dark:from-purple-950/20 dark:to-slate-900">
+            <section className="py-10 bg-gradient-to-b from-purple-50/50 to-background dark:from-purple-950/20 dark:to-background">
               <div className="container max-w-6xl mx-auto px-4">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-8 w-8 rounded-lg bg-purple-500/10 flex items-center justify-center">
                     <Brain className="w-4 h-4 text-purple-500" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Inteligência Artificial</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Serviços automatizados com IA</p>
+                    <h2 className="text-xl font-bold text-foreground">Inteligência Artificial</h2>
+                    <p className="text-xs text-muted-foreground">Serviços automatizados com IA</p>
                   </div>
                 </div>
                 <motion.div variants={containerVariants} initial="hidden" animate="visible" className={`grid gap-6 ${filteredAI.length === 1 ? 'grid-cols-1 max-w-md' : filteredAI.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
@@ -494,15 +494,15 @@ const ServicosPage = () => {
 
           {/* Section 2: SERVIÇOS AVULSOS */}
           {filteredOneTime.length > 0 && (
-            <section className="py-10 bg-slate-50 dark:bg-slate-900/50">
+            <section className="py-10 bg-muted/50">
               <div className="container max-w-6xl mx-auto px-4">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-8 w-8 rounded-lg bg-accent/10 flex items-center justify-center">
                     <Briefcase className="w-4 h-4 text-accent" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Serviços Avulsos</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Contrate sem assinatura, pague uma vez</p>
+                    <h2 className="text-xl font-bold text-foreground">Serviços Avulsos</h2>
+                    <p className="text-xs text-muted-foreground">Contrate sem assinatura, pague uma vez</p>
                   </div>
                 </div>
                 <motion.div variants={containerVariants} initial="hidden" animate="visible" className={`grid gap-6 ${filteredOneTime.length <= 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
@@ -516,15 +516,15 @@ const ServicosPage = () => {
 
           {/* Section 3: PLANOS DE ASSINATURA */}
           {filteredSubs.length > 0 && (
-            <section className="py-10 bg-white dark:bg-slate-900">
+            <section className="py-10 bg-background">
               <div className="container max-w-6xl mx-auto px-4">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Crown className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white">Planos de Assinatura</h2>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Ferramentas e dashboards com cobrança mensal</p>
+                    <h2 className="text-xl font-bold text-foreground">Planos de Assinatura</h2>
+                    <p className="text-xs text-muted-foreground">Ferramentas e dashboards com cobrança mensal</p>
                   </div>
                 </div>
                 <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -540,7 +540,7 @@ const ServicosPage = () => {
           {!hasResults && searchTerm && (
             <section className="py-16">
               <div className="container max-w-6xl mx-auto px-4 text-center">
-                <p className="text-slate-500 dark:text-slate-400 mb-4">
+                <p className="text-muted-foreground mb-4">
                   Nenhum serviço encontrado para "{searchTerm}"
                 </p>
                 <Button variant="outline" onClick={() => setSearchTerm('')}>
@@ -552,7 +552,7 @@ const ServicosPage = () => {
 
           {/* CTA — Non-subscribers */}
           {!isSubscriber && (
-            <section className="py-16 bg-gradient-to-br from-primary via-primary/95 to-slate-800">
+            <section className="py-16 bg-gradient-to-br from-primary via-primary/95 to-foreground">
               <div className="container max-w-4xl mx-auto px-4 text-center">
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 text-white/90 text-sm font-medium mb-6">
                   <Crown className="w-4 h-4 text-accent" />
