@@ -448,8 +448,8 @@ César`);
             <MessageCircle className="h-5 w-5 text-white" />
           </div>
           <div>
-            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento BI</h2>
-            <p className="text-xs text-slate-500">{clients.length} clientes • César</p>
+            <h2 className="text-base font-semibold text-slate-900">Central de Atendimento NF</h2>
+            <p className="text-xs text-slate-500">{clients.length} clientes</p>
           </div>
         </div>
         <Button variant="outline" size="sm" onClick={loadClients} className="gap-2 text-slate-600 border-slate-200">
