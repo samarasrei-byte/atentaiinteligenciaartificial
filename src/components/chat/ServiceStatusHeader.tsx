@@ -12,7 +12,7 @@ import {
   BarChart3
 } from 'lucide-react';
 
-export type ServiceType = 'limpanome' | 'analise-fiscal' | 'bi-contabilidade';
+export type ServiceType = 'limpanome' | 'analise-fiscal';
 
 interface ServiceStep {
   id: string;
