@@ -358,7 +358,7 @@ Guilherme`);
     
     try {
       const firstName = selectedClient.full_name?.split(' ')[0] || 'Cliente';
-      const serviceLabel = 'BI+ Inteligência Fiscal';
+      const serviceLabel = 'Análise Fiscal';
       
       // Determine amount: use custom or default
       let amountCents: number;
