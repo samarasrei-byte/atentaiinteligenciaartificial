@@ -626,9 +626,8 @@ const AdminPanel = () => {
           {activeTab === 'financial-module' && <FinancialModule />}
 
           {/* =====================================================
-              CHAT GUILHERME - Central de Atendimento
-              Responsável: Guilherme
-              Serviços: Limpa Nome, Análise Fiscal
+              CHAT UNIFICADO - Central de Atendimento
+              Serviços: Limpa Nome, Análise Fiscal, Emissão NF, IR
            ===================================================== */}
           {activeTab === 'guilherme-chat' && (
             <div className="h-[calc(100vh-120px)] -m-4 lg:-m-6">
