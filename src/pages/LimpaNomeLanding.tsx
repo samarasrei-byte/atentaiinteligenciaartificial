@@ -278,7 +278,7 @@ export default function LimpaNomeLanding() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: i * 0.15 }}
-                  className="group p-8 rounded-3xl bg-gradient-to-b from-red-500/[0.08] to-transparent border border-red-500/15 hover:border-red-500/30 transition-all duration-500"
+                  className="group p-5 sm:p-8 rounded-2xl sm:rounded-3xl bg-gradient-to-b from-red-500/[0.08] to-transparent border border-red-500/15 hover:border-red-500/30 transition-all duration-500"
                 >
                   <div className="w-14 h-14 rounded-2xl bg-red-500/10 flex items-center justify-center mb-5 group-hover:scale-110 transition-transform duration-500">
                     <item.icon className="w-7 h-7 text-red-400" />
