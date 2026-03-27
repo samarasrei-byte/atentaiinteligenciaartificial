@@ -481,7 +481,7 @@ César`);
             
             <div className="flex items-center gap-2 px-1">
               <BarChart3 className="h-4 w-4 text-violet-600" />
-              <span className="text-xs text-slate-600 font-medium">Assinantes BI Contabilidade</span>
+              <span className="text-xs text-slate-600 font-medium">Clientes Emissão NF</span>
             </div>
           </div>
 
