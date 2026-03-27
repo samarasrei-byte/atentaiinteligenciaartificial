@@ -125,7 +125,7 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
   }, [user?.id, profile, createWelcomeMessage, fetchWelcomeChats, toast]);
 
   // Mark messages as read for a chat type
-  const markAsRead = useCallback(async (chatType: 'guilherme' | 'cesar') => {
+  const markAsRead = useCallback(async (chatType: 'guilherme') => {
     if (!user?.id) return;
 
     try {
