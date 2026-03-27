@@ -457,7 +457,7 @@ export default function LimpaNomeLanding() {
         </Section>
 
         {/* ========== PROVA SOCIAL ========== */}
-        <Section className="px-4 py-24" id="depoimentos">
+        <Section className="px-4 py-14 sm:py-24" id="depoimentos">
           <div className="max-w-5xl mx-auto text-center">
             <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
               <Heart className="w-4 h-4" /> DEPOIMENTOS
