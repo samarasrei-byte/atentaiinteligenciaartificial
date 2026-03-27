@@ -59,7 +59,7 @@ export function useAutoWelcomeMessages(): UseAutoWelcomeMessagesReturn {
 
   // Create welcome message for a chat type
   const createWelcomeMessage = useCallback(async (
-    chatType: 'guilherme' | 'cesar',
+    chatType: 'guilherme',
     messageContent: string
   ) => {
     if (!user?.id) return;
