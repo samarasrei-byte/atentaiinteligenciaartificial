@@ -80,6 +80,7 @@ export default function SamaraChatWidget() {
 
   const addSamaraMessage = (text: string, options?: string[], isWhatsappCTA = false) => {
     setIsTyping(true);
+    const delay = 1200 + Math.random() * 1000 + text.length * 8;
     setTimeout(() => {
       setIsTyping(false);
       setMessages((prev) => [
@@ -92,7 +93,7 @@ export default function SamaraChatWidget() {
           isWhatsappCTA,
         },
       ]);
-    }, 800 + Math.random() * 700);
+    }, Math.min(delay, 3500));
   };
 
   const startChat = () => {
