@@ -702,14 +702,19 @@ export default function LimpaNomeLanding() {
               Converse com nosso especialista gratuitamente. Sem compromisso.
             </p>
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
-              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm sm:text-lg md:text-xl px-6 sm:px-10 md:px-14 py-6 sm:py-8 md:py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2 w-full sm:w-auto">
+              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs sm:text-lg md:text-xl px-4 sm:px-10 md:px-14 py-5 sm:py-8 md:py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2 w-full sm:w-auto">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 <MessageCircle className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 shrink-0" />
-                <span className="sm:hidden">FALAR NO WHATSAPP</span>
-                <span className="hidden sm:inline">FALAR COM ESPECIALISTA NO WHATSAPP</span>
+                <span className="text-[11px] sm:text-base md:text-xl leading-tight">EU QUERO LIMPAR MEU NOME AGORA</span>
               </Button>
             </a>
-            <p className="mt-8 text-white/25 text-sm">AtentAI • Regularização Jurídica • CNPJ ativo</p>
+            <p className="mt-6 text-white/40 text-sm flex flex-col sm:flex-row items-center justify-center gap-2">
+              <a href={`tel:+${WHATSAPP_NUMBER}`} className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                <Phone className="w-4 h-4" />
+                {PHONE_DISPLAY}
+              </a>
+            </p>
+            <p className="mt-4 text-white/25 text-sm">AtentAI • Regularização Jurídica • CNPJ ativo</p>
           </div>
         </section>
 
