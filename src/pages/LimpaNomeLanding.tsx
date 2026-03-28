@@ -10,7 +10,9 @@ import {
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
-const WHATSAPP_LINK = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20quero%20analisar%20meu%20caso%20de%20Limpa%20Nome%20AtentAI";
+const WHATSAPP_NUMBER = "5511985214895";
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Eu quero limpar o meu nome agora")}`;
+const PHONE_DISPLAY = "(11) 98521-4895";
 
 // Animated counter hook
 function useCounter(end: number, duration = 2000, startOnView = true) {
@@ -54,11 +56,11 @@ function CTAButton({ className = "", size = "lg", text = "QUERO ANALISAR MEU CAS
   return (
     <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
       <Button
-        className={`relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-1.5 w-full sm:w-auto ${size === "xl" ? "text-sm sm:text-base md:text-lg px-6 sm:px-10 md:px-12 py-6 sm:py-7 md:py-8 rounded-2xl" : "text-xs sm:text-sm md:text-base px-5 sm:px-8 py-5 sm:py-6 rounded-xl"} ${className}`}
+        className={`relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black uppercase tracking-wider shadow-[0_0_40px_rgba(16,185,129,0.4)] hover:shadow-[0_0_60px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-1.5 w-full sm:w-auto ${size === "xl" ? "text-xs sm:text-base md:text-lg px-4 sm:px-10 md:px-12 py-5 sm:py-7 md:py-8 rounded-2xl" : "text-xs sm:text-sm md:text-base px-4 sm:px-8 py-4 sm:py-6 rounded-xl"} ${className}`}
       >
         <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
         <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2 shrink-0" />
-        <span className="truncate">{text}</span>
+        <span className="text-[11px] sm:text-sm md:text-base leading-tight">{text}</span>
         <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 group-hover:translate-x-1 transition-transform shrink-0" />
       </Button>
     </a>
@@ -221,10 +223,17 @@ export default function LimpaNomeLanding() {
               transition={{ duration: 0.6, delay: 0.65 }}
               className="mt-12"
             >
-              <CTAButton size="xl" />
-              <p className="mt-5 text-white/30 text-sm flex items-center justify-center gap-2">
-                <Lock className="w-3.5 h-3.5" />
-                Atendimento rápido via WhatsApp • Sem compromisso
+              <CTAButton size="xl" text="EU QUERO LIMPAR MEU NOME AGORA" />
+              <p className="mt-5 text-white/30 text-sm flex flex-col sm:flex-row items-center justify-center gap-2">
+                <span className="flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5" />
+                  Atendimento rápido via WhatsApp
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <a href={`tel:+${WHATSAPP_NUMBER}`} className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                  <Phone className="w-3.5 h-3.5" />
+                  {PHONE_DISPLAY}
+                </a>
               </p>
             </motion.div>
           </div>
@@ -410,7 +419,7 @@ export default function LimpaNomeLanding() {
             </div>
 
             <div className="text-center mt-14">
-              <CTAButton />
+              <CTAButton text="EU QUERO LIMPAR MEU NOME AGORA" />
             </div>
           </div>
         </Section>
@@ -596,7 +605,13 @@ export default function LimpaNomeLanding() {
                 ))}
               </div>
 
-              <CTAButton size="xl" />
+              <CTAButton size="xl" text="EU QUERO LIMPAR MEU NOME AGORA" />
+              <p className="mt-6 text-white/40 text-sm flex items-center justify-center gap-2">
+                <Phone className="w-4 h-4 text-emerald-400" />
+                <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                  {PHONE_DISPLAY}
+                </a>
+              </p>
             </div>
           </div>
         </Section>
@@ -687,14 +702,19 @@ export default function LimpaNomeLanding() {
               Converse com nosso especialista gratuitamente. Sem compromisso.
             </p>
             <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="inline-block group w-full sm:w-auto">
-              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-sm sm:text-lg md:text-xl px-6 sm:px-10 md:px-14 py-6 sm:py-8 md:py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2 w-full sm:w-auto">
+              <Button className="relative overflow-hidden bg-emerald-500 hover:bg-emerald-400 text-black font-black text-xs sm:text-lg md:text-xl px-4 sm:px-10 md:px-14 py-5 sm:py-8 md:py-9 rounded-2xl uppercase tracking-wider shadow-[0_0_60px_rgba(16,185,129,0.4)] hover:shadow-[0_0_80px_rgba(16,185,129,0.6)] transition-all duration-500 hover:-translate-y-2 w-full sm:w-auto">
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
                 <MessageCircle className="w-5 h-5 sm:w-7 sm:h-7 mr-2 sm:mr-3 shrink-0" />
-                <span className="sm:hidden">FALAR NO WHATSAPP</span>
-                <span className="hidden sm:inline">FALAR COM ESPECIALISTA NO WHATSAPP</span>
+                <span className="text-[11px] sm:text-base md:text-xl leading-tight">EU QUERO LIMPAR MEU NOME AGORA</span>
               </Button>
             </a>
-            <p className="mt-8 text-white/25 text-sm">AtentAI • Regularização Jurídica • CNPJ ativo</p>
+            <p className="mt-6 text-white/40 text-sm flex flex-col sm:flex-row items-center justify-center gap-2">
+              <a href={`tel:+${WHATSAPP_NUMBER}`} className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                <Phone className="w-4 h-4" />
+                {PHONE_DISPLAY}
+              </a>
+            </p>
+            <p className="mt-4 text-white/25 text-sm">AtentAI • Regularização Jurídica • CNPJ ativo</p>
           </div>
         </section>
 
