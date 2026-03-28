@@ -425,6 +425,24 @@ export default function LimpaNomeLanding() {
           </div>
         </Section>
 
+        {/* ========== SAMARA CHAT ========== */}
+        <Section className="px-4 py-14 sm:py-24 relative" id="chat-samara">
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(16,185,129,0.05),_transparent_60%)]" />
+          <div className="relative max-w-5xl mx-auto text-center">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-sm font-semibold mb-6">
+              <MessageCircle className="w-4 h-4" /> TIRE SUAS DÚVIDAS
+            </span>
+            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black mb-4">
+              Converse com a{" "}
+              <span className="bg-gradient-to-r from-emerald-300 to-emerald-500 bg-clip-text text-transparent">Samara</span>
+            </h2>
+            <p className="text-white/50 text-base sm:text-lg max-w-xl mx-auto mb-10">
+              Nossa assistente responde suas dúvidas na hora e te conecta com o especialista Guilherme Mesquita
+            </p>
+            <SamaraChatWidget />
+          </div>
+        </Section>
+
         {/* ========== COMO FUNCIONA ========== */}
         <Section className="px-4 py-14 sm:py-24 relative" id="como-funciona">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_rgba(16,185,129,0.06),_transparent_60%)]" />
