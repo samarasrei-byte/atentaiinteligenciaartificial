@@ -19,39 +19,47 @@ const FLOW: {
   followUp?: Record<string, string>;
 }[] = [
   {
-    samaraText: "Oi! Eu sou a Samara, assistente virtual da AtentAI 💚 Tô aqui pra te ajudar a entender se o seu nome pode ser limpo pela lei. Posso te fazer algumas perguntas rápidas?",
+    samaraText: "Oii! 😊 Eu sou a Samara, tô aqui pela AtentAI pra te ajudar a entender direitinho a sua situação. Relaxa que é tudo bem simples, tá? Posso te fazer umas perguntinhas rápidas?",
     options: ["Sim, pode perguntar!", "Tenho uma dúvida antes"],
-  },
-  {
-    samaraText: "Seu nome está negativado em algum órgão como SPC, Serasa ou outro bureau de crédito?",
-    options: ["Sim, está negativado", "Não tenho certeza", "Sim, em mais de um"],
-  },
-  {
-    samaraText: "Entendi! E essa negativação é de pessoa física (CPF) ou pessoa jurídica (CNPJ)?",
-    options: ["CPF (Pessoa Física)", "CNPJ (Pessoa Jurídica)", "Os dois"],
-  },
-  {
-    samaraText: "Você sabe há quanto tempo o seu nome está negativado?",
-    options: ["Menos de 1 ano", "1 a 3 anos", "Mais de 3 anos", "Não sei ao certo"],
-  },
-  {
-    samaraText: "Perfeito! Sabia que muitas negativações no Brasil possuem irregularidades? 🤔 A lei protege o consumidor e é possível buscar a remoção mesmo sem quitar a dívida toda. Quer saber como funciona?",
-    options: ["Sim, quero saber!", "Isso é realmente legal?"],
     followUp: {
-      "Isso é realmente legal?": "100% legal! Utilizamos mecanismos previstos no Código de Defesa do Consumidor (CDC), Lei do Superendividamento e jurisprudências consolidadas nos tribunais brasileiros. Nada de milagre, é direito seu! 💪",
+      "Tenho uma dúvida antes": "Claro! Pode mandar sua dúvida que eu respondo. Mas já adianto: aqui a gente trabalha 100% dentro da lei, usando o Código de Defesa do Consumidor pra proteger você. Nada de milagre, é direito seu mesmo! 💪 Bora continuar?",
     },
   },
   {
-    samaraText: "Funciona assim:\n\n✅ **Passo 1** — Você envia seus dados básicos pelo WhatsApp\n✅ **Passo 2** — Nossa equipe jurídica analisa cada negativação\n✅ **Passo 3** — Você recebe o parecer com as possibilidades reais\n✅ **Passo 4** — Acompanhamos todo o processo até a resolução\n\nO investimento é de **R$ 840,00** (ou entrada de R$ 500 + 4x R$ 85). E se não houver viabilidade, você é informado antes de qualquer cobrança!",
+    samaraText: "Então me conta... seu nome tá negativado em algum lugar? Tipo Serasa, SPC, ou outro bureau de crédito?",
+    options: ["Sim, tá negativado", "Não tenho certeza", "Sim, em mais de um"],
+    followUp: {
+      "Não tenho certeza": "Sem problema! Muita gente nem sabe que tá com o nome sujo. O Guilherme consegue verificar isso pra você rapidinho. Bora continuar pra eu entender melhor o seu caso? 😉",
+    },
+  },
+  {
+    samaraText: "Entendi! E essa negativação é no seu CPF pessoal ou de alguma empresa (CNPJ)?",
+    options: ["CPF (Pessoa Física)", "CNPJ (Pessoa Jurídica)", "Os dois"],
+  },
+  {
+    samaraText: "E você lembra mais ou menos há quanto tempo seu nome ficou negativado? Não precisa ser exato não 😄",
+    options: ["Menos de 1 ano", "1 a 3 anos", "Mais de 3 anos", "Não sei ao certo"],
+  },
+  {
+    samaraText: "Sabia que grande parte das negativações no Brasil tem alguma irregularidade? 🤔 A lei protege o consumidor e, em muitos casos, é possível limpar o nome mesmo sem pagar a dívida toda. Quer entender como funciona na prática?",
+    options: ["Sim, quero entender!", "Isso é realmente legal?"],
+    followUp: {
+      "Isso é realmente legal?": "Total! 😊 A gente usa mecanismos do Código de Defesa do Consumidor, da Lei do Superendividamento e jurisprudências que os tribunais já consolidaram. É o seu direito, a gente só te ajuda a exercer ele! Bora ver como funciona? 💪",
+    },
+  },
+  {
+    samaraText: "Funciona assim, ó:\n\n✅ Você manda seus dados pelo WhatsApp pro Guilherme\n✅ A equipe jurídica analisa cada negativação sua\n✅ Você recebe o parecer com as possibilidades reais\n✅ A gente acompanha tudo até resolver!\n\nO investimento é de **R$ 840,00** (ou entrada de R$ 500 + 4x de R$ 85). E o melhor: se não tiver viabilidade, você fica sabendo antes de pagar qualquer coisa! 🙌",
     options: ["Quero começar agora!", "Quanto tempo leva?", "Funciona pra CNPJ?"],
     followUp: {
-      "Quanto tempo leva?": "A análise inicial é feita em até 48h úteis. O prazo total depende da complexidade do caso, mas mantemos você informado em cada etapa! ⏱️",
-      "Funciona pra CNPJ?": "Sim! Atendemos tanto CPF quanto CNPJ em todo o território nacional. Já ajudamos diversas empresas a regularizarem sua situação! 🏢",
+      "Quanto tempo leva?": "A análise inicial sai em até 48h úteis! O prazo total depende do caso, mas pode ficar tranquilo que a gente te mantém informado em cada etapa. Sem surpresas! ⏱️",
+      "Funciona pra CNPJ?": "Funciona sim! 🏢 A gente atende CPF e CNPJ em todo o Brasil. Já ajudamos várias empresas a saírem do sufoco!",
     },
   },
 ];
 
-const FINAL_MESSAGE = "Que ótimo! Você tá no caminho certo pra regularizar sua situação! 🎉\n\nAgora o próximo passo é falar diretamente com o **Guilherme Mesquita**, nosso especialista em regularização jurídica. Ele vai analisar seu caso pessoalmente.\n\nClica no botão abaixo pra falar com ele agora no WhatsApp! 👇";
+const FINAL_MESSAGE = "Que massa! 🎉 Você tá tomando a melhor decisão pra regularizar sua vida financeira!\n\nAgora o próximo passo é falar diretamente com o **Guilherme Mesquita**, nosso especialista. Ele vai analisar o seu caso pessoalmente e te orientar.\n\nClica no botão aqui embaixo pra falar com ele agora no WhatsApp! 👇";
+
+
 
 export default function SamaraChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
@@ -72,6 +80,7 @@ export default function SamaraChatWidget() {
 
   const addSamaraMessage = (text: string, options?: string[], isWhatsappCTA = false) => {
     setIsTyping(true);
+    const delay = 1200 + Math.random() * 1000 + text.length * 8;
     setTimeout(() => {
       setIsTyping(false);
       setMessages((prev) => [
@@ -84,7 +93,7 @@ export default function SamaraChatWidget() {
           isWhatsappCTA,
         },
       ]);
-    }, 800 + Math.random() * 700);
+    }, Math.min(delay, 3500));
   };
 
   const startChat = () => {
