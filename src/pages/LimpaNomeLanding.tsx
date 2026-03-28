@@ -419,7 +419,7 @@ export default function LimpaNomeLanding() {
             </div>
 
             <div className="text-center mt-14">
-              <CTAButton />
+              <CTAButton text="EU QUERO LIMPAR MEU NOME AGORA" />
             </div>
           </div>
         </Section>
