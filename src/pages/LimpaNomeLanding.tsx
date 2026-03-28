@@ -10,7 +10,9 @@ import {
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
 
-const WHATSAPP_LINK = "https://wa.me/5511999999999?text=Ol%C3%A1%2C%20quero%20analisar%20meu%20caso%20de%20Limpa%20Nome%20AtentAI";
+const WHATSAPP_NUMBER = "5511985214895";
+const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Eu quero limpar o meu nome agora")}`;
+const PHONE_DISPLAY = "(11) 98521-4895";
 
 // Animated counter hook
 function useCounter(end: number, duration = 2000, startOnView = true) {
