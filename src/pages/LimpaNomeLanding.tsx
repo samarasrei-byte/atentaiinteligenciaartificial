@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { Helmet } from "react-helmet-async";
+import SamaraChatWidget from "@/components/limpa-nome/SamaraChatWidget";
 
 const WHATSAPP_NUMBER = "5511985214895";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Vim limpar o meu nome através do AtentAI")}`;
