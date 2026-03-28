@@ -223,10 +223,17 @@ export default function LimpaNomeLanding() {
               transition={{ duration: 0.6, delay: 0.65 }}
               className="mt-12"
             >
-              <CTAButton size="xl" />
-              <p className="mt-5 text-white/30 text-sm flex items-center justify-center gap-2">
-                <Lock className="w-3.5 h-3.5" />
-                Atendimento rápido via WhatsApp • Sem compromisso
+              <CTAButton size="xl" text="EU QUERO LIMPAR MEU NOME AGORA" />
+              <p className="mt-5 text-white/30 text-sm flex flex-col sm:flex-row items-center justify-center gap-2">
+                <span className="flex items-center gap-2">
+                  <Lock className="w-3.5 h-3.5" />
+                  Atendimento rápido via WhatsApp
+                </span>
+                <span className="hidden sm:inline">•</span>
+                <a href={`tel:+${WHATSAPP_NUMBER}`} className="flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                  <Phone className="w-3.5 h-3.5" />
+                  {PHONE_DISPLAY}
+                </a>
               </p>
             </motion.div>
           </div>
