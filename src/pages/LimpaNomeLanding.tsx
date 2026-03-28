@@ -252,10 +252,10 @@ export default function LimpaNomeLanding() {
         {/* ========== SOCIAL PROOF COUNTER BAR ========== */}
         <Section className="py-16 px-4 border-y border-white/[0.06] bg-white/[0.02]">
           <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
-            <StatItem end={847} suffix="+" label="Casos analisados" />
+            <StatItem end={23995} suffix="+" label="CPFs analisados" />
+            <StatItem end={12836} suffix="+" label="CNPJs analisados" />
             <StatItem end={92} suffix="%" label="Taxa de êxito" />
             <StatItem end={27} suffix="" label="Estados atendidos" />
-            <StatItem end={8} suffix="+" label="Anos de experiência" />
           </div>
         </Section>
 
