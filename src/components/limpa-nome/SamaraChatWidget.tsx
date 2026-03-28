@@ -59,7 +59,7 @@ const FLOW: {
 
 const FINAL_MESSAGE = "Que massa! 🎉 Você tá tomando a melhor decisão pra regularizar sua vida financeira!\n\nAgora o próximo passo é falar diretamente com o **Guilherme Mesquita**, nosso especialista. Ele vai analisar o seu caso pessoalmente e te orientar.\n\nClica no botão aqui embaixo pra falar com ele agora no WhatsApp! 👇";
 
-const FINAL_MESSAGE = "Que ótimo! Você tá no caminho certo pra regularizar sua situação! 🎉\n\nAgora o próximo passo é falar diretamente com o **Guilherme Mesquita**, nosso especialista em regularização jurídica. Ele vai analisar seu caso pessoalmente.\n\nClica no botão abaixo pra falar com ele agora no WhatsApp! 👇";
+
 
 export default function SamaraChatWidget() {
   const [messages, setMessages] = useState<Message[]>([]);
