@@ -605,7 +605,13 @@ export default function LimpaNomeLanding() {
                 ))}
               </div>
 
-              <CTAButton size="xl" />
+              <CTAButton size="xl" text="EU QUERO LIMPAR MEU NOME AGORA" />
+              <p className="mt-6 text-white/40 text-sm flex items-center justify-center gap-2">
+                <Phone className="w-4 h-4 text-emerald-400" />
+                <a href={`tel:+${WHATSAPP_NUMBER}`} className="text-emerald-400 hover:text-emerald-300 transition-colors font-medium">
+                  {PHONE_DISPLAY}
+                </a>
+              </p>
             </div>
           </div>
         </Section>
