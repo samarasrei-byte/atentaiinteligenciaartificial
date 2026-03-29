@@ -150,6 +150,7 @@ const simulacaoGroup: SidebarGroup = {
 const empresaGroups: SidebarGroup[] = [
   visaoGeralGroup,
   iaGroup,
+  inteligenciaFiscalGroup,
   simulacaoGroup,
   reformaGroup,
   servicosGroup,
