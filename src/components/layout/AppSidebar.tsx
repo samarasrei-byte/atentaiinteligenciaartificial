@@ -90,6 +90,18 @@ const iaGroup: SidebarGroup = {
   ],
 };
 
+// INTELIGÊNCIA FISCAL (NOVO)
+const inteligenciaFiscalGroup: SidebarGroup = {
+  id: 'inteligencia-fiscal',
+  label: 'Inteligência Fiscal',
+  items: [
+    { icon: Calendar, label: 'Calendário Fiscal', tabId: 'calendario-fiscal', badge: 'Novo' },
+    { icon: Shield, label: 'Score Fiscal', tabId: 'score-fiscal', badge: 'Novo' },
+    { icon: BarChart3, label: 'Projeção 12 Meses', tabId: 'projecao-impostos', badge: 'Novo' },
+    { icon: Target, label: 'Radar & Benchmark', tabId: 'radar-legislativo', badge: 'Novo' },
+  ],
+};
+
 // REFORMA TRIBUTÁRIA (LC 214)
 const reformaGroup: SidebarGroup = {
   id: 'reforma-tributaria',
@@ -138,6 +150,7 @@ const simulacaoGroup: SidebarGroup = {
 const empresaGroups: SidebarGroup[] = [
   visaoGeralGroup,
   iaGroup,
+  inteligenciaFiscalGroup,
   simulacaoGroup,
   reformaGroup,
   servicosGroup,
