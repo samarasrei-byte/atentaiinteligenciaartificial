@@ -2,6 +2,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { HeroSection } from "@/components/sections/HeroSection";
 import { ServicesHubModern } from "@/components/dashboard/ServicesHubModern";
+import { FiscalIntelligenceShowcase } from "@/components/sections/FiscalIntelligenceShowcase";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 
