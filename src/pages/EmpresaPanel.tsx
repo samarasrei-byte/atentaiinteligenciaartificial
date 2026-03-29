@@ -101,6 +101,10 @@ import { EmbeddedRegimeComparator } from '@/components/simulator/EmbeddedRegimeC
 import { FiscalAnalysisNotification } from '@/components/notifications/FiscalAnalysisNotification';
 import { NotificationsPage } from '@/components/notifications/NotificationsPage';
 import { EmbeddedFiscalChat } from '@/components/fiscal/EmbeddedFiscalChat';
+import { FiscalCalendar } from '@/components/fiscal-intelligence/FiscalCalendar';
+import { FiscalScore } from '@/components/fiscal-intelligence/FiscalScore';
+import { TaxForecast } from '@/components/fiscal-intelligence/TaxForecast';
+import { LegislativeRadar } from '@/components/fiscal-intelligence/LegislativeRadar';
 
 const EmbeddedAIAgent = () => {
   return (
