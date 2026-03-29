@@ -151,7 +151,7 @@ export function FiscalIntelligenceShowcase() {
                         key={feat}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-muted/60 text-xs font-medium text-foreground/80"
                       >
-                        <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                        <CheckCircle2 className="w-3 h-3 text-primary" />
                         {feat}
                       </span>
                     ))}
