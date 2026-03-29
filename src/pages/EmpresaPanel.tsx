@@ -536,6 +536,49 @@ const EmpresaPanel = () => {
       case 'chat-fiscal':
         return <EmbeddedFiscalChat variant="empresa" serviceType="fiscal" />;
       // chat-bi removed
+      case 'calendario-fiscal':
+        return (
+          <FiscalCalendar
+            companyType={company?.company_type}
+            taxRegime={company?.tax_regime}
+            hasEmployees={(company?.employee_count || 0) > 0}
+          />
+        );
+      case 'score-fiscal':
+        return (
+          <FiscalScore
+            companyType={company?.company_type}
+            taxRegime={company?.tax_regime}
+            annualRevenue={company?.annual_revenue_cents}
+            monthlyRevenue={company?.monthly_revenue_cents}
+            sector={company?.sector}
+            employeeCount={company?.employee_count}
+            hasOnboardingCompleted={company?.onboarding_completed}
+            simulationsCount={stats.simulations}
+            aiChatsCount={stats.aiChats}
+          />
+        );
+      case 'projecao-impostos':
+        return (
+          <TaxForecast
+            companyType={company?.company_type}
+            taxRegime={company?.tax_regime}
+            monthlyRevenue={company?.monthly_revenue_cents}
+            annualRevenue={company?.annual_revenue_cents}
+            sector={company?.sector}
+            employeeCount={company?.employee_count}
+          />
+        );
+      case 'radar-legislativo':
+        return (
+          <LegislativeRadar
+            taxRegime={company?.tax_regime}
+            sector={company?.sector}
+            companyType={company?.company_type}
+            annualRevenue={company?.annual_revenue_cents}
+            monthlyRevenue={company?.monthly_revenue_cents}
+          />
+        );
       case 'profile':
         return <EmbeddedProfile profile={profile} user={user} onUpdate={fetchUserData} />;
       case 'glossary':
