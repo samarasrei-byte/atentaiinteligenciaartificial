@@ -56,18 +56,21 @@ export const PLANS = {
   },
   premium: {
     name: 'AtentAI Premium',
-    price: 9800, // cents (R$ 98,00)
-    description: 'Recursos completos para empresas',
-    tagline: 'Completo',
+    price: 15700, // cents (R$ 157,00)
+    description: 'Inteligência Fiscal completa para empresas',
+    tagline: 'Mais Popular',
     features: [
       'Tudo do Autônomo +',
       'IA ilimitada',
-      'Simulador de locação',
-      'Exportação Excel',
+      'Calendário Fiscal Inteligente',
+      'Score Fiscal & Health Check',
+      'Projeção de Impostos 12 meses',
+      'Radar Legislativo & Benchmark',
       'Suporte prioritário',
     ],
     tier: 3,
     color: 'from-primary to-primary/70',
+    popular: true,
   },
   contador: {
     name: 'Contador Premium Plus',
