@@ -31,9 +31,8 @@ interface ServiceItem {
   isPopular?: boolean;
   isNew?: boolean;
   successFee?: boolean;
-  /** Checkout route for direct payment services */
+  comingSoon?: boolean;
   checkoutRoute?: string;
-  /** Onboarding route for services requiring analysis first */
   onboardingRoute?: string;
 }
 
