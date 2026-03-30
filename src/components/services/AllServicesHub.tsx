@@ -283,30 +283,35 @@ export const AllServicesHub: React.FC = () => {
               {/* Badges */}
               <div className="absolute top-4 right-4 flex gap-2 z-10">
                 {service.isPopular && (
-                  <Badge className="bg-amber-500/90">
+                  <Badge className="bg-amber-500/90 text-white">
                     <Star className="h-3 w-3 mr-1" />
                     Popular
                   </Badge>
                 )}
                 {service.isNew && (
-                  <Badge className="bg-primary/90">
+                  <Badge className="bg-primary/90 text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Novo
                   </Badge>
                 )}
                 {service.successFee && (
-                  <Badge variant="outline" className="border-emerald-500/50 text-emerald-600">
+                  <Badge variant="outline" className="border-primary/50 text-primary">
                     Taxa de Sucesso
+                  </Badge>
+                )}
+                {service.comingSoon && (
+                  <Badge variant="outline" className="border-muted-foreground/50 text-muted-foreground">
+                    Em Breve
                   </Badge>
                 )}
               </div>
 
               {/* Gradient Header */}
-              <div className={`h-2 bg-gradient-to-r ${service.gradient}`} />
+              <div className={`h-2 bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50' : ''}`} />
               
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white`}>
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white ${service.comingSoon ? 'opacity-60' : ''}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -333,19 +338,20 @@ export const AllServicesHub: React.FC = () => {
                 <div className="pt-4 border-t space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
-                      {service.successFee ? 'Valor' : 'A partir de'}
+                      {service.successFee ? 'Valor' : service.id === 'emissao-nf' ? 'Mensal' : 'A partir de'}
                     </span>
                     <span className="text-lg font-bold">
-                      {getDisplayPrice(service)}
+                      {service.id === 'emissao-nf' ? 'R$ 97,00/mês' : getDisplayPrice(service)}
                     </span>
                   </div>
                   
                   <Button 
-                    onClick={() => handleContractService(service)}
-                    className={`w-full group-hover:translate-x-0 transition-transform bg-gradient-to-r ${service.gradient}`}
+                    onClick={() => !service.comingSoon && handleContractService(service)}
+                    disabled={service.comingSoon}
+                    className={`w-full transition-transform bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {service.checkoutRoute ? 'Contratar' : 'Solicitar'}
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    {service.comingSoon ? 'Em Breve' : service.checkoutRoute ? 'Contratar' : 'Solicitar'}
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
               </CardContent>
