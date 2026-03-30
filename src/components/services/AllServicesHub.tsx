@@ -31,9 +31,8 @@ interface ServiceItem {
   isPopular?: boolean;
   isNew?: boolean;
   successFee?: boolean;
-  /** Checkout route for direct payment services */
+  comingSoon?: boolean;
   checkoutRoute?: string;
-  /** Onboarding route for services requiring analysis first */
   onboardingRoute?: string;
 }
 
@@ -59,14 +58,33 @@ export const AllServicesHub: React.FC = () => {
    * NEVER mix them. Routes are ABSOLUTE and IMMUTABLE.
    */
   const services: ServiceItem[] = [
-    // ===== LIMPA NOME PF (CPF) - ALWAYS goes to /checkout/limpa-nome-pf =====
+    // ===== CONTADOR IA — IMPOSTO DE RENDA =====
+    {
+      id: 'ir-simples',
+      name: 'Contador IA — Imposto de Renda',
+      description: 'Envie seus documentos e a IA mais avançada do Brasil faz sua declaração de IR em minutos.',
+      icon: Brain,
+      gradient: 'from-violet-500 to-purple-600',
+      priceCents: 8900,
+      features: [
+        'Análise automática de documentos',
+        'Extração de dados por IA',
+        'Cálculo automático de imposto',
+        'Dicas de otimização fiscal',
+        'Alertas de inconsistências',
+      ],
+      isNew: true,
+      checkoutRoute: '/checkout/ir-simples',
+    },
+
+    // ===== LIMPA NOME PF (CPF) =====
     ...(isAutonomo ? [{
       id: 'limpa-nome-pf',
       name: 'Limpa Nome (CPF)',
-      description: 'Regularize restrições nos bureaus de crédito',
+      description: 'Regularize restrições nos bureaus de crédito com apoio especializado.',
       icon: Shield,
       gradient: 'from-emerald-500 to-green-600',
-      priceCents: 82450, // R$ 824,50 - FIXED PRICE
+      priceCents: 84000,
       features: [
         'Análise completa do histórico',
         'Remoção de registros SERASA/SPC',
@@ -74,17 +92,17 @@ export const AllServicesHub: React.FC = () => {
         'Bônus: Regularização de Score',
       ],
       isPopular: true,
-      checkoutRoute: '/checkout/limpa-nome-pf', // IMMUTABLE ROUTE
+      checkoutRoute: '/checkout/limpa-nome-pf',
     }] : []),
     
-    // ===== LIMPA NOME PJ (CNPJ) - ALWAYS goes to /checkout/limpa-nome-pj =====
+    // ===== LIMPA NOME PJ (CNPJ) =====
     ...(!isAutonomo ? [{
       id: 'limpa-nome-pj',
       name: 'Limpa Nome (CNPJ)',
-      description: 'Regularize restrições nos bureaus de crédito',
+      description: 'Regularize restrições nos bureaus de crédito da sua empresa.',
       icon: Shield,
       gradient: 'from-emerald-500 to-green-600',
-      priceCents: 128000, // R$ 1.280,00 - FIXED PRICE
+      priceCents: 128000,
       features: [
         'Análise completa do histórico',
         'Remoção de registros SERASA/SPC',
@@ -92,80 +110,31 @@ export const AllServicesHub: React.FC = () => {
         'Bônus: Regularização de Score',
       ],
       isPopular: true,
-      checkoutRoute: '/checkout/limpa-nome-pj', // IMMUTABLE ROUTE
+      checkoutRoute: '/checkout/limpa-nome-pj',
     }] : []),
-    
-    // ===== CERTIDÕES - Hidden by LEGACY_SERVICES flag =====
-    ...(showLegacyServices ? [{
-      id: 'certidoes',
-      name: 'Certidões Negativas',
-      description: 'Emissão de certidões negativas de débitos',
-      icon: ScrollText,
-      gradient: 'from-cyan-500 to-teal-600',
-      priceCents: 8000, // R$ 80,00 FIXED
-      features: [
-        'Federal, estadual e municipal',
-        'Entrega digital rápida',
-        'Suporte incluso',
-      ],
-      checkoutRoute: '/checkout/certidao', // IMMUTABLE ROUTE
-    }] : []),
-    
-    // ===== IR SIMPLES - Hidden by LEGACY_SERVICES flag =====
-    ...(showLegacyServices ? [{
-      id: 'ir-simples',
-      name: 'IR Simples (CLT)',
-      description: 'Declaração para CLT sem investimentos',
+
+    // ===== EMISSÃO DE NF =====
+    {
+      id: 'emissao-nf',
+      name: 'Emissão de NF',
+      description: 'Emissão automatizada de notas fiscais com validação inteligente e integração com prefeituras.',
       icon: FileText,
-      gradient: 'from-rose-500 to-red-600',
-      priceCents: 8900, // R$ 89,00 FIXED
+      gradient: 'from-emerald-500 to-teal-600',
+      priceCents: 9700,
       features: [
-        'Declaração completa',
-        'Revisão por especialista',
-        'Envio à Receita Federal',
-        'Recibo garantido',
+        'NF-e, NFS-e e NFC-e automatizadas',
+        'Validação fiscal em tempo real',
+        'Integração com prefeituras',
       ],
-      checkoutRoute: '/checkout/ir-simples', // IMMUTABLE ROUTE
-    }] : []),
-    
-    // ===== IR COMPLETO - Hidden by LEGACY_SERVICES flag =====
-    ...(showLegacyServices ? [{
-      id: 'ir-completo',
-      name: 'IR Completo',
-      description: 'Para autônomos e investidores',
-      icon: FileText,
-      gradient: 'from-purple-500 to-pink-600',
-      priceCents: 18900, // R$ 189,00 FIXED
-      features: [
-        'Múltiplas fontes de renda',
-        'Investimentos inclusos',
-        'Otimização fiscal',
-        'Especialista dedicado',
-      ],
-      checkoutRoute: '/checkout/ir-completo', // IMMUTABLE ROUTE
-    }] : []),
-    
-    // ===== ABERTURA EMPRESA - Hidden by LEGACY_SERVICES flag =====
-    ...(showLegacyServices ? [{
-      id: 'abertura-empresa',
-      name: 'Abertura de Empresa',
-      description: 'Abertura completa de CNPJ com suporte',
-      icon: Building2,
-      gradient: 'from-amber-500 to-orange-600',
-      priceCents: 78000, // R$ 780,00
-      features: [
-        'Análise do melhor regime',
-        'CNPJ em até 7 dias',
-        'Documentação inclusa',
-      ],
-      checkoutRoute: '/checkout/abertura-empresa', // IMMUTABLE ROUTE
-    }] : []),
-    
-    // ===== ANÁLISE FISCAL - ALWAYS goes to /modulo-fiscal/onboarding =====
+      isNew: true,
+      onboardingRoute: '/emissao-nf',
+    },
+
+    // ===== ANÁLISE FISCAL =====
     {
       id: 'analise-fiscal',
-      name: 'Análise Fiscal',
-      description: 'Recuperação de créditos tributários',
+      name: 'Análise Fiscal Inteligente',
+      description: 'Recuperação de créditos tributários com IA — pague apenas no êxito.',
       icon: Scale,
       gradient: 'from-blue-500 to-indigo-600',
       priceCents: 0,
@@ -175,24 +144,39 @@ export const AllServicesHub: React.FC = () => {
         'Pague apenas no êxito (50%)',
       ],
       successFee: true,
-      onboardingRoute: '/modulo-fiscal/onboarding', // IMMUTABLE ROUTE - NOT BI!
+      onboardingRoute: '/modulo-fiscal/onboarding',
     },
-    
-    // ===== EMISSÃO DE NF =====
+
+    // ===== ABERTURA DE EMPRESA — Em Breve =====
     {
-      id: 'emissao-nf',
-      name: 'Emissão de NF',
-      description: 'Emissão automatizada de notas fiscais com validação inteligente',
-      icon: FileText,
-      gradient: 'from-emerald-500 to-teal-600',
-      priceCents: 0,
+      id: 'abertura-empresa',
+      name: 'Abertura de Empresa',
+      description: 'Abertura completa de CNPJ com análise do melhor regime tributário.',
+      icon: Building2,
+      gradient: 'from-amber-500 to-orange-600',
+      priceCents: 78000,
       features: [
-        'NF-e, NFS-e e NFC-e automatizadas',
-        'Validação fiscal em tempo real',
-        'Integração com prefeituras',
+        'Análise do melhor regime',
+        'CNPJ em até 7 dias úteis',
+        'Documentação inclusa',
       ],
-      isNew: true,
-      onboardingRoute: '/emissao-nf',
+      comingSoon: true,
+    },
+
+    // ===== CERTIDÃO NEGATIVA — Em Breve =====
+    {
+      id: 'certidao',
+      name: 'Certidão Negativa',
+      description: 'Emissão de certidões negativas de débitos federais, estaduais e municipais.',
+      icon: ScrollText,
+      gradient: 'from-cyan-500 to-teal-600',
+      priceCents: 8000,
+      features: [
+        'Federal, estadual e municipal',
+        'Entrega digital rápida',
+        'Suporte especializado incluso',
+      ],
+      comingSoon: true,
     },
   ];
 
@@ -299,30 +283,35 @@ export const AllServicesHub: React.FC = () => {
               {/* Badges */}
               <div className="absolute top-4 right-4 flex gap-2 z-10">
                 {service.isPopular && (
-                  <Badge className="bg-amber-500/90">
+                  <Badge className="bg-amber-500/90 text-white">
                     <Star className="h-3 w-3 mr-1" />
                     Popular
                   </Badge>
                 )}
                 {service.isNew && (
-                  <Badge className="bg-primary/90">
+                  <Badge className="bg-primary/90 text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Novo
                   </Badge>
                 )}
                 {service.successFee && (
-                  <Badge variant="outline" className="border-emerald-500/50 text-emerald-600">
+                  <Badge variant="outline" className="border-primary/50 text-primary">
                     Taxa de Sucesso
+                  </Badge>
+                )}
+                {service.comingSoon && (
+                  <Badge variant="outline" className="border-muted-foreground/50 text-muted-foreground">
+                    Em Breve
                   </Badge>
                 )}
               </div>
 
               {/* Gradient Header */}
-              <div className={`h-2 bg-gradient-to-r ${service.gradient}`} />
+              <div className={`h-2 bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50' : ''}`} />
               
               <CardHeader className="pb-2">
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white`}>
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white ${service.comingSoon ? 'opacity-60' : ''}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -349,19 +338,20 @@ export const AllServicesHub: React.FC = () => {
                 <div className="pt-4 border-t space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-sm text-muted-foreground">
-                      {service.successFee ? 'Valor' : 'A partir de'}
+                      {service.successFee ? 'Valor' : service.id === 'emissao-nf' ? 'Mensal' : 'A partir de'}
                     </span>
                     <span className="text-lg font-bold">
-                      {getDisplayPrice(service)}
+                      {service.id === 'emissao-nf' ? 'R$ 97,00/mês' : getDisplayPrice(service)}
                     </span>
                   </div>
                   
                   <Button 
-                    onClick={() => handleContractService(service)}
-                    className={`w-full group-hover:translate-x-0 transition-transform bg-gradient-to-r ${service.gradient}`}
+                    onClick={() => !service.comingSoon && handleContractService(service)}
+                    disabled={service.comingSoon}
+                    className={`w-full transition-transform bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {service.checkoutRoute ? 'Contratar' : 'Solicitar'}
-                    <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    {service.comingSoon ? 'Em Breve' : service.checkoutRoute ? 'Contratar' : 'Solicitar'}
+                    <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
               </CardContent>
