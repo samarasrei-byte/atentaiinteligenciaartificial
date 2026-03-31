@@ -89,7 +89,7 @@ const Index = () => {
           <ProfilesSection />
         </Suspense>
         
-        <section id="servicos" className="py-20 relative overflow-hidden bg-gradient-to-b from-background via-muted/30 to-background">
+        <section id="servicos" className="py-12 relative overflow-hidden bg-gradient-to-b from-background via-muted/30 to-background">
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,hsl(var(--primary)/0.08)_0%,transparent_50%)]" />
           </div>
