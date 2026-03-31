@@ -213,18 +213,21 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
             {/* CTA Button */}
             <Button 
-              onClick={onClick} 
+              onClick={isComingSoon ? undefined : onClick}
+              disabled={isComingSoon}
               className={`
                 w-full h-12 font-semibold text-base rounded-xl group/btn relative overflow-hidden
-                ${popular 
-                  ? 'bg-gradient-to-r from-primary via-emerald-500 to-teal-500 hover:from-primary/90 hover:via-emerald-500/90 hover:to-teal-500/90 shadow-lg shadow-primary/30' 
-                  : 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70'
+                ${isComingSoon 
+                  ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'
+                  : popular 
+                    ? 'bg-gradient-to-r from-primary via-emerald-500 to-teal-500 hover:from-primary/90 hover:via-emerald-500/90 hover:to-teal-500/90 shadow-lg shadow-primary/30' 
+                    : 'bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70'
                 }
               `}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
-                Solicitar Serviço
-                <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+                {isComingSoon ? 'Em Breve' : 'Solicitar Serviço'}
+                {!isComingSoon && <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />}
               </span>
             </Button>
           </CardContent>
