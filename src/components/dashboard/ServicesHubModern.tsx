@@ -45,7 +45,8 @@ interface ServiceCardProps {
   popular?: boolean;
   index: number;
   isSuccessFee?: boolean;
-  isCustomPricing?: boolean; // For "Sob consulta" pricing
+  isCustomPricing?: boolean;
+  isComingSoon?: boolean;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
