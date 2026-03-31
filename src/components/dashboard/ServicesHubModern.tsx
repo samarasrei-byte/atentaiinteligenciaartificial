@@ -65,6 +65,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   popular,
   index,
   isCustomPricing,
+  isComingSoon,
 }) => {
   return (
     <motion.div
