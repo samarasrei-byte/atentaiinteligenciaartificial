@@ -272,18 +272,14 @@ export const ServicesHubModern: React.FC = () => {
       gradient: 'from-amber-500/40 to-orange-500/40',
       iconGradient: 'from-amber-500 to-orange-500',
       onClick: () => {
-        // Redireciona para o chat dentro do painel ao invés do onboarding
         console.log('[ServicesHub ROUTING] Análise Fiscal → chat-fiscal tab');
-        // Navigate to the chat tab by updating URL params
         const currentPath = window.location.pathname;
         const isPanelContext = currentPath.includes('/autonomo') || currentPath.includes('/empresa');
-
         if (isPanelContext) {
           navigate({ search: '?tab=chat-fiscal' });
           return;
         }
-
-        navigate('/modulo-fiscal/onboarding'); // fora do painel
+        navigate('/modulo-fiscal/onboarding');
       },
       badge: 'Sem Custo Inicial',
     },
@@ -303,6 +299,60 @@ export const ServicesHubModern: React.FC = () => {
       iconGradient: 'from-violet-500 to-purple-500',
       onClick: () => navigate('/ir'),
       badge: 'NOVO',
+    },
+    {
+      title: 'Abertura de Empresa',
+      description: 'Abra seu CNPJ com suporte completo. MEI, ME, LTDA e mais.',
+      icon: Building2,
+      basePrice: 78000,
+      discountedPrice: 62400,
+      discountPercent: 20,
+      features: [
+        'Análise do melhor regime',
+        'Documentação completa',
+        'Acompanhamento até aprovação',
+      ],
+      gradient: 'from-cyan-500/40 to-blue-500/40',
+      iconGradient: 'from-cyan-500 to-blue-500',
+      onClick: () => navigate('/servicos'),
+      badge: 'EM BREVE',
+      isComingSoon: true,
+    },
+    {
+      title: 'Certidão Negativa de Débitos',
+      description: 'Emissão rápida de CND Federal, Estadual e Municipal.',
+      icon: FileText,
+      basePrice: 8000,
+      discountedPrice: 6400,
+      discountPercent: 20,
+      features: [
+        'CND Federal e FGTS',
+        'Certidões Estaduais',
+        'Entrega em até 48h',
+      ],
+      gradient: 'from-indigo-500/40 to-blue-500/40',
+      iconGradient: 'from-indigo-500 to-blue-500',
+      onClick: () => navigate('/servicos'),
+      badge: 'EM BREVE',
+      isComingSoon: true,
+    },
+    {
+      title: 'Consultoria Tributária Premium',
+      description: 'Fale com especialistas certificados para planejamento fiscal sob medida.',
+      icon: MessageSquare,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      isCustomPricing: true,
+      features: [
+        'Consultor dedicado ao seu caso',
+        'Planejamento fiscal estratégico',
+        'Relatório completo de economia',
+      ],
+      gradient: 'from-rose-500/40 to-pink-500/40',
+      iconGradient: 'from-rose-500 to-pink-500',
+      onClick: () => navigate('/servicos'),
+      badge: 'EXCLUSIVO',
     },
   ];
 
