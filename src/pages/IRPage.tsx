@@ -48,6 +48,14 @@ function useCounter(target: number, inView: boolean, duration = 2000) {
 const IRPage = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement>(null);
+
+  // Force dark mode on this page
+  useEffect(() => {
+    const html = document.documentElement;
+    const hadDark = html.classList.contains('dark');
+    html.classList.add('dark');
+    return () => { if (!hadDark) html.classList.remove('dark'); };
+  }, []);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
