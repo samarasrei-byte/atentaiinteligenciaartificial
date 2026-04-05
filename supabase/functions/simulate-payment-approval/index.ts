@@ -21,7 +21,6 @@ const SERVICE_SPECIALIST: Record<string, { chatType: string; specialist: string 
   'control': { chatType: 'guilherme', specialist: 'Guilherme' },
   'ir_simples': { chatType: 'ia', specialist: 'Contador IA' },
   'ir_completo': { chatType: 'ia', specialist: 'Contador IA' },
-  };
 };
 
 function getWelcomeMessage(serviceType: string, serviceName: string, userName: string, cpf?: string | null): string {
