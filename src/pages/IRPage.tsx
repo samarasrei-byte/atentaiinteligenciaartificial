@@ -68,7 +68,7 @@ const IRPage = () => {
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div className="min-h-screen overflow-x-hidden antialiased" style={{ background: '#09090b', color: '#fafafa' }}>
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden antialiased">
       <Header onNavigate={scrollToSection} />
 
       {/* ═══════ HERO ═══════ */}
