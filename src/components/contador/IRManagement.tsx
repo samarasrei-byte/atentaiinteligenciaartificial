@@ -443,6 +443,20 @@ export function IRManagement() {
                 </div>
               )}
 
+              {/* Low confidence warning */}
+              {selectedDecl.status === 'review' && (selectedDecl.ai_confidence_percent ?? 0) < 80 && (
+                <div className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertCircle className="h-4 w-4 text-amber-500" />
+                    <h4 className="font-medium text-amber-600">Revisão Obrigatória</h4>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    A confiança da IA é de <strong>{selectedDecl.ai_confidence_percent}%</strong> (abaixo de 80%).
+                    Esta declaração precisa de aprovação manual antes de ser concluída.
+                  </p>
+                </div>
+              )}
+
               <div className="space-y-2">
                 <label className="text-sm text-muted-foreground">Atualizar Status</label>
                 <Select value={newStatus} onValueChange={setNewStatus}>
@@ -454,7 +468,7 @@ export function IRManagement() {
                     <SelectItem value="processing">Processando</SelectItem>
                     <SelectItem value="ai_analysis">IA Analisando</SelectItem>
                     <SelectItem value="review">Em Revisão</SelectItem>
-                    <SelectItem value="completed">Concluído</SelectItem>
+                    <SelectItem value="completed">Concluído (Aprovado)</SelectItem>
                     <SelectItem value="error">Erro</SelectItem>
                   </SelectContent>
                 </Select>
