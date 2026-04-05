@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Header } from '@/components/layout/Header';
 import { Footer } from '@/components/layout/Footer';
@@ -48,6 +48,14 @@ function useCounter(target: number, inView: boolean, duration = 2000) {
 const IRPage = () => {
   const navigate = useNavigate();
   const formRef = useRef<HTMLDivElement>(null);
+
+  // Force dark mode on this page
+  useEffect(() => {
+    const html = document.documentElement;
+    const hadDark = html.classList.contains('dark');
+    html.classList.add('dark');
+    return () => { if (!hadDark) html.classList.remove('dark'); };
+  }, []);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
   const heroY = useTransform(scrollYProgress, [0, 1], [0, 80]);
@@ -60,7 +68,7 @@ const IRPage = () => {
   const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div className="dark min-h-screen bg-background overflow-x-hidden antialiased">
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden antialiased">
       <Header onNavigate={scrollToSection} />
 
       {/* ═══════ HERO ═══════ */}
