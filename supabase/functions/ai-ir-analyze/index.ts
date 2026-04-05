@@ -738,10 +738,19 @@ IMPORTANTE: Todos os valores devem ser em centavos.${checklistContext}`,
 
       console.log(`[ai-ir-analyze] Fiscal validation: ${validationAlerts.length} corrections applied`, validationAlerts);
 
+      // AUTO-DECISION: High confidence (≥80%) → completed automatically
+      // Low confidence (<80%) → review (requires contador approval)
+      const aiConfidence = (typedAnalysis.confidence_percent as number) || 0;
+      const autoStatus = aiConfidence >= 80 ? "completed" : "review";
+      const completedAt = autoStatus === "completed" ? new Date().toISOString() : null;
+
+      console.log(`[ai-ir-analyze] Auto-status decision: confidence=${aiConfidence}% → status=${autoStatus}`);
+
       await supabase.from("ir_ai_declarations").update({
-        status: "review",
+        status: autoStatus,
+        completed_at: completedAt,
         ai_analysis: typedAnalysis,
-        ai_confidence_percent: (typedAnalysis.confidence_percent as number) || 0,
+        ai_confidence_percent: aiConfidence,
         total_income_cents: totalIncome,
         total_deductions_cents: totalDeductions,
         tax_due_cents: taxDue,
