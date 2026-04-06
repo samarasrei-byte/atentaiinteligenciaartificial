@@ -119,41 +119,40 @@ const IRPage = () => {
               <Button
                 onClick={scrollToForm}
                 size="lg"
-                className="h-14 px-10 rounded-full text-base font-semibold bg-primary text-primary-foreground hover:opacity-90 shadow-[var(--shadow-glow)] hover:-translate-y-0.5 transition-all duration-300"
+                className="h-14 px-10 rounded-full text-base font-semibold hover:-translate-y-0.5 transition-all duration-300 text-white" style={{
+                  background: 'linear-gradient(135deg, hsl(265 80% 60%), hsl(250 90% 65%))',
+                  boxShadow: '0 0 40px hsl(265 80% 60% / 0.3), 0 4px 20px hsl(265 80% 60% / 0.2)',
+                }}
               >
-                Começar agora
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <Sparkles className="w-4 h-4 mr-2" />
+                Fazer minha declaração
               </Button>
               <button
                 onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] transition-all text-sm font-medium backdrop-blur-sm"
               >
                 Como funciona
-                <ArrowDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3.5 h-3.5" />
               </button>
             </motion.div>
 
             {/* Trust bar */}
-            <motion.div variants={fadeIn} className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <div className="flex -space-x-1.5">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={i} className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center">
-                      <Users className="w-3 h-3 text-muted-foreground" />
-                    </div>
-                  ))}
-                </div>
-                <span><strong className="text-foreground">2.400+</strong> declarações</span>
+            <motion.div variants={fadeIn} className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-white/50">
+              <span className="flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-green-400" />
+                LGPD compliant
               </span>
               <span className="flex items-center gap-1.5">
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-accent text-accent" />)}
-                </div>
-                <span><strong className="text-foreground">4.9</strong></span>
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                Resultado em minutos
               </span>
               <span className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-success" />
-                LGPD • Criptografia AES-256
+                <Star className="w-3.5 h-3.5 text-primary" />
+                97% de precisão
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-white/40" />
+                Dados criptografados
               </span>
             </motion.div>
           </motion.div>
