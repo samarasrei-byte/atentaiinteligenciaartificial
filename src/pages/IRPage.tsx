@@ -72,16 +72,17 @@ const IRPage = () => {
       <Header onNavigate={scrollToSection} />
 
       {/* ═══════ HERO ═══════ */}
-      <section ref={heroRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
-        {/* Subtle ambient glow */}
+      <section ref={heroRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(240 10% 4%) 0%, hsl(240 10% 8%) 50%, hsl(260 20% 12%) 100%)' }}>
+        {/* Deep ambient glows */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-primary/[0.07] rounded-full blur-[160px]" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/[0.04] rounded-full blur-[120px]" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full blur-[180px]" style={{ background: 'radial-gradient(ellipse, hsl(var(--primary) / 0.15), transparent 70%)' }} />
+          <div className="absolute bottom-0 left-1/4 w-[600px] h-[400px] rounded-full blur-[140px]" style={{ background: 'radial-gradient(ellipse, hsl(265 80% 60% / 0.08), transparent 70%)' }} />
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(ellipse, hsl(var(--info) / 0.06), transparent 70%)' }} />
         </div>
         {/* Subtle grid */}
-        <div className="absolute inset-0 opacity-[0.015]" style={{
-          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-          backgroundSize: '64px 64px',
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px',
         }} />
 
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="container mx-auto px-6 relative z-10 pt-24">
