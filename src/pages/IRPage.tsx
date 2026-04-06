@@ -89,12 +89,12 @@ const IRPage = () => {
           <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center max-w-4xl mx-auto">
             {/* Urgency pill */}
             <motion.div variants={fadeIn} className="flex justify-center mb-10">
-              <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-destructive/20 bg-destructive/5 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.06] backdrop-blur-md">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
                 </span>
-                <span className="text-sm font-semibold text-destructive/90">Prazo IRPF 2026: 30 de maio</span>
+                <span className="text-sm font-semibold text-white/80">Exercício 2026 — Ano-Base 2025</span>
               </div>
             </motion.div>
 
