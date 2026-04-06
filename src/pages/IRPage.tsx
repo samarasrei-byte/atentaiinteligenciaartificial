@@ -99,19 +99,19 @@ const IRPage = () => {
             </motion.div>
 
             {/* Headline — Apple-style */}
-            <motion.h1 variants={fadeIn} className="text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold tracking-[-0.035em] leading-[0.95] text-foreground">
-              Imposto de Renda
+            <motion.h1 variants={fadeIn} className="text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold tracking-[-0.035em] leading-[0.95] text-white">
+              Sua declaração de IR
               <br />
-              <span className="bg-gradient-to-r from-primary via-primary-foreground/0 to-primary bg-[length:200%] bg-clip-text text-transparent animate-none" style={{
-                backgroundImage: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--info)), hsl(var(--primary)))'
+              <span className="bg-clip-text text-transparent" style={{
+                backgroundImage: 'linear-gradient(135deg, hsl(265 90% 70%), hsl(250 100% 75%), hsl(280 80% 65%))'
               }}>
-                feito por IA.
+                feita por Inteligência Artificial
               </span>
             </motion.h1>
 
-            <motion.p variants={fadeIn} className="mt-7 text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed font-light">
-              Envie seus documentos, a inteligência artificial faz o resto.
-              <span className="block mt-1 text-foreground/80 font-medium">Resultado em minutos.</span>
+            <motion.p variants={fadeIn} className="mt-7 text-lg md:text-xl text-white/60 max-w-xl mx-auto leading-relaxed font-light">
+              Envie seus documentos. A IA extrai, calcula, compara modelos e entrega seu resultado com restituição maximizada
+              <span className="block mt-1 text-white/80 font-medium">— em minutos, não em dias.</span>
             </motion.p>
 
             {/* CTA */}
