@@ -72,45 +72,46 @@ const IRPage = () => {
       <Header onNavigate={scrollToSection} />
 
       {/* ═══════ HERO ═══════ */}
-      <section ref={heroRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden">
-        {/* Subtle ambient glow */}
+      <section ref={heroRef} className="relative min-h-[100svh] flex items-center justify-center overflow-hidden" style={{ background: 'linear-gradient(180deg, hsl(240 10% 4%) 0%, hsl(240 10% 8%) 50%, hsl(260 20% 12%) 100%)' }}>
+        {/* Deep ambient glows */}
         <div className="absolute inset-0">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[600px] bg-primary/[0.07] rounded-full blur-[160px]" />
-          <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-primary/[0.04] rounded-full blur-[120px]" />
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] rounded-full blur-[180px]" style={{ background: 'radial-gradient(ellipse, hsl(var(--primary) / 0.15), transparent 70%)' }} />
+          <div className="absolute bottom-0 left-1/4 w-[600px] h-[400px] rounded-full blur-[140px]" style={{ background: 'radial-gradient(ellipse, hsl(265 80% 60% / 0.08), transparent 70%)' }} />
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] rounded-full blur-[120px]" style={{ background: 'radial-gradient(ellipse, hsl(var(--info) / 0.06), transparent 70%)' }} />
         </div>
         {/* Subtle grid */}
-        <div className="absolute inset-0 opacity-[0.015]" style={{
-          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
-          backgroundSize: '64px 64px',
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `linear-gradient(hsl(0 0% 100%) 1px, transparent 1px), linear-gradient(90deg, hsl(0 0% 100%) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px',
         }} />
 
         <motion.div style={{ y: heroY, opacity: heroOpacity }} className="container mx-auto px-6 relative z-10 pt-24">
           <motion.div initial="hidden" animate="visible" variants={stagger} className="text-center max-w-4xl mx-auto">
             {/* Urgency pill */}
             <motion.div variants={fadeIn} className="flex justify-center mb-10">
-              <div className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full border border-destructive/20 bg-destructive/5 backdrop-blur-sm">
+              <div className="inline-flex items-center gap-2.5 px-5 py-2.5 rounded-full border border-white/10 bg-white/[0.06] backdrop-blur-md">
                 <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-destructive opacity-75" />
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-destructive" />
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75" />
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-green-400" />
                 </span>
-                <span className="text-sm font-semibold text-destructive/90">Prazo IRPF 2026: 30 de maio</span>
+                <span className="text-sm font-semibold text-white/80">Exercício 2026 — Ano-Base 2025</span>
               </div>
             </motion.div>
 
             {/* Headline — Apple-style */}
-            <motion.h1 variants={fadeIn} className="text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold tracking-[-0.035em] leading-[0.95] text-foreground">
-              Imposto de Renda
+            <motion.h1 variants={fadeIn} className="text-[clamp(2.5rem,7vw,5.5rem)] font-extrabold tracking-[-0.035em] leading-[0.95] text-white">
+              Sua declaração de IR
               <br />
-              <span className="bg-gradient-to-r from-primary via-primary-foreground/0 to-primary bg-[length:200%] bg-clip-text text-transparent animate-none" style={{
-                backgroundImage: 'linear-gradient(90deg, hsl(var(--primary)), hsl(var(--info)), hsl(var(--primary)))'
+              <span className="bg-clip-text text-transparent" style={{
+                backgroundImage: 'linear-gradient(135deg, hsl(265 90% 70%), hsl(250 100% 75%), hsl(280 80% 65%))'
               }}>
-                feito por IA.
+                feita por Inteligência Artificial
               </span>
             </motion.h1>
 
-            <motion.p variants={fadeIn} className="mt-7 text-lg md:text-xl text-muted-foreground max-w-xl mx-auto leading-relaxed font-light">
-              Envie seus documentos, a inteligência artificial faz o resto.
-              <span className="block mt-1 text-foreground/80 font-medium">Resultado em minutos.</span>
+            <motion.p variants={fadeIn} className="mt-7 text-lg md:text-xl text-white/60 max-w-xl mx-auto leading-relaxed font-light">
+              Envie seus documentos. A IA extrai, calcula, compara modelos e entrega seu resultado com restituição maximizada
+              <span className="block mt-1 text-white/80 font-medium">— em minutos, não em dias.</span>
             </motion.p>
 
             {/* CTA */}
@@ -118,41 +119,40 @@ const IRPage = () => {
               <Button
                 onClick={scrollToForm}
                 size="lg"
-                className="h-14 px-10 rounded-full text-base font-semibold bg-primary text-primary-foreground hover:opacity-90 shadow-[var(--shadow-glow)] hover:-translate-y-0.5 transition-all duration-300"
+                className="h-14 px-10 rounded-full text-base font-semibold hover:-translate-y-0.5 transition-all duration-300 text-white" style={{
+                  background: 'linear-gradient(135deg, hsl(265 80% 60%), hsl(250 90% 65%))',
+                  boxShadow: '0 0 40px hsl(265 80% 60% / 0.3), 0 4px 20px hsl(265 80% 60% / 0.2)',
+                }}
               >
-                Começar agora
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <Sparkles className="w-4 h-4 mr-2" />
+                Fazer minha declaração
               </Button>
               <button
                 onClick={() => document.getElementById('como-funciona')?.scrollIntoView({ behavior: 'smooth' })}
-                className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors text-sm font-medium"
+                className="flex items-center gap-2 px-6 py-3 rounded-full border border-white/15 bg-white/[0.04] text-white/70 hover:text-white hover:bg-white/[0.08] transition-all text-sm font-medium backdrop-blur-sm"
               >
                 Como funciona
-                <ArrowDown className="w-3.5 h-3.5" />
+                <ChevronDown className="w-3.5 h-3.5" />
               </button>
             </motion.div>
 
             {/* Trust bar */}
-            <motion.div variants={fadeIn} className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-muted-foreground">
-              <span className="flex items-center gap-2">
-                <div className="flex -space-x-1.5">
-                  {[...Array(4)].map((_, i) => (
-                    <div key={i} className="w-6 h-6 rounded-full bg-muted border-2 border-background flex items-center justify-center">
-                      <Users className="w-3 h-3 text-muted-foreground" />
-                    </div>
-                  ))}
-                </div>
-                <span><strong className="text-foreground">2.400+</strong> declarações</span>
+            <motion.div variants={fadeIn} className="mt-16 flex flex-wrap justify-center gap-8 text-sm text-white/50">
+              <span className="flex items-center gap-1.5">
+                <Shield className="w-3.5 h-3.5 text-green-400" />
+                LGPD compliant
               </span>
               <span className="flex items-center gap-1.5">
-                <div className="flex gap-0.5">
-                  {[...Array(5)].map((_, i) => <Star key={i} className="w-3 h-3 fill-accent text-accent" />)}
-                </div>
-                <span><strong className="text-foreground">4.9</strong></span>
+                <Zap className="w-3.5 h-3.5 text-amber-400" />
+                Resultado em minutos
               </span>
               <span className="flex items-center gap-1.5">
-                <Shield className="w-3.5 h-3.5 text-success" />
-                LGPD • Criptografia AES-256
+                <Star className="w-3.5 h-3.5 text-primary" />
+                97% de precisão
+              </span>
+              <span className="flex items-center gap-1.5">
+                <Lock className="w-3.5 h-3.5 text-white/40" />
+                Dados criptografados
               </span>
             </motion.div>
           </motion.div>
@@ -160,8 +160,8 @@ const IRPage = () => {
 
         {/* Scroll dot */}
         <motion.div className="absolute bottom-10 left-1/2 -translate-x-1/2" animate={{ y: [0, 6, 0] }} transition={{ duration: 2, repeat: Infinity }}>
-          <div className="w-5 h-8 rounded-full border border-border/40 flex items-start justify-center pt-1.5">
-            <div className="w-1 h-2 rounded-full bg-muted-foreground/30" />
+          <div className="w-5 h-8 rounded-full border border-white/20 flex items-start justify-center pt-1.5">
+            <div className="w-1 h-2 rounded-full bg-white/30" />
           </div>
         </motion.div>
       </section>
