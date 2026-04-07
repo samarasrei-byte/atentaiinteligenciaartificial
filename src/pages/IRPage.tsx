@@ -339,7 +339,7 @@ function PlansSection({ onSelectPlan }: { onSelectPlan: () => void }) {
 
               <div className="space-y-3 mb-10">
                 {[
-                  'Análise 100% por IA (Gemini)',
+                  'Análise 100% por Inteligência Artificial',
                   '1 fonte de renda (CLT)',
                   'Deduções básicas (saúde, educação)',
                   'Comparação Simples vs Completo',
@@ -435,7 +435,7 @@ function TechSection() {
   const inView = useInView(ref, { once: true, margin: '-60px' });
 
   const features = [
-    { icon: ScanLine, title: 'Visão Computacional', desc: 'Gemini 2.5 lê PDFs e imagens com OCR nativo. Extrai rendimentos e deduções automaticamente.', wide: true },
+    { icon: ScanLine, title: 'Visão Computacional', desc: 'IA avançada lê PDFs e imagens com OCR nativo. Extrai rendimentos e deduções automaticamente.', wide: true },
     { icon: TrendingUp, title: 'Cálculo Dual', desc: 'Compara Simples e Completo. Recomenda o que paga menos.' },
     { icon: AlertTriangle, title: 'Detector Malha Fina', desc: 'Identifica inconsistências antes da Receita Federal.' },
     { icon: Shield, title: 'Travas Legais', desc: 'Tetos atualizados: simplificado, educação, PGBL, dependente.' },

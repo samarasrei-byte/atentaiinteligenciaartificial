@@ -181,6 +181,30 @@ const aiServices: ServiceCardConfig[] = [
     category: 'declaracoes',
     isFree: false,
   },
+  {
+    key: 'emissao_nf',
+    name: 'Emissão de Nota Fiscal',
+    description: 'Automatize cobranças, pagamentos e emissão de NF. Receba no Pix e a nota sai sozinha.',
+    targetAudience: 'Para quem emite nota fiscal',
+    features: [
+      'Cobranças via Pix, boleto e cartão',
+      'NF emitida automaticamente',
+      'Dashboard financeiro em tempo real',
+      'Gestão de clientes integrada',
+    ],
+    guarantees: ['Setup em 2 min', 'NF automática'],
+    basePrice: 9700,
+    discountPercent: 0,
+    badge: 'new' as const,
+    cta: 'Ativar agora',
+    color: 'emerald' as const,
+    icon: Receipt,
+    serviceType: 'emissao_nf',
+    checkoutRoute: '/emissao-nf',
+    category: 'empresarial',
+    isFree: false,
+    isSubscription: true,
+  },
 ];
 
 // SUBSCRIPTION plans
@@ -483,7 +507,7 @@ const ServicosPage = () => {
                     <p className="text-xs text-muted-foreground">Serviços automatizados com IA</p>
                   </div>
                 </div>
-                <motion.div variants={containerVariants} initial="hidden" animate="visible" className={`grid gap-6 ${filteredAI.length === 1 ? 'grid-cols-1 max-w-md' : filteredAI.length === 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid gap-6 grid-cols-1 md:grid-cols-2 max-w-3xl">
                   {filteredAI.map((service) => (
                     <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
                   ))}
@@ -505,7 +529,7 @@ const ServicosPage = () => {
                     <p className="text-xs text-muted-foreground">Contrate sem assinatura, pague uma vez</p>
                   </div>
                 </div>
-                <motion.div variants={containerVariants} initial="hidden" animate="visible" className={`grid gap-6 ${filteredOneTime.length <= 2 ? 'grid-cols-1 md:grid-cols-2 max-w-3xl' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}>
+                <motion.div variants={containerVariants} initial="hidden" animate="visible" className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
                   {filteredOneTime.map((service) => (
                     <ServiceCardPremium key={service.key} service={service} isSubscriber={isSubscriber} />
                   ))}
