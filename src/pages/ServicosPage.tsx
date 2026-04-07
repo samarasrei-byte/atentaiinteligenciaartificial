@@ -181,6 +181,30 @@ const aiServices: ServiceCardConfig[] = [
     category: 'declaracoes',
     isFree: false,
   },
+  {
+    key: 'emissao_nf',
+    name: 'Emissão de Nota Fiscal',
+    description: 'Automatize cobranças, pagamentos e emissão de NF. Receba no Pix e a nota sai sozinha.',
+    targetAudience: 'Para quem emite nota fiscal',
+    features: [
+      'Cobranças via Pix, boleto e cartão',
+      'NF emitida automaticamente',
+      'Dashboard financeiro em tempo real',
+      'Gestão de clientes integrada',
+    ],
+    guarantees: ['Setup em 2 min', 'NF automática'],
+    basePrice: 9700,
+    discountPercent: 0,
+    badge: 'new' as const,
+    cta: 'Ativar agora',
+    color: 'emerald' as const,
+    icon: Receipt,
+    serviceType: 'emissao_nf',
+    checkoutRoute: '/emissao-nf',
+    category: 'empresarial',
+    isFree: false,
+    isSubscription: true,
+  },
 ];
 
 // SUBSCRIPTION plans
