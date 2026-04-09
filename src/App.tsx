@@ -105,6 +105,7 @@ const PartnerGuilhermePage = lazy(() => import("./pages/PartnerGuilhermePage"));
 const PartnerGuilhermePanel = lazy(() => import("./pages/PartnerGuilhermePanel"));
 const MarketplaceServicePage = lazy(() => import("./pages/MarketplaceServicePage"));
 const SobrePage = lazy(() => import("./pages/SobrePage"));
+const PitchDeck = lazy(() => import("./pages/PitchDeck"));
 const SuportePage = lazy(() => import("./pages/SuportePage"));
 // BI routes hidden - kept imports commented for future reactivation
 // const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
@@ -223,6 +224,7 @@ const App = () => (
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
+              <Route path="/pitch" element={<PitchDeck />} />
               <Route path="/limpanome" element={<LimpaNomeLanding />} />
               <Route path="/limpa-nome" element={<Navigate to="/limpanome" replace />} />
               <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
