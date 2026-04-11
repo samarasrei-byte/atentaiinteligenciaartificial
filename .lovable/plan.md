@@ -1,29 +1,40 @@
 
 
-# Plano: Melhorias no resultado do IR para o usuário
+# Plano: Entregáveis do IR — Download e Visualização
 
-## Contexto
-O pipeline de IA do IR está funcional e robusto. Porém, 3 dados calculados pelo backend não chegam ao usuário no frontend.
+## Problemas identificados
+O usuário completa todo o fluxo mas não tem como **baixar** nada. O resultado existe apenas na tela. Documentos enviados não podem ser revisados.
 
-## Melhorias propostas
+## Melhorias
 
-### 1. Exibir comparação Simplificado vs Completo
-O backend já calcula e salva `model_comparison` com deduções, base de cálculo e imposto de ambos os modelos. Criar um card visual no tab "Resultado" mostrando:
-- Simplificado: deduções → base → imposto
-- Completo: deduções → base → imposto  
-- Economia escolhida
+### 1. Botão "Baixar Relatório PDF" no tab Resultado
+Gerar um PDF client-side (usando `jspdf` + `html2canvas` ou construção manual) com:
+- Resumo financeiro (rendimentos, deduções, imposto, restituição)
+- Comparação Simplificado vs Completo
+- Deduções identificadas
+- Fontes de rendimento com IRRF
+- Risco de Malha Fina
+- Disclaimer legal
 
-**Arquivo**: `src/pages/ContadorIADashboard.tsx` (tab "result", após o card de recomendação)
+**Arquivo**: `src/pages/ContadorIADashboard.tsx` — novo botão + função `handleDownloadPDF()`
 
-### 2. Mostrar IRRF retido por fonte pagadora
-Na seção "Fontes de Rendimento", adicionar coluna/linha com `irrf_cents` de cada fonte, para o usuário ver quanto foi retido em cada emprego/fonte.
+### 2. Botão de download/preview nos documentos enviados
+Na lista de documentos (tab "Documentos"), adicionar ícone de download que gera URL temporária do storage:
+```
+supabase.storage.from('ir-ai-documents').createSignedUrl(filePath, 300)
+```
 
-**Arquivo**: `src/pages/ContadorIADashboard.tsx` (seção `income_sources`)
+**Arquivo**: `src/pages/ContadorIADashboard.tsx` — na seção de documentos
 
-### 3. Nenhuma alteração no backend
-O Edge Function `ai-ir-analyze` já calcula e persiste todos os dados necessários. As melhorias são 100% frontend.
+### 3. Dependências
+- Instalar `jspdf` para geração de PDF client-side
+- Nenhuma alteração no backend
+
+## Arquivos alterados
+- `src/pages/ContadorIADashboard.tsx` (2 seções: resultado + documentos)
+- `package.json` (adicionar jspdf)
 
 ## Estimativa
-- 2 alterações no mesmo arquivo (`ContadorIADashboard.tsx`)
-- Sem risco de quebrar lógica existente
+- 3 alterações no mesmo arquivo principal
+- Sem risco para lógica existente
 
