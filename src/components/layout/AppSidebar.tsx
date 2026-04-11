@@ -121,6 +121,7 @@ const servicosGroup: SidebarGroup = {
   items: [
     { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
     { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
+    { icon: Calculator, label: 'Imposto de Renda', tabId: 'ir-declaracao', badge: 'IA' },
     { icon: FileText, label: 'Emissão de NF', tabId: 'emissao-nf', badge: 'Novo' },
   ],
 };
@@ -177,6 +178,7 @@ const autonomoGroups: SidebarGroup[] = [
     items: [
       { icon: Shield, label: 'Limpa Nome', tabId: 'servicos', isService: true, serviceKey: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
+      { icon: Calculator, label: 'Imposto de Renda', tabId: 'ir-declaracao', badge: 'IA' },
       { icon: FileText, label: 'Emissão de NF', tabId: 'emissao-nf', badge: 'Novo' },
     ],
   },
