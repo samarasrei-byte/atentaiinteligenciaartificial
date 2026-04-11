@@ -203,7 +203,7 @@ const IRPage = () => {
               Dados protegidos com criptografia end-to-end.
             </p>
           </div>
-          <IRRequestForm onSuccess={() => navigate('/contador-ia')} />
+          <IRRequestForm onSuccess={() => navigate('/empresa?tab=ir-declaracao')} />
         </div>
       </section>
 
