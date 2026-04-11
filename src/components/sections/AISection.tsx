@@ -448,7 +448,7 @@ export function AISection() {
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-0 flex flex-col bg-slate-50">
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
+                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
                   {messages.map((msg, index) => (
                     <div
                       key={index}
@@ -488,7 +488,7 @@ export function AISection() {
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
+                  
                 </div>
 
                 {/* Input */}
