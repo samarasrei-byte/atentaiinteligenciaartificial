@@ -216,17 +216,19 @@ export function AISection() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const isPremium = subscription.subscribed && (subscription.plan === 'premium' || subscription.plan === 'contador');
   const plan = PLANS.premium;
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'auto' });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    requestAnimationFrame(() => scrollToBottom());
   }, [messages]);
 
   const handleSend = async () => {
