@@ -1074,11 +1074,12 @@ const ContadorIADashboard = () => {
                           >
                             <Download className="w-3 h-3 mr-1" /> Baixar PDF
                           </Button>
-                        {activeDeclaration.ai_confidence_percent != null && (
-                          <Badge className="bg-emerald-500/20 text-emerald-400 border-0">
-                            {activeDeclaration.ai_confidence_percent}% confiança
-                          </Badge>
-                        )}
+                          {activeDeclaration.ai_confidence_percent != null && (
+                            <Badge className="bg-emerald-500/20 text-emerald-400 border-0">
+                              {activeDeclaration.ai_confidence_percent}% confiança
+                            </Badge>
+                          )}
+                        </div>
                       </div>
 
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
