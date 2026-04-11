@@ -1066,6 +1066,14 @@ const ContadorIADashboard = () => {
                           <h3 className="text-xl font-bold">Resultado da Declaração</h3>
                           <p className="text-sm text-muted-foreground">Ano-base {activeDeclaration.fiscal_year}</p>
                         </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={handleDownloadPDF}
+                            className="bg-purple-500 hover:bg-purple-600 rounded-full text-xs"
+                          >
+                            <Download className="w-3 h-3 mr-1" /> Baixar PDF
+                          </Button>
                         {activeDeclaration.ai_confidence_percent != null && (
                           <Badge className="bg-emerald-500/20 text-emerald-400 border-0">
                             {activeDeclaration.ai_confidence_percent}% confiança
