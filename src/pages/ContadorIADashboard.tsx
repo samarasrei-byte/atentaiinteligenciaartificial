@@ -9,7 +9,7 @@ import {
   Brain, Upload, FileText, CheckCircle2, AlertCircle,
   TrendingUp, TrendingDown, DollarSign, Shield, Sparkles,
   LogOut, Loader2, Eye, FileUp, Trash2, BarChart3, Zap,
-  Star, Lock
+  Star, Lock, Download
 } from 'lucide-react';
 import IRPreAnalysisChecklist, { type ChecklistAnswers } from '@/components/contador-ia/IRPreAnalysisChecklist';
 import { useNavigate } from 'react-router-dom';
@@ -282,6 +282,179 @@ const ContadorIADashboard = () => {
       await new Promise(r => setTimeout(r, 1500));
     }
     setIsAnalyzing(false);
+  };
+
+  // Download document from storage
+  const handleDownloadDocument = async (doc: DocFile) => {
+    try {
+      const { data, error } = await supabase.storage
+        .from('ir-ai-documents')
+        .createSignedUrl(doc.file_path, 300);
+      if (error || !data?.signedUrl) {
+        toast.error('Erro ao gerar link de download');
+        return;
+      }
+      window.open(data.signedUrl, '_blank');
+    } catch {
+      toast.error('Erro ao baixar documento');
+    }
+  };
+
+  // Download PDF report
+  const handleDownloadPDF = async () => {
+    if (!activeDeclaration || !analysis) return;
+    const { default: jsPDF } = await import('jspdf');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pw = pdf.internal.pageSize.getWidth();
+    let y = 15;
+
+    // Header
+    pdf.setFillColor(147, 51, 234); // purple-600
+    pdf.rect(0, 0, pw, 32, 'F');
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(18);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Declaração de Imposto de Renda', pw / 2, 15, { align: 'center' });
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(`Ano-base ${activeDeclaration.fiscal_year} • Gerado por IA`, pw / 2, 24, { align: 'center' });
+    y = 42;
+
+    // Summary
+    pdf.setTextColor(30, 41, 59);
+    pdf.setFontSize(13);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text('Resumo Financeiro', 15, y);
+    y += 8;
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.setTextColor(71, 85, 105);
+    const summaryRows = [
+      ['Rendimentos Totais', formatCurrency(activeDeclaration.total_income_cents)],
+      ['Deduções Totais', formatCurrency(activeDeclaration.total_deductions_cents)],
+      ['Imposto Devido', formatCurrency(activeDeclaration.tax_due_cents)],
+      ['Restituição', formatCurrency(activeDeclaration.refund_cents)],
+    ];
+    summaryRows.forEach(([label, value]) => {
+      pdf.text(label, 20, y);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(value, pw - 20, y, { align: 'right' });
+      pdf.setFont('helvetica', 'normal');
+      y += 7;
+    });
+    y += 5;
+
+    // Model comparison
+    if (analysis.model_comparison) {
+      pdf.setTextColor(30, 41, 59);
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Comparação: Simplificado vs Completo', 15, y);
+      y += 8;
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(71, 85, 105);
+      const simp = analysis.model_comparison.simplified;
+      const comp = analysis.model_comparison.complete;
+      if (simp) {
+        pdf.text('SIMPLIFICADO', 20, y);
+        y += 5;
+        pdf.text(`  Deduções: ${formatCurrency(simp.deductions_cents || 0)}`, 20, y); y += 5;
+        pdf.text(`  Base: ${formatCurrency(simp.taxable_base_cents || 0)}`, 20, y); y += 5;
+        pdf.text(`  Imposto: ${formatCurrency(simp.tax_cents || 0)}`, 20, y); y += 7;
+      }
+      if (comp) {
+        pdf.text('COMPLETO', 20, y);
+        y += 5;
+        pdf.text(`  Deduções: ${formatCurrency(comp.deductions_cents || 0)}`, 20, y); y += 5;
+        pdf.text(`  Base: ${formatCurrency(comp.taxable_base_cents || 0)}`, 20, y); y += 5;
+        pdf.text(`  Imposto: ${formatCurrency(comp.tax_cents || 0)}`, 20, y); y += 7;
+      }
+      if (analysis.recommended_model) {
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(16, 185, 129);
+        pdf.text(`Modelo recomendado: ${analysis.recommended_model}`, 20, y);
+        y += 8;
+      }
+    }
+
+    // Deductions
+    if (analysis.deduction_items?.length > 0) {
+      if (y > 240) { pdf.addPage(); y = 15; }
+      pdf.setTextColor(30, 41, 59);
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Deduções Identificadas', 15, y);
+      y += 8;
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(71, 85, 105);
+      analysis.deduction_items.forEach((d: any) => {
+        if (y > 270) { pdf.addPage(); y = 15; }
+        pdf.text(`• ${d.description}${d.category ? ` (${d.category})` : ''}`, 20, y);
+        pdf.text(formatCurrency(d.value_cents || 0), pw - 20, y, { align: 'right' });
+        y += 6;
+      });
+      y += 5;
+    }
+
+    // Income sources
+    if (analysis.income_sources?.length > 0) {
+      if (y > 240) { pdf.addPage(); y = 15; }
+      pdf.setTextColor(30, 41, 59);
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text('Fontes de Rendimento', 15, y);
+      y += 8;
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(71, 85, 105);
+      analysis.income_sources.forEach((src: any) => {
+        if (y > 270) { pdf.addPage(); y = 15; }
+        const irrf = src.irrf_cents > 0 ? ` | IRRF: ${formatCurrency(src.irrf_cents)}` : '';
+        pdf.text(`• ${src.source}`, 20, y);
+        pdf.text(`${formatCurrency(src.value_cents || 0)}${irrf}`, pw - 20, y, { align: 'right' });
+        y += 6;
+      });
+      y += 5;
+    }
+
+    // Malha Fina
+    if (analysis.malha_fina_risk) {
+      if (y > 250) { pdf.addPage(); y = 15; }
+      pdf.setTextColor(30, 41, 59);
+      pdf.setFontSize(13);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(`Risco de Malha Fina: ${analysis.malha_fina_risk}`, 15, y);
+      y += 8;
+      pdf.setFontSize(9);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(71, 85, 105);
+      analysis.malha_fina_reasons?.forEach((r: string) => {
+        if (y > 270) { pdf.addPage(); y = 15; }
+        pdf.text(`• ${r}`, 20, y);
+        y += 6;
+      });
+      y += 5;
+    }
+
+    // Disclaimer
+    if (y > 260) { pdf.addPage(); y = 15; }
+    pdf.setTextColor(148, 163, 184);
+    pdf.setFontSize(7);
+    const disc = 'Esta análise é gerada por inteligência artificial e tem caráter informativo. A responsabilidade pela declaração é do contribuinte. Recomendamos a revisão por um contador credenciado.';
+    const lines = pdf.splitTextToSize(disc, pw - 30);
+    pdf.text(lines, 15, y);
+
+    // Footer
+    const footerY = pdf.internal.pageSize.getHeight() - 10;
+    pdf.setFontSize(7);
+    pdf.setTextColor(148, 163, 184);
+    pdf.text(`Gerado em ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR')}`, 15, footerY);
+    pdf.text('Atenta IA — Contador IA', pw - 15, footerY, { align: 'right' });
+
+    pdf.save(`declaracao-ir-${activeDeclaration.fiscal_year}.pdf`);
+    toast.success('PDF baixado com sucesso!');
   };
 
   // Delete document
