@@ -121,7 +121,32 @@ export function useAutoOpenChat() {
           return;
         }
 
-        // Check for active IR request (BI related)
+        // Check for active IR declaration (AI-based)
+        const { data: irDeclaration, error: irDeclError } = await supabase
+          .from('ir_ai_declarations')
+          .select('id, status')
+          .eq('user_id', user.id)
+          .in('status', ['pending_documents', 'processing', 'ai_analysis', 'review', 'draft'])
+          .order('created_at', { ascending: false })
+          .limit(1)
+          .maybeSingle();
+
+        if (irDeclError) {
+          console.error('[AutoOpenChat] Error checking IR declarations:', irDeclError);
+        }
+
+        if (irDeclaration) {
+          console.log('[AutoOpenChat] Found active IR declaration:', irDeclaration.id);
+          toast({
+            title: 'Declaração de IR em andamento',
+            description: 'Acesse pelo menu "Imposto de Renda" na sidebar.',
+          });
+          setHasChecked(true);
+          setIsChecking(false);
+          return;
+        }
+
+        // Check for active IR request (legacy)
         const { data: irRequest, error: irError } = await supabase
           .from('ir_requests')
           .select('id, status')
@@ -139,11 +164,10 @@ export function useAutoOpenChat() {
           console.log('[AutoOpenChat] Found active IR request:', irRequest.id);
           toast({
             title: 'Declaração IR em andamento',
-            description: 'Acesse seu chat pelo menu "Minhas Solicitações".',
+            description: 'Acesse pelo menu "Imposto de Renda" na sidebar.',
           });
           setHasChecked(true);
           setIsChecking(false);
-          // Don't navigate away from the panel
           return;
         }
 

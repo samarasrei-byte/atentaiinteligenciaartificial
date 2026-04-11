@@ -119,7 +119,7 @@ export function IRRequestForm({ onSuccess }: IRRequestFormProps) {
       requireGuestInfo: false,
       onSuccess: () => {
         // Save redirect target for post-auth
-        sessionStorage.setItem('postAuthRedirect', '/contador-ia');
+        sessionStorage.setItem('postAuthRedirect', '/empresa?tab=ir-declaracao');
         toast({ title: 'Pagamento aprovado! ✅', description: 'Redirecionando para upload de documentos...' });
         onSuccess?.();
       },

@@ -56,9 +56,9 @@ export default function CheckoutSuccessPage() {
   };
 
   const getChatRoute = () => {
-    // IR services are 100% AI - redirect to Contador IA panel
+    // IR services → redirect to dashboard with IR tab
     if (serviceType === 'ir_simples' || serviceType === 'ir_completo' || serviceType === 'ir') {
-      return '/contador-ia';
+      return '/empresa?tab=ir-declaracao';
     }
     if (serviceType.includes('credit_repair') || serviceType === 'certificate') {
       return '/chat/guilherme';

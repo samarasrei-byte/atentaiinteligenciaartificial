@@ -105,7 +105,7 @@ import { FiscalCalendar } from '@/components/fiscal-intelligence/FiscalCalendar'
 import { FiscalScore } from '@/components/fiscal-intelligence/FiscalScore';
 import { TaxForecast } from '@/components/fiscal-intelligence/TaxForecast';
 import { LegislativeRadar } from '@/components/fiscal-intelligence/LegislativeRadar';
-
+import IRDashboardTab from '@/components/ir/IRDashboardTab';
 const EmbeddedAIAgent = () => {
   return (
     <div className="space-y-6">
@@ -749,6 +749,8 @@ const EmpresaPanel = () => {
       case 'settings':
       case 'configuracoes':
         return <UnifiedSettingsPage />;
+      case 'ir-declaracao':
+        return <IRDashboardTab />;
       case 'servicos':
       case 'ver-todos-servicos':
         return <AllServicesHub />;
