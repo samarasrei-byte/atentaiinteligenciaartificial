@@ -926,6 +926,9 @@ const ContadorIADashboard = () => {
                                 {analyzingDocId === doc.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Brain className="w-4 h-4" />}
                               </Button>
                             )}
+                            <Button size="sm" variant="ghost" onClick={() => handleDownloadDocument(doc)} className="text-blue-400 hover:text-blue-300 hover:bg-blue-500/10" title="Baixar documento">
+                              <Download className="w-4 h-4" />
+                            </Button>
                             <Button size="sm" variant="ghost" onClick={() => deleteDocument(doc)} className="text-red-400 hover:text-red-300 hover:bg-red-500/10">
                               <Trash2 className="w-4 h-4" />
                             </Button>
