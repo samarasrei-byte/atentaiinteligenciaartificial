@@ -216,17 +216,19 @@ export function AISection() {
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   const isPremium = subscription.subscribed && (subscription.plan === 'premium' || subscription.plan === 'contador');
   const plan = PLANS.premium;
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    const el = messagesContainerRef.current;
+    if (!el) return;
+    el.scrollTo({ top: el.scrollHeight, behavior: 'auto' });
   };
 
   useEffect(() => {
-    scrollToBottom();
+    requestAnimationFrame(() => scrollToBottom());
   }, [messages]);
 
   const handleSend = async () => {
@@ -446,7 +448,7 @@ export function AISection() {
               </CardHeader>
               <CardContent className="flex-1 overflow-hidden p-0 flex flex-col bg-slate-50">
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
+                <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-3 md:p-4 space-y-3 md:space-y-4">
                   {messages.map((msg, index) => (
                     <div
                       key={index}
@@ -486,7 +488,7 @@ export function AISection() {
                       </div>
                     </div>
                   )}
-                  <div ref={messagesEndRef} />
+                  
                 </div>
 
                 {/* Input */}
