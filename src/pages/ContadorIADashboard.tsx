@@ -933,6 +933,82 @@ const ContadorIADashboard = () => {
                         </div>
                       </CardContent>
                     </Card>
+                    )}
+
+                  {/* Model Comparison: Simplified vs Complete */}
+                  {analysis.model_comparison && (
+                    <Card className="bg-card border-purple-500/20">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-sm flex items-center gap-2 text-purple-400">
+                          <BarChart3 className="w-4 h-4" /> Comparação: Simplificado vs Completo
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="grid grid-cols-2 gap-4">
+                          {/* Simplified */}
+                          <div className={`p-4 rounded-xl border ${analysis.recommended_model === 'simplificado' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-border bg-muted/20'}`}>
+                            <div className="flex items-center justify-between mb-3">
+                              <p className="text-sm font-semibold">Simplificado</p>
+                              {analysis.recommended_model === 'simplificado' && (
+                                <Badge className="bg-emerald-500/20 text-emerald-400 border-0 text-[10px]">✓ Melhor</Badge>
+                              )}
+                            </div>
+                            <div className="space-y-2 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Deduções</span>
+                                <span className="font-medium">{formatCurrency(analysis.model_comparison.simplified?.deductions_cents || 0)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Base de cálculo</span>
+                                <span className="font-medium">{formatCurrency(analysis.model_comparison.simplified?.taxable_base_cents || 0)}</span>
+                              </div>
+                              <div className="flex justify-between pt-1 border-t border-border/50">
+                                <span className="text-muted-foreground font-medium">Imposto</span>
+                                <span className="font-bold text-amber-400">{formatCurrency(analysis.model_comparison.simplified?.tax_cents || 0)}</span>
+                              </div>
+                            </div>
+                          </div>
+                          {/* Complete */}
+                          <div className={`p-4 rounded-xl border ${analysis.recommended_model === 'completo' ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-border bg-muted/20'}`}>
+                            <div className="flex items-center justify-between mb-3">
+                              <p className="text-sm font-semibold">Completo</p>
+                              {analysis.recommended_model === 'completo' && (
+                                <Badge className="bg-emerald-500/20 text-emerald-400 border-0 text-[10px]">✓ Melhor</Badge>
+                              )}
+                            </div>
+                            <div className="space-y-2 text-xs">
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Deduções</span>
+                                <span className="font-medium">{formatCurrency(analysis.model_comparison.complete?.deductions_cents || 0)}</span>
+                              </div>
+                              <div className="flex justify-between">
+                                <span className="text-muted-foreground">Base de cálculo</span>
+                                <span className="font-medium">{formatCurrency(analysis.model_comparison.complete?.taxable_base_cents || 0)}</span>
+                              </div>
+                              <div className="flex justify-between pt-1 border-t border-border/50">
+                                <span className="text-muted-foreground font-medium">Imposto</span>
+                                <span className="font-bold text-amber-400">{formatCurrency(analysis.model_comparison.complete?.tax_cents || 0)}</span>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        {/* Savings */}
+                        {(() => {
+                          const simpTax = analysis.model_comparison.simplified?.tax_cents || 0;
+                          const compTax = analysis.model_comparison.complete?.tax_cents || 0;
+                          const savings = Math.abs(simpTax - compTax);
+                          if (savings > 0) {
+                            return (
+                              <div className="mt-4 p-3 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-center">
+                                <p className="text-xs text-muted-foreground">Economia com o modelo recomendado</p>
+                                <p className="text-lg font-bold text-emerald-400">{formatCurrency(savings)}</p>
+                              </div>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </CardContent>
+                    </Card>
                   )}
 
                   {/* Deductions detail */}
@@ -1003,9 +1079,16 @@ const ContadorIADashboard = () => {
                       </CardHeader>
                       <CardContent className="space-y-2">
                         {analysis.income_sources.map((src: any, i: number) => (
-                          <div key={i} className="flex items-center justify-between p-2 rounded bg-muted/30">
-                            <span className="text-sm text-muted-foreground">{src.source}</span>
-                            <span className="text-sm font-medium">{formatCurrency(src.value_cents || 0)}</span>
+                          <div key={i} className="flex items-center justify-between p-2 rounded bg-muted/30 gap-3">
+                            <span className="text-sm text-muted-foreground flex-1 min-w-0 truncate">{src.source}</span>
+                            <div className="flex items-center gap-4 shrink-0">
+                              {src.irrf_cents != null && src.irrf_cents > 0 && (
+                                <span className="text-xs text-amber-400" title="IRRF retido na fonte">
+                                  IRRF: {formatCurrency(src.irrf_cents)}
+                                </span>
+                              )}
+                              <span className="text-sm font-medium">{formatCurrency(src.value_cents || 0)}</span>
+                            </div>
                           </div>
                         ))}
                       </CardContent>
