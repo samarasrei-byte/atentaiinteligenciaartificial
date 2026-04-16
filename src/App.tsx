@@ -119,6 +119,7 @@ const CheckoutSuccessPage = lazy(() => import("./pages/CheckoutSuccessPage"));
 const LimpaNomeColaborador = lazy(() => import("./pages/LimpaNomeColaborador"));
 const SalesPresentation = lazy(() => import("./pages/SalesPresentation"));
 const AdminPresentations = lazy(() => import("./pages/AdminPresentations"));
+const AdminUXAudit = lazy(() => import("./pages/AdminUXAudit"));
 const SeracPresentation = lazy(() => import("./pages/SeracPresentation"));
 
 // SERAC White Label - lazy loaded
@@ -387,6 +388,11 @@ const App = () => (
               <Route path="/admin/apresentacoes" element={
                 <RoleProtectedRoute requiredRole="admin">
                   <AdminPresentations />
+                </RoleProtectedRoute>
+              } />
+              <Route path="/admin/ux-audit" element={
+                <RoleProtectedRoute requiredRole="admin">
+                  <AdminUXAudit />
                 </RoleProtectedRoute>
               } />
               <Route path="/colaborador/limpa-nome" element={

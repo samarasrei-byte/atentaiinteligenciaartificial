@@ -112,8 +112,8 @@ const overall = SCORES.reduce((s, x) => s + x.score, 0) / SCORES.length;
 const severityColor = (s: AuditFinding['severity']) => {
   switch (s) {
     case 'critical': return 'bg-destructive text-destructive-foreground';
-    case 'high': return 'bg-orange-500 text-white';
-    case 'medium': return 'bg-amber-400 text-amber-950';
+    case 'high': return 'bg-warning text-warning-foreground';
+    case 'medium': return 'bg-accent text-accent-foreground';
     case 'low': return 'bg-muted text-muted-foreground';
   }
 };
@@ -323,7 +323,7 @@ export default function AdminUXAudit() {
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                <Star className="w-5 h-5 text-primary fill-primary" />
                 Nota geral: {overall.toFixed(1)} / 10
               </CardTitle>
               <CardDescription>
@@ -393,7 +393,7 @@ export default function AdminUXAudit() {
               <CardContent className="space-y-2 text-sm">
                 <div>
                   <p className="font-semibold flex items-center gap-1 mb-1">
-                    <AlertTriangle className="w-3 h-3 text-amber-500" /> Observação
+                    <AlertTriangle className="w-3 h-3 text-warning" /> Observação
                   </p>
                   <p className="text-muted-foreground">{f.observation}</p>
                 </div>
