@@ -34,12 +34,19 @@ serve(async (req) => {
 
     log("Starting QA environment provisioning");
 
-    // 1. Find or create QA user
-    const { data: existing } = await admin.auth.admin.getUserByEmail(QA_EMAIL);
+    // 1. Find or create QA user (paginate listUsers to find by email)
+    let existingUser: { id: string; email?: string } | null = null;
+    for (let page = 1; page <= 10; page++) {
+      const { data: list, error: listErr } = await admin.auth.admin.listUsers({ page, perPage: 200 });
+      if (listErr) throw new Error(`listUsers failed: ${listErr.message}`);
+      const found = list?.users?.find((u) => u.email?.toLowerCase() === QA_EMAIL.toLowerCase());
+      if (found) { existingUser = found; break; }
+      if (!list?.users?.length || list.users.length < 200) break;
+    }
     let userId: string;
 
-    if (existing?.user) {
-      userId = existing.user.id;
+    if (existingUser) {
+      userId = existingUser.id;
       log("QA user exists, resetting password + confirming email", { userId });
       await admin.auth.admin.updateUserById(userId, {
         password: QA_PASSWORD,
