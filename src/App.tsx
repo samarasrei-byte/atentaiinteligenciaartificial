@@ -62,6 +62,7 @@ const LimpaNomePage = lazy(() => import("./pages/LimpaNomePage"));
 const LimpaNomeStatusPage = lazy(() => import("./pages/LimpaNomeStatusPage"));
 const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const IRPage = lazy(() => import("./pages/IRPage"));
+const IRPJ = lazy(() => import("./pages/IRPJ"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
 const ServicosPage = lazy(() => import("./pages/ServicosPage").catch(() => {
   window.location.reload();
@@ -222,6 +223,7 @@ const App = () => (
               <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
               <Route path="/parceiroatentaigb" element={<PartnerGuilhermePanel />} />
               <Route path="/ir" element={<IRPage />} />
+              <Route path="/ir-pj" element={<IRPJ />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
