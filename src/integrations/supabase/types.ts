@@ -2635,6 +2635,87 @@ export type Database = {
           },
         ]
       }
+      ir_pj_simulations: {
+        Row: {
+          ai_analysis: Json | null
+          alternatives: Json | null
+          annual_revenue_cents: number
+          base_year: number
+          cnae_code: string | null
+          cnae_description: string | null
+          created_at: string
+          current_company_type: Database["public"]["Enums"]["ir_pj_company_type"]
+          documents_checklist: Json | null
+          estimated_bank_movement_cents: number | null
+          has_payroll: boolean
+          id: string
+          malha_fina_score:
+            | Database["public"]["Enums"]["ir_pj_risk_level"]
+            | null
+          payroll_monthly_cents: number | null
+          recommendation_reason: string | null
+          recommended_regime:
+            | Database["public"]["Enums"]["ir_pj_company_type"]
+            | null
+          risks: Json | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          ai_analysis?: Json | null
+          alternatives?: Json | null
+          annual_revenue_cents?: number
+          base_year: number
+          cnae_code?: string | null
+          cnae_description?: string | null
+          created_at?: string
+          current_company_type: Database["public"]["Enums"]["ir_pj_company_type"]
+          documents_checklist?: Json | null
+          estimated_bank_movement_cents?: number | null
+          has_payroll?: boolean
+          id?: string
+          malha_fina_score?:
+            | Database["public"]["Enums"]["ir_pj_risk_level"]
+            | null
+          payroll_monthly_cents?: number | null
+          recommendation_reason?: string | null
+          recommended_regime?:
+            | Database["public"]["Enums"]["ir_pj_company_type"]
+            | null
+          risks?: Json | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          ai_analysis?: Json | null
+          alternatives?: Json | null
+          annual_revenue_cents?: number
+          base_year?: number
+          cnae_code?: string | null
+          cnae_description?: string | null
+          created_at?: string
+          current_company_type?: Database["public"]["Enums"]["ir_pj_company_type"]
+          documents_checklist?: Json | null
+          estimated_bank_movement_cents?: number | null
+          has_payroll?: boolean
+          id?: string
+          malha_fina_score?:
+            | Database["public"]["Enums"]["ir_pj_risk_level"]
+            | null
+          payroll_monthly_cents?: number | null
+          recommendation_reason?: string | null
+          recommended_regime?:
+            | Database["public"]["Enums"]["ir_pj_company_type"]
+            | null
+          risks?: Json | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       ir_requests: {
         Row: {
           base_price_cents: number
@@ -3997,6 +4078,12 @@ export type Database = {
         | "sa_aberta"
         | "cooperativa"
       consultation_status: "pending" | "scheduled" | "completed" | "cancelled"
+      ir_pj_company_type:
+        | "mei"
+        | "simples_nacional"
+        | "lucro_presumido"
+        | "lucro_real"
+      ir_pj_risk_level: "baixo" | "medio" | "alto"
       service_responsible: "guilherme" | "cesar" | "contador"
       subscription_status: "active" | "cancelled" | "pending" | "expired"
       tax_regime:
@@ -4248,6 +4335,13 @@ export const Constants = {
         "cooperativa",
       ],
       consultation_status: ["pending", "scheduled", "completed", "cancelled"],
+      ir_pj_company_type: [
+        "mei",
+        "simples_nacional",
+        "lucro_presumido",
+        "lucro_real",
+      ],
+      ir_pj_risk_level: ["baixo", "medio", "alto"],
       service_responsible: ["guilherme", "cesar", "contador"],
       subscription_status: ["active", "cancelled", "pending", "expired"],
       tax_regime: [
