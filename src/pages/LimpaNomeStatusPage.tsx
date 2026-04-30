@@ -362,6 +362,19 @@ const LimpaNomeStatusPage = () => {
               </Card>
             </motion.div>
 
+            {/* AI Agent Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <LimpaNomeAIAgent 
+                requestId={request.id} 
+                status={request.status}
+                aiStatus={request.ai_agent_status || 'idle'} 
+              />
+            </motion.div>
+
             {/* Timeline Card */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
