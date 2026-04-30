@@ -1716,6 +1716,44 @@ export type Database = {
         }
         Relationships: []
       }
+      credit_repair_ai_logs: {
+        Row: {
+          channel: string
+          created_at: string | null
+          direction: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          request_id: string | null
+        }
+        Insert: {
+          channel: string
+          created_at?: string | null
+          direction: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          request_id?: string | null
+        }
+        Update: {
+          channel?: string
+          created_at?: string | null
+          direction?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "credit_repair_ai_logs_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       credit_repair_chat_messages: {
         Row: {
           attachment_name: string | null
@@ -1904,6 +1942,8 @@ export type Database = {
       }
       credit_repair_requests: {
         Row: {
+          ai_agent_enabled: boolean | null
+          ai_agent_status: string | null
           birth_date: string | null
           bureaus_selected: string[] | null
           completed_at: string | null
@@ -1934,6 +1974,8 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          ai_agent_enabled?: boolean | null
+          ai_agent_status?: string | null
           birth_date?: string | null
           bureaus_selected?: string[] | null
           completed_at?: string | null
@@ -1964,6 +2006,8 @@ export type Database = {
           user_id: string
         }
         Update: {
+          ai_agent_enabled?: boolean | null
+          ai_agent_status?: string | null
           birth_date?: string | null
           bureaus_selected?: string[] | null
           completed_at?: string | null

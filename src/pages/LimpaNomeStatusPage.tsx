@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CreditRepairAIChat } from '@/components/limpa-nome/CreditRepairAIChat';
+import { LimpaNomeAIAgent } from '@/components/limpa-nome/LimpaNomeAIAgent';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   ArrowLeft,
@@ -47,6 +48,8 @@ interface CreditRepairRequest {
   contador_id: string | null;
   created_at: string;
   completed_at: string | null;
+  ai_agent_enabled: boolean;
+  ai_agent_status: string;
 }
 
 interface SpecialistInfo {
@@ -357,6 +360,19 @@ const LimpaNomeStatusPage = () => {
                   </div>
                 </CardContent>
               </Card>
+            </motion.div>
+
+            {/* AI Agent Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+            >
+              <LimpaNomeAIAgent 
+                requestId={request.id} 
+                status={request.status}
+                aiStatus={request.ai_agent_status || 'idle'} 
+              />
             </motion.div>
 
             {/* Timeline Card */}
