@@ -47,6 +47,8 @@ interface CreditRepairRequest {
   contador_id: string | null;
   created_at: string;
   completed_at: string | null;
+  ai_agent_enabled: boolean;
+  ai_agent_status: string;
 }
 
 interface SpecialistInfo {
