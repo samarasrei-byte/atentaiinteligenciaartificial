@@ -62,26 +62,34 @@ function ruleBasedEngine(input: Input) {
       "Embora o faturamento esteja dentro do limite MEI, a presença de folha de pagamento (acima de 1 funcionário com salário regular) requer enquadramento no Simples Nacional.";
     risks.push("MEI permite apenas 1 funcionário com salário mínimo ou piso da categoria.");
   } else if (rev <= SIMPLES_LIMIT_CENTS) {
-    // Análise margem para sugerir Presumido em serviços
-    const margem_estimada = rev > 0 ? 1 - estimated_bank_movement_cents / rev : 0;
+    // Cálculo do Fator R (Folha / Faturamento >= 28%)
+    const annual_payroll = (payroll_monthly_cents * 12);
+    const fatorR = rev > 0 ? annual_payroll / rev : 0;
+    
     recommended = "simples_nacional";
-    reason = `Faturamento de R$ ${(rev / 100).toLocaleString("pt-BR")} dentro do teto do Simples Nacional (R$ 4,8M). Tributação unificada e simplificada.`;
+    reason = `Faturamento de R$ ${(rev / 100).toLocaleString("pt-BR")} dentro do teto do Simples Nacional (R$ 4,8M).`;
 
-    if (margem_estimada > 0.6 && rev > 30_000_000) {
+    if (fatorR >= 0.28) {
+      reason += " Beneficiado pelo Fator R (>= 28%): sua empresa pode tributar pelo Anexo III (alíquota menor) em vez do Anexo V.";
+    } else if (has_payroll) {
+      risks.push(`Fator R atual é de ${(fatorR * 100).toFixed(1)}%. Se atingir 28%, sua tributação no Simples Nacional pode cair drasticamente (Anexo V -> Anexo III).`);
+    }
+
+    // Análise margem para sugerir Presumido em serviços
+    const margem_estimada = rev > 0 ? 1 - (estimated_bank_movement_cents / rev) : 0;
+    if (margem_estimada > 0.6 && rev > 2_000_000_00) { // Sugerir acima de 2M faturamento
       alternatives.push({
         regime: "lucro_presumido",
-        reason:
-          "Sua margem operacional aparenta ser alta (>60%). Em prestação de serviços, Lucro Presumido pode resultar em carga tributária menor — recomendamos simulação detalhada.",
+        reason: "Sua margem operacional é alta. No Lucro Presumido, o imposto incide sobre uma margem fixa (ex: 32% para serviços), o que pode ser mais barato que as faixas superiores do Simples.",
       });
     }
   } else if (rev <= PRESUMIDO_LIMIT_CENTS) {
     recommended = "lucro_presumido";
-    reason =
-      "Faturamento ultrapassou o limite do Simples Nacional (R$ 4,8M). Lucro Presumido é o próximo passo natural até R$ 78M anuais.";
-    risks.push("Atenção ao desenquadramento automático do Simples Nacional.");
+    reason = "Faturamento ultrapassou o limite do Simples Nacional (R$ 4,8M). Lucro Presumido é o caminho para empresas com faturamento até R$ 78M que não possuem custos operacionais altíssimos.";
+    risks.push("Atenção: No Lucro Presumido, PIS/COFINS são cumulativos (3,65% sem créditos).");
   } else {
     recommended = "lucro_real";
-    reason = "Faturamento acima de R$ 78M anuais — obrigatório Lucro Real.";
+    reason = "Faturamento acima de R$ 78M anuais ou atividade financeira — enquadramento no Lucro Real é obrigatório.";
     risk = "alto";
   }
 
@@ -110,21 +118,29 @@ async function aiQualitativeAnalysis(input: Input, ruleResult: ReturnType<typeof
   if (!LOVABLE_API_KEY) return null;
 
   try {
-    const prompt = `Você é um contador especialista brasileiro. Analise estes dados de uma empresa e gere uma explicação clara em português, sem jargão excessivo, sobre a recomendação tributária.
+    const prompt = `Você é um Cientista de Dados e Contador Sênior nível World-Class especialista em malha fina da Receita Federal do Brasil.
+Analise os dados desta empresa com rigor técnico e gere um parecer de auditoria.
 
-Dados:
-- Regime atual: ${input.current_company_type}
+DADOS DA EMPRESA:
+- Regime Atual: ${input.current_company_type}
 - Ano-base: ${input.base_year}
-- Faturamento anual: R$ ${(input.annual_revenue_cents / 100).toLocaleString("pt-BR")}
-- CNAE: ${input.cnae_code || "não informado"} - ${input.cnae_description || ""}
-- Tem folha de pagamento: ${input.has_payroll ? "sim" : "não"}
-- Movimentação bancária estimada: R$ ${((input.estimated_bank_movement_cents || 0) / 100).toLocaleString("pt-BR")}
+- Faturamento Bruto: R$ ${(input.annual_revenue_cents / 100).toLocaleString("pt-BR")}
+- CNAE: ${input.cnae_code || "N/A"} - ${input.cnae_description || ""}
+- Folha Salarial Anual: R$ ${(((input.payroll_monthly_cents || 0) * 12) / 100).toLocaleString("pt-BR")}
+- Movimentação Bancária: R$ ${((input.estimated_bank_movement_cents || 0) / 100).toLocaleString("pt-BR")}
 
-Recomendação do motor: ${ruleResult.recommended}
-Motivo: ${ruleResult.reason}
-Riscos: ${ruleResult.risks.join("; ") || "nenhum"}
+RESULTADO DO MOTOR DE REGRAS:
+- Sugestão: ${ruleResult.recommended}
+- Risco Detectado: ${ruleResult.risk}
+- Alertas: ${ruleResult.risks.join("; ") || "Nenhum alerta crítico imediato"}
 
-Retorne em até 3 parágrafos curtos: (1) confirmação ou ajuste da recomendação, (2) principal benefício, (3) o que o usuário deve fazer agora.`;
+TASK:
+1. Valide se a sugestão do motor está correta sob a ótica de elisão fiscal (pagar menos imposto legalmente).
+2. Identifique inconsistências de "Data Science": a movimentação bancária condiz com o faturamento? Há risco de cruzamento de dados via DIMOF/e-Financeira?
+3. Explique o "Fator R" se for Simples Nacional.
+4. Dê o veredito final: "Seguro para prosseguir" ou "Requer revisão humana urgente".
+
+Responda em tom profissional, direto e autoritário. Divida em: [ANÁLISE DE RISCO], [OTIMIZAÇÃO TRIBUTÁRIA] e [PRÓXIMOS PASSOS].`;
 
     const resp = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",

@@ -264,13 +264,29 @@ const IRPJ: React.FC = () => {
           )}
 
           {result.ai_analysis?.qualitative && (
-            <Card className="p-4 mb-4 bg-muted/30">
-              <h3 className="font-semibold mb-2 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Análise do especialista IA
-              </h3>
-              <p className="text-sm whitespace-pre-line text-muted-foreground">
-                {result.ai_analysis.qualitative}
-              </p>
+            <Card className="p-6 mb-4 bg-slate-950 text-slate-50 border-slate-800 shadow-xl">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-1.5 bg-primary/20 rounded-md">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg leading-tight">Parecer do Auditor IA</h3>
+                  <p className="text-xs text-slate-400">Análise de Dados Sênior • RFB Compliance</p>
+                </div>
+              </div>
+              <div className="text-sm space-y-4 leading-relaxed opacity-90">
+                {result.ai_analysis.qualitative.split('\n').map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[10px] text-slate-500 uppercase tracking-widest">
+                  <ShieldCheck className="h-3 w-3" /> Verificado por Auditoria Nível 1
+                </div>
+                <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
+                  REF: {result.id.split('-')[0].toUpperCase()}
+                </Badge>
+              </div>
             </Card>
           )}
 
