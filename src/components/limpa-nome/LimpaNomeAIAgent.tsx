@@ -159,6 +159,25 @@ export function LimpaNomeAIAgent({ requestId, status, aiStatus }: LimpaNomeAIAge
                 <><Zap className="mr-2 h-4 w-4" /> Ativar Agente Negociador</>
               )}
             </Button>
+            
+            {/* Simulation button for demo purposes */}
+            <Button 
+              variant="link" 
+              size="sm" 
+              className="text-[10px] text-muted-foreground opacity-50"
+              onClick={async () => {
+                await supabase.functions.invoke('ai-limpa-nome-callback', {
+                  body: { 
+                    requestId, 
+                    channel: 'WhatsApp', 
+                    sender: 'Banco Bradesco', 
+                    message: 'Recebemos sua solicitação. Após análise do CPF, confirmamos que o débito de 2018 está prescrito e procedemos com a exclusão do apontamento em nosso sistema. Favor aguardar 72h para atualização nos bureaus.'
+                  }
+                });
+              }}
+            >
+              (Simular Resposta do Credor)
+            </Button>
           </div>
         )}
 
