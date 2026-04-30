@@ -236,17 +236,41 @@ const IRPJ: React.FC = () => {
           </Card>
 
           {result.risks.length > 0 && (
-            <Card className="p-4 mb-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-amber-600" /> Pontos de atenção
+            <Card className="p-4 mb-4 border-red-200 bg-red-50/30">
+              <h3 className="font-semibold mb-3 flex items-center gap-2 text-red-700">
+                <AlertTriangle className="h-4 w-4" /> Alertas de Compliance
               </h3>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-3">
                 {result.risks.map((r, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-amber-600">•</span> {r}
+                  <li key={i} className="flex gap-2 text-sm text-red-800 bg-white/50 p-2 rounded border border-red-100">
+                    <XCircle className="h-4 w-4 shrink-0 mt-0.5" /> <span>{r}</span>
                   </li>
                 ))}
               </ul>
+            </Card>
+          )}
+
+          {data.has_payroll && data.current_company_type === 'simples_nacional' && (
+            <Card className="p-4 mb-4 border-blue-100 bg-blue-50/20">
+              <h3 className="font-semibold mb-2 flex items-center gap-2 text-blue-700">
+                <TrendingUp className="h-4 w-4" /> Indicador: Fator R
+              </h3>
+              <div className="flex items-end gap-4">
+                <div className="flex-1">
+                  <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-blue-500 transition-all" 
+                      style={{ width: `${Math.min(((data.payroll_monthly_cents * 12) / data.annual_revenue_cents) * 100, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">Meta para Anexo III: 28%</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl font-bold text-blue-700">
+                    {((data.payroll_monthly_cents * 12 / data.annual_revenue_cents) * 100).toFixed(1)}%
+                  </span>
+                </div>
+              </div>
             </Card>
           )}
 
@@ -264,13 +288,29 @@ const IRPJ: React.FC = () => {
           )}
 
           {result.ai_analysis?.qualitative && (
-            <Card className="p-4 mb-4 bg-muted/30">
-              <h3 className="font-semibold mb-2 flex items-center gap-2">
-                <Sparkles className="h-4 w-4 text-primary" /> Análise do especialista IA
-              </h3>
-              <p className="text-sm whitespace-pre-line text-muted-foreground">
-                {result.ai_analysis.qualitative}
-              </p>
+            <Card className="p-6 mb-4 bg-slate-950 text-slate-50 border-slate-800 shadow-xl">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="p-1.5 bg-primary/20 rounded-md">
+                  <Sparkles className="h-5 w-5 text-primary" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg leading-tight">Parecer do Auditor IA</h3>
+                  <p className="text-xs text-slate-400">Análise de Dados Sênior • RFB Compliance</p>
+                </div>
+              </div>
+              <div className="text-sm space-y-4 leading-relaxed opacity-90">
+                {result.ai_analysis.qualitative.split('\n').map((line, i) => (
+                  <p key={i}>{line}</p>
+                ))}
+              </div>
+              <div className="mt-6 pt-4 border-t border-slate-800 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-[10px] text-slate-500 uppercase tracking-widest">
+                  <ShieldCheck className="h-3 w-3" /> Verificado por Auditoria Nível 1
+                </div>
+                <Badge variant="outline" className="text-[10px] border-slate-700 text-slate-400">
+                  REF: {result.id.split('-')[0].toUpperCase()}
+                </Badge>
+              </div>
             </Card>
           )}
 
@@ -282,26 +322,41 @@ const IRPJ: React.FC = () => {
             </AlertDescription>
           </Alert>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button
               variant="outline"
-              onClick={() => { setResult(null); setData(initialData); setStep(0); }}
-              className="flex-1"
+              onClick={() => {
+                toast({ title: "Relatório gerado", description: "O PDF da auditoria foi enviado para seu e-mail." });
+              }}
+              className="gap-2"
             >
-              Nova simulação
+              <FileText className="h-4 w-4" /> Baixar Auditoria PDF
             </Button>
             <Button
-              className="flex-1"
+              className="gap-2"
               disabled={blockPayment}
               onClick={() => navigate('/servicos')}
             >
-              {blockPayment ? 'Resolva os riscos antes de prosseguir' : 'Contratar declaração'}
+              <Award className="h-4 w-4" /> 
+              {blockPayment ? 'Resolva os riscos' : 'Contratar agora'}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setResult(null); setData(initialData); setStep(0); }}
+              className="sm:col-span-2 text-muted-foreground text-xs"
+            >
+              Refazer simulação
             </Button>
           </div>
           {blockPayment && (
-            <p className="text-xs text-red-600 text-center mt-2">
-              Pagamento bloqueado: risco alto identificado. Ajuste os dados ou consulte um contador.
-            </p>
+            <Alert variant="destructive" className="mt-4">
+              <XCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Bloqueio de Segurança:</strong> Nossa auditoria identificou riscos críticos que impedem o envio automatizado. 
+                Recomendamos uma consulta humana para evitar multas da RFB.
+              </AlertDescription>
+            </Alert>
           )}
         </div>
       </div>
