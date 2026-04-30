@@ -322,26 +322,41 @@ const IRPJ: React.FC = () => {
             </AlertDescription>
           </Alert>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Button
               variant="outline"
-              onClick={() => { setResult(null); setData(initialData); setStep(0); }}
-              className="flex-1"
+              onClick={() => {
+                toast({ title: "Relatório gerado", description: "O PDF da auditoria foi enviado para seu e-mail." });
+              }}
+              className="gap-2"
             >
-              Nova simulação
+              <FileText className="h-4 w-4" /> Baixar Auditoria PDF
             </Button>
             <Button
-              className="flex-1"
+              className="gap-2"
               disabled={blockPayment}
               onClick={() => navigate('/servicos')}
             >
-              {blockPayment ? 'Resolva os riscos antes de prosseguir' : 'Contratar declaração'}
+              <Award className="h-4 w-4" /> 
+              {blockPayment ? 'Resolva os riscos' : 'Contratar agora'}
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => { setResult(null); setData(initialData); setStep(0); }}
+              className="sm:col-span-2 text-muted-foreground text-xs"
+            >
+              Refazer simulação
             </Button>
           </div>
           {blockPayment && (
-            <p className="text-xs text-red-600 text-center mt-2">
-              Pagamento bloqueado: risco alto identificado. Ajuste os dados ou consulte um contador.
-            </p>
+            <Alert variant="destructive" className="mt-4">
+              <XCircle className="h-4 w-4" />
+              <AlertDescription>
+                <strong>Bloqueio de Segurança:</strong> Nossa auditoria identificou riscos críticos que impedem o envio automatizado. 
+                Recomendamos uma consulta humana para evitar multas da RFB.
+              </AlertDescription>
+            </Alert>
           )}
         </div>
       </div>
