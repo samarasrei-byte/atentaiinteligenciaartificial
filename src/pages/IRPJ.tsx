@@ -236,17 +236,41 @@ const IRPJ: React.FC = () => {
           </Card>
 
           {result.risks.length > 0 && (
-            <Card className="p-4 mb-4">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <AlertTriangle className="h-4 w-4 text-amber-600" /> Pontos de atenção
+            <Card className="p-4 mb-4 border-red-200 bg-red-50/30">
+              <h3 className="font-semibold mb-3 flex items-center gap-2 text-red-700">
+                <AlertTriangle className="h-4 w-4" /> Alertas de Compliance
               </h3>
-              <ul className="space-y-2 text-sm">
+              <ul className="space-y-3">
                 {result.risks.map((r, i) => (
-                  <li key={i} className="flex gap-2">
-                    <span className="text-amber-600">•</span> {r}
+                  <li key={i} className="flex gap-2 text-sm text-red-800 bg-white/50 p-2 rounded border border-red-100">
+                    <XCircle className="h-4 w-4 shrink-0 mt-0.5" /> <span>{r}</span>
                   </li>
                 ))}
               </ul>
+            </Card>
+          )}
+
+          {data.has_payroll && data.current_company_type === 'simples_nacional' && (
+            <Card className="p-4 mb-4 border-blue-100 bg-blue-50/20">
+              <h3 className="font-semibold mb-2 flex items-center gap-2 text-blue-700">
+                <TrendingUp className="h-4 w-4" /> Indicador: Fator R
+              </h3>
+              <div className="flex items-end gap-4">
+                <div className="flex-1">
+                  <div className="h-2 bg-slate-200 rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-blue-500 transition-all" 
+                      style={{ width: `${Math.min(((data.payroll_monthly_cents * 12) / data.annual_revenue_cents) * 100, 100)}%` }}
+                    />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-1">Meta para Anexo III: 28%</p>
+                </div>
+                <div className="text-right">
+                  <span className="text-xl font-bold text-blue-700">
+                    {((data.payroll_monthly_cents * 12 / data.annual_revenue_cents) * 100).toFixed(1)}%
+                  </span>
+                </div>
+              </div>
             </Card>
           )}
 
