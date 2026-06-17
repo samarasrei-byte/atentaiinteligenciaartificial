@@ -238,6 +238,28 @@ export default function CartasContempladas() {
               </a>
             </motion.div>
 
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="mt-14 rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-border/40"
+            >
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full"
+                aria-label="Carta Contemplada - Clique no WhatsApp"
+              >
+                <img
+                  src={bannerAsset.url}
+                  alt="Carta Contemplada - Crédito imediato, sem juros. Realize seus planos."
+                  className="w-full h-auto object-cover"
+                  loading="eager"
+                />
+              </a>
+            </motion.div>
+
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Sem burocracia infinita</span>
               <span className="inline-flex items-center gap-2"><Check className="w-4 h-4 text-primary" /> Transferência via administradora</span>
