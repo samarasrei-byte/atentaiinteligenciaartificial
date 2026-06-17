@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
+import bannerAsset from "@/assets/carta-contemplada-banner.png.asset.json";
 import {
   ShieldCheck,
   Zap,
