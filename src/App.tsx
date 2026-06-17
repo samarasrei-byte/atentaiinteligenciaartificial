@@ -63,6 +63,7 @@ const LimpaNomeStatusPage = lazy(() => import("./pages/LimpaNomeStatusPage"));
 const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const IRPage = lazy(() => import("./pages/IRPage"));
 const IRPJ = lazy(() => import("./pages/IRPJ"));
+const CartasContempladas = lazy(() => import("./pages/CartasContempladas"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
 const ServicosPage = lazy(() => import("./pages/ServicosPage").catch(() => {
   window.location.reload();
@@ -192,6 +193,7 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
               <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/cartas-contempladas" element={<CartasContempladas />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/sobre" element={<SobrePage />} />
               <Route path="/suporte" element={<SuportePage />} />
