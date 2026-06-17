@@ -480,7 +480,21 @@ export default function CartasContempladas() {
             © {new Date().getFullYear()} AtentAI. Todos os direitos reservados.
           </div>
         </footer>
+
+        {/* ============== FLOATING WHATSAPP BUTTON ============== */}
+        <a
+          href={WHATSAPP_LINK}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Falar no WhatsApp"
+          className="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50 inline-flex items-center gap-2 pl-4 pr-5 py-3 rounded-full font-semibold text-sm shadow-lg shadow-black/15 bg-[#25D366] text-white hover:scale-105 active:scale-95 transition-transform"
+        >
+          <MessageCircle className="w-5 h-5" />
+          <span className="hidden sm:inline">Falar no WhatsApp</span>
+          <span className="sm:hidden">WhatsApp</span>
+        </a>
       </div>
     </>
   );
 }
+
