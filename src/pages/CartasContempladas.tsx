@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { motion } from "framer-motion";
+import bannerAsset from "@/assets/carta-contemplada-banner.png.asset.json";
 import {
   ShieldCheck,
   Zap,
@@ -234,6 +235,28 @@ export default function CartasContempladas() {
                 className="inline-flex items-center gap-2 px-6 py-4 rounded-full font-semibold text-sm border border-border hover:bg-muted transition-colors"
               >
                 <MessageCircle className="w-4 h-4" /> {WHATSAPP_DISPLAY}
+              </a>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7, delay: 0.35 }}
+              className="mt-14 rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-border/40"
+            >
+              <a
+                href={WHATSAPP_LINK}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block w-full"
+                aria-label="Carta Contemplada - Clique no WhatsApp"
+              >
+                <img
+                  src={bannerAsset.url}
+                  alt="Carta Contemplada - Crédito imediato, sem juros. Realize seus planos."
+                  className="w-full h-auto object-cover"
+                  loading="eager"
+                />
               </a>
             </motion.div>
 
