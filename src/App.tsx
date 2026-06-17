@@ -193,6 +193,7 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
               <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/cartas-contempladas" element={<CartasContempladas />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/sobre" element={<SobrePage />} />
               <Route path="/suporte" element={<SuportePage />} />
