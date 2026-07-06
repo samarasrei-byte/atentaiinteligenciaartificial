@@ -221,12 +221,10 @@ export default function CartasContempladas() {
               className="mt-10 flex flex-col sm:flex-row gap-3 items-center justify-center"
             >
               <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/cartas-contempladas/quiz"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-base bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
               >
-                Quero meu crédito agora <ArrowRight className="w-5 h-5" />
+                Simular minha carta agora <ArrowRight className="w-5 h-5" />
               </a>
               <a
                 href={WHATSAPP_LINK}
@@ -245,11 +243,9 @@ export default function CartasContempladas() {
               className="mt-14 rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-border/40"
             >
               <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/cartas-contempladas/quiz"
                 className="block w-full"
-                aria-label="Carta Contemplada - Clique no WhatsApp"
+                aria-label="Fazer simulação de carta contemplada"
               >
                 <img
                   src={bannerAsset.url}
@@ -457,12 +453,10 @@ export default function CartasContempladas() {
             </p>
             <div className="mt-10 flex flex-col sm:flex-row gap-3 items-center justify-center">
               <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/cartas-contempladas/quiz"
                 className="inline-flex items-center gap-2 px-10 py-5 rounded-full font-semibold text-base bg-background text-foreground hover:opacity-90 transition-opacity"
               >
-                Falar com um especialista <ArrowRight className="w-5 h-5" />
+                Simular minha carta agora <ArrowRight className="w-5 h-5" />
               </a>
               <a
                 href={WHATSAPP_LINK}
