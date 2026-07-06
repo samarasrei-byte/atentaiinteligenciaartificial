@@ -70,9 +70,9 @@ export default function ParceiroCartasLogin() {
               <Label htmlFor="password">Senha</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoFocus />
             </div>
-            <Button type="submit" className="w-full" disabled={loading || provisioning}>
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {provisioning ? "Preparando acesso..." : loading ? "Entrando..." : "Entrar"}
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
             <p className="text-center text-[11px] text-muted-foreground">
               Acesso restrito. Todos os acessos são auditados.
