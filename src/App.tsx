@@ -260,6 +260,8 @@ const App = () => (
               <Route path="/apresentação/serac" element={<Navigate to="/apresentacao/serac" replace />} />
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
+              <Route path="/parceiro/cartas/login" element={<ParceiroCartasLogin />} />
+              <Route path="/parceiro/cartas" element={<ParceiroCartasPanel />} />
               <Route path="/test-login" element={<TestLogin />} />
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
