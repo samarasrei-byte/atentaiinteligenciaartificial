@@ -5,7 +5,7 @@ import {
   Home, Car, Truck, Wrench, Sprout, Ship,
   CheckCircle2, ShieldCheck, TrendingUp, Sparkles,
   ArrowRight, ArrowLeft, MessageCircle, Phone, Mail, User as UserIcon,
-  Calculator, Calendar, Percent, Wallet,
+  Calculator, Calendar, Percent, Wallet, TrendingDown, Landmark, PiggyBank,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -179,8 +179,25 @@ const URGENCIA = [
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
+// Taxa média anual de mercado (banco) por tipo de crédito — para comparação
+const TAXA_BANCO_AA: Record<CartaKey, number> = {
+  imovel: 0.115,           // financiamento imobiliário
+  automovel: 0.245,        // CDC veículo
+  caminhao: 0.22,          // Finame / CDC pesados
+  reforma_servicos: 0.42,  // crédito pessoal / consignado
+  rural: 0.14,             // crédito rural / Pronaf comercial
+  nautico: 0.28,           // financiamento náutico / aeronáutico
+};
+
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+// Parcela Price: P = V * i / (1 - (1+i)^-n)
+const priceInstallment = (principal: number, annualRate: number, months: number) => {
+  const i = Math.pow(1 + annualRate, 1 / 12) - 1;
+  if (i === 0) return principal / months;
+  return (principal * i) / (1 - Math.pow(1 + i, -months));
+};
 
 export default function CartasContempladasQuiz() {
   const { toast } = useToast();
@@ -215,12 +232,20 @@ export default function CartasContempladasQuiz() {
     if (!carta || !credito || !prazo) return null;
     const totalComTaxa = credito * (1 + carta.taxaTotal);
     const parcela = totalComTaxa / prazo;
-    const lanceSugerido = credito * 0.25; // 25% costuma ser competitivo
+    const lanceSugerido = credito * 0.25;
+    const bancoAA = TAXA_BANCO_AA[carta.key];
+    const parcelaBanco = priceInstallment(credito, bancoAA, prazo);
+    const totalBanco = parcelaBanco * prazo;
+    const economia = Math.max(0, totalBanco - totalComTaxa);
     return {
       parcela,
       totalComTaxa,
       lanceSugerido,
       taxaMensalEquivalente: (carta.taxaTotal / prazo) * 100,
+      parcelaBanco,
+      totalBanco,
+      economia,
+      bancoAA,
     };
   }, [carta, credito, prazo]);
 
@@ -347,6 +372,62 @@ export default function CartasContempladasQuiz() {
                 {/* STEP 0 — tipo de carta */}
                 {step === 0 && (
                   <div>
+                    {/* Benefícios + comparação com juros do banco */}
+                    <div className="mb-6 grid gap-3 sm:mb-8 sm:grid-cols-3">
+                      {[
+                        { icon: PiggyBank, title: "Zero juros", desc: "Só taxa administrativa — sem juros compostos do banco." },
+                        { icon: TrendingDown, title: "Parcela até 45% menor", desc: "Compare com CDC e financiamento tradicional." },
+                        { icon: ShieldCheck, title: "Poder de à vista", desc: "Negocie desconto como quem paga na hora." },
+                      ].map((b) => (
+                        <div key={b.title} className="rounded-2xl border border-border bg-background/60 p-3 sm:p-4">
+                          <b.icon className="h-5 w-5 text-primary" />
+                          <p className="mt-2 text-sm font-semibold">{b.title}</p>
+                          <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">{b.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Comparativo ilustrativo Banco x Carta */}
+                    <div className="mb-6 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 to-transparent p-4 sm:mb-8 sm:p-5">
+                      <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                        <TrendingDown className="h-4 w-4" /> Diferença real vs. juros do banco
+                      </div>
+                      {(() => {
+                        const V = 100_000, N = 120, rBanco = 0.22;
+                        const pBanco = priceInstallment(V, rBanco, N);
+                        const pCarta = (V * 1.20) / N;
+                        const econ = pBanco * N - V * 1.20;
+                        return (
+                          <div className="grid gap-3 sm:grid-cols-3">
+                            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
+                                <Landmark className="h-3.5 w-3.5" /> Banco (CDC ~22% a.a.)
+                              </div>
+                              <p className="mt-1 text-lg font-bold text-foreground sm:text-xl">{brl(pBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
+                              <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(pBanco * N)}</p>
+                            </div>
+                            <div className="rounded-xl border border-primary/40 bg-primary/10 p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
+                                <Sparkles className="h-3.5 w-3.5" /> Carta contemplada
+                              </div>
+                              <p className="mt-1 text-lg font-bold text-primary sm:text-xl">{brl(pCarta)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
+                              <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(V * 1.20)}</p>
+                            </div>
+                            <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                <PiggyBank className="h-3.5 w-3.5" /> Economia
+                              </div>
+                              <p className="mt-1 text-lg font-bold text-emerald-600 dark:text-emerald-400 sm:text-xl">{brl(econ)}</p>
+                              <p className="mt-0.5 text-[11px] text-muted-foreground">no total pago</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                      <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                        * Exemplo ilustrativo: R$ 100.000 em 120 meses. Consórcio cobra apenas taxa administrativa (~20%); banco cobra juros compostos.
+                      </p>
+                    </div>
+
                     <h2 className="text-lg font-semibold sm:text-2xl">
                       Qual é o seu objetivo?
                     </h2>
@@ -444,10 +525,15 @@ export default function CartasContempladasQuiz() {
                     </div>
 
                     {/* Prazo */}
-                    <div className="mt-6 space-y-2">
-                      <Label className="text-sm font-medium">
-                        <Calendar className="mr-1 inline h-3.5 w-3.5" /> Prazo (meses)
-                      </Label>
+                    <div className="mt-6 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="prazo-custom" className="text-sm font-medium">
+                          <Calendar className="mr-1 inline h-3.5 w-3.5" /> Prazo (meses)
+                        </Label>
+                        <span className="text-xs text-muted-foreground">
+                          Sugeridos: {carta.prazos.join(" · ")}
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                         {carta.prazos.map((p) => (
                           <button
@@ -463,6 +549,23 @@ export default function CartasContempladasQuiz() {
                             {p}x
                           </button>
                         ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="prazo-custom"
+                          type="number"
+                          inputMode="numeric"
+                          min={12}
+                          max={300}
+                          value={prazo || ""}
+                          onChange={(e) => {
+                            const v = parseInt(e.target.value, 10);
+                            setPrazo(Number.isFinite(v) ? Math.max(0, Math.min(300, v)) : 0);
+                          }}
+                          placeholder="Ou digite outro prazo"
+                          className="h-11 flex-1 text-base"
+                        />
+                        <span className="text-sm text-muted-foreground">meses</span>
                       </div>
                     </div>
 
@@ -498,6 +601,29 @@ export default function CartasContempladasQuiz() {
                           <p className="mt-0.5 text-[11px] text-muted-foreground">sem juros compostos</p>
                         </div>
                       </div>
+
+                      {/* Comparação com banco */}
+                      <div className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
+                        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                          <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
+                            <Landmark className="h-3.5 w-3.5" /> Se fosse no banco (~{(simulacao.bancoAA * 100).toFixed(0)}% a.a.)
+                          </div>
+                          <p className="mt-1 text-lg font-bold text-foreground sm:text-xl">
+                            {brl(simulacao.parcelaBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(simulacao.totalBanco)}</p>
+                        </div>
+                        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
+                          <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                            <PiggyBank className="h-3.5 w-3.5" /> Você economiza
+                          </div>
+                          <p className="mt-1 text-lg font-bold text-emerald-600 dark:text-emerald-400 sm:text-xl">
+                            {brl(simulacao.economia)}
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">no total pago ao longo do prazo</p>
+                        </div>
+                      </div>
+
                       <p className="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
                         * Simulação ilustrativa. Consórcio não cobra juros — apenas taxa administrativa, fundo de reserva e seguro (variam por administradora). A carta contemplada permite antecipar essa parcela pagando à vista com poder de negociação.
                       </p>
