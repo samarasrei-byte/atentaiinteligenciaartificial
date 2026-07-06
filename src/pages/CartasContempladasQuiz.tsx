@@ -350,51 +350,50 @@ export default function CartasContempladasQuiz() {
                   </div>
                 )}
 
-                {/* STEP 1 — Comparativo banco x carta */}
+                {/* STEP 1 — Comparativo banco x carta por categoria (taxas reais) */}
                 {step === 1 && (
                   <div>
                     <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                      <TrendingDown className="h-3.5 w-3.5" /> Comparativo real
+                      <TrendingDown className="h-3.5 w-3.5" /> Comparativo real por categoria
                     </span>
                     <h2 className="mt-3 text-lg font-semibold sm:text-2xl">Banco x Carta contemplada</h2>
                     <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                      Exemplo: R$ 100.000 em 120 meses.
+                      Taxas médias praticadas em 2025. Exemplo em 120 meses.
                     </p>
-                    {(() => {
-                      const V = 100_000, N = 120, rBanco = 0.22;
-                      const pBanco = priceInstallment(V, rBanco, N);
-                      const pCarta = (V * 1.20) / N;
-                      const econ = pBanco * N - V * 1.20;
-                      return (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
-                              <Landmark className="h-3.5 w-3.5" /> Banco (CDC ~22% a.a.)
+                    <div className="mt-4 space-y-2">
+                      {CARTAS.slice(0, 4).map((c) => {
+                        const V = c.default, N = 120;
+                        const pBanco = priceInstallment(V, TAXA_BANCO_AA[c.key], N);
+                        const pCarta = (V * (1 + c.taxaTotal)) / N;
+                        const econ = pBanco * N - V * (1 + c.taxaTotal);
+                        const Icon = c.icon;
+                        return (
+                          <div key={c.key} className="grid grid-cols-[auto_1fr_1fr_1fr] items-center gap-2 rounded-xl border border-border bg-background/60 p-2.5 sm:gap-3 sm:p-3">
+                            <div className="flex items-center gap-2">
+                              <Icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                              <div className="hidden text-[11px] font-semibold text-foreground sm:block">{c.label.replace("Carta de ", "").replace("Carta ", "")}</div>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-foreground">{brl(pBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
-                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(pBanco * N)}</p>
-                          </div>
-                          <div className="rounded-xl border border-primary/40 bg-primary/10 p-3">
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
-                              <Sparkles className="h-3.5 w-3.5" /> Carta contemplada
+                            <div>
+                              <div className="text-[9px] font-medium uppercase tracking-wide text-destructive">Banco {(TAXA_BANCO_AA[c.key] * 100).toFixed(1)}%aa</div>
+                              <div className="text-xs font-bold sm:text-sm">{brl(pBanco)}<span className="text-[9px] text-muted-foreground">/mês</span></div>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-primary">{brl(pCarta)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
-                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(V * 1.20)}</p>
-                          </div>
-                          <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                              <PiggyBank className="h-3.5 w-3.5" /> Economia
+                            <div>
+                              <div className="text-[9px] font-medium uppercase tracking-wide text-primary">Carta {(c.taxaTotal * 100).toFixed(0)}% total</div>
+                              <div className="text-xs font-bold text-primary sm:text-sm">{brl(pCarta)}<span className="text-[9px] text-muted-foreground">/mês</span></div>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-emerald-600 dark:text-emerald-400">{brl(econ)}</p>
-                            <p className="mt-0.5 text-[11px] text-muted-foreground">no total pago</p>
+                            <div>
+                              <div className="text-[9px] font-medium uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Economia</div>
+                              <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 sm:text-sm">{brl(econ)}</div>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })()}
-                    <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                      * Consórcio cobra apenas taxa administrativa (~20%); banco cobra juros compostos ao longo do tempo.
+                        );
+                      })}
+                    </div>
+                    <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
+                      * Taxas bancárias médias: imóvel ~11,5% aa, automóvel ~24,5% aa, caminhão ~22% aa, reforma ~42% aa. Consórcio cobra apenas taxa administrativa + fundo de reserva; sem juros compostos. Valores ilustrativos, sujeitos à administradora, seguro prestamista e reajuste anual (INCC/IPCA).
                     </p>
                   </div>
+
                 )}
 
                 {/* STEP 2 — tipo de carta */}
