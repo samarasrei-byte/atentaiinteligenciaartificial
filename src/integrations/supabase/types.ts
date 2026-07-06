@@ -2893,6 +2893,11 @@ export type Database = {
           id: string
           message: string | null
           metadata: Json | null
+          partner_validated: boolean
+          partner_validated_at: string | null
+          partner_validated_by: string | null
+          partner_validation_notes: string | null
+          partner_validation_status: string | null
           phone: string
           source: string | null
           status: string
@@ -2907,6 +2912,11 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
+          partner_validated?: boolean
+          partner_validated_at?: string | null
+          partner_validated_by?: string | null
+          partner_validation_notes?: string | null
+          partner_validation_status?: string | null
           phone: string
           source?: string | null
           status?: string
@@ -2921,6 +2931,11 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
+          partner_validated?: boolean
+          partner_validated_at?: string | null
+          partner_validated_by?: string | null
+          partner_validation_notes?: string | null
+          partner_validation_status?: string | null
           phone?: string
           source?: string | null
           status?: string
@@ -4046,6 +4061,7 @@ export type Database = {
         Args: { _org_id: string; _user_id: string }
         Returns: boolean
       }
+      is_carta_partner: { Args: { _user_id: string }; Returns: boolean }
       is_equipe_guilherme: { Args: { _user_id: string }; Returns: boolean }
       is_valid_contador_assignment: {
         Args: { p_contador_id: string; p_request_user_id: string }
