@@ -279,21 +279,27 @@ export default function CartasContempladasQuiz() {
         <meta name="description" content="Descubra em 9 passos a carta contemplada ideal, simule sua parcela e receba proposta. Crédito à vista, sem juros, liberado em até 7 dias." />
       </Helmet>
 
-      {/* NAV */}
+      {/* NAV com credibilidade */}
       <header className="flex-shrink-0 border-b border-border bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2.5 sm:px-6 sm:py-3">
           <Link to="/cartas-contempladas" className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-6 w-6 rounded-full sm:h-7 sm:w-7" />
             <span className="text-xs font-semibold tracking-tight sm:text-sm">
               AtentAI · <span className="text-muted-foreground">Quiz Cartas</span>
             </span>
           </Link>
-          <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-            className="hidden items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground md:inline-flex">
-            <MessageCircle className="h-3.5 w-3.5" /> (11) 98521-4895
-          </a>
+          <div className="hidden items-center gap-3 sm:flex">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[10px] font-medium text-muted-foreground">
+              <ShieldCheck className="h-3 w-3 text-emerald-500" /> Administradoras reguladas pelo BACEN
+            </span>
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground">
+              <MessageCircle className="h-3.5 w-3.5" /> (11) 98521-4895
+            </a>
+          </div>
         </div>
       </header>
+
 
       {/* Progress + título compactos */}
       {!done && (
