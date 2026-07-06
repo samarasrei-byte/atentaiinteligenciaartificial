@@ -152,8 +152,8 @@ export default function CartasContempladasQuiz() {
 
   const progress = ((step + 1) / 4) * 100;
 
-  const next = () => setStep((s) => Math.min(3, (s + 1) as Step));
-  const back = () => setStep((s) => Math.max(0, (s - 1) as Step));
+  const next = () => setStep((s) => Math.min(3, s + 1) as Step);
+  const back = () => setStep((s) => Math.max(0, s - 1) as Step);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
