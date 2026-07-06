@@ -195,8 +195,11 @@ const App = () => (
               <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/cartas-contempladas" element={<CartasContempladas />} />
+              <Route path="/cartas-contempladas/mentoria" element={<CartasContempladasMentoria />} />
               <Route path="/carta-contemplada" element={<CartasContempladas />} />
               <Route path="/carta-contempladas" element={<CartasContempladas />} />
+              <Route path="/mentoria-cartas-contempladas" element={<CartasContempladasMentoria />} />
+
               <Route path="/auth" element={<Auth />} />
               <Route path="/sobre" element={<SobrePage />} />
               <Route path="/suporte" element={<SuportePage />} />
