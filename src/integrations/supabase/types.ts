@@ -2885,6 +2885,10 @@ export type Database = {
       }
       mentoria_cartas_leads: {
         Row: {
+          admin_release_notes: string | null
+          admin_released_at: string | null
+          admin_released_by: string | null
+          approval_stage: string
           carta_type: string
           created_at: string
           credit_range: string | null
@@ -2893,6 +2897,8 @@ export type Database = {
           id: string
           message: string | null
           metadata: Json | null
+          partner_approved_at: string | null
+          partner_rejection_reason: string | null
           partner_validated: boolean
           partner_validated_at: string | null
           partner_validated_by: string | null
@@ -2904,6 +2910,10 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          admin_release_notes?: string | null
+          admin_released_at?: string | null
+          admin_released_by?: string | null
+          approval_stage?: string
           carta_type: string
           created_at?: string
           credit_range?: string | null
@@ -2912,6 +2922,8 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
+          partner_approved_at?: string | null
+          partner_rejection_reason?: string | null
           partner_validated?: boolean
           partner_validated_at?: string | null
           partner_validated_by?: string | null
@@ -2923,6 +2935,10 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          admin_release_notes?: string | null
+          admin_released_at?: string | null
+          admin_released_by?: string | null
+          approval_stage?: string
           carta_type?: string
           created_at?: string
           credit_range?: string | null
@@ -2931,6 +2947,8 @@ export type Database = {
           id?: string
           message?: string | null
           metadata?: Json | null
+          partner_approved_at?: string | null
+          partner_rejection_reason?: string | null
           partner_validated?: boolean
           partner_validated_at?: string | null
           partner_validated_by?: string | null
