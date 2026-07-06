@@ -549,6 +549,7 @@ const AdminPanel = () => {
           {activeTab === 'withdrawals' && <AdminWithdrawalPanel />}
           {activeTab === 'support' && <AdminSupportPanel />}
           {activeTab === 'limpa-nome' && <CreditRepairManagement />}
+          {activeTab === 'mentoria-cartas' && <MentoriaCartasLeads />}
           {activeTab === 'cashback' && <CashbackMetricsDashboard />}
           {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
           {activeTab === 'ir-management' && <AdminIRManagement />}
