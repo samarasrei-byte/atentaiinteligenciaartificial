@@ -221,12 +221,10 @@ export default function CartasContempladas() {
               className="mt-10 flex flex-col sm:flex-row gap-3 items-center justify-center"
             >
               <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/cartas-contempladas/quiz"
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-full font-semibold text-base bg-primary text-primary-foreground hover:opacity-90 transition-opacity"
               >
-                Quero meu crédito agora <ArrowRight className="w-5 h-5" />
+                Simular minha carta agora <ArrowRight className="w-5 h-5" />
               </a>
               <a
                 href={WHATSAPP_LINK}
