@@ -102,6 +102,21 @@ export default function ParceiroCartasPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checking]);
 
+  const logAudit = async (action_type: string, resource_id: string, success: boolean, metadata: any = {}, failure_reason?: string) => {
+    const { data: sess } = await supabase.auth.getSession();
+    const uid = sess.session?.user?.id;
+    if (!uid) return;
+    await supabase.from("audit_logs").insert({
+      user_id: uid,
+      action_type,
+      resource_type: "mentoria_cartas_lead",
+      resource_id,
+      success,
+      failure_reason: failure_reason ?? null,
+      metadata: { ...metadata, actor_role: "carta_partner", actor_email: sess.session?.user?.email },
+    });
+  };
+
   const approve = async (id: string) => {
     setSavingId(id);
     const patch: any = {
@@ -112,8 +127,13 @@ export default function ParceiroCartasPanel() {
     if (notesDraft[id] !== undefined) patch.partner_validation_notes = notesDraft[id];
     const { error } = await supabase.from("mentoria_cartas_leads").update(patch).eq("id", id);
     setSavingId(null);
-    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else toast({ title: "Aprovado!", description: "Admin foi notificado para liberar o contato." });
+    if (error) {
+      await logAudit("carta_partner_approve", id, false, { notes: notesDraft[id] ?? null }, error.message);
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      await logAudit("carta_partner_approve", id, true, { notes: notesDraft[id] ?? null });
+      toast({ title: "Aprovado!", description: "Admin foi notificado para liberar o contato." });
+    }
   };
 
   const reject = async (id: string) => {
@@ -129,8 +149,13 @@ export default function ParceiroCartasPanel() {
       partner_validation_notes: notesDraft[id] ?? null,
     }).eq("id", id);
     setSavingId(null);
-    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else toast({ title: "Rejeitado" });
+    if (error) {
+      await logAudit("carta_partner_reject", id, false, { reason }, error.message);
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      await logAudit("carta_partner_reject", id, true, { reason });
+      toast({ title: "Rejeitado" });
+    }
   };
 
   const saveNotes = async (id: string) => {
