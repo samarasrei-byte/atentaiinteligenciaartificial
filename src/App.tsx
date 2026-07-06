@@ -114,6 +114,8 @@ const SuportePage = lazy(() => import("./pages/SuportePage"));
 // const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
 // const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
+const ParceiroCartasLogin = lazy(() => import("./pages/ParceiroCartasLogin"));
+const ParceiroCartasPanel = lazy(() => import("./pages/ParceiroCartasPanel"));
 
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
 const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
