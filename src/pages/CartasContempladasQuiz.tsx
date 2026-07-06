@@ -5,7 +5,7 @@ import {
   Home, Car, Truck, Wrench, Sprout, Ship,
   CheckCircle2, ShieldCheck, TrendingUp, Sparkles,
   ArrowRight, ArrowLeft, MessageCircle, Phone, Mail, User as UserIcon,
-  Calculator, Calendar, Percent, Wallet,
+  Calculator, Calendar, Percent, Wallet, TrendingDown, Landmark, PiggyBank,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
