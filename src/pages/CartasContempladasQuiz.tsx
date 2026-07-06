@@ -562,23 +562,48 @@ export default function CartasContempladasQuiz() {
                       Valores finais podem variar por administradora.
                     </p>
 
-                    {/* Slider crédito */}
+                    {/* Slider + input crédito */}
                     <div className="mt-6 space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium">Valor do crédito</Label>
+                        <Label htmlFor="credito-input" className="text-sm font-medium">Valor do crédito</Label>
                         <span className="text-base font-bold text-primary sm:text-lg">{brl(credito)}</span>
                       </div>
+                      <Input
+                        id="credito-input"
+                        inputMode="numeric"
+                        value={creditoInput}
+                        onChange={(e) => {
+                          const masked = formatBRLInput(e.target.value);
+                          setCreditoInput(masked);
+                          setCredito(parseBRLInput(masked));
+                        }}
+                        onBlur={() => {
+                          if (carta && credito) {
+                            const clamped = Math.max(carta.min, Math.min(carta.max, credito));
+                            setCredito(clamped);
+                            setCreditoInput(formatBRLInput(String(clamped)));
+                          }
+                        }}
+                        placeholder="Digite o valor desejado"
+                        className={`h-12 text-base font-semibold ${errorCredito ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                      />
                       <Slider
-                        value={[credito]}
+                        value={[Math.max(carta.min, Math.min(carta.max, credito || carta.min))]}
                         min={carta.min}
                         max={carta.max}
                         step={Math.max(1000, Math.round((carta.max - carta.min) / 100))}
-                        onValueChange={(v) => setCredito(v[0])}
+                        onValueChange={(v) => {
+                          setCredito(v[0]);
+                          setCreditoInput(formatBRLInput(String(v[0])));
+                        }}
                       />
                       <div className="flex justify-between text-[11px] text-muted-foreground">
                         <span>{brl(carta.min)}</span>
                         <span>{brl(carta.max)}</span>
                       </div>
+                      {errorCredito && (
+                        <p className="text-xs font-medium text-destructive">{errorCredito}</p>
+                      )}
                     </div>
 
                     {/* Prazo */}
@@ -619,14 +644,18 @@ export default function CartasContempladasQuiz() {
                             const v = parseInt(e.target.value, 10);
                             setPrazo(Number.isFinite(v) ? Math.max(0, Math.min(300, v)) : 0);
                           }}
-                          placeholder="Ou digite outro prazo"
-                          className="h-11 flex-1 text-base"
+                          placeholder="Ou digite (12 a 300)"
+                          className={`h-11 flex-1 text-base ${errorPrazo ? "border-destructive focus-visible:ring-destructive" : ""}`}
                         />
                         <span className="text-sm text-muted-foreground">meses</span>
                       </div>
+                      {errorPrazo && (
+                        <p className="text-xs font-medium text-destructive">{errorPrazo}</p>
+                      )}
                     </div>
 
                     {/* Resultado */}
+                    {simulacao ? (
                     <div className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-6">
                       <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
                         <Sparkles className="h-4 w-4" /> Estimativa
@@ -659,6 +688,38 @@ export default function CartasContempladasQuiz() {
                         </div>
                       </div>
 
+                      {/* Contemplada vs Não-contemplada */}
+                      <div className="mt-5 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
+                        <div className="rounded-xl border border-primary/40 bg-primary/10 p-4">
+                          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                            <Sparkles className="h-3.5 w-3.5" /> Carta contemplada (uso imediato)
+                          </div>
+                          <p className="text-lg font-bold text-foreground sm:text-xl">
+                            {brl(simulacao.parcelaContemplada)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                          </p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            + ágio à vista de <b className="text-foreground">{brl(simulacao.agio)}</b> (~{(AGIO_CONTEMPLADA*100).toFixed(0)}%)
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">
+                            Total: {brl(simulacao.totalContemplada)} · <b className="text-emerald-600 dark:text-emerald-400">crédito hoje</b>
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-4">
+                          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            <Calendar className="h-3.5 w-3.5" /> Cota comum (não-contemplada)
+                          </div>
+                          <p className="text-lg font-bold text-foreground sm:text-xl">
+                            {brl(simulacao.parcela)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                          </p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Sem ágio · espera <b className="text-foreground">~{ESPERA_MEDIA_MESES} meses</b> por sorteio/lance
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">
+                            Total: {brl(simulacao.totalComTaxa)} · <b>crédito não é imediato</b>
+                          </p>
+                        </div>
+                      </div>
+
                       {/* Comparação com banco */}
                       <div className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
                         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
@@ -682,9 +743,14 @@ export default function CartasContempladasQuiz() {
                       </div>
 
                       <p className="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                        * Simulação ilustrativa. Consórcio não cobra juros — apenas taxa administrativa, fundo de reserva e seguro (variam por administradora). A carta contemplada permite antecipar essa parcela pagando à vista com poder de negociação.
+                        * Simulação ilustrativa. Consórcio não cobra juros — apenas taxa administrativa, fundo de reserva e seguro (variam por administradora). Carta contemplada exige ágio à vista, mas libera o crédito no ato; cota comum não paga ágio, mas depende de sorteio ou lance para ser contemplada.
                       </p>
                     </div>
+                    ) : (
+                      <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+                        Ajuste crédito e prazo válidos para ver a simulação.
+                      </div>
+                    )}
                   </div>
                 )}
 
