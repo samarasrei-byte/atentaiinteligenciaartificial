@@ -96,32 +96,59 @@ export default function MentoriaCartasLeads() {
     else toast({ title: "Status atualizado" });
   };
 
+  const logAudit = async (action_type: string, resource_id: string, success: boolean, metadata: any = {}, failure_reason?: string) => {
+    const { data: sess } = await supabase.auth.getSession();
+    const uid = sess.session?.user?.id;
+    if (!uid) return;
+    await supabase.from("audit_logs").insert({
+      user_id: uid,
+      action_type,
+      resource_type: "mentoria_cartas_lead",
+      resource_id,
+      success,
+      failure_reason: failure_reason ?? null,
+      metadata: { ...metadata, actor_role: "admin", actor_email: sess.session?.user?.email },
+    });
+  };
+
   const releaseContact = async (id: string) => {
     const { data: session } = await supabase.auth.getSession();
     setSavingId(id);
+    const notes = releaseNotes[id] ?? null;
     const { error } = await supabase.from("mentoria_cartas_leads").update({
       approval_stage: "admin_released",
       admin_released_at: new Date().toISOString(),
       admin_released_by: session.session?.user?.id ?? null,
-      admin_release_notes: releaseNotes[id] ?? null,
+      admin_release_notes: notes,
     }).eq("id", id);
     setSavingId(null);
-    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else toast({ title: "Contato liberado", description: "O parceiro foi notificado." });
+    if (error) {
+      await logAudit("carta_admin_release", id, false, { notes }, error.message);
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      await logAudit("carta_admin_release", id, true, { notes });
+      toast({ title: "Contato liberado", description: "O parceiro foi notificado." });
+    }
   };
 
   const denyRelease = async (id: string) => {
     const { data: session } = await supabase.auth.getSession();
     setSavingId(id);
+    const notes = releaseNotes[id] ?? "Negado pelo admin";
     const { error } = await supabase.from("mentoria_cartas_leads").update({
       approval_stage: "admin_denied",
       admin_released_at: new Date().toISOString(),
       admin_released_by: session.session?.user?.id ?? null,
-      admin_release_notes: releaseNotes[id] ?? "Negado pelo admin",
+      admin_release_notes: notes,
     }).eq("id", id);
     setSavingId(null);
-    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else toast({ title: "Liberação negada" });
+    if (error) {
+      await logAudit("carta_admin_deny", id, false, { notes }, error.message);
+      toast({ title: "Erro", description: error.message, variant: "destructive" });
+    } else {
+      await logAudit("carta_admin_deny", id, true, { notes });
+      toast({ title: "Liberação negada" });
+    }
   };
 
   const filtered = useMemo(() => leads.filter((l) => {
