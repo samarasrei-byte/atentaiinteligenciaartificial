@@ -525,10 +525,15 @@ export default function CartasContempladasQuiz() {
                     </div>
 
                     {/* Prazo */}
-                    <div className="mt-6 space-y-2">
-                      <Label className="text-sm font-medium">
-                        <Calendar className="mr-1 inline h-3.5 w-3.5" /> Prazo (meses)
-                      </Label>
+                    <div className="mt-6 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="prazo-custom" className="text-sm font-medium">
+                          <Calendar className="mr-1 inline h-3.5 w-3.5" /> Prazo (meses)
+                        </Label>
+                        <span className="text-xs text-muted-foreground">
+                          Sugeridos: {carta.prazos.join(" · ")}
+                        </span>
+                      </div>
                       <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
                         {carta.prazos.map((p) => (
                           <button
@@ -544,6 +549,23 @@ export default function CartasContempladasQuiz() {
                             {p}x
                           </button>
                         ))}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Input
+                          id="prazo-custom"
+                          type="number"
+                          inputMode="numeric"
+                          min={12}
+                          max={300}
+                          value={prazo || ""}
+                          onChange={(e) => {
+                            const v = parseInt(e.target.value, 10);
+                            setPrazo(Number.isFinite(v) ? Math.max(0, Math.min(300, v)) : 0);
+                          }}
+                          placeholder="Ou digite outro prazo"
+                          className="h-11 flex-1 text-base"
+                        />
+                        <span className="text-sm text-muted-foreground">meses</span>
                       </div>
                     </div>
 
@@ -579,6 +601,29 @@ export default function CartasContempladasQuiz() {
                           <p className="mt-0.5 text-[11px] text-muted-foreground">sem juros compostos</p>
                         </div>
                       </div>
+
+                      {/* Comparação com banco */}
+                      <div className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
+                        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                          <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
+                            <Landmark className="h-3.5 w-3.5" /> Se fosse no banco (~{(simulacao.bancoAA * 100).toFixed(0)}% a.a.)
+                          </div>
+                          <p className="mt-1 text-lg font-bold text-foreground sm:text-xl">
+                            {brl(simulacao.parcelaBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(simulacao.totalBanco)}</p>
+                        </div>
+                        <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
+                          <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                            <PiggyBank className="h-3.5 w-3.5" /> Você economiza
+                          </div>
+                          <p className="mt-1 text-lg font-bold text-emerald-600 dark:text-emerald-400 sm:text-xl">
+                            {brl(simulacao.economia)}
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">no total pago ao longo do prazo</p>
+                        </div>
+                      </div>
+
                       <p className="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
                         * Simulação ilustrativa. Consórcio não cobra juros — apenas taxa administrativa, fundo de reserva e seguro (variam por administradora). A carta contemplada permite antecipar essa parcela pagando à vista com poder de negociação.
                       </p>
