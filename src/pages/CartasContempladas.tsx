@@ -243,11 +243,9 @@ export default function CartasContempladas() {
               className="mt-14 rounded-3xl overflow-hidden shadow-2xl shadow-black/10 border border-border/40"
             >
               <a
-                href={WHATSAPP_LINK}
-                target="_blank"
-                rel="noopener noreferrer"
+                href="/cartas-contempladas/quiz"
                 className="block w-full"
-                aria-label="Carta Contemplada - Clique no WhatsApp"
+                aria-label="Fazer simulação de carta contemplada"
               >
                 <img
                   src={bannerAsset.url}
