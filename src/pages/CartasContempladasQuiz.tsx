@@ -549,7 +549,7 @@ export default function CartasContempladasQuiz() {
                 )}
 
                 {/* STEP 2 — SIMULADOR */}
-                {step === 2 && carta && simulacao && (
+                {step === 2 && carta && (
                   <div>
                     <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                       <Calculator className="h-3.5 w-3.5" /> Simulador de consórcio
