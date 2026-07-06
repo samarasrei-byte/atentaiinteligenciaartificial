@@ -372,6 +372,62 @@ export default function CartasContempladasQuiz() {
                 {/* STEP 0 — tipo de carta */}
                 {step === 0 && (
                   <div>
+                    {/* Benefícios + comparação com juros do banco */}
+                    <div className="mb-6 grid gap-3 sm:mb-8 sm:grid-cols-3">
+                      {[
+                        { icon: PiggyBank, title: "Zero juros", desc: "Só taxa administrativa — sem juros compostos do banco." },
+                        { icon: TrendingDown, title: "Parcela até 45% menor", desc: "Compare com CDC e financiamento tradicional." },
+                        { icon: ShieldCheck, title: "Poder de à vista", desc: "Negocie desconto como quem paga na hora." },
+                      ].map((b) => (
+                        <div key={b.title} className="rounded-2xl border border-border bg-background/60 p-3 sm:p-4">
+                          <b.icon className="h-5 w-5 text-primary" />
+                          <p className="mt-2 text-sm font-semibold">{b.title}</p>
+                          <p className="mt-1 text-[11px] leading-relaxed text-muted-foreground sm:text-xs">{b.desc}</p>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Comparativo ilustrativo Banco x Carta */}
+                    <div className="mb-6 overflow-hidden rounded-2xl border border-primary/25 bg-gradient-to-br from-primary/5 to-transparent p-4 sm:mb-8 sm:p-5">
+                      <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                        <TrendingDown className="h-4 w-4" /> Diferença real vs. juros do banco
+                      </div>
+                      {(() => {
+                        const V = 100_000, N = 120, rBanco = 0.22;
+                        const pBanco = priceInstallment(V, rBanco, N);
+                        const pCarta = (V * 1.20) / N;
+                        const econ = pBanco * N - V * 1.20;
+                        return (
+                          <div className="grid gap-3 sm:grid-cols-3">
+                            <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
+                                <Landmark className="h-3.5 w-3.5" /> Banco (CDC ~22% a.a.)
+                              </div>
+                              <p className="mt-1 text-lg font-bold text-foreground sm:text-xl">{brl(pBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
+                              <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(pBanco * N)}</p>
+                            </div>
+                            <div className="rounded-xl border border-primary/40 bg-primary/10 p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
+                                <Sparkles className="h-3.5 w-3.5" /> Carta contemplada
+                              </div>
+                              <p className="mt-1 text-lg font-bold text-primary sm:text-xl">{brl(pCarta)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
+                              <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(V * 1.20)}</p>
+                            </div>
+                            <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
+                              <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                                <PiggyBank className="h-3.5 w-3.5" /> Economia
+                              </div>
+                              <p className="mt-1 text-lg font-bold text-emerald-600 dark:text-emerald-400 sm:text-xl">{brl(econ)}</p>
+                              <p className="mt-0.5 text-[11px] text-muted-foreground">no total pago</p>
+                            </div>
+                          </div>
+                        );
+                      })()}
+                      <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
+                        * Exemplo ilustrativo: R$ 100.000 em 120 meses. Consórcio cobra apenas taxa administrativa (~20%); banco cobra juros compostos.
+                      </p>
+                    </div>
+
                     <h2 className="text-lg font-semibold sm:text-2xl">
                       Qual é o seu objetivo?
                     </h2>
