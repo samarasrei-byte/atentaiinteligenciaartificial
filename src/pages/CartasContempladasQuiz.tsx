@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -134,6 +134,8 @@ export default function CartasContempladasQuiz() {
   const [prazo, setPrazo] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [lgpd, setLgpd] = useState(false);
+  const [partialSaved, setPartialSaved] = useState(false);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", message: "" });
 
   const carta = useMemo(() => (selected ? CARTAS.find((c) => c.key === selected)! : null), [selected]);
@@ -177,6 +179,8 @@ export default function CartasContempladasQuiz() {
   const next = () => setStep((s) => Math.min(TOTAL_STEPS - 1, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
 
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
+
   const canNext = (() => {
     if (step === 2 && !selected) return false;
     if (step === 4 && !creditoValido) return false;
@@ -185,11 +189,38 @@ export default function CartasContempladasQuiz() {
     return true;
   })();
 
+  // Captura parcial ao entrar na simulação (passo 6): salva se já houver email
+  const savePartialLead = async () => {
+    if (partialSaved || !carta || !emailValido || !form.full_name.trim()) return;
+    try {
+      await supabase.from("mentoria_cartas_leads").insert({
+        full_name: form.full_name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim() || "pendente",
+        carta_type: carta.label,
+        credit_range: credito ? brl(credito) : carta.ticket,
+        message: "[LEAD PARCIAL - quiz não finalizado]",
+        source: "quiz_landing_partial",
+        metadata: { carta_key: carta.key, urgencia, partial: true },
+      });
+      setPartialSaved(true);
+    } catch (e) { console.warn("partial lead skipped", e); }
+  };
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!carta) return;
     if (!form.full_name || !form.email || !form.phone) {
       toast({ title: "Preencha nome, e-mail e WhatsApp", variant: "destructive" });
+      return;
+    }
+    if (!emailValido) {
+      toast({ title: "E-mail inválido", variant: "destructive" });
+      return;
+    }
+    if (!lgpd) {
+      toast({ title: "Autorize o contato (LGPD) para continuar", variant: "destructive" });
       return;
     }
     setSubmitting(true);
@@ -203,13 +234,16 @@ export default function CartasContempladasQuiz() {
         message: form.message.trim() || null,
         source: "quiz_landing",
         metadata: {
-          carta_key: carta.key, urgencia,
+          carta_key: carta.key, urgencia, lgpd_consent: true,
           simulacao: simulacao ? {
             credito, prazo_meses: prazo,
             parcela_estimada: Math.round(simulacao.parcela),
             total_com_taxa: Math.round(simulacao.totalComTaxa),
             lance_sugerido: Math.round(simulacao.lanceSugerido),
             taxa_total_pct: carta.taxaTotal * 100,
+            parcela_banco: Math.round(simulacao.parcelaBanco),
+            economia_estimada: Math.round(simulacao.economia),
+            taxa_banco_aa_pct: simulacao.bancoAA * 100,
           } : null,
         },
       });
@@ -237,6 +271,7 @@ export default function CartasContempladasQuiz() {
     "Resumo e proposta",
   ];
 
+
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground antialiased">
       <Helmet>
@@ -244,21 +279,27 @@ export default function CartasContempladasQuiz() {
         <meta name="description" content="Descubra em 9 passos a carta contemplada ideal, simule sua parcela e receba proposta. Crédito à vista, sem juros, liberado em até 7 dias." />
       </Helmet>
 
-      {/* NAV */}
+      {/* NAV com credibilidade */}
       <header className="flex-shrink-0 border-b border-border bg-background/85 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2.5 sm:px-6 sm:py-3">
+        <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2.5 sm:px-6 sm:py-3">
           <Link to="/cartas-contempladas" className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-6 w-6 rounded-full sm:h-7 sm:w-7" />
             <span className="text-xs font-semibold tracking-tight sm:text-sm">
               AtentAI · <span className="text-muted-foreground">Quiz Cartas</span>
             </span>
           </Link>
-          <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
-            className="hidden items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground md:inline-flex">
-            <MessageCircle className="h-3.5 w-3.5" /> (11) 98521-4895
-          </a>
+          <div className="hidden items-center gap-3 sm:flex">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted/40 px-2.5 py-1 text-[10px] font-medium text-muted-foreground">
+              <ShieldCheck className="h-3 w-3 text-emerald-500" /> Administradoras reguladas pelo BACEN
+            </span>
+            <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary transition hover:bg-primary hover:text-primary-foreground">
+              <MessageCircle className="h-3.5 w-3.5" /> (11) 98521-4895
+            </a>
+          </div>
         </div>
       </header>
+
 
       {/* Progress + título compactos */}
       {!done && (
@@ -309,51 +350,50 @@ export default function CartasContempladasQuiz() {
                   </div>
                 )}
 
-                {/* STEP 1 — Comparativo banco x carta */}
+                {/* STEP 1 — Comparativo banco x carta por categoria (taxas reais) */}
                 {step === 1 && (
                   <div>
                     <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                      <TrendingDown className="h-3.5 w-3.5" /> Comparativo real
+                      <TrendingDown className="h-3.5 w-3.5" /> Comparativo real por categoria
                     </span>
                     <h2 className="mt-3 text-lg font-semibold sm:text-2xl">Banco x Carta contemplada</h2>
                     <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                      Exemplo: R$ 100.000 em 120 meses.
+                      Taxas médias praticadas em 2025. Exemplo em 120 meses.
                     </p>
-                    {(() => {
-                      const V = 100_000, N = 120, rBanco = 0.22;
-                      const pBanco = priceInstallment(V, rBanco, N);
-                      const pCarta = (V * 1.20) / N;
-                      const econ = pBanco * N - V * 1.20;
-                      return (
-                        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-                          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
-                              <Landmark className="h-3.5 w-3.5" /> Banco (CDC ~22% a.a.)
+                    <div className="mt-4 space-y-2">
+                      {CARTAS.slice(0, 4).map((c) => {
+                        const V = c.default, N = 120;
+                        const pBanco = priceInstallment(V, TAXA_BANCO_AA[c.key], N);
+                        const pCarta = (V * (1 + c.taxaTotal)) / N;
+                        const econ = pBanco * N - V * (1 + c.taxaTotal);
+                        const Icon = c.icon;
+                        return (
+                          <div key={c.key} className="grid grid-cols-[auto_1fr_1fr_1fr] items-center gap-2 rounded-xl border border-border bg-background/60 p-2.5 sm:gap-3 sm:p-3">
+                            <div className="flex items-center gap-2">
+                              <Icon className="h-4 w-4 text-primary sm:h-5 sm:w-5" />
+                              <div className="hidden text-[11px] font-semibold text-foreground sm:block">{c.label.replace("Carta de ", "").replace("Carta ", "")}</div>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-foreground">{brl(pBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
-                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(pBanco * N)}</p>
-                          </div>
-                          <div className="rounded-xl border border-primary/40 bg-primary/10 p-3">
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
-                              <Sparkles className="h-3.5 w-3.5" /> Carta contemplada
+                            <div>
+                              <div className="text-[9px] font-medium uppercase tracking-wide text-destructive">Banco {(TAXA_BANCO_AA[c.key] * 100).toFixed(1)}%aa</div>
+                              <div className="text-xs font-bold sm:text-sm">{brl(pBanco)}<span className="text-[9px] text-muted-foreground">/mês</span></div>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-primary">{brl(pCarta)}<span className="text-xs font-normal text-muted-foreground">/mês</span></p>
-                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(V * 1.20)}</p>
-                          </div>
-                          <div className="rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
-                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
-                              <PiggyBank className="h-3.5 w-3.5" /> Economia
+                            <div>
+                              <div className="text-[9px] font-medium uppercase tracking-wide text-primary">Carta {(c.taxaTotal * 100).toFixed(0)}% total</div>
+                              <div className="text-xs font-bold text-primary sm:text-sm">{brl(pCarta)}<span className="text-[9px] text-muted-foreground">/mês</span></div>
                             </div>
-                            <p className="mt-1 text-xl font-bold text-emerald-600 dark:text-emerald-400">{brl(econ)}</p>
-                            <p className="mt-0.5 text-[11px] text-muted-foreground">no total pago</p>
+                            <div>
+                              <div className="text-[9px] font-medium uppercase tracking-wide text-emerald-600 dark:text-emerald-400">Economia</div>
+                              <div className="text-xs font-bold text-emerald-600 dark:text-emerald-400 sm:text-sm">{brl(econ)}</div>
+                            </div>
                           </div>
-                        </div>
-                      );
-                    })()}
-                    <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                      * Consórcio cobra apenas taxa administrativa (~20%); banco cobra juros compostos ao longo do tempo.
+                        );
+                      })}
+                    </div>
+                    <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">
+                      * Taxas bancárias médias: imóvel ~11,5% aa, automóvel ~24,5% aa, caminhão ~22% aa, reforma ~42% aa. Consórcio cobra apenas taxa administrativa + fundo de reserva; sem juros compostos. Valores ilustrativos, sujeitos à administradora, seguro prestamista e reajuste anual (INCC/IPCA).
                     </p>
                   </div>
+
                 )}
 
                 {/* STEP 2 — tipo de carta */}
@@ -503,10 +543,22 @@ export default function CartasContempladasQuiz() {
                         <p className="mt-0.5 text-[11px] text-muted-foreground">Sem ágio · espera ~{ESPERA_MEDIA_MESES} meses</p>
                       </div>
                     </div>
+                    <div className="mt-4 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3">
+                      <p className="text-[11px] font-semibold text-primary">📧 Receba esta simulação em PDF por e-mail</p>
+                      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                        <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} placeholder="Seu nome" className="h-10 flex-1 text-sm" />
+                        <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="voce@email.com" className="h-10 flex-1 text-sm" />
+                        <Button type="button" size="sm" variant="outline" onClick={savePartialLead} disabled={!emailValido || !form.full_name.trim() || partialSaved} className="h-10 rounded-full">
+                          {partialSaved ? "✓ Salvo" : "Guardar"}
+                        </Button>
+                      </div>
+                      <p className="mt-1.5 text-[10px] text-muted-foreground">Assim você não perde a simulação — pode voltar depois.</p>
+                    </div>
                     <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                      * Valores ilustrativos. Podem variar por administradora.
+                      * Valores ilustrativos. Podem variar por administradora, fundo de reserva, seguro e reajuste anual.
                     </p>
                   </div>
+
                 )}
                 {step === 6 && (!carta || !simulacao) && (
                   <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
@@ -595,13 +647,26 @@ export default function CartasContempladasQuiz() {
                       <Textarea id="message" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="min-h-16" placeholder="Conte um pouco sobre seu objetivo..." />
                     </div>
 
-                    <Button type="submit" disabled={submitting} className="w-full rounded-full py-5 text-sm font-semibold">
+                    <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-border bg-muted/30 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={lgpd}
+                        onChange={(e) => setLgpd(e.target.checked)}
+                        className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 accent-primary"
+                      />
+                      <span>
+                        Autorizo a AtentAI e a administradora parceira a entrarem em contato por WhatsApp, e-mail e telefone com a proposta desta simulação, conforme a <b className="text-foreground">LGPD (Lei 13.709/2018)</b>. Meus dados serão tratados apenas para esta finalidade.
+                      </span>
+                    </label>
+
+                    <Button type="submit" disabled={submitting || !lgpd} className="w-full rounded-full py-5 text-sm font-semibold">
                       {submitting ? "Enviando..." : "Receber minha proposta"}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    <p className="text-center text-[10px] text-muted-foreground">
-                      Ao enviar você concorda em receber contato por WhatsApp e e-mail.
+                    <p className="text-center text-[10px] leading-relaxed text-muted-foreground">
+                      <b>Aviso legal:</b> valores estimados. A parcela final depende da administradora, do reajuste anual do grupo (INCC/IPCA), do fundo de reserva e do seguro prestamista. Não há garantia de contemplação em prazo específico. Consórcio é regulado pelo BACEN (Lei 11.795/2008).
                     </p>
+
                   </form>
                 )}
               </motion.div>
