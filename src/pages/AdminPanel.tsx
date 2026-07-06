@@ -54,6 +54,7 @@ import ServiceManagement from '@/components/admin/ServiceManagement';
 import PanelManagement from '@/components/admin/PanelManagement';
 import { RoleManagementTab } from '@/components/admin/RoleManagementTab';
 import { AdminIRManagement } from '@/components/admin/AdminIRManagement';
+import MentoriaCartasLeads from '@/components/admin/MentoriaCartasLeads';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
@@ -548,6 +549,7 @@ const AdminPanel = () => {
           {activeTab === 'withdrawals' && <AdminWithdrawalPanel />}
           {activeTab === 'support' && <AdminSupportPanel />}
           {activeTab === 'limpa-nome' && <CreditRepairManagement />}
+          {activeTab === 'mentoria-cartas' && <MentoriaCartasLeads />}
           {activeTab === 'cashback' && <CashbackMetricsDashboard />}
           {activeTab === 'modulo-fiscal' && <FiscalAnalysisManagement />}
           {activeTab === 'ir-management' && <AdminIRManagement />}
