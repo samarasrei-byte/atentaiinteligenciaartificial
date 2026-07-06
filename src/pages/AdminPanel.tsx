@@ -54,7 +54,7 @@ import ServiceManagement from '@/components/admin/ServiceManagement';
 import PanelManagement from '@/components/admin/PanelManagement';
 import { RoleManagementTab } from '@/components/admin/RoleManagementTab';
 import { AdminIRManagement } from '@/components/admin/AdminIRManagement';
-import MentoriaCartasLeads from '@/components/admin/MentoriaCartasLeads';
+import CartasQuizLeads from '@/components/admin/CartasQuizLeads';
 import {
   Users, DollarSign, Calculator, MessageSquare, Shield, Loader2, Search,
   TrendingUp, BarChart3, Activity, UserPlus, Settings, Wallet, Calendar,
