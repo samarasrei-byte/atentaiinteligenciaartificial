@@ -179,8 +179,25 @@ const URGENCIA = [
 
 type Step = 0 | 1 | 2 | 3 | 4;
 
+// Taxa média anual de mercado (banco) por tipo de crédito — para comparação
+const TAXA_BANCO_AA: Record<CartaKey, number> = {
+  imovel: 0.115,           // financiamento imobiliário
+  automovel: 0.245,        // CDC veículo
+  caminhao: 0.22,          // Finame / CDC pesados
+  reforma_servicos: 0.42,  // crédito pessoal / consignado
+  rural: 0.14,             // crédito rural / Pronaf comercial
+  nautico: 0.28,           // financiamento náutico / aeronáutico
+};
+
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
+
+// Parcela Price: P = V * i / (1 - (1+i)^-n)
+const priceInstallment = (principal: number, annualRate: number, months: number) => {
+  const i = Math.pow(1 + annualRate, 1 / 12) - 1;
+  if (i === 0) return principal / months;
+  return (principal * i) / (1 - Math.pow(1 + i, -months));
+};
 
 export default function CartasContempladasQuiz() {
   const { toast } = useToast();
