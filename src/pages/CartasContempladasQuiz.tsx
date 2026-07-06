@@ -803,12 +803,68 @@ export default function CartasContempladasQuiz() {
                         Onde enviamos sua proposta?
                       </h2>
                       <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                        <span className="font-semibold text-primary">{carta.label}</span> · {brl(credito)} em {prazo}x de{" "}
-                        <span className="font-semibold text-foreground">
-                          {simulacao ? brl(simulacao.parcela) : "—"}
-                        </span>
+                        <span className="font-semibold text-primary">{carta.label}</span> · {brl(credito)} em {prazo}x
                       </p>
                     </div>
+
+                    {/* RESUMO FINAL — Banco vs Consórcio */}
+                    {simulacao && (
+                      <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-transparent p-4 sm:p-5">
+                        <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                          <Sparkles className="h-4 w-4" /> Resumo da sua simulação
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
+                              <Landmark className="h-3.5 w-3.5" /> Parcela no banco (~{(simulacao.bancoAA * 100).toFixed(0)}% a.a.)
+                            </div>
+                            <p className="mt-1 text-xl font-bold text-foreground sm:text-2xl">
+                              {brl(simulacao.parcelaBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(simulacao.totalBanco)}</p>
+                          </div>
+                          <div className="rounded-xl border border-primary/40 bg-primary/10 p-3">
+                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
+                              <Sparkles className="h-3.5 w-3.5" /> Parcela no consórcio
+                            </div>
+                            <p className="mt-1 text-xl font-bold text-primary sm:text-2xl">
+                              {brl(simulacao.parcela)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(simulacao.totalComTaxa)}</p>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
+                          <div className="flex items-center gap-2">
+                            <PiggyBank className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                            <div>
+                              <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300">Economia total</p>
+                              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 sm:text-xl">
+                                {brl(simulacao.economia)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] text-muted-foreground">vs. financiamento tradicional</p>
+                            <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                              {simulacao.totalBanco > 0
+                                ? `${Math.round((simulacao.economia / simulacao.totalBanco) * 100)}% mais barato`
+                                : "—"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-3 rounded-xl border border-border bg-background/60 p-3 text-xs leading-relaxed text-foreground/85">
+                          <b className="text-primary">Nossa recomendação:</b>{" "}
+                          {urgencia === "asap"
+                            ? `Você precisa do crédito em até 30 dias — indicamos uma CARTA JÁ CONTEMPLADA. Custo do ágio: ${brl(simulacao.agio)}, com liberação em até 7 dias úteis.`
+                            : urgencia === "3m"
+                              ? `Como você quer usar em até 3 meses, uma carta contemplada com ágio de ${brl(simulacao.agio)} é o caminho mais seguro. Alternativa: cota comum com lance forte (~${brl(simulacao.lanceSugerido)}).`
+                              : urgencia === "6m"
+                                ? `Com 6 meses de janela, vale avaliar cota comum com lance de ${brl(simulacao.lanceSugerido)}. Se surgir oportunidade, contemplada acelera o processo.`
+                                : `Sem pressa, a cota comum é mais econômica — você poupa o ágio de ${brl(simulacao.agio)} e ainda economiza ${brl(simulacao.economia)} vs. banco.`}
+                        </div>
+                      </div>
+                    )}
+
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-1.5">
