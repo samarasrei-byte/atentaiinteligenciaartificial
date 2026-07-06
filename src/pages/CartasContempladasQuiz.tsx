@@ -950,7 +950,7 @@ export default function CartasContempladasQuiz() {
                   onClick={next}
                   disabled={
                     (step === 0 && !selected) ||
-                    (step === 2 && (!credito || !prazo)) ||
+                    (step === 2 && (!creditoValido || !prazoValido)) ||
                     (step === 3 && !urgencia)
                   }
                   className="rounded-full px-5 sm:px-6"
