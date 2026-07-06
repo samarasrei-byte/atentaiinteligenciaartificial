@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { CartaLeadTimeline } from "./CartaLeadTimeline";
 
 interface Lead {
   id: string;
@@ -345,6 +346,8 @@ export default function MentoriaCartasLeads() {
                         <p>{lead.admin_release_notes}</p>
                       </div>
                     )}
+
+                    <CartaLeadTimeline lead={lead} />
                   </div>
                 );
               })}
