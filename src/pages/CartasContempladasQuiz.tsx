@@ -232,12 +232,20 @@ export default function CartasContempladasQuiz() {
     if (!carta || !credito || !prazo) return null;
     const totalComTaxa = credito * (1 + carta.taxaTotal);
     const parcela = totalComTaxa / prazo;
-    const lanceSugerido = credito * 0.25; // 25% costuma ser competitivo
+    const lanceSugerido = credito * 0.25;
+    const bancoAA = TAXA_BANCO_AA[carta.key];
+    const parcelaBanco = priceInstallment(credito, bancoAA, prazo);
+    const totalBanco = parcelaBanco * prazo;
+    const economia = Math.max(0, totalBanco - totalComTaxa);
     return {
       parcela,
       totalComTaxa,
       lanceSugerido,
       taxaMensalEquivalente: (carta.taxaTotal / prazo) * 100,
+      parcelaBanco,
+      totalBanco,
+      economia,
+      bancoAA,
     };
   }, [carta, credito, prazo]);
 
