@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import {
   ShieldCheck, LogOut, Search, RefreshCw, Download, Mail, Phone,
-  CheckCircle2, XCircle, Clock, FileText, Loader2,
+  CheckCircle2, XCircle, Clock, Lock, Loader2, Sparkles, HandshakeIcon,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
@@ -28,17 +28,31 @@ interface Lead {
   source: string | null;
   created_at: string;
   metadata: any;
-  partner_validated: boolean;
-  partner_validation_status: string | null;
   partner_validation_notes: string | null;
-  partner_validated_at: string | null;
+  partner_approved_at: string | null;
+  partner_rejection_reason: string | null;
+  approval_stage: string;
+  admin_released_at: string | null;
+  admin_release_notes: string | null;
 }
 
-const VAL_STATUS: Record<string, { label: string; className: string; Icon: any }> = {
-  pending: { label: "Pendente", className: "bg-amber-500/15 text-amber-500 border-amber-500/30", Icon: Clock },
-  valid: { label: "Válida", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30", Icon: CheckCircle2 },
-  invalid: { label: "Inválida", className: "bg-red-500/15 text-red-500 border-red-500/30", Icon: XCircle },
-  needs_docs: { label: "Falta documentação", className: "bg-blue-500/15 text-blue-500 border-blue-500/30", Icon: FileText },
+const STAGE: Record<string, { label: string; className: string; Icon: any; desc: string }> = {
+  pending_partner: { label: "Aguardando análise", className: "bg-amber-500/15 text-amber-500 border-amber-500/30", Icon: Clock, desc: "Revise a solicitação e aprove ou rejeite." },
+  partner_approved: { label: "Aprovado — aguarda admin", className: "bg-blue-500/15 text-blue-600 border-blue-500/30", Icon: HandshakeIcon, desc: "Admin foi notificado. Aguarde a liberação do contato." },
+  partner_rejected: { label: "Rejeitado por você", className: "bg-red-500/15 text-red-500 border-red-500/30", Icon: XCircle, desc: "Você marcou este lead como não conforme." },
+  admin_released: { label: "Contato liberado", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30", Icon: CheckCircle2, desc: "Admin liberou o contato. Feche o negócio." },
+  admin_denied: { label: "Negado pelo admin", className: "bg-red-500/15 text-red-500 border-red-500/30", Icon: XCircle, desc: "O admin não autorizou o contato." },
+};
+
+const maskEmail = (email: string) => {
+  const [u, d] = email.split("@");
+  if (!u || !d) return "•••@•••";
+  return `${u.slice(0, 2)}${"•".repeat(Math.max(2, u.length - 2))}@${d}`;
+};
+const maskPhone = (phone: string) => {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length < 4) return "•• ••••• ••••";
+  return `(${digits.slice(0, 2)}) •••••-${digits.slice(-2)}`;
 };
 
 export default function ParceiroCartasPanel() {
@@ -50,6 +64,7 @@ export default function ParceiroCartasPanel() {
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const [notesDraft, setNotesDraft] = useState<Record<string, string>>({});
+  const [rejectDraft, setRejectDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -87,58 +102,68 @@ export default function ParceiroCartasPanel() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checking]);
 
-  const updateValidation = async (id: string, status: string) => {
+  const approve = async (id: string) => {
     setSavingId(id);
     const patch: any = {
-      partner_validation_status: status,
-      partner_validated: status === "valid",
-      partner_validated_at: new Date().toISOString(),
+      approval_stage: "partner_approved",
+      partner_approved_at: new Date().toISOString(),
+      partner_rejection_reason: null,
     };
     if (notesDraft[id] !== undefined) patch.partner_validation_notes = notesDraft[id];
     const { error } = await supabase.from("mentoria_cartas_leads").update(patch).eq("id", id);
     setSavingId(null);
-    if (error) {
-      toast({ title: "Erro", description: error.message, variant: "destructive" });
-    } else {
-      toast({ title: "Validação atualizada" });
-      setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, ...patch } : l)));
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else toast({ title: "Aprovado!", description: "Admin foi notificado para liberar o contato." });
+  };
+
+  const reject = async (id: string) => {
+    const reason = rejectDraft[id]?.trim();
+    if (!reason) {
+      toast({ title: "Informe o motivo da rejeição", variant: "destructive" });
+      return;
     }
+    setSavingId(id);
+    const { error } = await supabase.from("mentoria_cartas_leads").update({
+      approval_stage: "partner_rejected",
+      partner_rejection_reason: reason,
+      partner_validation_notes: notesDraft[id] ?? null,
+    }).eq("id", id);
+    setSavingId(null);
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
+    else toast({ title: "Rejeitado" });
   };
 
   const saveNotes = async (id: string) => {
     setSavingId(id);
-    const { error } = await supabase
-      .from("mentoria_cartas_leads")
-      .update({ partner_validation_notes: notesDraft[id] ?? "" })
-      .eq("id", id);
+    const { error } = await supabase.from("mentoria_cartas_leads")
+      .update({ partner_validation_notes: notesDraft[id] ?? "" }).eq("id", id);
     setSavingId(null);
-    if (error) toast({ title: "Erro ao salvar nota", description: error.message, variant: "destructive" });
+    if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
     else toast({ title: "Observação salva" });
   };
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return leads.filter((l) => {
-      const matchQ = !q || l.full_name.toLowerCase().includes(q) || l.email.toLowerCase().includes(q) || l.phone.includes(q);
-      const status = l.partner_validation_status ?? "pending";
-      const matchS = filter === "all" || status === filter;
+      const matchQ = !q || l.full_name.toLowerCase().includes(q) || l.carta_type.toLowerCase().includes(q);
+      const matchS = filter === "all" || l.approval_stage === filter;
       return matchQ && matchS;
     });
   }, [leads, search, filter]);
 
   const kpi = useMemo(() => ({
     total: leads.length,
-    pending: leads.filter((l) => (l.partner_validation_status ?? "pending") === "pending").length,
-    valid: leads.filter((l) => l.partner_validation_status === "valid").length,
-    invalid: leads.filter((l) => l.partner_validation_status === "invalid").length,
+    pending: leads.filter((l) => l.approval_stage === "pending_partner").length,
+    waiting: leads.filter((l) => l.approval_stage === "partner_approved").length,
+    released: leads.filter((l) => l.approval_stage === "admin_released").length,
   }), [leads]);
 
   const exportCsv = () => {
-    const header = ["Data", "Nome", "Email", "WhatsApp", "Carta", "Crédito", "Validação", "Observação parceiro"];
+    const header = ["Data", "Nome", "Carta", "Crédito", "Etapa", "Observações"];
     const rows = filtered.map((l) => [
       format(new Date(l.created_at), "dd/MM/yyyy HH:mm"),
-      l.full_name, l.email, l.phone, l.carta_type, l.credit_range ?? "",
-      VAL_STATUS[l.partner_validation_status ?? "pending"]?.label ?? "Pendente",
+      l.full_name, l.carta_type, l.credit_range ?? "",
+      STAGE[l.approval_stage]?.label ?? l.approval_stage,
       (l.partner_validation_notes ?? "").replace(/\n/g, " "),
     ]);
     const csv = [header, ...rows].map((r) => r.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";")).join("\n");
@@ -184,28 +209,35 @@ export default function ParceiroCartasPanel() {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 py-6 space-y-6">
+        <div className="rounded-xl border border-primary/30 bg-primary/5 p-4 text-xs text-foreground/85">
+          <p className="font-semibold text-primary mb-1">Como funciona</p>
+          <ol className="list-decimal pl-4 space-y-0.5">
+            <li>Analise a solicitação e a simulação de valor.</li>
+            <li>Aprove se estiver conforme — o admin receberá notificação.</li>
+            <li>Assim que o admin liberar, os dados de contato aparecerão para você fechar o negócio.</li>
+          </ol>
+        </div>
+
         {/* KPIs */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
             { l: "Total leads", v: kpi.total, c: "text-foreground" },
-            { l: "Pendentes", v: kpi.pending, c: "text-amber-500" },
-            { l: "Válidas", v: kpi.valid, c: "text-emerald-600" },
-            { l: "Inválidas", v: kpi.invalid, c: "text-red-500" },
+            { l: "Aguardando análise", v: kpi.pending, c: "text-amber-500" },
+            { l: "Aguardando admin", v: kpi.waiting, c: "text-blue-500" },
+            { l: "Contatos liberados", v: kpi.released, c: "text-emerald-600" },
           ].map((k) => (
-            <Card key={k.l}>
-              <CardContent className="p-4">
-                <p className="text-xs text-muted-foreground">{k.l}</p>
-                <p className={`mt-1 text-2xl font-bold ${k.c}`}>{k.v}</p>
-              </CardContent>
-            </Card>
+            <Card key={k.l}><CardContent className="p-4">
+              <p className="text-xs text-muted-foreground">{k.l}</p>
+              <p className={`mt-1 text-2xl font-bold ${k.c}`}>{k.v}</p>
+            </CardContent></Card>
           ))}
         </div>
 
         <Card>
           <CardHeader className="flex-row items-center justify-between">
             <div>
-              <CardTitle>Leads do Quiz de Cartas</CardTitle>
-              <CardDescription>Valide se a carta contemplada é real e conforme.</CardDescription>
+              <CardTitle>Leads do Quiz</CardTitle>
+              <CardDescription>Analise a simulação e aprove ou rejeite cada solicitação.</CardDescription>
             </div>
             <div className="flex gap-2">
               <Button variant="outline" size="sm" onClick={load}><RefreshCw className="mr-2 h-4 w-4" />Atualizar</Button>
@@ -216,13 +248,13 @@ export default function ParceiroCartasPanel() {
             <div className="mb-4 flex flex-col gap-3 sm:flex-row">
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input className="pl-10" placeholder="Buscar por nome, e-mail ou telefone..." value={search} onChange={(e) => setSearch(e.target.value)} />
+                <Input className="pl-10" placeholder="Buscar por nome ou tipo de carta..." value={search} onChange={(e) => setSearch(e.target.value)} />
               </div>
               <Select value={filter} onValueChange={setFilter}>
-                <SelectTrigger className="w-full sm:w-56"><SelectValue placeholder="Filtro" /></SelectTrigger>
+                <SelectTrigger className="w-full sm:w-64"><SelectValue placeholder="Filtro" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Todas validações</SelectItem>
-                  {Object.entries(VAL_STATUS).map(([k, v]) => (
+                  <SelectItem value="all">Todas as etapas</SelectItem>
+                  {Object.entries(STAGE).map(([k, v]) => (
                     <SelectItem key={k} value={k}>{v.label}</SelectItem>
                   ))}
                 </SelectContent>
@@ -236,38 +268,74 @@ export default function ParceiroCartasPanel() {
             ) : (
               <div className="space-y-3">
                 {filtered.map((lead) => {
-                  const status = lead.partner_validation_status ?? "pending";
-                  const S = VAL_STATUS[status] ?? VAL_STATUS.pending;
+                  const S = STAGE[lead.approval_stage] ?? STAGE.pending_partner;
                   const meta = lead.metadata ?? {};
                   const sim = meta.simulacao ?? {};
                   const notes = notesDraft[lead.id] ?? lead.partner_validation_notes ?? "";
+                  const released = lead.approval_stage === "admin_released";
+                  const canEdit = lead.approval_stage === "pending_partner";
+
                   return (
                     <div key={lead.id} className="rounded-xl border border-border bg-card p-4 space-y-3">
+                      {/* Header */}
                       <div className="flex flex-wrap items-start justify-between gap-3">
                         <div className="flex-1 min-w-[240px]">
                           <div className="flex flex-wrap items-center gap-2">
                             <p className="font-semibold text-foreground">{lead.full_name}</p>
                             <Badge className={`border ${S.className}`}><S.Icon className="mr-1 h-3 w-3" />{S.label}</Badge>
                             <Badge variant="secondary" className="text-xs">{lead.carta_type}</Badge>
-                            {lead.credit_range && (
-                              <Badge variant="outline" className="text-xs">{lead.credit_range}</Badge>
+                            {lead.credit_range && <Badge variant="outline" className="text-xs">{lead.credit_range}</Badge>}
+                          </div>
+                          <p className="mt-1 text-[11px] text-muted-foreground">{S.desc}</p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Recebido em {format(new Date(lead.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Contato (mascarado até liberação) */}
+                      <div className={`rounded-lg border p-3 text-xs ${released ? "border-emerald-500/40 bg-emerald-500/10" : "border-dashed border-border bg-muted/30"}`}>
+                        <div className="flex items-center gap-2 mb-2">
+                          {released ? <CheckCircle2 className="h-4 w-4 text-emerald-600" /> : <Lock className="h-4 w-4 text-muted-foreground" />}
+                          <span className="font-semibold">{released ? "Contato liberado" : "Contato bloqueado até liberação do admin"}</span>
+                        </div>
+                        <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+                          <div>
+                            <p className="text-[10px] uppercase text-muted-foreground">E-mail</p>
+                            {released ? (
+                              <a href={`mailto:${lead.email}`} className="font-mono text-sm hover:text-primary flex items-center gap-1"><Mail className="h-3 w-3" />{lead.email}</a>
+                            ) : (
+                              <p className="font-mono text-sm text-muted-foreground">{maskEmail(lead.email)}</p>
                             )}
                           </div>
-                          <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
-                            <a href={`mailto:${lead.email}`} className="flex items-center gap-1 hover:text-primary"><Mail className="h-3 w-3" />{lead.email}</a>
-                            <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-primary"><Phone className="h-3 w-3" />{lead.phone}</a>
-                            <span>{format(new Date(lead.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</span>
+                          <div>
+                            <p className="text-[10px] uppercase text-muted-foreground">WhatsApp</p>
+                            {released ? (
+                              <a href={`https://wa.me/${lead.phone.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="font-mono text-sm hover:text-primary flex items-center gap-1"><Phone className="h-3 w-3" />{lead.phone}</a>
+                            ) : (
+                              <p className="font-mono text-sm text-muted-foreground">{maskPhone(lead.phone)}</p>
+                            )}
                           </div>
                         </div>
                       </div>
 
-                      {/* Simulação */}
+                      {/* Simulação de valor */}
                       {sim.credito && (
-                        <div className="grid grid-cols-2 gap-2 rounded-lg border border-border/60 bg-muted/30 p-3 text-xs sm:grid-cols-4">
-                          <div><p className="text-muted-foreground">Crédito</p><p className="font-semibold">R$ {Number(sim.credito).toLocaleString("pt-BR")}</p></div>
-                          <div><p className="text-muted-foreground">Prazo</p><p className="font-semibold">{sim.prazo_meses}x</p></div>
-                          <div><p className="text-muted-foreground">Parcela</p><p className="font-semibold">R$ {Number(sim.parcela_estimada).toLocaleString("pt-BR")}</p></div>
-                          <div><p className="text-muted-foreground">Economia vs banco</p><p className="font-semibold text-emerald-600">R$ {Number(sim.economia_estimada ?? 0).toLocaleString("pt-BR")}</p></div>
+                        <div className="rounded-lg border border-primary/30 bg-primary/5 p-3">
+                          <p className="mb-2 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                            <Sparkles className="h-3.5 w-3.5" /> Simulação do cliente
+                          </p>
+                          <div className="grid grid-cols-2 gap-2 text-xs sm:grid-cols-4">
+                            <div><p className="text-muted-foreground">Valor desejado</p><p className="font-bold text-base">R$ {Number(sim.credito).toLocaleString("pt-BR")}</p></div>
+                            <div><p className="text-muted-foreground">Prazo</p><p className="font-bold text-base">{sim.prazo_meses}x</p></div>
+                            <div><p className="text-muted-foreground">Parcela</p><p className="font-bold text-base">R$ {Number(sim.parcela_estimada).toLocaleString("pt-BR")}</p></div>
+                            <div><p className="text-muted-foreground">Economia vs banco</p><p className="font-bold text-base text-emerald-600">R$ {Number(sim.economia_estimada ?? 0).toLocaleString("pt-BR")}</p></div>
+                          </div>
+                          <div className="mt-2 flex flex-wrap gap-3 text-[10px] text-muted-foreground">
+                            <span>Lance sugerido: <b className="text-foreground">R$ {Number(sim.lance_sugerido ?? 0).toLocaleString("pt-BR")}</b></span>
+                            <span>Taxa admin.: <b className="text-foreground">{sim.taxa_total_pct}%</b></span>
+                            <span>Taxa banco: <b className="text-foreground">{Number(sim.taxa_banco_aa_pct ?? 0).toFixed(1)}% aa</b></span>
+                          </div>
                         </div>
                       )}
 
@@ -275,36 +343,63 @@ export default function ParceiroCartasPanel() {
                         <p className="rounded-lg bg-muted/40 p-2 text-xs text-muted-foreground italic">"{lead.message}"</p>
                       )}
 
-                      <div className="space-y-2">
-                        <Textarea
-                          value={notes}
-                          onChange={(e) => setNotesDraft((p) => ({ ...p, [lead.id]: e.target.value }))}
-                          placeholder="Observações da validação (documento verificado, número da cota, administradora, motivo etc.)"
-                          className="min-h-16 text-sm"
-                        />
-                        <div className="flex flex-wrap gap-2">
-                          <Button size="sm" variant="outline" onClick={() => saveNotes(lead.id)} disabled={savingId === lead.id}>
-                            Salvar observação
-                          </Button>
-                          <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => updateValidation(lead.id, "valid")} disabled={savingId === lead.id}>
-                            <CheckCircle2 className="mr-1.5 h-4 w-4" />Marcar como válida
-                          </Button>
-                          <Button size="sm" variant="destructive" onClick={() => updateValidation(lead.id, "invalid")} disabled={savingId === lead.id}>
-                            <XCircle className="mr-1.5 h-4 w-4" />Inválida
-                          </Button>
-                          <Button size="sm" variant="outline" onClick={() => updateValidation(lead.id, "needs_docs")} disabled={savingId === lead.id}>
-                            <FileText className="mr-1.5 h-4 w-4" />Falta doc
-                          </Button>
-                          <Button size="sm" variant="ghost" onClick={() => updateValidation(lead.id, "pending")} disabled={savingId === lead.id}>
-                            <Clock className="mr-1.5 h-4 w-4" />Pendente
-                          </Button>
+                      {lead.admin_release_notes && (
+                        <div className="rounded-lg border border-emerald-500/30 bg-emerald-500/5 p-2 text-xs">
+                          <p className="text-[10px] font-semibold uppercase text-emerald-600">Nota do admin</p>
+                          <p className="text-foreground/85">{lead.admin_release_notes}</p>
                         </div>
-                        {lead.partner_validated_at && (
-                          <p className="text-[10px] text-muted-foreground">
-                            Última validação: {format(new Date(lead.partner_validated_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
-                          </p>
-                        )}
-                      </div>
+                      )}
+
+                      {/* Ações de análise (só quando pendente) */}
+                      {canEdit ? (
+                        <div className="space-y-2 rounded-lg border border-border bg-background/60 p-3">
+                          <Textarea
+                            value={notes}
+                            onChange={(e) => setNotesDraft((p) => ({ ...p, [lead.id]: e.target.value }))}
+                            placeholder="Observações da análise (número da cota, administradora, documento verificado etc.)"
+                            className="min-h-16 text-sm"
+                          />
+                          <div className="flex flex-wrap gap-2">
+                            <Button size="sm" variant="outline" onClick={() => saveNotes(lead.id)} disabled={savingId === lead.id}>Salvar rascunho</Button>
+                            <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700" onClick={() => approve(lead.id)} disabled={savingId === lead.id}>
+                              <CheckCircle2 className="mr-1.5 h-4 w-4" />Aprovar e notificar admin
+                            </Button>
+                          </div>
+                          <div className="pt-2 border-t border-border/60">
+                            <p className="text-[11px] font-semibold text-muted-foreground mb-1">Rejeitar</p>
+                            <Input
+                              placeholder="Motivo da rejeição (obrigatório)"
+                              value={rejectDraft[lead.id] ?? ""}
+                              onChange={(e) => setRejectDraft((p) => ({ ...p, [lead.id]: e.target.value }))}
+                              className="mb-2 text-sm h-9"
+                            />
+                            <Button size="sm" variant="destructive" onClick={() => reject(lead.id)} disabled={savingId === lead.id}>
+                              <XCircle className="mr-1.5 h-4 w-4" />Rejeitar solicitação
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          {lead.partner_validation_notes && (
+                            <div className="rounded-lg border border-border/60 bg-muted/30 p-2 text-xs">
+                              <p className="text-[10px] font-semibold uppercase text-muted-foreground">Sua observação</p>
+                              <p>{lead.partner_validation_notes}</p>
+                            </div>
+                          )}
+                          {lead.partner_rejection_reason && (
+                            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-2 text-xs">
+                              <p className="text-[10px] font-semibold uppercase text-destructive">Motivo da rejeição</p>
+                              <p>{lead.partner_rejection_reason}</p>
+                            </div>
+                          )}
+                          {lead.partner_approved_at && (
+                            <p className="text-[10px] text-muted-foreground">
+                              Aprovado em {format(new Date(lead.partner_approved_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}
+                              {lead.admin_released_at && ` · liberado em ${format(new Date(lead.admin_released_at), "dd/MM/yyyy HH:mm", { locale: ptBR })}`}
+                            </p>
+                          )}
+                        </>
+                      )}
                     </div>
                   );
                 })}
