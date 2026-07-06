@@ -543,10 +543,22 @@ export default function CartasContempladasQuiz() {
                         <p className="mt-0.5 text-[11px] text-muted-foreground">Sem ágio · espera ~{ESPERA_MEDIA_MESES} meses</p>
                       </div>
                     </div>
+                    <div className="mt-4 rounded-xl border border-dashed border-primary/40 bg-primary/5 p-3">
+                      <p className="text-[11px] font-semibold text-primary">📧 Receba esta simulação em PDF por e-mail</p>
+                      <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                        <Input value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} placeholder="Seu nome" className="h-10 flex-1 text-sm" />
+                        <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="voce@email.com" className="h-10 flex-1 text-sm" />
+                        <Button type="button" size="sm" variant="outline" onClick={savePartialLead} disabled={!emailValido || !form.full_name.trim() || partialSaved} className="h-10 rounded-full">
+                          {partialSaved ? "✓ Salvo" : "Guardar"}
+                        </Button>
+                      </div>
+                      <p className="mt-1.5 text-[10px] text-muted-foreground">Assim você não perde a simulação — pode voltar depois.</p>
+                    </div>
                     <p className="mt-3 text-[11px] leading-relaxed text-muted-foreground">
-                      * Valores ilustrativos. Podem variar por administradora.
+                      * Valores ilustrativos. Podem variar por administradora, fundo de reserva, seguro e reajuste anual.
                     </p>
                   </div>
+
                 )}
                 {step === 6 && (!carta || !simulacao) && (
                   <div className="rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
