@@ -635,13 +635,26 @@ export default function CartasContempladasQuiz() {
                       <Textarea id="message" value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} className="min-h-16" placeholder="Conte um pouco sobre seu objetivo..." />
                     </div>
 
-                    <Button type="submit" disabled={submitting} className="w-full rounded-full py-5 text-sm font-semibold">
+                    <label className="flex cursor-pointer items-start gap-2 rounded-xl border border-border bg-muted/30 p-2.5 text-[11px] leading-relaxed text-muted-foreground">
+                      <input
+                        type="checkbox"
+                        checked={lgpd}
+                        onChange={(e) => setLgpd(e.target.checked)}
+                        className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 accent-primary"
+                      />
+                      <span>
+                        Autorizo a AtentAI e a administradora parceira a entrarem em contato por WhatsApp, e-mail e telefone com a proposta desta simulação, conforme a <b className="text-foreground">LGPD (Lei 13.709/2018)</b>. Meus dados serão tratados apenas para esta finalidade.
+                      </span>
+                    </label>
+
+                    <Button type="submit" disabled={submitting || !lgpd} className="w-full rounded-full py-5 text-sm font-semibold">
                       {submitting ? "Enviando..." : "Receber minha proposta"}
                       <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                    <p className="text-center text-[10px] text-muted-foreground">
-                      Ao enviar você concorda em receber contato por WhatsApp e e-mail.
+                    <p className="text-center text-[10px] leading-relaxed text-muted-foreground">
+                      <b>Aviso legal:</b> valores estimados. A parcela final depende da administradora, do reajuste anual do grupo (INCC/IPCA), do fundo de reserva e do seguro prestamista. Não há garantia de contemplação em prazo específico. Consórcio é regulado pelo BACEN (Lei 11.795/2008).
                     </p>
+
                   </form>
                 )}
               </motion.div>
