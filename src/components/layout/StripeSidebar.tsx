@@ -115,6 +115,7 @@ const adminGroups: SidebarGroup[] = [
       { icon: Shield, label: 'Limpa Nome', tabId: 'limpa-nome' },
       { icon: Scale, label: 'Análise Fiscal', tabId: 'modulo-fiscal' },
       { icon: Brain, label: 'Imposto de Renda', tabId: 'ir-management' },
+      { icon: GraduationCap, label: 'Mentoria — Cartas Contempladas', tabId: 'mentoria-cartas' },
     ],
   },
   {
