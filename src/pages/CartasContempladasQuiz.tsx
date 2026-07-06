@@ -134,6 +134,8 @@ export default function CartasContempladasQuiz() {
   const [prazo, setPrazo] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
+  const [lgpd, setLgpd] = useState(false);
+  const [partialSaved, setPartialSaved] = useState(false);
   const [form, setForm] = useState({ full_name: "", email: "", phone: "", message: "" });
 
   const carta = useMemo(() => (selected ? CARTAS.find((c) => c.key === selected)! : null), [selected]);
@@ -177,6 +179,8 @@ export default function CartasContempladasQuiz() {
   const next = () => setStep((s) => Math.min(TOTAL_STEPS - 1, s + 1));
   const back = () => setStep((s) => Math.max(0, s - 1));
 
+  const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim());
+
   const canNext = (() => {
     if (step === 2 && !selected) return false;
     if (step === 4 && !creditoValido) return false;
@@ -184,6 +188,25 @@ export default function CartasContempladasQuiz() {
     if (step === 7 && !urgencia) return false;
     return true;
   })();
+
+  // Captura parcial ao entrar na simulação (passo 6): salva se já houver email
+  const savePartialLead = async () => {
+    if (partialSaved || !carta || !emailValido || !form.full_name.trim()) return;
+    try {
+      await supabase.from("mentoria_cartas_leads").insert({
+        full_name: form.full_name.trim(),
+        email: form.email.trim().toLowerCase(),
+        phone: form.phone.trim() || "pendente",
+        carta_type: carta.label,
+        credit_range: credito ? brl(credito) : carta.ticket,
+        message: "[LEAD PARCIAL - quiz não finalizado]",
+        source: "quiz_landing_partial",
+        metadata: { carta_key: carta.key, urgencia, partial: true },
+      });
+      setPartialSaved(true);
+    } catch (e) { console.warn("partial lead skipped", e); }
+  };
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
