@@ -219,6 +219,20 @@ export default function CartasContempladasQuiz() {
       toast({ title: "E-mail inválido", variant: "destructive" });
       return;
     }
+    if (form.email.trim().toLowerCase() !== form.email_confirm.trim().toLowerCase()) {
+      toast({ title: "Os e-mails não coincidem", description: "Confirme o mesmo e-mail nos dois campos.", variant: "destructive" });
+      return;
+    }
+    const digitsPhone = form.phone.replace(/\D/g, "");
+    const digitsPhoneConfirm = form.phone_confirm.replace(/\D/g, "");
+    if (digitsPhone.length < 10) {
+      toast({ title: "WhatsApp inválido", description: "Informe DDD + número (ex.: 11 98521-4895).", variant: "destructive" });
+      return;
+    }
+    if (digitsPhone !== digitsPhoneConfirm) {
+      toast({ title: "Os WhatsApp não coincidem", description: "Confirme o mesmo número nos dois campos.", variant: "destructive" });
+      return;
+    }
     if (!lgpd) {
       toast({ title: "Autorize o contato (LGPD) para continuar", variant: "destructive" });
       return;
