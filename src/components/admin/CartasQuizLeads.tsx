@@ -133,10 +133,10 @@ export default function MentoriaCartasLeads() {
         <div>
           <h2 className="flex items-center gap-2 text-2xl font-bold text-foreground">
             <GraduationCap className="h-6 w-6 text-primary" />
-            Mentoria — Cartas Contempladas
+            Quiz — Cartas Contempladas
           </h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            Leads da landing page /cartas-contempladas/mentoria
+            Leads da landing page /cartas-contempladas/quiz
           </p>
         </div>
         <div className="flex gap-2">
@@ -146,7 +146,7 @@ export default function MentoriaCartasLeads() {
           <Button variant="outline" size="sm" onClick={exportCsv}>
             <Download className="mr-2 h-4 w-4" /> Exportar CSV
           </Button>
-          <a href="/cartas-contempladas/mentoria" target="_blank" rel="noopener noreferrer">
+          <a href="/cartas-contempladas/quiz" target="_blank" rel="noopener noreferrer">
             <Button size="sm">
               <ExternalLink className="mr-2 h-4 w-4" /> Ver landing
             </Button>
