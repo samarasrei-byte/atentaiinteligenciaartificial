@@ -346,6 +346,8 @@ export default function MentoriaCartasLeads() {
                         <p>{lead.admin_release_notes}</p>
                       </div>
                     )}
+
+                    <CartaLeadTimeline lead={lead} />
                   </div>
                 );
               })}
