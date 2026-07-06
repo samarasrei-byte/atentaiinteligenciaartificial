@@ -15,19 +15,12 @@ export default function ParceiroCartasLogin() {
   const [email, setEmail] = useState("parceiro@atentai.com.br");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [provisioning, setProvisioning] = useState(true);
 
-  // Idempotently provision the partner account on mount
+  // Idempotently provision the partner account on mount (fire-and-forget, never blocks login)
   useEffect(() => {
-    (async () => {
-      try {
-        await supabase.functions.invoke("provision-carta-partner");
-      } catch (e) {
-        console.warn("provision skipped", e);
-      } finally {
-        setProvisioning(false);
-      }
-    })();
+    supabase.functions.invoke("provision-carta-partner").catch((e) => {
+      console.warn("provision skipped", e);
+    });
   }, []);
 
   // If already logged in as the partner, jump straight to panel
@@ -77,9 +70,9 @@ export default function ParceiroCartasLogin() {
               <Label htmlFor="password">Senha</Label>
               <Input id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} required autoFocus />
             </div>
-            <Button type="submit" className="w-full" disabled={loading || provisioning}>
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : null}
-              {provisioning ? "Preparando acesso..." : loading ? "Entrando..." : "Entrar"}
+              {loading ? "Entrando..." : "Entrar"}
             </Button>
             <p className="text-center text-[11px] text-muted-foreground">
               Acesso restrito. Todos os acessos são auditados.
