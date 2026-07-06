@@ -136,7 +136,7 @@ export default function CartasContempladasQuiz() {
   const [done, setDone] = useState(false);
   const [lgpd, setLgpd] = useState(false);
   const [partialSaved, setPartialSaved] = useState(false);
-  const [form, setForm] = useState({ full_name: "", email: "", phone: "", message: "" });
+  const [form, setForm] = useState({ full_name: "", email: "", email_confirm: "", phone: "", phone_confirm: "", message: "" });
 
   const carta = useMemo(() => (selected ? CARTAS.find((c) => c.key === selected)! : null), [selected]);
 
