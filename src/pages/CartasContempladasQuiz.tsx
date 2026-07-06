@@ -215,6 +215,14 @@ export default function CartasContempladasQuiz() {
       toast({ title: "Preencha nome, e-mail e WhatsApp", variant: "destructive" });
       return;
     }
+    if (!emailValido) {
+      toast({ title: "E-mail inválido", variant: "destructive" });
+      return;
+    }
+    if (!lgpd) {
+      toast({ title: "Autorize o contato (LGPD) para continuar", variant: "destructive" });
+      return;
+    }
     setSubmitting(true);
     try {
       const { error } = await supabase.from("mentoria_cartas_leads").insert({
@@ -226,13 +234,16 @@ export default function CartasContempladasQuiz() {
         message: form.message.trim() || null,
         source: "quiz_landing",
         metadata: {
-          carta_key: carta.key, urgencia,
+          carta_key: carta.key, urgencia, lgpd_consent: true,
           simulacao: simulacao ? {
             credito, prazo_meses: prazo,
             parcela_estimada: Math.round(simulacao.parcela),
             total_com_taxa: Math.round(simulacao.totalComTaxa),
             lance_sugerido: Math.round(simulacao.lanceSugerido),
             taxa_total_pct: carta.taxaTotal * 100,
+            parcela_banco: Math.round(simulacao.parcelaBanco),
+            economia_estimada: Math.round(simulacao.economia),
+            taxa_banco_aa_pct: simulacao.bancoAA * 100,
           } : null,
         },
       });
@@ -259,6 +270,7 @@ export default function CartasContempladasQuiz() {
     "Quando quer usar?",
     "Resumo e proposta",
   ];
+
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground antialiased">
