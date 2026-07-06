@@ -2883,6 +2883,51 @@ export type Database = {
         }
         Relationships: []
       }
+      mentoria_cartas_leads: {
+        Row: {
+          carta_type: string
+          created_at: string
+          credit_range: string | null
+          email: string
+          full_name: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          phone: string
+          source: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          carta_type: string
+          created_at?: string
+          credit_range?: string | null
+          email: string
+          full_name: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          phone: string
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          carta_type?: string
+          created_at?: string
+          credit_range?: string | null
+          email?: string
+          full_name?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          phone?: string
+          source?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       nf_charges: {
         Row: {
           asaas_charge_id: string | null
