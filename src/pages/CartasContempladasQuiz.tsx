@@ -316,7 +316,8 @@ export default function CartasContempladasQuiz() {
 
       {/* CONTENT AREA — flex-1, overflow interno somente */}
       <main className="min-h-0 flex-1 overflow-y-auto overflow-x-hidden">
-        <div className="mx-auto flex min-h-full max-w-3xl flex-col px-4 py-4 sm:px-6 sm:py-6">
+        <div className="mx-auto flex min-h-full max-w-3xl flex-col justify-center px-4 py-4 sm:px-6 sm:py-6 lg:max-w-4xl xl:max-w-5xl">
+
           {!done ? (
             <AnimatePresence mode="wait">
               <motion.div
