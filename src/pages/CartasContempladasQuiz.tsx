@@ -192,12 +192,33 @@ const TAXA_BANCO_AA: Record<CartaKey, number> = {
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
+// Máscara de moeda: recebe string com dígitos e devolve "R$ X.XXX"
+const formatBRLInput = (raw: string) => {
+  const digits = raw.replace(/\D/g, "").slice(0, 10); // até 10 dígitos ~ 9,9 bilhões
+  if (!digits) return "";
+  return Number(digits).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  });
+};
+const parseBRLInput = (raw: string) => {
+  const digits = raw.replace(/\D/g, "");
+  return digits ? parseInt(digits, 10) : 0;
+};
+
 // Parcela Price: P = V * i / (1 - (1+i)^-n)
 const priceInstallment = (principal: number, annualRate: number, months: number) => {
+  if (!principal || !months) return 0;
   const i = Math.pow(1 + annualRate, 1 / 12) - 1;
   if (i === 0) return principal / months;
   return (principal * i) / (1 - Math.pow(1 + i, -months));
 };
+
+// Ágio médio pago para adquirir uma carta JÁ contemplada (sobre o crédito)
+const AGIO_CONTEMPLADA = 0.18;
+// Prazo médio de contemplação por sorteio/lance em uma cota comum (meses)
+const ESPERA_MEDIA_MESES = 24;
 
 export default function CartasContempladasQuiz() {
   const { toast } = useToast();
@@ -205,6 +226,7 @@ export default function CartasContempladasQuiz() {
   const [selected, setSelected] = useState<CartaKey | null>(null);
   const [urgencia, setUrgencia] = useState<string | null>(null);
   const [credito, setCredito] = useState<number>(0);
+  const [creditoInput, setCreditoInput] = useState<string>("");
   const [prazo, setPrazo] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -225,29 +247,64 @@ export default function CartasContempladasQuiz() {
     setSelected(k);
     const c = CARTAS.find((x) => x.key === k)!;
     setCredito(c.default);
+    setCreditoInput(formatBRLInput(String(c.default)));
     setPrazo(c.prazos[Math.floor(c.prazos.length / 2)]);
   };
 
+  // Validações
+  const creditoValido = !!carta && credito >= carta.min && credito <= carta.max;
+  const prazoValido = prazo >= 12 && prazo <= 300;
+  const errorCredito = !carta
+    ? null
+    : credito === 0
+      ? "Informe o valor do crédito"
+      : credito < carta.min
+        ? `Mínimo: ${brl(carta.min)}`
+        : credito > carta.max
+          ? `Máximo: ${brl(carta.max)}`
+          : null;
+  const errorPrazo =
+    prazo === 0
+      ? "Informe o prazo em meses"
+      : prazo < 12
+        ? "Prazo mínimo: 12 meses"
+        : prazo > 300
+          ? "Prazo máximo: 300 meses"
+          : null;
+
   const simulacao = useMemo(() => {
-    if (!carta || !credito || !prazo) return null;
+    if (!carta || !creditoValido || !prazoValido) return null;
+    // Consórcio (cota comum, sem contemplação imediata)
     const totalComTaxa = credito * (1 + carta.taxaTotal);
     const parcela = totalComTaxa / prazo;
     const lanceSugerido = credito * 0.25;
+
+    // Banco (referência)
     const bancoAA = TAXA_BANCO_AA[carta.key];
     const parcelaBanco = priceInstallment(credito, bancoAA, prazo);
     const totalBanco = parcelaBanco * prazo;
     const economia = Math.max(0, totalBanco - totalComTaxa);
+
+    // Carta CONTEMPLADA (uso imediato, com ágio pago no ato)
+    const agio = credito * AGIO_CONTEMPLADA;
+    const totalContemplada = totalComTaxa + agio;
+    const parcelaContemplada = totalComTaxa / prazo; // parcelas seguem iguais; ágio é à vista
+
     return {
       parcela,
       totalComTaxa,
       lanceSugerido,
-      taxaMensalEquivalente: (carta.taxaTotal / prazo) * 100,
       parcelaBanco,
       totalBanco,
       economia,
       bancoAA,
+      agio,
+      totalContemplada,
+      parcelaContemplada,
+      economiaVsBanco: economia,
+      economiaContempladaVsBanco: Math.max(0, totalBanco - totalContemplada),
     };
-  }, [carta, credito, prazo]);
+  }, [carta, credito, prazo, creditoValido, prazoValido]);
 
   const progress = ((step + 1) / 5) * 100;
 
