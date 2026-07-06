@@ -192,12 +192,33 @@ const TAXA_BANCO_AA: Record<CartaKey, number> = {
 const brl = (n: number) =>
   n.toLocaleString("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 });
 
+// Máscara de moeda: recebe string com dígitos e devolve "R$ X.XXX"
+const formatBRLInput = (raw: string) => {
+  const digits = raw.replace(/\D/g, "").slice(0, 10); // até 10 dígitos ~ 9,9 bilhões
+  if (!digits) return "";
+  return Number(digits).toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+    maximumFractionDigits: 0,
+  });
+};
+const parseBRLInput = (raw: string) => {
+  const digits = raw.replace(/\D/g, "");
+  return digits ? parseInt(digits, 10) : 0;
+};
+
 // Parcela Price: P = V * i / (1 - (1+i)^-n)
 const priceInstallment = (principal: number, annualRate: number, months: number) => {
+  if (!principal || !months) return 0;
   const i = Math.pow(1 + annualRate, 1 / 12) - 1;
   if (i === 0) return principal / months;
   return (principal * i) / (1 - Math.pow(1 + i, -months));
 };
+
+// Ágio médio pago para adquirir uma carta JÁ contemplada (sobre o crédito)
+const AGIO_CONTEMPLADA = 0.18;
+// Prazo médio de contemplação por sorteio/lance em uma cota comum (meses)
+const ESPERA_MEDIA_MESES = 24;
 
 export default function CartasContempladasQuiz() {
   const { toast } = useToast();
@@ -205,6 +226,7 @@ export default function CartasContempladasQuiz() {
   const [selected, setSelected] = useState<CartaKey | null>(null);
   const [urgencia, setUrgencia] = useState<string | null>(null);
   const [credito, setCredito] = useState<number>(0);
+  const [creditoInput, setCreditoInput] = useState<string>("");
   const [prazo, setPrazo] = useState<number>(0);
   const [submitting, setSubmitting] = useState(false);
   const [done, setDone] = useState(false);
@@ -225,29 +247,64 @@ export default function CartasContempladasQuiz() {
     setSelected(k);
     const c = CARTAS.find((x) => x.key === k)!;
     setCredito(c.default);
+    setCreditoInput(formatBRLInput(String(c.default)));
     setPrazo(c.prazos[Math.floor(c.prazos.length / 2)]);
   };
 
+  // Validações
+  const creditoValido = !!carta && credito >= carta.min && credito <= carta.max;
+  const prazoValido = prazo >= 12 && prazo <= 300;
+  const errorCredito = !carta
+    ? null
+    : credito === 0
+      ? "Informe o valor do crédito"
+      : credito < carta.min
+        ? `Mínimo: ${brl(carta.min)}`
+        : credito > carta.max
+          ? `Máximo: ${brl(carta.max)}`
+          : null;
+  const errorPrazo =
+    prazo === 0
+      ? "Informe o prazo em meses"
+      : prazo < 12
+        ? "Prazo mínimo: 12 meses"
+        : prazo > 300
+          ? "Prazo máximo: 300 meses"
+          : null;
+
   const simulacao = useMemo(() => {
-    if (!carta || !credito || !prazo) return null;
+    if (!carta || !creditoValido || !prazoValido) return null;
+    // Consórcio (cota comum, sem contemplação imediata)
     const totalComTaxa = credito * (1 + carta.taxaTotal);
     const parcela = totalComTaxa / prazo;
     const lanceSugerido = credito * 0.25;
+
+    // Banco (referência)
     const bancoAA = TAXA_BANCO_AA[carta.key];
     const parcelaBanco = priceInstallment(credito, bancoAA, prazo);
     const totalBanco = parcelaBanco * prazo;
     const economia = Math.max(0, totalBanco - totalComTaxa);
+
+    // Carta CONTEMPLADA (uso imediato, com ágio pago no ato)
+    const agio = credito * AGIO_CONTEMPLADA;
+    const totalContemplada = totalComTaxa + agio;
+    const parcelaContemplada = totalComTaxa / prazo; // parcelas seguem iguais; ágio é à vista
+
     return {
       parcela,
       totalComTaxa,
       lanceSugerido,
-      taxaMensalEquivalente: (carta.taxaTotal / prazo) * 100,
       parcelaBanco,
       totalBanco,
       economia,
       bancoAA,
+      agio,
+      totalContemplada,
+      parcelaContemplada,
+      economiaVsBanco: economia,
+      economiaContempladaVsBanco: Math.max(0, totalBanco - totalContemplada),
     };
-  }, [carta, credito, prazo]);
+  }, [carta, credito, prazo, creditoValido, prazoValido]);
 
   const progress = ((step + 1) / 5) * 100;
 
@@ -492,7 +549,7 @@ export default function CartasContempladasQuiz() {
                 )}
 
                 {/* STEP 2 — SIMULADOR */}
-                {step === 2 && carta && simulacao && (
+                {step === 2 && carta && (
                   <div>
                     <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
                       <Calculator className="h-3.5 w-3.5" /> Simulador de consórcio
@@ -505,23 +562,48 @@ export default function CartasContempladasQuiz() {
                       Valores finais podem variar por administradora.
                     </p>
 
-                    {/* Slider crédito */}
+                    {/* Slider + input crédito */}
                     <div className="mt-6 space-y-3">
                       <div className="flex items-center justify-between">
-                        <Label className="text-sm font-medium">Valor do crédito</Label>
+                        <Label htmlFor="credito-input" className="text-sm font-medium">Valor do crédito</Label>
                         <span className="text-base font-bold text-primary sm:text-lg">{brl(credito)}</span>
                       </div>
+                      <Input
+                        id="credito-input"
+                        inputMode="numeric"
+                        value={creditoInput}
+                        onChange={(e) => {
+                          const masked = formatBRLInput(e.target.value);
+                          setCreditoInput(masked);
+                          setCredito(parseBRLInput(masked));
+                        }}
+                        onBlur={() => {
+                          if (carta && credito) {
+                            const clamped = Math.max(carta.min, Math.min(carta.max, credito));
+                            setCredito(clamped);
+                            setCreditoInput(formatBRLInput(String(clamped)));
+                          }
+                        }}
+                        placeholder="Digite o valor desejado"
+                        className={`h-12 text-base font-semibold ${errorCredito ? "border-destructive focus-visible:ring-destructive" : ""}`}
+                      />
                       <Slider
-                        value={[credito]}
+                        value={[Math.max(carta.min, Math.min(carta.max, credito || carta.min))]}
                         min={carta.min}
                         max={carta.max}
                         step={Math.max(1000, Math.round((carta.max - carta.min) / 100))}
-                        onValueChange={(v) => setCredito(v[0])}
+                        onValueChange={(v) => {
+                          setCredito(v[0]);
+                          setCreditoInput(formatBRLInput(String(v[0])));
+                        }}
                       />
                       <div className="flex justify-between text-[11px] text-muted-foreground">
                         <span>{brl(carta.min)}</span>
                         <span>{brl(carta.max)}</span>
                       </div>
+                      {errorCredito && (
+                        <p className="text-xs font-medium text-destructive">{errorCredito}</p>
+                      )}
                     </div>
 
                     {/* Prazo */}
@@ -562,14 +644,18 @@ export default function CartasContempladasQuiz() {
                             const v = parseInt(e.target.value, 10);
                             setPrazo(Number.isFinite(v) ? Math.max(0, Math.min(300, v)) : 0);
                           }}
-                          placeholder="Ou digite outro prazo"
-                          className="h-11 flex-1 text-base"
+                          placeholder="Ou digite (12 a 300)"
+                          className={`h-11 flex-1 text-base ${errorPrazo ? "border-destructive focus-visible:ring-destructive" : ""}`}
                         />
                         <span className="text-sm text-muted-foreground">meses</span>
                       </div>
+                      {errorPrazo && (
+                        <p className="text-xs font-medium text-destructive">{errorPrazo}</p>
+                      )}
                     </div>
 
                     {/* Resultado */}
+                    {simulacao ? (
                     <div className="mt-6 rounded-2xl border border-primary/30 bg-primary/5 p-5 sm:p-6">
                       <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-primary">
                         <Sparkles className="h-4 w-4" /> Estimativa
@@ -602,6 +688,38 @@ export default function CartasContempladasQuiz() {
                         </div>
                       </div>
 
+                      {/* Contemplada vs Não-contemplada */}
+                      <div className="mt-5 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
+                        <div className="rounded-xl border border-primary/40 bg-primary/10 p-4">
+                          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                            <Sparkles className="h-3.5 w-3.5" /> Carta contemplada (uso imediato)
+                          </div>
+                          <p className="text-lg font-bold text-foreground sm:text-xl">
+                            {brl(simulacao.parcelaContemplada)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                          </p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            + ágio à vista de <b className="text-foreground">{brl(simulacao.agio)}</b> (~{(AGIO_CONTEMPLADA*100).toFixed(0)}%)
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">
+                            Total: {brl(simulacao.totalContemplada)} · <b className="text-emerald-600 dark:text-emerald-400">crédito hoje</b>
+                          </p>
+                        </div>
+                        <div className="rounded-xl border border-border bg-muted/40 p-4">
+                          <div className="mb-1 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">
+                            <Calendar className="h-3.5 w-3.5" /> Cota comum (não-contemplada)
+                          </div>
+                          <p className="text-lg font-bold text-foreground sm:text-xl">
+                            {brl(simulacao.parcela)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                          </p>
+                          <p className="mt-1 text-[11px] text-muted-foreground">
+                            Sem ágio · espera <b className="text-foreground">~{ESPERA_MEDIA_MESES} meses</b> por sorteio/lance
+                          </p>
+                          <p className="mt-0.5 text-[11px] text-muted-foreground">
+                            Total: {brl(simulacao.totalComTaxa)} · <b>crédito não é imediato</b>
+                          </p>
+                        </div>
+                      </div>
+
                       {/* Comparação com banco */}
                       <div className="mt-4 grid gap-3 border-t border-border pt-4 sm:grid-cols-2">
                         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
@@ -625,9 +743,14 @@ export default function CartasContempladasQuiz() {
                       </div>
 
                       <p className="mt-4 border-t border-border pt-3 text-[11px] leading-relaxed text-muted-foreground">
-                        * Simulação ilustrativa. Consórcio não cobra juros — apenas taxa administrativa, fundo de reserva e seguro (variam por administradora). A carta contemplada permite antecipar essa parcela pagando à vista com poder de negociação.
+                        * Simulação ilustrativa. Consórcio não cobra juros — apenas taxa administrativa, fundo de reserva e seguro (variam por administradora). Carta contemplada exige ágio à vista, mas libera o crédito no ato; cota comum não paga ágio, mas depende de sorteio ou lance para ser contemplada.
                       </p>
                     </div>
+                    ) : (
+                      <div className="mt-6 rounded-2xl border border-dashed border-border bg-muted/30 p-6 text-center text-sm text-muted-foreground">
+                        Ajuste crédito e prazo válidos para ver a simulação.
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -680,12 +803,68 @@ export default function CartasContempladasQuiz() {
                         Onde enviamos sua proposta?
                       </h2>
                       <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-                        <span className="font-semibold text-primary">{carta.label}</span> · {brl(credito)} em {prazo}x de{" "}
-                        <span className="font-semibold text-foreground">
-                          {simulacao ? brl(simulacao.parcela) : "—"}
-                        </span>
+                        <span className="font-semibold text-primary">{carta.label}</span> · {brl(credito)} em {prazo}x
                       </p>
                     </div>
+
+                    {/* RESUMO FINAL — Banco vs Consórcio */}
+                    {simulacao && (
+                      <div className="rounded-2xl border border-primary/30 bg-gradient-to-br from-primary/5 to-transparent p-4 sm:p-5">
+                        <div className="mb-3 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                          <Sparkles className="h-4 w-4" /> Resumo da sua simulação
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-2">
+                          <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-3">
+                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-destructive">
+                              <Landmark className="h-3.5 w-3.5" /> Parcela no banco (~{(simulacao.bancoAA * 100).toFixed(0)}% a.a.)
+                            </div>
+                            <p className="mt-1 text-xl font-bold text-foreground sm:text-2xl">
+                              {brl(simulacao.parcelaBanco)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(simulacao.totalBanco)}</p>
+                          </div>
+                          <div className="rounded-xl border border-primary/40 bg-primary/10 p-3">
+                            <div className="flex items-center gap-1.5 text-[11px] font-medium text-primary">
+                              <Sparkles className="h-3.5 w-3.5" /> Parcela no consórcio
+                            </div>
+                            <p className="mt-1 text-xl font-bold text-primary sm:text-2xl">
+                              {brl(simulacao.parcela)}<span className="text-xs font-normal text-muted-foreground">/mês</span>
+                            </p>
+                            <p className="mt-0.5 text-[11px] text-muted-foreground">Total: {brl(simulacao.totalComTaxa)}</p>
+                          </div>
+                        </div>
+                        <div className="mt-3 flex items-center justify-between gap-3 rounded-xl border border-emerald-500/40 bg-emerald-500/10 p-3">
+                          <div className="flex items-center gap-2">
+                            <PiggyBank className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+                            <div>
+                              <p className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300">Economia total</p>
+                              <p className="text-lg font-bold text-emerald-600 dark:text-emerald-400 sm:text-xl">
+                                {brl(simulacao.economia)}
+                              </p>
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[10px] text-muted-foreground">vs. financiamento tradicional</p>
+                            <p className="text-sm font-semibold text-emerald-600 dark:text-emerald-400">
+                              {simulacao.totalBanco > 0
+                                ? `${Math.round((simulacao.economia / simulacao.totalBanco) * 100)}% mais barato`
+                                : "—"}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="mt-3 rounded-xl border border-border bg-background/60 p-3 text-xs leading-relaxed text-foreground/85">
+                          <b className="text-primary">Nossa recomendação:</b>{" "}
+                          {urgencia === "asap"
+                            ? `Você precisa do crédito em até 30 dias — indicamos uma CARTA JÁ CONTEMPLADA. Custo do ágio: ${brl(simulacao.agio)}, com liberação em até 7 dias úteis.`
+                            : urgencia === "3m"
+                              ? `Como você quer usar em até 3 meses, uma carta contemplada com ágio de ${brl(simulacao.agio)} é o caminho mais seguro. Alternativa: cota comum com lance forte (~${brl(simulacao.lanceSugerido)}).`
+                              : urgencia === "6m"
+                                ? `Com 6 meses de janela, vale avaliar cota comum com lance de ${brl(simulacao.lanceSugerido)}. Se surgir oportunidade, contemplada acelera o processo.`
+                                : `Sem pressa, a cota comum é mais econômica — você poupa o ágio de ${brl(simulacao.agio)} e ainda economiza ${brl(simulacao.economia)} vs. banco.`}
+                        </div>
+                      </div>
+                    )}
+
 
                     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                       <div className="space-y-1.5">
@@ -771,7 +950,7 @@ export default function CartasContempladasQuiz() {
                   onClick={next}
                   disabled={
                     (step === 0 && !selected) ||
-                    (step === 2 && (!credito || !prazo)) ||
+                    (step === 2 && (!creditoValido || !prazoValido)) ||
                     (step === 3 && !urgencia)
                   }
                   className="rounded-full px-5 sm:px-6"
