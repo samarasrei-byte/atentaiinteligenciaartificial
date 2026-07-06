@@ -19,21 +19,23 @@ serve(async (req) => {
       { auth: { persistSession: false } },
     );
 
-    // Idempotent: try to find; else create
-    const { data: found } = await admin.auth.admin.getUserByEmail(PARTNER_EMAIL);
-    let userId = found?.user?.id;
+    // Idempotent: try create; if it fails because user exists, look them up and reset password
+    let userId: string | undefined;
+    const { data: created, error: createErr } = await admin.auth.admin.createUser({
+      email: PARTNER_EMAIL,
+      password: PARTNER_PASSWORD,
+      email_confirm: true,
+      user_metadata: { full_name: "Parceiro Validador Cartas" },
+    });
 
-    if (!userId) {
-      const { data: created, error: createErr } = await admin.auth.admin.createUser({
-        email: PARTNER_EMAIL,
-        password: PARTNER_PASSWORD,
-        email_confirm: true,
-        user_metadata: { full_name: "Parceiro Validador Cartas" },
-      });
-      if (createErr) throw createErr;
-      userId = created.user?.id;
+    if (created?.user?.id) {
+      userId = created.user.id;
     } else {
-      // Ensure password is the expected one (reset every time we provision to keep in sync)
+      // Find existing user by paginating listUsers (up to first 1000)
+      const { data: list } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      const existing = list?.users?.find((u) => (u.email ?? "").toLowerCase() === PARTNER_EMAIL);
+      if (!existing) throw createErr ?? new Error("Could not create or locate partner user");
+      userId = existing.id;
       await admin.auth.admin.updateUserById(userId, { password: PARTNER_PASSWORD, email_confirm: true });
     }
 
