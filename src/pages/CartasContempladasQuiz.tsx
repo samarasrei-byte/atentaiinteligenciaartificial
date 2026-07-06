@@ -136,7 +136,7 @@ export default function CartasContempladasQuiz() {
   const [done, setDone] = useState(false);
   const [lgpd, setLgpd] = useState(false);
   const [partialSaved, setPartialSaved] = useState(false);
-  const [form, setForm] = useState({ full_name: "", email: "", phone: "", message: "" });
+  const [form, setForm] = useState({ full_name: "", email: "", email_confirm: "", phone: "", phone_confirm: "", message: "" });
 
   const carta = useMemo(() => (selected ? CARTAS.find((c) => c.key === selected)! : null), [selected]);
 
@@ -217,6 +217,20 @@ export default function CartasContempladasQuiz() {
     }
     if (!emailValido) {
       toast({ title: "E-mail inválido", variant: "destructive" });
+      return;
+    }
+    if (form.email.trim().toLowerCase() !== form.email_confirm.trim().toLowerCase()) {
+      toast({ title: "Os e-mails não coincidem", description: "Confirme o mesmo e-mail nos dois campos.", variant: "destructive" });
+      return;
+    }
+    const digitsPhone = form.phone.replace(/\D/g, "");
+    const digitsPhoneConfirm = form.phone_confirm.replace(/\D/g, "");
+    if (digitsPhone.length < 10) {
+      toast({ title: "WhatsApp inválido", description: "Informe DDD + número (ex.: 11 98521-4895).", variant: "destructive" });
+      return;
+    }
+    if (digitsPhone !== digitsPhoneConfirm) {
+      toast({ title: "Os WhatsApp não coincidem", description: "Confirme o mesmo número nos dois campos.", variant: "destructive" });
       return;
     }
     if (!lgpd) {
@@ -638,10 +652,24 @@ export default function CartasContempladasQuiz() {
                         <Label htmlFor="phone" className="text-xs"><Phone className="mr-1 inline h-3 w-3" />WhatsApp *</Label>
                         <Input id="phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="(11) 98521-4895" required className="h-11" />
                       </div>
+                      <div className="space-y-1.5 sm:col-span-2">
+                        <Label htmlFor="phone_confirm" className="text-xs"><Phone className="mr-1 inline h-3 w-3" />Confirme seu WhatsApp *</Label>
+                        <Input id="phone_confirm" value={form.phone_confirm} onChange={(e) => setForm({ ...form, phone_confirm: e.target.value })} placeholder="Digite novamente" required className="h-11" onPaste={(e) => e.preventDefault()} />
+                        {form.phone && form.phone_confirm && form.phone.replace(/\D/g, "") !== form.phone_confirm.replace(/\D/g, "") && (
+                          <p className="text-[11px] font-medium text-destructive">Os WhatsApp não coincidem.</p>
+                        )}
+                      </div>
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="email" className="text-xs"><Mail className="mr-1 inline h-3 w-3" />E-mail *</Label>
                       <Input id="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="voce@email.com" required className="h-11" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="email_confirm" className="text-xs"><Mail className="mr-1 inline h-3 w-3" />Confirme seu e-mail *</Label>
+                      <Input id="email_confirm" type="email" value={form.email_confirm} onChange={(e) => setForm({ ...form, email_confirm: e.target.value })} placeholder="Digite novamente" required className="h-11" onPaste={(e) => e.preventDefault()} />
+                      {form.email && form.email_confirm && form.email.trim().toLowerCase() !== form.email_confirm.trim().toLowerCase() && (
+                        <p className="text-[11px] font-medium text-destructive">Os e-mails não coincidem.</p>
+                      )}
                     </div>
                     <div className="space-y-1.5">
                       <Label htmlFor="message" className="text-xs">Observação (opcional)</Label>

@@ -114,6 +114,8 @@ const SuportePage = lazy(() => import("./pages/SuportePage"));
 // const BIContabilidadeLanding = lazy(() => import("./pages/BIContabilidadeLanding"));
 // const BIContabilidadeOnboarding = lazy(() => import("./pages/BIContabilidadeOnboarding"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
+const ParceiroCartasLogin = lazy(() => import("./pages/ParceiroCartasLogin"));
+const ParceiroCartasPanel = lazy(() => import("./pages/ParceiroCartasPanel"));
 
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
 const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
@@ -258,6 +260,8 @@ const App = () => (
               <Route path="/apresentação/serac" element={<Navigate to="/apresentacao/serac" replace />} />
               <Route path="/apresentacao/:slug" element={<SalesPresentation />} />
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
+              <Route path="/parceiro/cartas/login" element={<ParceiroCartasLogin />} />
+              <Route path="/parceiro/cartas" element={<ParceiroCartasPanel />} />
               <Route path="/test-login" element={<TestLogin />} />
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
