@@ -71,6 +71,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   index,
   isCustomPricing,
   isComingSoon,
+  isOutOfSeason,
+  outOfSeasonMessage,
 }) => {
   return (
     <motion.div
