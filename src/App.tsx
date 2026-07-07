@@ -226,7 +226,7 @@ const App = () => (
               <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
               <Route path="/parceiroatentaigb" element={<PartnerGuilhermePanel />} />
               <Route path="/ir" element={<IRPage />} />
-              <Route path="/ir-pj" element={<IRPJ />} />
+              <Route path="/ir-pj" element={<Navigate to="/ir" replace />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
