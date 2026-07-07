@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, FileText, Shield, Scale, Bell, Receipt, Brain } from 'lucide-react';
+import { MessageCircle, FileText, Shield, Scale, Bell, Receipt, Brain, Zap, Droplets, Sun } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { AdminClientChat } from './AdminClientChat';
 import { supabase } from '@/integrations/supabase/client';
