@@ -25,6 +25,9 @@ import {
   Users,
   Rocket,
   Brain,
+  Ticket,
+  Droplets,
+  Sun,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
@@ -47,6 +50,8 @@ interface ServiceCardProps {
   isSuccessFee?: boolean;
   isCustomPricing?: boolean;
   isComingSoon?: boolean;
+  isOutOfSeason?: boolean;
+  outOfSeasonMessage?: string;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -66,6 +71,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   index,
   isCustomPricing,
   isComingSoon,
+  isOutOfSeason,
+  outOfSeasonMessage,
 }) => {
   return (
     <motion.div
@@ -77,8 +84,17 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       <div className={`
         relative h-full rounded-3xl overflow-hidden group cursor-pointer
+        ${isOutOfSeason ? 'grayscale opacity-60' : ''}
         ${popular ? 'p-[2px] bg-gradient-to-br from-primary via-success to-info' : 'p-[1px] bg-gradient-to-br from-border to-border/50'}
       `}>
+        {isOutOfSeason && (
+          <div className="absolute top-4 left-4 z-20">
+            <Badge className="bg-muted text-muted-foreground border border-border text-[11px] font-semibold px-3 py-1 shadow-lg">
+              <Clock className="w-3 h-3 mr-1" />
+              {outOfSeasonMessage ?? 'FORA DO PRAZO'}
+            </Badge>
+          </div>
+        )}
         {/* Animated glow effect on hover (decorative only) */}
         <motion.div 
           className={`pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl bg-gradient-to-br ${gradient}`}
@@ -213,11 +229,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
             {/* CTA Button */}
             <Button 
-              onClick={isComingSoon ? undefined : onClick}
-              disabled={isComingSoon}
+              onClick={(isComingSoon || isOutOfSeason) ? undefined : onClick}
+              disabled={isComingSoon || isOutOfSeason}
               className={`
                 w-full h-12 font-semibold text-base rounded-xl group/btn relative overflow-hidden
-                ${isComingSoon 
+                ${(isComingSoon || isOutOfSeason)
                   ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'
                   : popular 
                     ? 'bg-gradient-to-r from-primary via-emerald-500 to-teal-500 hover:from-primary/90 hover:via-emerald-500/90 hover:to-teal-500/90 shadow-lg shadow-primary/30' 
@@ -226,8 +242,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               `}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
-                {isComingSoon ? 'Em Breve' : 'Solicitar Serviço'}
-                {!isComingSoon && <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />}
+                {isOutOfSeason ? 'Indisponível' : isComingSoon ? 'Em Breve' : 'Solicitar Serviço'}
+                {!isComingSoon && !isOutOfSeason && <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />}
               </span>
             </Button>
           </CardContent>
@@ -303,6 +319,77 @@ export const ServicesHubModern: React.FC = () => {
       gradient: 'from-violet-500/40 to-purple-500/40',
       iconGradient: 'from-violet-500 to-purple-500',
       onClick: () => navigate('/ir'),
+      isOutOfSeason: true,
+      outOfSeasonMessage: 'Fora do prazo — volta em Mar/2027',
+    },
+    {
+      title: 'Simulador Carta Contemplada',
+      description: 'Simule crédito, prazo e parcela. Compare com financiamento bancário.',
+      icon: Ticket,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      features: [
+        'Simulação em segundos',
+        'Comparativo vs banco',
+        'Análise por especialista',
+      ],
+      gradient: 'from-fuchsia-500/40 to-pink-500/40',
+      iconGradient: 'from-fuchsia-500 to-pink-500',
+      onClick: () => navigate('/simulador-carta'),
+      badge: 'NOVO',
+    },
+    {
+      title: 'Recuperação Fiscal Energética',
+      description: 'Devolução de ICMS indevido na conta de luz. STF, retroativo 10 anos.',
+      icon: Zap,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 50,
+      features: [
+        '100% administrativo',
+        'Retroativo até 10 anos',
+        'PJ e PF (colaboradores)',
+      ],
+      gradient: 'from-yellow-500/40 to-orange-500/40',
+      iconGradient: 'from-yellow-500 to-orange-500',
+      onClick: () => navigate('/recuperacao-energetica'),
+      badge: 'NOVO',
+    },
+    {
+      title: 'Recuperação Fiscal Hídrica',
+      description: 'Devolução do Fator K na conta de água via Mandado de Segurança.',
+      icon: Droplets,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      isCustomPricing: true,
+      features: [
+        'Via Mandado de Segurança',
+        'Retroativo 5 anos',
+        'Sem risco de sucumbência',
+      ],
+      gradient: 'from-sky-500/40 to-blue-500/40',
+      iconGradient: 'from-sky-500 to-blue-500',
+      onClick: () => navigate('/recuperacao-hidrica'),
+      badge: 'NOVO',
+    },
+    {
+      title: 'Placas Solares — Custo Zero',
+      description: 'A economia paga o financiamento. Após quitação, economia integral.',
+      icon: Sun,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      isCustomPricing: true,
+      features: [
+        'Sem investimento inicial',
+        'Economia compartilhável',
+        'Estudo preliminar grátis',
+      ],
+      gradient: 'from-amber-400/40 to-yellow-500/40',
+      iconGradient: 'from-amber-400 to-yellow-500',
+      onClick: () => navigate('/placas-solares'),
       badge: 'NOVO',
     },
     {
