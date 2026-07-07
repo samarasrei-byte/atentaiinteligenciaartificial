@@ -95,7 +95,7 @@ export const GuilhermeChatHub: React.FC = () => {
                   <span className="relative inline-flex rounded-full h-full w-full bg-white" />
                 </span>
               </h1>
-              <p className="text-emerald-100 text-xs sm:text-sm truncate">Central Unificada • NF, IR, Fiscal, Limpa Nome</p>
+              <p className="text-emerald-100 text-xs sm:text-sm truncate">Central Unificada • Limpa Nome, Fiscal, NF, IR, Energia, Água, Solar, Carta</p>
             </div>
           </div>
           
