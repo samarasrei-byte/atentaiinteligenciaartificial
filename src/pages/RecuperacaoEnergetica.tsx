@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
 import QuizShell, { QuizStep } from "@/components/quiz/QuizShell";
+import QuizConfirmation from "@/components/quiz/QuizConfirmation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Zap, ShieldCheck, Clock, Building2 } from "lucide-react";
+import { Zap, ShieldCheck, Clock, Building2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { contactSchema, docSchema, ufSchema, firstError } from "@/lib/quizValidation";
+import { z } from "zod";
 
 const BRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
@@ -19,6 +22,7 @@ export default function RecuperacaoEnergetica() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [protocol, setProtocol] = useState<string | null>(null);
 
   const [clientType, setClientType] = useState<"pf" | "pj">("pj");
   const [distributor, setDistributor] = useState("");
@@ -39,27 +43,48 @@ export default function RecuperacaoEnergetica() {
   const meetsMinimum = estimated >= 15000;
 
   const submit = async () => {
-    if (!name.trim() || !email.trim() || !phone.trim() || !document.trim()) {
-      toast({ title: "Preencha nome, e-mail, WhatsApp e CPF/CNPJ", variant: "destructive" });
+    const schema = z.object({
+      distributor: z.string().trim().min(2, "Distribuidora obrigatória"),
+      uf: ufSchema,
+      installations: z.coerce.number().int().min(1, "Mín. 1 instalação"),
+      billNumber: z.number().positive("Informe o valor da conta"),
+      document: docSchema(clientType),
+    }).merge(contactSchema);
+
+    const parsed = schema.safeParse({
+      name, email, phone, distributor, uf, installations, billNumber, document,
+    });
+    if (!parsed.success) {
+      toast({ title: firstError(parsed.error), variant: "destructive" });
       return;
     }
     if (!meetsMinimum) {
       toast({ title: "Valor mínimo não atingido", description: "Estimativa precisa ser ≥ R$ 150.", variant: "destructive" });
       return;
     }
+
     setSaving(true);
-    const { error } = await supabase.from("energy_recovery_requests").insert({
-      user_id: user?.id ?? null,
-      full_name: name, email, phone,
-      client_type: clientType,
-      monthly_bill_cents: Math.round(billNumber * 100),
-      months_estimated: Number(months),
-      estimated_recovery_cents: estimated,
-      status: "pending",
-      approval_stage: "new_lead",
-    });
+    const { data, error } = await supabase
+      .from("energy_recovery_requests")
+      .insert({
+        user_id: user?.id ?? null,
+        full_name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        document: document.trim(),
+        client_type: clientType,
+        monthly_bill_cents: Math.round(billNumber * 100),
+        months_estimated: Number(months),
+        estimated_recovery_cents: estimated,
+        status: "pending",
+        approval_stage: "new_lead",
+        metadata: { distributor, uf, installations: Number(installations) },
+      })
+      .select("id")
+      .single();
     setSaving(false);
-    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    if (error) return toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    setProtocol(data?.id ? data.id.slice(0, 8).toUpperCase() : null);
     setDone(true);
   };
 
@@ -113,7 +138,7 @@ export default function RecuperacaoEnergetica() {
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="sm:col-span-2">
             <Label>Distribuidora (Enel, CPFL, Light, Neoenergia...)</Label>
-            <Input value={distributor} onChange={(e) => setDistributor(e.target.value)} placeholder="Ex: Enel SP" />
+            <Input value={distributor} onChange={(e) => setDistributor(e.target.value)} placeholder="Ex: Enel SP" maxLength={80} />
           </div>
           <div>
             <Label>UF</Label>
@@ -121,7 +146,7 @@ export default function RecuperacaoEnergetica() {
           </div>
           <div className="sm:col-span-3">
             <Label>Quantidade de instalações / unidades consumidoras</Label>
-            <Input value={installations} onChange={(e) => setInstallations(e.target.value.replace(/\D/g, ""))} inputMode="numeric" />
+            <Input value={installations} onChange={(e) => setInstallations(e.target.value.replace(/\D/g, "").slice(0, 4))} inputMode="numeric" />
           </div>
         </div>
       ),
@@ -134,7 +159,7 @@ export default function RecuperacaoEnergetica() {
         <div className="space-y-4">
           <div>
             <Label>Valor médio mensal da conta (R$)</Label>
-            <Input inputMode="decimal" placeholder="Ex: 850" value={monthlyBill} onChange={(e) => setMonthlyBill(e.target.value)} />
+            <Input inputMode="decimal" placeholder="Ex: 850" value={monthlyBill} onChange={(e) => setMonthlyBill(e.target.value)} maxLength={12} />
           </div>
           <div>
             <Label>Período retroativo</Label>
@@ -165,10 +190,10 @@ export default function RecuperacaoEnergetica() {
       canNext: !!name.trim() && !!email.trim() && !!phone.trim() && !!document.trim(),
       content: (
         <div className="grid gap-3 sm:grid-cols-2">
-          <Input placeholder="Nome / Razão social" value={name} onChange={(e) => setName(e.target.value)} />
-          <Input placeholder={clientType === "pj" ? "CNPJ" : "CPF"} value={document} onChange={(e) => setDocument(e.target.value)} />
-          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Input placeholder="Nome / Razão social" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
+          <Input placeholder={clientType === "pj" ? "CNPJ" : "CPF"} value={document} onChange={(e) => setDocument(e.target.value)} maxLength={18} />
+          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={160} />
+          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} />
         </div>
       ),
     },
@@ -187,13 +212,28 @@ export default function RecuperacaoEnergetica() {
       submitLabel="Enviar para análise"
       done={done}
       doneContent={
-        <div className="text-center">
-          <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
-          <h2 className="mt-4 text-2xl font-bold">Solicitação enviada!</h2>
-          <p className="mt-2 text-muted-foreground">
-            Estimativa de devolução: <span className="text-primary font-semibold">{BRL(estimated)}</span>. Nosso parceiro entra em contato em até 24h úteis.
-          </p>
-        </div>
+        <QuizConfirmation
+          headline="Solicitação enviada com sucesso!"
+          subline="Nosso parceiro fiscal recebeu seu pedido e vai analisar sua elegibilidade."
+          protocol={protocol}
+          highlight={{ label: "Estimativa de devolução", value: BRL(estimated) }}
+          summary={[
+            { label: "Solicitante", value: name },
+            { label: "Perfil", value: clientType === "pj" ? "Pessoa Jurídica" : "Pessoa Física" },
+            { label: "Documento", value: document },
+            { label: "Distribuidora", value: `${distributor} / ${uf}` },
+            { label: "Instalações", value: installations },
+            { label: "Conta média", value: BRL(Math.round(billNumber * 100)) },
+            { label: "Período", value: `${months} meses` },
+            { label: "Contato", value: `${email} · ${phone}` },
+          ]}
+          nextSteps={[
+            { title: "Análise em até 24h úteis", description: "O parceiro valida os dados e confirma a elegibilidade." },
+            { title: "Envio dos documentos", description: "Solicitaremos faturas dos últimos meses e procuração." },
+            { title: "Recuperação administrativa", description: "Iniciamos o pedido e você acompanha em tempo real." },
+          ]}
+          chatHref="/chat/guilherme?servico=recuperacao-energetica"
+        />
       }
     />
   );
