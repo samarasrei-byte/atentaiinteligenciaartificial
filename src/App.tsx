@@ -205,11 +205,11 @@ const App = () => (
               <Route path="/autonomo-onboarding" element={<AutonomoOnboarding />} />
               <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/plano/simulador" element={<PlanoSimulador />} />
-              <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
-              <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
+              <Route path="/plano/simulador" element={<Navigate to="/pricing" replace />} />
+              <Route path="/plano/atente-ai" element={<Navigate to="/pricing" replace />} />
+              <Route path="/plano/autonomo" element={<Navigate to="/pricing" replace />} />
               <Route path="/plano/comparar" element={<PlanComparison />} />
-              <Route path="/planos-perfil" element={<PlanosPorPerfil />} />
+              <Route path="/planos-perfil" element={<Navigate to="/pricing" replace />} />
               <Route path="/contadores-publico" element={<ContadoresPublic />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/termos" element={<TermosDeUso />} />
