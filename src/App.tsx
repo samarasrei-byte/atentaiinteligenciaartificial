@@ -108,6 +108,10 @@ const SuportePage = lazy(() => import("./pages/SuportePage"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
 const ParceiroCartasLogin = lazy(() => import("./pages/ParceiroCartasLogin"));
 const ParceiroCartasPanel = lazy(() => import("./pages/ParceiroCartasPanel"));
+const RecuperacaoEnergetica = lazy(() => import("./pages/RecuperacaoEnergetica"));
+const RecuperacaoHidrica = lazy(() => import("./pages/RecuperacaoHidrica"));
+const PlacasSolares = lazy(() => import("./pages/PlacasSolares"));
+const SimuladorCarta = lazy(() => import("./pages/SimuladorCarta"));
 
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
 const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
