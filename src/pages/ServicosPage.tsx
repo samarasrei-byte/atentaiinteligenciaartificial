@@ -221,7 +221,6 @@ const aiServices: ServiceCardConfig[] = [
     color: 'purple',
     icon: CreditCard,
     serviceType: 'simulador_carta',
-    onboardingRoute: '/simulador-carta' as any,
     checkoutRoute: '/simulador-carta',
     category: 'empresarial',
     isFree: true,
