@@ -65,7 +65,7 @@ export const AllServicesHub: React.FC = () => {
    * NEVER mix them. Routes are ABSOLUTE and IMMUTABLE.
    */
   const services: ServiceItem[] = [
-    // ===== CONTADOR IA — IMPOSTO DE RENDA =====
+    // ===== CONTADOR IA — IMPOSTO DE RENDA (Fora do prazo — ofuscado) =====
     {
       id: 'ir-simples',
       name: 'Contador IA — Imposto de Renda',
@@ -77,11 +77,62 @@ export const AllServicesHub: React.FC = () => {
         'Análise automática de documentos',
         'Extração de dados por IA',
         'Cálculo automático de imposto',
-        'Dicas de otimização fiscal',
-        'Alertas de inconsistências',
       ],
+      outOfSeason: true,
+      outOfSeasonMessage: 'Fora do prazo — volta em Mar/2027',
+      checkoutRoute: '/ir',
+    },
+
+    // ===== SIMULADOR CARTA CONTEMPLADA =====
+    {
+      id: 'simulador-carta',
+      name: 'Simulador Carta Contemplada',
+      description: 'Simule crédito, prazo e parcela. Compare com financiamento bancário e descubra sua economia.',
+      icon: Ticket,
+      gradient: 'from-fuchsia-500 to-pink-600',
+      priceCents: 0,
+      features: ['Simulação em segundos', 'Comparativo vs banco', 'Análise por especialista'],
       isNew: true,
-      checkoutRoute: '/checkout/ir-simples',
+      onboardingRoute: '/simulador-carta',
+    },
+
+    // ===== RECUPERAÇÃO FISCAL ENERGÉTICA =====
+    {
+      id: 'recuperacao-energetica',
+      name: 'Recuperação Fiscal Energética',
+      description: 'Devolução de ICMS indevido cobrado na conta de luz. Decisão do STF, retroativo até 10 anos.',
+      icon: Zap,
+      gradient: 'from-yellow-500 to-orange-600',
+      priceCents: 15000,
+      features: ['100% administrativo', 'Retroativo até 10 anos', 'PJ e PF (colaboradores)'],
+      isNew: true,
+      onboardingRoute: '/recuperacao-energetica',
+    },
+
+    // ===== RECUPERAÇÃO FISCAL HÍDRICA =====
+    {
+      id: 'recuperacao-hidrica',
+      name: 'Recuperação Fiscal Hídrica',
+      description: 'Devolução do Fator K cobrado na conta de água. 100% judicial via mandado de segurança.',
+      icon: Droplets,
+      gradient: 'from-sky-500 to-blue-600',
+      priceCents: 200000,
+      features: ['Via Mandado de Segurança', 'Retroativo 5 anos', 'Sem risco de sucumbência'],
+      isNew: true,
+      onboardingRoute: '/recuperacao-hidrica',
+    },
+
+    // ===== PLACAS SOLARES CUSTO ZERO =====
+    {
+      id: 'placas-solares',
+      name: 'Placas Solares — Custo Zero',
+      description: 'A economia paga o financiamento e ainda sobra no caixa. Após quitação, economia integral.',
+      icon: Sun,
+      gradient: 'from-amber-400 to-yellow-600',
+      priceCents: 0,
+      features: ['Sem investimento inicial', 'Economia compartilhável', 'Estudo preliminar grátis'],
+      isNew: true,
+      onboardingRoute: '/placas-solares',
     },
 
     // ===== LIMPA NOME PF (CPF) =====
