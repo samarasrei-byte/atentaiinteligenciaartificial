@@ -158,6 +158,18 @@ export const GuilhermeChatHub: React.FC = () => {
             <span>{stats.pendingDocs} docs</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.energyLeads} energia</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Droplets className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.waterLeads} água</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.solarLeads} solar</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span>{stats.newAlerts} novos</span>
           </div>
