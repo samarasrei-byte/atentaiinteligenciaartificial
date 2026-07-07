@@ -25,24 +25,34 @@ interface Stats {
   pendingDocs: number;
   newAlerts: number;
   irDeclarations: number;
+  energyLeads: number;
+  waterLeads: number;
+  solarLeads: number;
 }
 
 /**
  * GuilhermeChatHub - Central Unificada de Atendimento
  * 
- * SERVIÇOS: Limpa Nome, Análise Fiscal, Emissão NF, Imposto de Renda
+ * SERVIÇOS: Limpa Nome, Análise Fiscal, Emissão NF, Imposto de Renda,
+ * Recuperação Energética, Recuperação Hídrica, Placas Solares, Carta Contemplada
  */
 export const GuilhermeChatHub: React.FC = () => {
   const [isWhatsAppConnected] = React.useState(true);
-  const [stats, setStats] = useState<Stats>({ activeChats: 0, pendingDocs: 0, newAlerts: 0, irDeclarations: 0 });
+  const [stats, setStats] = useState<Stats>({
+    activeChats: 0, pendingDocs: 0, newAlerts: 0, irDeclarations: 0,
+    energyLeads: 0, waterLeads: 0, solarLeads: 0,
+  });
   
   useEffect(() => {
     const loadStats = async () => {
-      const [limpaNomeRes, fiscalRes, docsRes, irRes] = await Promise.all([
+      const [limpaNomeRes, fiscalRes, docsRes, irRes, energyRes, waterRes, solarRes] = await Promise.all([
         supabase.from('credit_repair_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
         supabase.from('fiscal_analysis_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
         supabase.from('company_opening_documents').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('ir_ai_declarations').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('energy_recovery_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('water_recovery_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('solar_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
       ]);
       
       const activeChats = (limpaNomeRes.count || 0) + (fiscalRes.count || 0);
@@ -57,7 +67,12 @@ export const GuilhermeChatHub: React.FC = () => {
         .gte('created_at', yesterday.toISOString())
         .eq('status', 'pending');
       
-      setStats({ activeChats, pendingDocs, newAlerts: newAlerts || 0, irDeclarations });
+      setStats({
+        activeChats, pendingDocs, newAlerts: newAlerts || 0, irDeclarations,
+        energyLeads: energyRes.count || 0,
+        waterLeads: waterRes.count || 0,
+        solarLeads: solarRes.count || 0,
+      });
     };
     
     loadStats();
