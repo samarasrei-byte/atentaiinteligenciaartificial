@@ -84,8 +84,17 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
     >
       <div className={`
         relative h-full rounded-3xl overflow-hidden group cursor-pointer
+        ${isOutOfSeason ? 'grayscale opacity-60' : ''}
         ${popular ? 'p-[2px] bg-gradient-to-br from-primary via-success to-info' : 'p-[1px] bg-gradient-to-br from-border to-border/50'}
       `}>
+        {isOutOfSeason && (
+          <div className="absolute top-4 left-4 z-20">
+            <Badge className="bg-muted text-muted-foreground border border-border text-[11px] font-semibold px-3 py-1 shadow-lg">
+              <Clock className="w-3 h-3 mr-1" />
+              {outOfSeasonMessage ?? 'FORA DO PRAZO'}
+            </Badge>
+          </div>
+        )}
         {/* Animated glow effect on hover (decorative only) */}
         <motion.div 
           className={`pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-2xl bg-gradient-to-br ${gradient}`}
