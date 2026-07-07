@@ -128,6 +128,18 @@ export const GuilhermeChatHub: React.FC = () => {
               <Brain className="h-3 w-3" />
               <span className="hidden lg:inline">IR</span>
             </Badge>
+            <Badge variant="outline" className="hidden md:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <Zap className="h-3 w-3" />
+              <span className="hidden lg:inline">Energia</span>
+            </Badge>
+            <Badge variant="outline" className="hidden md:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <Droplets className="h-3 w-3" />
+              <span className="hidden lg:inline">Água</span>
+            </Badge>
+            <Badge variant="outline" className="hidden md:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <Sun className="h-3 w-3" />
+              <span className="hidden lg:inline">Solar</span>
+            </Badge>
           </div>
         </div>
         
