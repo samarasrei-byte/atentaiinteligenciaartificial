@@ -1,45 +1,47 @@
 import { useMemo, useState } from "react";
-import { Helmet } from "react-helmet-async";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import QuizShell, { QuizStep } from "@/components/quiz/QuizShell";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { Droplets, Scale, Gavel, Clock, CheckCircle2, Sparkles, Loader2 } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { CheckCircle2, Droplets, Gavel, Clock, Scale } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
 
 const BRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
+const toCents = (v: string) =>
+  Math.round((Number(v.replace(/[^\d,]/g, "").replace(",", ".")) || 0) * 100);
 
 export default function RecuperacaoHidrica() {
   const { user } = useAuth();
   const { toast } = useToast();
+
+  const [step, setStep] = useState(0);
+  const [done, setDone] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  const [isPJ, setIsPJ] = useState<boolean | null>(null);
+  const [concessionaria, setConcessionaria] = useState("");
+  const [uf, setUf] = useState("");
+  const [segment, setSegment] = useState("");
   const [b1, setB1] = useState(""); const [b2, setB2] = useState(""); const [b3, setB3] = useState("");
   const [name, setName] = useState(user?.user_metadata?.full_name || "");
   const [email, setEmail] = useState(user?.email || "");
   const [phone, setPhone] = useState("");
-  const [saving, setSaving] = useState(false);
+  const [cnpj, setCnpj] = useState("");
 
-  const toCents = (v: string) => Math.round((Number(v.replace(/[^\d,]/g, "").replace(",", ".")) || 0) * 100);
-
-  const estimated = useMemo(() => {
-    const avg = (toCents(b1) + toCents(b2) + toCents(b3)) / 3;
-    // Fator K médio devolvido ~22% * 60 meses
-    return Math.round(avg * 0.22 * 60);
-  }, [b1, b2, b3]);
-
-  const canSimulate = toCents(b1) > 0 && toCents(b2) > 0 && toCents(b3) > 0;
-  const meetsMinimum = estimated >= 200000; // R$ 2.000 mínimo
+  const avgCents = (toCents(b1) + toCents(b2) + toCents(b3)) / 3;
+  const estimated = useMemo(() => Math.round(avgCents * 0.22 * 60), [avgCents]);
+  const meetsMinimum = estimated >= 200000;
 
   const submit = async () => {
-    if (!name.trim() || !email.trim() || !phone.trim()) {
-      toast({ title: "Preencha nome, e-mail e WhatsApp", variant: "destructive" });
+    if (!name.trim() || !email.trim() || !phone.trim() || !cnpj.trim()) {
+      toast({ title: "Preencha todos os dados de contato", variant: "destructive" });
       return;
     }
     if (!meetsMinimum) {
-      toast({ title: "Valor mínimo não atingido", description: "Estimativa mínima para operar: R$ 2.000.", variant: "destructive" });
+      toast({ title: "Valor mínimo não atingido", description: "Estimativa mínima: R$ 2.000.", variant: "destructive" });
       return;
     }
     setSaving(true);
@@ -56,101 +58,133 @@ export default function RecuperacaoHidrica() {
     });
     setSaving(false);
     if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
-    toast({ title: "Solicitação enviada!", description: "Análise em até 48h úteis." });
-    setB1(""); setB2(""); setB3(""); setPhone("");
+    setDone(true);
   };
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <Helmet>
-        <title>Recuperação Fiscal Hídrica — Fator K | AtentAI</title>
-        <meta name="description" content="Devolução do Fator K cobrado indevidamente na conta de água. 100% judicial via mandado de segurança, sem risco de sucumbência." />
-      </Helmet>
-
-      <section className="border-b border-border bg-gradient-to-b from-primary/5 to-background">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:py-20">
-          <Badge variant="outline" className="mb-4 border-primary/40 text-primary"><Sparkles className="mr-1 h-3 w-3" /> Judicial · Mandado de Segurança</Badge>
-          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight">
-            Recuperação Fiscal <span className="text-primary">Hídrica</span>
-          </h1>
-          <p className="mt-4 max-w-2xl text-lg text-muted-foreground">
-            Devolução do Fator K cobrado na conta de água com base em cálculo contábil dos últimos 5 anos.
-          </p>
-
-          <div className="mt-8 grid gap-3 sm:grid-cols-3">
-            {[
-              { icon: Gavel, t: "Via Mandado de Segurança", d: "Sem risco de sucumbência" },
-              { icon: Clock, t: "Retroativo 5 anos", d: "Recuperação cheia" },
-              { icon: Scale, t: "Cálculo contábil", d: "Base sólida e auditável" },
-            ].map((b) => (
-              <div key={b.t} className="rounded-xl border border-border bg-card p-4">
-                <b.icon className="h-5 w-5 text-primary mb-2" />
-                <p className="text-sm font-semibold">{b.t}</p>
-                <p className="text-xs text-muted-foreground">{b.d}</p>
-              </div>
-            ))}
+  const steps: QuizStep[] = [
+    {
+      title: "Recuperação Fiscal Hídrica",
+      subtitle: "Devolução do Fator K cobrado indevidamente na conta de água — via mandado de segurança.",
+      canNext: true,
+      content: (
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            { icon: Gavel, t: "Mandado de Segurança", d: "Sem risco de sucumbência" },
+            { icon: Clock, t: "Retroativo 5 anos", d: "Recuperação cheia" },
+            { icon: Scale, t: "Cálculo contábil", d: "Base auditável" },
+          ].map((b) => (
+            <Card key={b.t} className="p-4">
+              <b.icon className="h-5 w-5 text-primary mb-2" />
+              <p className="text-sm font-semibold">{b.t}</p>
+              <p className="text-xs text-muted-foreground">{b.d}</p>
+            </Card>
+          ))}
+        </div>
+      ),
+    },
+    {
+      title: "Você está solicitando como PJ?",
+      subtitle: "A recuperação hídrica só é operada para pessoa jurídica.",
+      canNext: isPJ === true,
+      content: (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {[{ v: true, l: "Sim, sou PJ", d: "Empresa com CNPJ ativo e conta de água" },
+            { v: false, l: "Não, sou PF", d: "Serviço indisponível — apenas PJ" }].map((o) => (
+            <button
+              key={String(o.v)} type="button"
+              onClick={() => setIsPJ(o.v)}
+              className={`rounded-xl border p-4 text-left transition ${isPJ === o.v ? (o.v ? "border-primary bg-primary/5" : "border-destructive bg-destructive/5") : "border-border hover:border-primary/40"}`}
+            >
+              <p className="font-semibold">{o.l}</p>
+              <p className="text-xs text-muted-foreground mt-1">{o.d}</p>
+            </button>
+          ))}
+          {isPJ === false && (
+            <p className="sm:col-span-2 text-xs text-destructive">Este serviço é exclusivo para empresas. Confira Recuperação Energética (disponível para PF).</p>
+          )}
+        </div>
+      ),
+    },
+    {
+      title: "Concessionária e segmento",
+      subtitle: "Onde a conta é emitida e o setor de atuação.",
+      canNext: concessionaria.trim().length > 1 && uf.length === 2 && segment.trim().length > 1,
+      content: (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div className="sm:col-span-2">
+            <Label>Concessionária (Sabesp, Copasa, Cedae...)</Label>
+            <Input value={concessionaria} onChange={(e) => setConcessionaria(e.target.value)} placeholder="Ex: Sabesp" />
+          </div>
+          <div>
+            <Label>UF</Label>
+            <Input value={uf} onChange={(e) => setUf(e.target.value.toUpperCase().slice(0, 2))} placeholder="SP" />
+          </div>
+          <div className="sm:col-span-3">
+            <Label>Segmento (indústria, comércio, serviços...)</Label>
+            <Input value={segment} onChange={(e) => setSegment(e.target.value)} placeholder="Ex: Indústria alimentícia" />
           </div>
         </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-12">
-        <div className="grid gap-6 lg:grid-cols-5">
-          <Card className="lg:col-span-3">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Droplets className="h-5 w-5 text-primary" /> Simulador de recuperação</CardTitle>
-              <CardDescription>Informe as 3 últimas contas de água para uma estimativa.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid gap-3 sm:grid-cols-3">
-                <div><Label>Conta mês 1 (R$)</Label><Input value={b1} onChange={(e) => setB1(e.target.value)} placeholder="Ex: 1.200" /></div>
-                <div><Label>Conta mês 2 (R$)</Label><Input value={b2} onChange={(e) => setB2(e.target.value)} placeholder="Ex: 1.180" /></div>
-                <div><Label>Conta mês 3 (R$)</Label><Input value={b3} onChange={(e) => setB3(e.target.value)} placeholder="Ex: 1.250" /></div>
-              </div>
-
-              {canSimulate && (
-                <div className="rounded-xl border border-primary/40 bg-primary/5 p-4">
-                  <p className="text-xs uppercase text-muted-foreground">Estimativa de devolução (5 anos)</p>
-                  <p className="mt-1 text-3xl font-bold text-primary">{BRL(estimated)}</p>
-                  <p className="mt-1 text-xs text-muted-foreground">Cálculo referencial. Valor final depende da análise contábil.</p>
-                  {!meetsMinimum && <p className="mt-2 text-xs text-destructive">Mínimo para operar: R$ 2.000.</p>}
-                </div>
-              )}
-
-              <div className="border-t border-border pt-4 space-y-3">
-                <p className="text-sm font-semibold">Enviar solicitação</p>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <Input placeholder="Razão social / Nome" value={name} onChange={(e) => setName(e.target.value)} />
-                  <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                  <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} className="sm:col-span-2" />
-                </div>
-                <Button onClick={submit} disabled={saving || !canSimulate} className="w-full">
-                  {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enviar para análise"}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="lg:col-span-2 h-fit">
-            <CardHeader><CardTitle className="text-base">Como funciona</CardTitle></CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              {[
-                "Envio das últimas 3 contas de água",
-                "Cálculo do Fator K indevido",
-                "Impetração de mandado de segurança",
-                "Compensação/restituição via ordem judicial",
-              ].map((s, i) => (
-                <div key={s} className="flex items-start gap-2">
-                  <div className="grid h-6 w-6 place-items-center rounded-full bg-primary/15 text-xs font-bold text-primary shrink-0">{i + 1}</div>
-                  <p className="text-muted-foreground">{s}</p>
-                </div>
-              ))}
-              <div className="mt-3 flex items-center gap-2 text-xs text-emerald-600">
-                <CheckCircle2 className="h-4 w-4" /> Sem risco de sucumbência
-              </div>
-            </CardContent>
-          </Card>
+      ),
+    },
+    {
+      title: "Últimas 3 contas de água",
+      subtitle: "Informe os valores em reais. Mínimo para operar: R$ 2.000 de estimativa.",
+      canNext: toCents(b1) > 0 && toCents(b2) > 0 && toCents(b3) > 0,
+      content: (
+        <div className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div><Label>Conta mês 1</Label><Input value={b1} onChange={(e) => setB1(e.target.value)} placeholder="1.200" /></div>
+            <div><Label>Conta mês 2</Label><Input value={b2} onChange={(e) => setB2(e.target.value)} placeholder="1.180" /></div>
+            <div><Label>Conta mês 3</Label><Input value={b3} onChange={(e) => setB3(e.target.value)} placeholder="1.250" /></div>
+          </div>
+          {avgCents > 0 && (
+            <div className="rounded-xl border border-primary/40 bg-primary/5 p-4">
+              <p className="text-[11px] uppercase text-muted-foreground">Estimativa de devolução (5 anos)</p>
+              <p className="mt-1 text-3xl font-bold text-primary">{BRL(estimated)}</p>
+              <p className="mt-1 text-xs text-muted-foreground">Base: Fator K médio 22% sobre 60 meses.</p>
+              {!meetsMinimum && <p className="mt-2 text-xs text-destructive">Mínimo para operar: R$ 2.000.</p>}
+            </div>
+          )}
         </div>
-      </section>
-    </div>
+      ),
+    },
+    {
+      title: "Dados de contato",
+      subtitle: "Retorno em até 48h úteis com plano de ação.",
+      canNext: !!name.trim() && !!email.trim() && !!phone.trim() && !!cnpj.trim(),
+      content: (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Input placeholder="Razão social" value={name} onChange={(e) => setName(e.target.value)} />
+          <Input placeholder="CNPJ" value={cnpj} onChange={(e) => setCnpj(e.target.value)} />
+          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} />
+        </div>
+      ),
+    },
+  ];
+
+  return (
+    <QuizShell
+      brandLabel="Recuperação Hídrica"
+      title="Quiz Recuperação Fiscal Hídrica | AtentAI"
+      metaDescription="Simule a devolução do Fator K na conta de água em 5 passos."
+      step={step} steps={steps}
+      onBack={() => setStep((s) => Math.max(0, s - 1))}
+      onNext={() => setStep((s) => Math.min(steps.length - 1, s + 1))}
+      onSubmit={submit}
+      submitting={saving}
+      submitLabel="Enviar para análise"
+      done={done}
+      doneContent={
+        <div className="text-center">
+          <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
+          <Droplets className="mx-auto mt-2 h-6 w-6 text-primary" />
+          <h2 className="mt-4 text-2xl font-bold">Solicitação enviada!</h2>
+          <p className="mt-2 text-muted-foreground">
+            Estimativa: <span className="text-primary font-semibold">{BRL(estimated)}</span>. Análise em até 48h úteis.
+          </p>
+        </div>
+      }
+    />
   );
 }
