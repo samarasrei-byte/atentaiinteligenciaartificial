@@ -445,6 +445,35 @@ export default function ParceiroCartasPanel() {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="energia" className="mt-6">
+            <PartnerServiceLeads
+              table="energy_recovery_requests"
+              serviceLabel="Recuperação Fiscal Energética"
+              valueField="estimated_recovery_cents"
+              valueLabel="Recuperação est."
+            />
+          </TabsContent>
+
+          <TabsContent value="hidrica" className="mt-6">
+            <PartnerServiceLeads
+              table="water_recovery_requests"
+              serviceLabel="Recuperação Fiscal Hídrica"
+              valueField="estimated_recovery_cents"
+              valueLabel="Recuperação est."
+            />
+          </TabsContent>
+
+          <TabsContent value="solar" className="mt-6">
+            <PartnerServiceLeads
+              table="solar_requests"
+              serviceLabel="Placas Solares Custo Zero"
+              valueField="estimated_savings_cents"
+              valueLabel="Economia/mês"
+            />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
