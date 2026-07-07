@@ -58,11 +58,9 @@ const AutonomoOnboarding = lazy(() => import("./pages/AutonomoOnboarding"));
 const ContadorOnboarding = lazy(() => import("./pages/ContadorOnboarding"));
 const LocacaoSimulator = lazy(() => import("./pages/LocacaoSimulator"));
 const RegimeComparator = lazy(() => import("./pages/RegimeComparator"));
-const LimpaNomePage = lazy(() => import("./pages/LimpaNomePage"));
 const LimpaNomeStatusPage = lazy(() => import("./pages/LimpaNomeStatusPage"));
 const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const IRPage = lazy(() => import("./pages/IRPage"));
-const IRPJ = lazy(() => import("./pages/IRPJ"));
 const CartasContempladas = lazy(() => import("./pages/CartasContempladas"));
 const CartasContempladasQuiz = lazy(() => import("./pages/CartasContempladasQuiz"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
@@ -76,10 +74,6 @@ const ModuloFiscal = lazy(() => import("./pages/ModuloFiscal"));
 const TimelineReforma = lazy(() => import("./pages/TimelineReforma"));
 const TransicaoTributaria = lazy(() => import("./pages/TransicaoTributaria"));
 const FerramentasLC214 = lazy(() => import("./pages/FerramentasLC214"));
-const PlanoSimulador = lazy(() => import("./pages/PlanoSimulador"));
-const PlanoAutonomo = lazy(() => import("./pages/PlanoAutonomo"));
-const PlanoAtenteAi = lazy(() => import("./pages/PlanoAtenteAi"));
-const PlanosPorPerfil = lazy(() => import("./pages/PlanosPorPerfil"));
 const PlanComparison = lazy(() => import("./pages/PlanComparison"));
 const RoleManagement = lazy(() => import("./pages/RoleManagement"));
 const MetricsDashboard = lazy(() => import("./pages/MetricsDashboard"));
@@ -90,7 +84,6 @@ const WelcomePage = lazy(() => import("./pages/WelcomePage"));
 const UserTypeSelection = lazy(() => import("./pages/UserTypeSelection"));
 const AffiliatePanel = lazy(() => import("./pages/AffiliatePanel"));
 const AffiliateLanding = lazy(() => import("./pages/AffiliateLanding"));
-const AffiliateLandingPremium = lazy(() => import("./pages/AffiliateLandingPremium"));
 const AffiliateFiscalLanding = lazy(() => import("./pages/AffiliateFiscalLanding"));
 const AffiliateLimpaNomeLanding = lazy(() => import("./pages/AffiliateLimpaNomeLanding"));
 const AffiliateOnboarding = lazy(() => import("./pages/AffiliateOnboarding"));
@@ -103,7 +96,6 @@ const LimpaNomeOnboarding = lazy(() => import("./pages/LimpaNomeOnboarding"));
 const LimpaNomeLanding = lazy(() => import("./pages/LimpaNomeLanding"));
 const ModuloFiscalLanding = lazy(() => import("./pages/ModuloFiscalLanding"));
 const FiscalAnalysisOnboarding = lazy(() => import("./pages/FiscalAnalysisOnboarding"));
-const TestLogin = lazy(() => import("./pages/TestLogin"));
 const PartnerGuilhermePage = lazy(() => import("./pages/PartnerGuilhermePage"));
 const PartnerGuilhermePanel = lazy(() => import("./pages/PartnerGuilhermePanel"));
 const MarketplaceServicePage = lazy(() => import("./pages/MarketplaceServicePage"));
@@ -153,8 +145,6 @@ const SeracDefesasDoc = lazy(() => import("./pages/serac/SeracDefesasDoc"));
 const EmissaoNFLanding = lazy(() => import("./pages/EmissaoNFLanding"));
 const EmissaoNFDashboard = lazy(() => import("./pages/EmissaoNFDashboard"));
 
-// Contador IA - IR
-const ContadorIADashboard = lazy(() => import("./pages/ContadorIADashboard"));
 
 // Capassi - lazy loaded
 const CapassiGuardLazy = lazy(() => import("./components/capassi/CapassiGuard").then(m => ({ default: m.CapassiGuard })));
@@ -213,11 +203,11 @@ const App = () => (
               <Route path="/autonomo-onboarding" element={<AutonomoOnboarding />} />
               <Route path="/contador-onboarding" element={<ContadorOnboarding />} />
               <Route path="/pricing" element={<Pricing />} />
-              <Route path="/plano/simulador" element={<PlanoSimulador />} />
-              <Route path="/plano/atente-ai" element={<PlanoAtenteAi />} />
-              <Route path="/plano/autonomo" element={<PlanoAutonomo />} />
+              <Route path="/plano/simulador" element={<Navigate to="/pricing" replace />} />
+              <Route path="/plano/atente-ai" element={<Navigate to="/pricing" replace />} />
+              <Route path="/plano/autonomo" element={<Navigate to="/pricing" replace />} />
               <Route path="/plano/comparar" element={<PlanComparison />} />
-              <Route path="/planos-perfil" element={<PlanosPorPerfil />} />
+              <Route path="/planos-perfil" element={<Navigate to="/pricing" replace />} />
               <Route path="/contadores-publico" element={<ContadoresPublic />} />
               <Route path="/payment-success" element={<PaymentSuccess />} />
               <Route path="/termos" element={<TermosDeUso />} />
@@ -234,14 +224,14 @@ const App = () => (
               <Route path="/parceiroguilherme" element={<PartnerGuilhermePage />} />
               <Route path="/parceiroatentaigb" element={<PartnerGuilhermePanel />} />
               <Route path="/ir" element={<IRPage />} />
-              <Route path="/ir-pj" element={<IRPJ />} />
+              <Route path="/ir-pj" element={<Navigate to="/ir" replace />} />
               <Route path="/ferramentas-lc214" element={<FerramentasLC214 />} />
               <Route path="/timeline-reforma" element={<TimelineReforma />} />
               <Route path="/investor" element={<InvestorPresentation />} />
               <Route path="/pitch" element={<PitchDeck />} />
               <Route path="/limpanome" element={<LimpaNomeLanding />} />
               <Route path="/limpa-nome" element={<Navigate to="/limpanome" replace />} />
-              <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
+              <Route path="/limpa-nome/checkout" element={<Navigate to="/limpanome" replace />} />
               <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
               <Route path="/limpa-nome/sucesso" element={<LimpaNomePaymentSuccess />} />
               <Route path="/limpa-nome/dados" element={<LimpaNomeDataCollection />} />
@@ -262,7 +252,7 @@ const App = () => (
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/parceiro/cartas/login" element={<ParceiroCartasLogin />} />
               <Route path="/parceiro/cartas" element={<ParceiroCartasPanel />} />
-              <Route path="/test-login" element={<TestLogin />} />
+              <Route path="/test-login" element={<Navigate to="/auth" replace />} />
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
               <Route path="/emissao-nf/dashboard" element={
@@ -271,17 +261,13 @@ const App = () => (
                 </ProtectedRoute>
               } />
               {/* Contador IA routes */}
-              <Route path="/contador-ia" element={
-                <ProtectedRoute>
-                  <ContadorIADashboard />
-                </ProtectedRoute>
-              } />
+              <Route path="/contador-ia" element={<Navigate to="/empresa?tab=ir-declaracao" replace />} />
               {/* Affiliate routes */}
               <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
               <Route path="/afiliado/oferta/:affiliateCode" element={<AffiliateOfferPage />} />
-              <Route path="/afiliado/:affiliateCode" element={<AffiliateLandingPremium />} />
-              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLandingPremium />} />
-              <Route path="/p/:affiliateCode" element={<AffiliateLandingPremium />} />
+              <Route path="/afiliado/:affiliateCode" element={<AffiliateLanding />} />
+              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLanding />} />
+              <Route path="/p/:affiliateCode" element={<AffiliateLanding />} />
               <Route path="/p/:affiliateCode/fiscal" element={<AffiliateFiscalLanding />} />
               <Route path="/p/:affiliateCode/limpa-nome" element={<AffiliateLimpaNomeLanding />} />
               <Route path="/documentos-fiscais" element={<FiscalDocumentsPage />} />
