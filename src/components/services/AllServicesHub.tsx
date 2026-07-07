@@ -37,6 +37,8 @@ interface ServiceItem {
   isNew?: boolean;
   successFee?: boolean;
   comingSoon?: boolean;
+  outOfSeason?: boolean;
+  outOfSeasonMessage?: string;
   checkoutRoute?: string;
   onboardingRoute?: string;
 }
