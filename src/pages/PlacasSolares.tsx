@@ -1,13 +1,16 @@
 import { useMemo, useState } from "react";
 import QuizShell, { QuizStep } from "@/components/quiz/QuizShell";
+import QuizConfirmation from "@/components/quiz/QuizConfirmation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Sun, TrendingDown, Share2, Wallet } from "lucide-react";
+import { Sun, TrendingDown, Share2, Wallet } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { contactSchema, docSchema, ufSchema, firstError } from "@/lib/quizValidation";
+import { z } from "zod";
 
 const BRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
@@ -23,6 +26,7 @@ export default function PlacasSolares() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [protocol, setProtocol] = useState<string | null>(null);
 
   const [clientType, setClientType] = useState<"pf" | "pj">("pj");
   const [uf, setUf] = useState("");
@@ -45,24 +49,48 @@ export default function PlacasSolares() {
   }, [billCents]);
 
   const submit = async () => {
-    if (!name.trim() || !email.trim() || !phone.trim() || !document.trim()) {
-      toast({ title: "Preencha todos os dados de contato", variant: "destructive" });
+    const schema = z.object({
+      uf: ufSchema,
+      city: z.string().trim().min(2, "Cidade obrigatória"),
+      roofType: z.string().min(1, "Selecione o tipo de estrutura"),
+      ownership: z.enum(["propria", "alugada"], { errorMap: () => ({ message: "Selecione o tipo de imóvel" }) }),
+      billCents: z.number().positive("Informe o valor da conta"),
+      document: docSchema(clientType),
+    }).merge(contactSchema);
+
+    const parsed = schema.safeParse({
+      name, email, phone, uf, city, roofType, ownership, billCents, document,
+    });
+    if (!parsed.success) {
+      toast({ title: firstError(parsed.error), variant: "destructive" });
       return;
     }
+
     setSaving(true);
-    const { error } = await supabase.from("solar_requests").insert({
-      user_id: user?.id ?? null,
-      full_name: name, email, phone,
-      client_type: clientType,
-      monthly_bill_cents: billCents,
-      monthly_kwh: est.kwh,
-      address, city, state: uf,
-      estimated_savings_cents: est.monthlySave,
-      status: "pending",
-      approval_stage: "new_lead",
-    });
+    const { data, error } = await supabase
+      .from("solar_requests")
+      .insert({
+        user_id: user?.id ?? null,
+        full_name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        document: document.trim(),
+        client_type: clientType,
+        monthly_bill_cents: billCents,
+        monthly_kwh: est.kwh,
+        address: address.trim() || null,
+        city: city.trim(),
+        state: uf,
+        estimated_savings_cents: est.monthlySave,
+        status: "pending",
+        approval_stage: "new_lead",
+        metadata: { roofType, ownership },
+      })
+      .select("id")
+      .single();
     setSaving(false);
-    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    if (error) return toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    setProtocol(data?.id ? data.id.slice(0, 8).toUpperCase() : null);
     setDone(true);
   };
 
@@ -120,11 +148,11 @@ export default function PlacasSolares() {
           </div>
           <div className="sm:col-span-2">
             <Label>Cidade</Label>
-            <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Ex: Campinas" />
+            <Input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Ex: Campinas" maxLength={80} />
           </div>
           <div className="sm:col-span-3">
             <Label>Endereço (opcional)</Label>
-            <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Rua, número, bairro" />
+            <Input value={address} onChange={(e) => setAddress(e.target.value)} placeholder="Rua, número, bairro" maxLength={160} />
           </div>
         </div>
       ),
@@ -168,7 +196,7 @@ export default function PlacasSolares() {
         <div className="space-y-4">
           <div>
             <Label>Valor médio mensal da conta (R$)</Label>
-            <Input value={bill} onChange={(e) => setBill(e.target.value)} placeholder="Ex: 3.500" />
+            <Input value={bill} onChange={(e) => setBill(e.target.value)} placeholder="Ex: 3.500" maxLength={12} />
           </div>
           {billCents > 0 && (
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 rounded-xl border border-primary/40 bg-primary/5 p-4">
@@ -187,10 +215,10 @@ export default function PlacasSolares() {
       canNext: !!name.trim() && !!email.trim() && !!phone.trim() && !!document.trim(),
       content: (
         <div className="grid gap-3 sm:grid-cols-2">
-          <Input placeholder="Nome / Razão social" value={name} onChange={(e) => setName(e.target.value)} />
-          <Input placeholder={clientType === "pj" ? "CNPJ" : "CPF"} value={document} onChange={(e) => setDocument(e.target.value)} />
-          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Input placeholder="Nome / Razão social" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
+          <Input placeholder={clientType === "pj" ? "CNPJ" : "CPF"} value={document} onChange={(e) => setDocument(e.target.value)} maxLength={18} />
+          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={160} />
+          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} />
         </div>
       ),
     },
@@ -209,13 +237,28 @@ export default function PlacasSolares() {
       submitLabel="Solicitar estudo"
       done={done}
       doneContent={
-        <div className="text-center">
-          <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
-          <h2 className="mt-4 text-2xl font-bold">Estudo solicitado!</h2>
-          <p className="mt-2 text-muted-foreground">
-            Economia estimada: <span className="text-primary font-semibold">{BRL(est.monthlySave)}/mês</span>. Retorno com proposta em até 3 dias úteis.
-          </p>
-        </div>
+        <QuizConfirmation
+          headline="Estudo solicitado com sucesso!"
+          subline="Nosso parceiro solar prepara sua proposta de dimensionamento."
+          protocol={protocol}
+          highlight={{ label: "Economia estimada por mês", value: BRL(est.monthlySave) }}
+          summary={[
+            { label: "Solicitante", value: name },
+            { label: "Perfil", value: clientType === "pj" ? "Pessoa Jurídica" : "Pessoa Física" },
+            { label: "Documento", value: document },
+            { label: "Localização", value: `${city} / ${uf}` },
+            { label: "Estrutura", value: `${roofType} · ${ownership === "propria" ? "próprio" : "alugado"}` },
+            { label: "Conta mensal", value: BRL(billCents) },
+            { label: "Consumo estimado", value: `${est.kwh} kWh/mês` },
+            { label: "Contato", value: `${email} · ${phone}` },
+          ]}
+          nextSteps={[
+            { title: "Estudo preliminar em até 3 dias úteis", description: "Cálculo de payback e dimensionamento das placas." },
+            { title: "Proposta comercial", description: "Financiamento sem entrada, com parcela menor que sua conta atual." },
+            { title: "Instalação e homologação", description: "Nosso parceiro cuida do projeto na concessionária e da instalação." },
+          ]}
+          chatHref="/chat/guilherme?servico=placas-solares"
+        />
       }
     />
   );

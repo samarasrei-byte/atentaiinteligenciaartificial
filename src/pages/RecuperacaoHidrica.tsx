@@ -1,12 +1,15 @@
 import { useMemo, useState } from "react";
 import QuizShell, { QuizStep } from "@/components/quiz/QuizShell";
+import QuizConfirmation from "@/components/quiz/QuizConfirmation";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card } from "@/components/ui/card";
-import { CheckCircle2, Droplets, Gavel, Clock, Scale } from "lucide-react";
+import { Droplets, Gavel, Clock, Scale } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/contexts/AuthContext";
+import { contactSchema, cnpjSchema, ufSchema, firstError } from "@/lib/quizValidation";
+import { z } from "zod";
 
 const BRL = (cents: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(cents / 100);
@@ -20,6 +23,7 @@ export default function RecuperacaoHidrica() {
   const [step, setStep] = useState(0);
   const [done, setDone] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [protocol, setProtocol] = useState<string | null>(null);
 
   const [isPJ, setIsPJ] = useState<boolean | null>(null);
   const [concessionaria, setConcessionaria] = useState("");
@@ -36,8 +40,22 @@ export default function RecuperacaoHidrica() {
   const meetsMinimum = estimated >= 200000;
 
   const submit = async () => {
-    if (!name.trim() || !email.trim() || !phone.trim() || !cnpj.trim()) {
-      toast({ title: "Preencha todos os dados de contato", variant: "destructive" });
+    const schema = z.object({
+      concessionaria: z.string().trim().min(2, "Concessionária obrigatória"),
+      uf: ufSchema,
+      segment: z.string().trim().min(2, "Segmento obrigatório"),
+      b1c: z.number().positive("Informe a conta do mês 1"),
+      b2c: z.number().positive("Informe a conta do mês 2"),
+      b3c: z.number().positive("Informe a conta do mês 3"),
+      cnpj: cnpjSchema,
+    }).merge(contactSchema);
+
+    const parsed = schema.safeParse({
+      name, email, phone, concessionaria, uf, segment,
+      b1c: toCents(b1), b2c: toCents(b2), b3c: toCents(b3), cnpj,
+    });
+    if (!parsed.success) {
+      toast({ title: firstError(parsed.error), variant: "destructive" });
       return;
     }
     if (!meetsMinimum) {
@@ -45,19 +63,28 @@ export default function RecuperacaoHidrica() {
       return;
     }
     setSaving(true);
-    const { error } = await supabase.from("water_recovery_requests").insert({
-      user_id: user?.id ?? null,
-      full_name: name, email, phone,
-      client_type: "pj",
-      bill_1_cents: toCents(b1),
-      bill_2_cents: toCents(b2),
-      bill_3_cents: toCents(b3),
-      estimated_recovery_cents: estimated,
-      status: "pending",
-      approval_stage: "new_lead",
-    });
+    const { data, error } = await supabase
+      .from("water_recovery_requests")
+      .insert({
+        user_id: user?.id ?? null,
+        full_name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        document: cnpj.trim(),
+        client_type: "pj",
+        bill_1_cents: toCents(b1),
+        bill_2_cents: toCents(b2),
+        bill_3_cents: toCents(b3),
+        estimated_recovery_cents: estimated,
+        status: "pending",
+        approval_stage: "new_lead",
+        metadata: { concessionaria, uf, segment },
+      })
+      .select("id")
+      .single();
     setSaving(false);
-    if (error) return toast({ title: "Erro", description: error.message, variant: "destructive" });
+    if (error) return toast({ title: "Erro ao enviar", description: error.message, variant: "destructive" });
+    setProtocol(data?.id ? data.id.slice(0, 8).toUpperCase() : null);
     setDone(true);
   };
 
@@ -113,7 +140,7 @@ export default function RecuperacaoHidrica() {
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="sm:col-span-2">
             <Label>Concessionária (Sabesp, Copasa, Cedae...)</Label>
-            <Input value={concessionaria} onChange={(e) => setConcessionaria(e.target.value)} placeholder="Ex: Sabesp" />
+            <Input value={concessionaria} onChange={(e) => setConcessionaria(e.target.value)} placeholder="Ex: Sabesp" maxLength={80} />
           </div>
           <div>
             <Label>UF</Label>
@@ -121,7 +148,7 @@ export default function RecuperacaoHidrica() {
           </div>
           <div className="sm:col-span-3">
             <Label>Segmento (indústria, comércio, serviços...)</Label>
-            <Input value={segment} onChange={(e) => setSegment(e.target.value)} placeholder="Ex: Indústria alimentícia" />
+            <Input value={segment} onChange={(e) => setSegment(e.target.value)} placeholder="Ex: Indústria alimentícia" maxLength={80} />
           </div>
         </div>
       ),
@@ -133,9 +160,9 @@ export default function RecuperacaoHidrica() {
       content: (
         <div className="space-y-4">
           <div className="grid gap-3 sm:grid-cols-3">
-            <div><Label>Conta mês 1</Label><Input value={b1} onChange={(e) => setB1(e.target.value)} placeholder="1.200" /></div>
-            <div><Label>Conta mês 2</Label><Input value={b2} onChange={(e) => setB2(e.target.value)} placeholder="1.180" /></div>
-            <div><Label>Conta mês 3</Label><Input value={b3} onChange={(e) => setB3(e.target.value)} placeholder="1.250" /></div>
+            <div><Label>Conta mês 1</Label><Input value={b1} onChange={(e) => setB1(e.target.value)} placeholder="1.200" maxLength={12} /></div>
+            <div><Label>Conta mês 2</Label><Input value={b2} onChange={(e) => setB2(e.target.value)} placeholder="1.180" maxLength={12} /></div>
+            <div><Label>Conta mês 3</Label><Input value={b3} onChange={(e) => setB3(e.target.value)} placeholder="1.250" maxLength={12} /></div>
           </div>
           {avgCents > 0 && (
             <div className="rounded-xl border border-primary/40 bg-primary/5 p-4">
@@ -154,10 +181,10 @@ export default function RecuperacaoHidrica() {
       canNext: !!name.trim() && !!email.trim() && !!phone.trim() && !!cnpj.trim(),
       content: (
         <div className="grid gap-3 sm:grid-cols-2">
-          <Input placeholder="Razão social" value={name} onChange={(e) => setName(e.target.value)} />
-          <Input placeholder="CNPJ" value={cnpj} onChange={(e) => setCnpj(e.target.value)} />
-          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} />
+          <Input placeholder="Razão social" value={name} onChange={(e) => setName(e.target.value)} maxLength={120} />
+          <Input placeholder="CNPJ" value={cnpj} onChange={(e) => setCnpj(e.target.value)} maxLength={18} />
+          <Input placeholder="E-mail" type="email" value={email} onChange={(e) => setEmail(e.target.value)} maxLength={160} />
+          <Input placeholder="WhatsApp com DDD" value={phone} onChange={(e) => setPhone(e.target.value)} maxLength={20} />
         </div>
       ),
     },
@@ -176,14 +203,26 @@ export default function RecuperacaoHidrica() {
       submitLabel="Enviar para análise"
       done={done}
       doneContent={
-        <div className="text-center">
-          <CheckCircle2 className="mx-auto h-14 w-14 text-emerald-500" />
-          <Droplets className="mx-auto mt-2 h-6 w-6 text-primary" />
-          <h2 className="mt-4 text-2xl font-bold">Solicitação enviada!</h2>
-          <p className="mt-2 text-muted-foreground">
-            Estimativa: <span className="text-primary font-semibold">{BRL(estimated)}</span>. Análise em até 48h úteis.
-          </p>
-        </div>
+        <QuizConfirmation
+          headline="Solicitação enviada com sucesso!"
+          subline="Nosso parceiro jurídico-tributário vai revisar seu caso."
+          protocol={protocol}
+          highlight={{ label: "Estimativa de devolução (5 anos)", value: BRL(estimated) }}
+          summary={[
+            { label: "Razão social", value: name },
+            { label: "CNPJ", value: cnpj },
+            { label: "Concessionária", value: `${concessionaria} / ${uf}` },
+            { label: "Segmento", value: segment },
+            { label: "Média das contas", value: BRL(Math.round(avgCents)) },
+            { label: "Contato", value: `${email} · ${phone}` },
+          ]}
+          nextSteps={[
+            { title: "Análise em até 48h úteis", description: "Validamos elegibilidade e potencial de recuperação." },
+            { title: "Coleta de documentos", description: "Contrato social, procuração e faturas dos últimos 60 meses." },
+            { title: "Mandado de segurança", description: "Petição protocolada — você acompanha cada movimentação." },
+          ]}
+          chatHref="/chat/guilherme?servico=recuperacao-hidrica"
+        />
       }
     />
   );
