@@ -35,6 +35,8 @@ export interface ServiceCardConfig {
   isCustomPricing?: boolean;
   isSubscription?: boolean;
   isDisabled?: boolean;
+  outOfSeason?: boolean;
+  outOfSeasonMessage?: string;
 }
 
 interface ServiceCardPremiumProps {
@@ -191,13 +193,22 @@ export function ServiceCardPremium({ service, isSubscriber }: ServiceCardPremium
       transition={{ duration: 0.4 }}
       className="h-full"
     >
-      <Card className={`h-full flex flex-col bg-card border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group relative overflow-hidden rounded-3xl ${
+      <Card className={`h-full flex flex-col bg-card border-2 transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 group relative overflow-hidden rounded-3xl ${service.outOfSeason ? 'grayscale opacity-60' : ''} ${
         service.badge === 'popular' 
           ? `${colors.border} ring-1 ${colors.ring}` 
           : service.badge === 'free'
             ? 'border-emerald-500/50 ring-1 ring-emerald-500/20'
             : 'border-border hover:border-border/80'
       }`}>
+        
+        {service.outOfSeason && (
+          <div className="absolute top-4 left-4 z-10">
+            <Badge className="bg-muted text-muted-foreground border border-border text-[11px] font-semibold px-3 py-1 shadow-lg">
+              <Clock className="w-3 h-3 mr-1" />
+              {service.outOfSeasonMessage ?? 'FORA DO PRAZO'}
+            </Badge>
+          </div>
+        )}
         
         {/* Badge */}
         {service.badge && (

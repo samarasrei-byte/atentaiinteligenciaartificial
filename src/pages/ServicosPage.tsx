@@ -180,6 +180,8 @@ const aiServices: ServiceCardConfig[] = [
     checkoutRoute: '/ir',
     category: 'declaracoes',
     isFree: false,
+    outOfSeason: true,
+    outOfSeasonMessage: 'Fora do prazo — volta em Mar/2027',
   },
   {
     key: 'emissao_nf',
