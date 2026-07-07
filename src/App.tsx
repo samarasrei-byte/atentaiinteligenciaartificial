@@ -233,7 +233,7 @@ const App = () => (
               <Route path="/pitch" element={<PitchDeck />} />
               <Route path="/limpanome" element={<LimpaNomeLanding />} />
               <Route path="/limpa-nome" element={<Navigate to="/limpanome" replace />} />
-              <Route path="/limpa-nome/checkout" element={<LimpaNomePage />} />
+              <Route path="/limpa-nome/checkout" element={<Navigate to="/limpanome" replace />} />
               <Route path="/limpa-nome/onboarding" element={<LimpaNomeOnboarding />} />
               <Route path="/limpa-nome/sucesso" element={<LimpaNomePaymentSuccess />} />
               <Route path="/limpa-nome/dados" element={<LimpaNomeDataCollection />} />
