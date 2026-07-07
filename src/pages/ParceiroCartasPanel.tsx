@@ -246,6 +246,16 @@ export default function ParceiroCartasPanel() {
           </ol>
         </div>
 
+        <Tabs defaultValue="cartas" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+            <TabsTrigger value="cartas" className="gap-1.5"><Ticket className="h-4 w-4" /> Cartas</TabsTrigger>
+            <TabsTrigger value="energia" className="gap-1.5"><Zap className="h-4 w-4" /> Energia</TabsTrigger>
+            <TabsTrigger value="hidrica" className="gap-1.5"><Droplets className="h-4 w-4" /> Água</TabsTrigger>
+            <TabsTrigger value="solar" className="gap-1.5"><Sun className="h-4 w-4" /> Solar</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="cartas" className="space-y-6 mt-6">
+
         {/* KPIs */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
