@@ -50,6 +50,8 @@ interface ServiceCardProps {
   isSuccessFee?: boolean;
   isCustomPricing?: boolean;
   isComingSoon?: boolean;
+  isOutOfSeason?: boolean;
+  outOfSeasonMessage?: string;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
