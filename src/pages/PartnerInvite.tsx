@@ -58,14 +58,11 @@ export default function PartnerInvite() {
     setError(null);
 
     try {
-      // First get invitation
-      const { data: invData, error: invError } = await supabase
-        .from('partner_invitations')
-        .select('*')
-        .eq('invitation_token', token)
-        .eq('status', 'pending')
-        .gt('expires_at', new Date().toISOString())
-        .single();
+      // Secure token lookup via SECURITY DEFINER RPC (no public listing)
+      const { data: invRows, error: invError } = await supabase
+        .rpc('get_partner_invitation_by_token', { _token: token as string });
+
+      const invData: any = Array.isArray(invRows) ? invRows[0] : invRows;
 
       if (invError || !invData) {
         setError('Convite inválido, expirado ou já utilizado.');

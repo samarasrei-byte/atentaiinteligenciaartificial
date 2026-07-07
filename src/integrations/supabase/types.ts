@@ -4284,6 +4284,17 @@ export type Database = {
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       get_capassi_org_ids: { Args: { _user_id: string }; Returns: string[] }
       get_daily_question_count: { Args: { p_user_id: string }; Returns: number }
+      get_partner_invitation_by_token: {
+        Args: { _token: string }
+        Returns: {
+          created_at: string
+          email: string
+          expires_at: string
+          id: string
+          partner_id: string
+          status: string
+        }[]
+      }
       has_capassi_master_access: {
         Args: { _user_id: string }
         Returns: boolean
