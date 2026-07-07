@@ -11,10 +11,13 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ShieldCheck, LogOut, Search, RefreshCw, Download, Mail, Phone,
   CheckCircle2, XCircle, Clock, Lock, Loader2, Sparkles, HandshakeIcon,
+  Ticket, Zap, Droplets, Sun,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Helmet } from "react-helmet-async";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { PartnerServiceLeads } from "./partner/PartnerServiceLeads";
 
 interface Lead {
   id: string;
