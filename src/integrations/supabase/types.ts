@@ -2176,6 +2176,77 @@ export type Database = {
         }
         Relationships: []
       }
+      energy_recovery_requests: {
+        Row: {
+          admin_notes: string | null
+          approval_stage: string
+          client_type: string
+          created_at: string
+          document: string | null
+          email: string
+          estimated_recovery_cents: number
+          full_name: string
+          id: string
+          metadata: Json
+          monthly_bill_cents: number
+          months_estimated: number
+          partner_id: string | null
+          partner_notes: string | null
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          approval_stage?: string
+          client_type?: string
+          created_at?: string
+          document?: string | null
+          email: string
+          estimated_recovery_cents?: number
+          full_name: string
+          id?: string
+          metadata?: Json
+          monthly_bill_cents?: number
+          months_estimated?: number
+          partner_id?: string | null
+          partner_notes?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          approval_stage?: string
+          client_type?: string
+          created_at?: string
+          document?: string | null
+          email?: string
+          estimated_recovery_cents?: number
+          full_name?: string
+          id?: string
+          metadata?: Json
+          monthly_bill_cents?: number
+          months_estimated?: number
+          partner_id?: string | null
+          partner_notes?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "energy_recovery_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       financial_costs: {
         Row: {
           amount_cents: number
@@ -3440,6 +3511,86 @@ export type Database = {
         }
         Relationships: []
       }
+      solar_requests: {
+        Row: {
+          address: string | null
+          admin_notes: string | null
+          approval_stage: string
+          city: string | null
+          client_type: string
+          created_at: string
+          document: string | null
+          email: string
+          estimated_savings_cents: number
+          full_name: string
+          id: string
+          metadata: Json
+          monthly_bill_cents: number
+          monthly_kwh: number
+          partner_id: string | null
+          partner_notes: string | null
+          phone: string
+          state: string | null
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          address?: string | null
+          admin_notes?: string | null
+          approval_stage?: string
+          city?: string | null
+          client_type?: string
+          created_at?: string
+          document?: string | null
+          email: string
+          estimated_savings_cents?: number
+          full_name: string
+          id?: string
+          metadata?: Json
+          monthly_bill_cents?: number
+          monthly_kwh?: number
+          partner_id?: string | null
+          partner_notes?: string | null
+          phone: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          address?: string | null
+          admin_notes?: string | null
+          approval_stage?: string
+          city?: string | null
+          client_type?: string
+          created_at?: string
+          document?: string | null
+          email?: string
+          estimated_savings_cents?: number
+          full_name?: string
+          id?: string
+          metadata?: Json
+          monthly_bill_cents?: number
+          monthly_kwh?: number
+          partner_id?: string | null
+          partner_notes?: string | null
+          phone?: string
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solar_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       specialist_chat_messages: {
         Row: {
           attachment_name: string | null
@@ -3871,6 +4022,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      water_recovery_requests: {
+        Row: {
+          admin_notes: string | null
+          approval_stage: string
+          bill_1_cents: number
+          bill_2_cents: number
+          bill_3_cents: number
+          client_type: string
+          created_at: string
+          document: string | null
+          email: string
+          estimated_recovery_cents: number
+          full_name: string
+          id: string
+          metadata: Json
+          partner_id: string | null
+          partner_notes: string | null
+          phone: string
+          status: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          admin_notes?: string | null
+          approval_stage?: string
+          bill_1_cents?: number
+          bill_2_cents?: number
+          bill_3_cents?: number
+          client_type?: string
+          created_at?: string
+          document?: string | null
+          email: string
+          estimated_recovery_cents?: number
+          full_name: string
+          id?: string
+          metadata?: Json
+          partner_id?: string | null
+          partner_notes?: string | null
+          phone: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          admin_notes?: string | null
+          approval_stage?: string
+          bill_1_cents?: number
+          bill_2_cents?: number
+          bill_3_cents?: number
+          client_type?: string
+          created_at?: string
+          document?: string | null
+          email?: string
+          estimated_recovery_cents?: number
+          full_name?: string
+          id?: string
+          metadata?: Json
+          partner_id?: string | null
+          partner_notes?: string | null
+          phone?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "water_recovery_requests_partner_id_fkey"
+            columns: ["partner_id"]
+            isOneToOne: false
+            referencedRelation: "credit_repair_partners"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       withdrawal_requests: {
         Row: {

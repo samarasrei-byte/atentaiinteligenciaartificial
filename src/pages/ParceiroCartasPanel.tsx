@@ -11,10 +11,13 @@ import { useToast } from "@/hooks/use-toast";
 import {
   ShieldCheck, LogOut, Search, RefreshCw, Download, Mail, Phone,
   CheckCircle2, XCircle, Clock, Lock, Loader2, Sparkles, HandshakeIcon,
+  Ticket, Zap, Droplets, Sun,
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 import { Helmet } from "react-helmet-async";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { PartnerServiceLeads } from "./partner/PartnerServiceLeads";
 
 interface Lead {
   id: string;
@@ -243,6 +246,16 @@ export default function ParceiroCartasPanel() {
           </ol>
         </div>
 
+        <Tabs defaultValue="cartas" className="w-full">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+            <TabsTrigger value="cartas" className="gap-1.5"><Ticket className="h-4 w-4" /> Cartas</TabsTrigger>
+            <TabsTrigger value="energia" className="gap-1.5"><Zap className="h-4 w-4" /> Energia</TabsTrigger>
+            <TabsTrigger value="hidrica" className="gap-1.5"><Droplets className="h-4 w-4" /> Água</TabsTrigger>
+            <TabsTrigger value="solar" className="gap-1.5"><Sun className="h-4 w-4" /> Solar</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="cartas" className="space-y-6 mt-6">
+
         {/* KPIs */}
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[
@@ -432,6 +445,35 @@ export default function ParceiroCartasPanel() {
             )}
           </CardContent>
         </Card>
+          </TabsContent>
+
+          <TabsContent value="energia" className="mt-6">
+            <PartnerServiceLeads
+              table="energy_recovery_requests"
+              serviceLabel="Recuperação Fiscal Energética"
+              valueField="estimated_recovery_cents"
+              valueLabel="Recuperação est."
+            />
+          </TabsContent>
+
+          <TabsContent value="hidrica" className="mt-6">
+            <PartnerServiceLeads
+              table="water_recovery_requests"
+              serviceLabel="Recuperação Fiscal Hídrica"
+              valueField="estimated_recovery_cents"
+              valueLabel="Recuperação est."
+            />
+          </TabsContent>
+
+          <TabsContent value="solar" className="mt-6">
+            <PartnerServiceLeads
+              table="solar_requests"
+              serviceLabel="Placas Solares Custo Zero"
+              valueField="estimated_savings_cents"
+              valueLabel="Economia/mês"
+            />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );

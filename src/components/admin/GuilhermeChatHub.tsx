@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MessageCircle, FileText, Shield, Scale, Bell, Receipt, Brain } from 'lucide-react';
+import { MessageCircle, FileText, Shield, Scale, Bell, Receipt, Brain, Zap, Droplets, Sun } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { AdminClientChat } from './AdminClientChat';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,24 +25,34 @@ interface Stats {
   pendingDocs: number;
   newAlerts: number;
   irDeclarations: number;
+  energyLeads: number;
+  waterLeads: number;
+  solarLeads: number;
 }
 
 /**
  * GuilhermeChatHub - Central Unificada de Atendimento
  * 
- * SERVIÇOS: Limpa Nome, Análise Fiscal, Emissão NF, Imposto de Renda
+ * SERVIÇOS: Limpa Nome, Análise Fiscal, Emissão NF, Imposto de Renda,
+ * Recuperação Energética, Recuperação Hídrica, Placas Solares, Carta Contemplada
  */
 export const GuilhermeChatHub: React.FC = () => {
   const [isWhatsAppConnected] = React.useState(true);
-  const [stats, setStats] = useState<Stats>({ activeChats: 0, pendingDocs: 0, newAlerts: 0, irDeclarations: 0 });
+  const [stats, setStats] = useState<Stats>({
+    activeChats: 0, pendingDocs: 0, newAlerts: 0, irDeclarations: 0,
+    energyLeads: 0, waterLeads: 0, solarLeads: 0,
+  });
   
   useEffect(() => {
     const loadStats = async () => {
-      const [limpaNomeRes, fiscalRes, docsRes, irRes] = await Promise.all([
+      const [limpaNomeRes, fiscalRes, docsRes, irRes, energyRes, waterRes, solarRes] = await Promise.all([
         supabase.from('credit_repair_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
         supabase.from('fiscal_analysis_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
         supabase.from('company_opening_documents').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
         supabase.from('ir_ai_declarations').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('energy_recovery_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('water_recovery_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
+        supabase.from('solar_requests').select('id', { count: 'exact', head: true }).neq('status', 'completed'),
       ]);
       
       const activeChats = (limpaNomeRes.count || 0) + (fiscalRes.count || 0);
@@ -57,7 +67,12 @@ export const GuilhermeChatHub: React.FC = () => {
         .gte('created_at', yesterday.toISOString())
         .eq('status', 'pending');
       
-      setStats({ activeChats, pendingDocs, newAlerts: newAlerts || 0, irDeclarations });
+      setStats({
+        activeChats, pendingDocs, newAlerts: newAlerts || 0, irDeclarations,
+        energyLeads: energyRes.count || 0,
+        waterLeads: waterRes.count || 0,
+        solarLeads: solarRes.count || 0,
+      });
     };
     
     loadStats();
@@ -80,7 +95,7 @@ export const GuilhermeChatHub: React.FC = () => {
                   <span className="relative inline-flex rounded-full h-full w-full bg-white" />
                 </span>
               </h1>
-              <p className="text-emerald-100 text-xs sm:text-sm truncate">Central Unificada • NF, IR, Fiscal, Limpa Nome</p>
+              <p className="text-emerald-100 text-xs sm:text-sm truncate">Central Unificada • Limpa Nome, Fiscal, NF, IR, Energia, Água, Solar, Carta</p>
             </div>
           </div>
           
@@ -113,6 +128,18 @@ export const GuilhermeChatHub: React.FC = () => {
               <Brain className="h-3 w-3" />
               <span className="hidden lg:inline">IR</span>
             </Badge>
+            <Badge variant="outline" className="hidden md:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <Zap className="h-3 w-3" />
+              <span className="hidden lg:inline">Energia</span>
+            </Badge>
+            <Badge variant="outline" className="hidden md:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <Droplets className="h-3 w-3" />
+              <span className="hidden lg:inline">Água</span>
+            </Badge>
+            <Badge variant="outline" className="hidden md:flex bg-white/10 text-white border-white/20 gap-1.5 text-xs">
+              <Sun className="h-3 w-3" />
+              <span className="hidden lg:inline">Solar</span>
+            </Badge>
           </div>
         </div>
         
@@ -129,6 +156,18 @@ export const GuilhermeChatHub: React.FC = () => {
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <FileText className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             <span>{stats.pendingDocs} docs</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.energyLeads} energia</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Droplets className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.waterLeads} água</span>
+          </div>
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Sun className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+            <span>{stats.solarLeads} solar</span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
             <Bell className="h-3.5 w-3.5 sm:h-4 sm:w-4" />

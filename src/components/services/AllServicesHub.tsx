@@ -14,7 +14,12 @@ import {
   ArrowRight,
   CheckCircle,
   Star,
-  MessageSquare
+  MessageSquare,
+  Zap,
+  Droplets,
+  Sun,
+  Ticket,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -32,6 +37,8 @@ interface ServiceItem {
   isNew?: boolean;
   successFee?: boolean;
   comingSoon?: boolean;
+  outOfSeason?: boolean;
+  outOfSeasonMessage?: string;
   checkoutRoute?: string;
   onboardingRoute?: string;
 }
@@ -58,7 +65,7 @@ export const AllServicesHub: React.FC = () => {
    * NEVER mix them. Routes are ABSOLUTE and IMMUTABLE.
    */
   const services: ServiceItem[] = [
-    // ===== CONTADOR IA — IMPOSTO DE RENDA =====
+    // ===== CONTADOR IA — IMPOSTO DE RENDA (Fora do prazo — ofuscado) =====
     {
       id: 'ir-simples',
       name: 'Contador IA — Imposto de Renda',
@@ -70,11 +77,62 @@ export const AllServicesHub: React.FC = () => {
         'Análise automática de documentos',
         'Extração de dados por IA',
         'Cálculo automático de imposto',
-        'Dicas de otimização fiscal',
-        'Alertas de inconsistências',
       ],
+      outOfSeason: true,
+      outOfSeasonMessage: 'Fora do prazo — volta em Mar/2027',
+      checkoutRoute: '/ir',
+    },
+
+    // ===== SIMULADOR CARTA CONTEMPLADA =====
+    {
+      id: 'simulador-carta',
+      name: 'Simulador Carta Contemplada',
+      description: 'Simule crédito, prazo e parcela. Compare com financiamento bancário e descubra sua economia.',
+      icon: Ticket,
+      gradient: 'from-fuchsia-500 to-pink-600',
+      priceCents: 0,
+      features: ['Simulação em segundos', 'Comparativo vs banco', 'Análise por especialista'],
       isNew: true,
-      checkoutRoute: '/checkout/ir-simples',
+      onboardingRoute: '/simulador-carta',
+    },
+
+    // ===== RECUPERAÇÃO FISCAL ENERGÉTICA =====
+    {
+      id: 'recuperacao-energetica',
+      name: 'Recuperação Fiscal Energética',
+      description: 'Devolução de ICMS indevido cobrado na conta de luz. Decisão do STF, retroativo até 10 anos.',
+      icon: Zap,
+      gradient: 'from-yellow-500 to-orange-600',
+      priceCents: 15000,
+      features: ['100% administrativo', 'Retroativo até 10 anos', 'PJ e PF (colaboradores)'],
+      isNew: true,
+      onboardingRoute: '/recuperacao-energetica',
+    },
+
+    // ===== RECUPERAÇÃO FISCAL HÍDRICA =====
+    {
+      id: 'recuperacao-hidrica',
+      name: 'Recuperação Fiscal Hídrica',
+      description: 'Devolução do Fator K cobrado na conta de água. 100% judicial via mandado de segurança.',
+      icon: Droplets,
+      gradient: 'from-sky-500 to-blue-600',
+      priceCents: 200000,
+      features: ['Via Mandado de Segurança', 'Retroativo 5 anos', 'Sem risco de sucumbência'],
+      isNew: true,
+      onboardingRoute: '/recuperacao-hidrica',
+    },
+
+    // ===== PLACAS SOLARES CUSTO ZERO =====
+    {
+      id: 'placas-solares',
+      name: 'Placas Solares — Custo Zero',
+      description: 'A economia paga o financiamento e ainda sobra no caixa. Após quitação, economia integral.',
+      icon: Sun,
+      gradient: 'from-amber-400 to-yellow-600',
+      priceCents: 0,
+      features: ['Sem investimento inicial', 'Economia compartilhável', 'Estudo preliminar grátis'],
+      isNew: true,
+      onboardingRoute: '/placas-solares',
     },
 
     // ===== LIMPA NOME PF (CPF) =====
@@ -278,17 +336,23 @@ export const AllServicesHub: React.FC = () => {
           return (
             <Card 
               key={service.id}
-              className="relative overflow-hidden hover:shadow-lg transition-shadow group"
+              className={`relative overflow-hidden hover:shadow-lg transition-shadow group ${service.outOfSeason ? 'grayscale' : ''}`}
             >
               {/* Badges */}
-              <div className="absolute top-4 right-4 flex gap-2 z-10">
-                {service.isPopular && (
+              <div className="absolute top-4 right-4 flex flex-wrap gap-2 z-10 max-w-[60%] justify-end">
+                {service.outOfSeason && (
+                  <Badge className="bg-muted text-muted-foreground border border-border">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {service.outOfSeasonMessage ?? 'Fora do prazo'}
+                  </Badge>
+                )}
+                {service.isPopular && !service.outOfSeason && (
                   <Badge className="bg-amber-500/90 text-white">
                     <Star className="h-3 w-3 mr-1" />
                     Popular
                   </Badge>
                 )}
-                {service.isNew && (
+                {service.isNew && !service.outOfSeason && (
                   <Badge className="bg-primary/90 text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Novo
@@ -307,11 +371,11 @@ export const AllServicesHub: React.FC = () => {
               </div>
 
               {/* Gradient Header */}
-              <div className={`h-2 bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50' : ''}`} />
+              <div className={`h-2 bg-gradient-to-r ${service.gradient} ${(service.comingSoon || service.outOfSeason) ? 'opacity-50' : ''}`} />
               
-              <CardHeader className="pb-2">
+              <CardHeader className={`pb-2 ${service.outOfSeason ? 'opacity-60' : ''}`}>
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white ${service.comingSoon ? 'opacity-60' : ''}`}>
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white ${(service.comingSoon || service.outOfSeason) ? 'opacity-60' : ''}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -323,7 +387,7 @@ export const AllServicesHub: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               
-              <CardContent className="space-y-4">
+              <CardContent className={`space-y-4 ${service.outOfSeason ? 'opacity-60' : ''}`}>
                 {/* Features */}
                 <ul className="space-y-2">
                   {service.features.slice(0, 3).map((feature, i) => (
@@ -348,9 +412,10 @@ export const AllServicesHub: React.FC = () => {
                   <Button 
                     onClick={() => !service.comingSoon && handleContractService(service)}
                     disabled={service.comingSoon}
-                    className={`w-full transition-transform bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    variant={service.outOfSeason ? 'outline' : 'default'}
+                    className={`w-full transition-transform ${service.outOfSeason ? '' : `bg-gradient-to-r ${service.gradient}`} ${service.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {service.comingSoon ? 'Em Breve' : service.checkoutRoute ? 'Contratar' : 'Solicitar'}
+                    {service.comingSoon ? 'Em Breve' : service.outOfSeason ? 'Ver histórico' : service.checkoutRoute ? 'Contratar' : 'Solicitar'}
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>

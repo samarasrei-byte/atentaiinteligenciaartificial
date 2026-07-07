@@ -108,6 +108,10 @@ const SuportePage = lazy(() => import("./pages/SuportePage"));
 const ChatGuilherme = lazy(() => import("./pages/ChatGuilherme"));
 const ParceiroCartasLogin = lazy(() => import("./pages/ParceiroCartasLogin"));
 const ParceiroCartasPanel = lazy(() => import("./pages/ParceiroCartasPanel"));
+const RecuperacaoEnergetica = lazy(() => import("./pages/RecuperacaoEnergetica"));
+const RecuperacaoHidrica = lazy(() => import("./pages/RecuperacaoHidrica"));
+const PlacasSolares = lazy(() => import("./pages/PlacasSolares"));
+const SimuladorCarta = lazy(() => import("./pages/SimuladorCarta"));
 
 const LimpaNomePaymentSuccess = lazy(() => import("./pages/LimpaNomePaymentSuccess"));
 const LimpaNomeDataCollection = lazy(() => import("./pages/LimpaNomeDataCollection"));
@@ -252,6 +256,10 @@ const App = () => (
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/parceiro/cartas/login" element={<ParceiroCartasLogin />} />
               <Route path="/parceiro/cartas" element={<ParceiroCartasPanel />} />
+              <Route path="/recuperacao-energetica" element={<RecuperacaoEnergetica />} />
+              <Route path="/recuperacao-hidrica" element={<RecuperacaoHidrica />} />
+              <Route path="/placas-solares" element={<PlacasSolares />} />
+              <Route path="/simulador-carta" element={<SimuladorCarta />} />
               <Route path="/test-login" element={<Navigate to="/auth" replace />} />
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
