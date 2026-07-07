@@ -35,6 +35,8 @@ export interface ServiceCardConfig {
   isCustomPricing?: boolean;
   isSubscription?: boolean;
   isDisabled?: boolean;
+  outOfSeason?: boolean;
+  outOfSeasonMessage?: string;
 }
 
 interface ServiceCardPremiumProps {
