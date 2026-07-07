@@ -27,17 +27,77 @@ serve(async (req) => {
   );
 
   try {
-    // Validate webhook signature if secret key is configured
+    // Read body once (needed for signature validation + parsing)
+    const rawBody = await req.text();
+    let body: any;
+    try {
+      body = JSON.parse(rawBody);
+    } catch {
+      return new Response(JSON.stringify({ error: "Invalid JSON" }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 400,
+      });
+    }
+
+    // HMAC-SHA256 signature validation (Mercado Pago spec)
     const secretKey = Deno.env.get("MERCADOPAGO_SECRET_KEY");
     if (secretKey) {
       const xSignature = req.headers.get("x-signature");
       const xRequestId = req.headers.get("x-request-id");
-      if (xSignature && xRequestId) {
-        log("Webhook signature present", { requestId: xRequestId });
+
+      if (!xSignature || !xRequestId) {
+        log("Missing signature headers");
+        return new Response(JSON.stringify({ error: "Missing signature" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        });
       }
+
+      const parts = xSignature.split(",").reduce((acc, part) => {
+        const [k, v] = part.trim().split("=");
+        if (k && v) acc[k] = v;
+        return acc;
+      }, {} as Record<string, string>);
+
+      const ts = parts["ts"];
+      const v1 = parts["v1"];
+      const dataId =
+        body?.data?.id?.toString() ??
+        new URL(req.url).searchParams.get("data.id") ??
+        "";
+
+      if (!ts || !v1 || !dataId) {
+        log("Signature parts incomplete");
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        });
+      }
+
+      const manifest = `id:${dataId};request-id:${xRequestId};ts:${ts};`;
+      const encoder = new TextEncoder();
+      const key = await crypto.subtle.importKey(
+        "raw",
+        encoder.encode(secretKey),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"],
+      );
+      const sigBuf = await crypto.subtle.sign("HMAC", key, encoder.encode(manifest));
+      const calculated = Array.from(new Uint8Array(sigBuf))
+        .map((b) => b.toString(16).padStart(2, "0"))
+        .join("");
+
+      if (calculated !== v1) {
+        log("Invalid webhook signature");
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 401,
+        });
+      }
+      log("Webhook signature verified", { requestId: xRequestId });
     }
 
-    const body = await req.json();
     log("Webhook received", { type: body.type, action: body.action });
 
     // Handle subscription (preapproval) notifications
