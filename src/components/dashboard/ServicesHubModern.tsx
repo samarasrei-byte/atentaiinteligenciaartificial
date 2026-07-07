@@ -229,11 +229,11 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
 
             {/* CTA Button */}
             <Button 
-              onClick={isComingSoon ? undefined : onClick}
-              disabled={isComingSoon}
+              onClick={(isComingSoon || isOutOfSeason) ? undefined : onClick}
+              disabled={isComingSoon || isOutOfSeason}
               className={`
                 w-full h-12 font-semibold text-base rounded-xl group/btn relative overflow-hidden
-                ${isComingSoon 
+                ${(isComingSoon || isOutOfSeason)
                   ? 'bg-muted text-muted-foreground cursor-not-allowed opacity-70'
                   : popular 
                     ? 'bg-gradient-to-r from-primary via-emerald-500 to-teal-500 hover:from-primary/90 hover:via-emerald-500/90 hover:to-teal-500/90 shadow-lg shadow-primary/30' 
@@ -242,8 +242,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               `}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
-                {isComingSoon ? 'Em Breve' : 'Solicitar Serviço'}
-                {!isComingSoon && <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />}
+                {isOutOfSeason ? 'Indisponível' : isComingSoon ? 'Em Breve' : 'Solicitar Serviço'}
+                {!isComingSoon && !isOutOfSeason && <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />}
               </span>
             </Button>
           </CardContent>
