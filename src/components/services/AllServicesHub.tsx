@@ -336,17 +336,23 @@ export const AllServicesHub: React.FC = () => {
           return (
             <Card 
               key={service.id}
-              className="relative overflow-hidden hover:shadow-lg transition-shadow group"
+              className={`relative overflow-hidden hover:shadow-lg transition-shadow group ${service.outOfSeason ? 'grayscale' : ''}`}
             >
               {/* Badges */}
-              <div className="absolute top-4 right-4 flex gap-2 z-10">
-                {service.isPopular && (
+              <div className="absolute top-4 right-4 flex flex-wrap gap-2 z-10 max-w-[60%] justify-end">
+                {service.outOfSeason && (
+                  <Badge className="bg-muted text-muted-foreground border border-border">
+                    <Clock className="h-3 w-3 mr-1" />
+                    {service.outOfSeasonMessage ?? 'Fora do prazo'}
+                  </Badge>
+                )}
+                {service.isPopular && !service.outOfSeason && (
                   <Badge className="bg-amber-500/90 text-white">
                     <Star className="h-3 w-3 mr-1" />
                     Popular
                   </Badge>
                 )}
-                {service.isNew && (
+                {service.isNew && !service.outOfSeason && (
                   <Badge className="bg-primary/90 text-primary-foreground">
                     <Sparkles className="h-3 w-3 mr-1" />
                     Novo
@@ -365,11 +371,11 @@ export const AllServicesHub: React.FC = () => {
               </div>
 
               {/* Gradient Header */}
-              <div className={`h-2 bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50' : ''}`} />
+              <div className={`h-2 bg-gradient-to-r ${service.gradient} ${(service.comingSoon || service.outOfSeason) ? 'opacity-50' : ''}`} />
               
-              <CardHeader className="pb-2">
+              <CardHeader className={`pb-2 ${service.outOfSeason ? 'opacity-60' : ''}`}>
                 <div className="flex items-center gap-3">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white ${service.comingSoon ? 'opacity-60' : ''}`}>
+                  <div className={`p-3 rounded-xl bg-gradient-to-br ${service.gradient} text-white ${(service.comingSoon || service.outOfSeason) ? 'opacity-60' : ''}`}>
                     <Icon className="h-5 w-5" />
                   </div>
                   <div>
@@ -381,7 +387,7 @@ export const AllServicesHub: React.FC = () => {
                 </CardDescription>
               </CardHeader>
               
-              <CardContent className="space-y-4">
+              <CardContent className={`space-y-4 ${service.outOfSeason ? 'opacity-60' : ''}`}>
                 {/* Features */}
                 <ul className="space-y-2">
                   {service.features.slice(0, 3).map((feature, i) => (
@@ -406,9 +412,10 @@ export const AllServicesHub: React.FC = () => {
                   <Button 
                     onClick={() => !service.comingSoon && handleContractService(service)}
                     disabled={service.comingSoon}
-                    className={`w-full transition-transform bg-gradient-to-r ${service.gradient} ${service.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    variant={service.outOfSeason ? 'outline' : 'default'}
+                    className={`w-full transition-transform ${service.outOfSeason ? '' : `bg-gradient-to-r ${service.gradient}`} ${service.comingSoon ? 'opacity-50 cursor-not-allowed' : ''}`}
                   >
-                    {service.comingSoon ? 'Em Breve' : service.checkoutRoute ? 'Contratar' : 'Solicitar'}
+                    {service.comingSoon ? 'Em Breve' : service.outOfSeason ? 'Ver histórico' : service.checkoutRoute ? 'Contratar' : 'Solicitar'}
                     <ArrowRight className="h-4 w-4 ml-2" />
                   </Button>
                 </div>
