@@ -256,6 +256,10 @@ const App = () => (
               <Route path="/partner/invite/:token" element={<PartnerInvite />} />
               <Route path="/parceiro/cartas/login" element={<ParceiroCartasLogin />} />
               <Route path="/parceiro/cartas" element={<ParceiroCartasPanel />} />
+              <Route path="/recuperacao-energetica" element={<RecuperacaoEnergetica />} />
+              <Route path="/recuperacao-hidrica" element={<RecuperacaoHidrica />} />
+              <Route path="/placas-solares" element={<PlacasSolares />} />
+              <Route path="/simulador-carta" element={<SimuladorCarta />} />
               <Route path="/test-login" element={<Navigate to="/auth" replace />} />
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
