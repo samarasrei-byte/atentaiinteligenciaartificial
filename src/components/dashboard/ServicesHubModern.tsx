@@ -25,6 +25,9 @@ import {
   Users,
   Rocket,
   Brain,
+  Ticket,
+  Droplets,
+  Sun,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
