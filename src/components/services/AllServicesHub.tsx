@@ -14,7 +14,12 @@ import {
   ArrowRight,
   CheckCircle,
   Star,
-  MessageSquare
+  MessageSquare,
+  Zap,
+  Droplets,
+  Sun,
+  Ticket,
+  Clock
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
