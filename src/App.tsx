@@ -271,9 +271,9 @@ const App = () => (
               {/* Affiliate routes */}
               <Route path="/afiliado/cadastro" element={<AffiliateOnboarding />} />
               <Route path="/afiliado/oferta/:affiliateCode" element={<AffiliateOfferPage />} />
-              <Route path="/afiliado/:affiliateCode" element={<AffiliateLandingPremium />} />
-              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLandingPremium />} />
-              <Route path="/p/:affiliateCode" element={<AffiliateLandingPremium />} />
+              <Route path="/afiliado/:affiliateCode" element={<AffiliateLanding />} />
+              <Route path="/afiliado/:affiliateCode/:serviceSlug" element={<AffiliateLanding />} />
+              <Route path="/p/:affiliateCode" element={<AffiliateLanding />} />
               <Route path="/p/:affiliateCode/fiscal" element={<AffiliateFiscalLanding />} />
               <Route path="/p/:affiliateCode/limpa-nome" element={<AffiliateLimpaNomeLanding />} />
               <Route path="/documentos-fiscais" element={<FiscalDocumentsPage />} />
