@@ -19,8 +19,8 @@ import { motion } from "framer-motion";
 const KPIS = [
   { value: "R$ 2,3 tri", label: "TAM fiscal Brasil", sub: "Arrecadação tributária 2025" },
   { value: "20 M+", label: "Empresas impactadas", sub: "Reforma Tributária 2026" },
-  { value: "63 M", label: "Consumidores negativados", sub: "Base Serasa/SPC" },
-  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita ativas" },
+  { value: "Pré-launch", label: "Ativo virgem de mercado", sub: "Sem queima de marca, sem CAC" },
+  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita prontas" },
 ];
 
 const ASSETS = [
@@ -29,7 +29,7 @@ const ASSETS = [
   { icon: Layers, title: "6 Módulos Monetizados", desc: "Simulador, Autônomo, Premium, IR, Limpa Nome e NF — todos com checkout interno via Mercado Pago.", tag: "PRODUTO" },
   { icon: Network, title: "Marketplace de Contadores", desc: "Rede de profissionais certificados prontos para escala nacional B2B/B2C.", tag: "REDE" },
   { icon: FileCheck2, title: "Compliance & Segurança", desc: "Auditoria de segurança zerada, RBAC completo, webhooks HMAC-SHA256, storage isolado por owner.", tag: "GOVERNANÇA" },
-  { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios, identidade visual madura, +2.400 usuários ativos e presença SEO consolidada.", tag: "BRAND" },
+  { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios técnicos, identidade visual madura, SEO estruturado — pronto para lançamento em Q1 2026.", tag: "BRAND" },
 ];
 
 const REVENUE_STREAMS = [
@@ -59,7 +59,7 @@ const IDEAL_BUYER = [
 const DEAL_INCLUDES = [
   "Código-fonte completo (frontend, backend, edge functions, IA)",
   "Domínios: atentai.com.br + subdomínios técnicos",
-  "Base de +2.400 usuários e histórico de conversão",
+  "Ativo pré-launch: sem passivos, sem legado, sem CAC gasto",
   "Playbooks de marketing, funil e onboarding validados",
   "Pipeline comercial ativo e contratos em negociação",
   "Transição técnica assistida (90 dias com founding team)",
