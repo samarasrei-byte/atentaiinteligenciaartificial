@@ -191,6 +191,8 @@ const App = () => (
               <Suspense fallback={<PageLoader />}>
               <Routes>
               <Route path="/" element={<Index />} />
+              <Route path="/vender-atentai" element={<VenderAtentai />} />
+              <Route path="/atentai" element={<Navigate to="/vender-atentai" replace />} />
               <Route path="/cartas-contempladas" element={<CartasContempladas />} />
               <Route path="/cartas-contempladas/quiz" element={<CartasContempladasQuiz />} />
               <Route path="/cartas-contempladas/mentoria" element={<Navigate to="/cartas-contempladas/quiz" replace />} />
