@@ -18,6 +18,7 @@ import { lazy, Suspense } from "react";
 
 // Only eagerly load the landing page — everything else is lazy
 import Index from "./pages/Index";
+const VenderAtentai = lazy(() => import("./pages/VenderAtentai"));
 
 // Global loading fallback
 const PageLoader = () => (
