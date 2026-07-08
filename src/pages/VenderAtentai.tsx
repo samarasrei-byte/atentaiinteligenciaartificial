@@ -1,4 +1,5 @@
 import { Helmet } from "react-helmet-async";
+import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -75,12 +76,23 @@ const FAQS = [
 ];
 
 export default function VenderAtentai() {
+  // Força dark mode nesta LP (design cinematográfico projetado para dark)
+  useEffect(() => {
+    const root = document.documentElement;
+    const hadDark = root.classList.contains("dark");
+    root.classList.add("dark");
+    return () => {
+      if (!hadDark) root.classList.remove("dark");
+    };
+  }, []);
+
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="dark min-h-screen bg-background text-foreground">
+
       <Helmet>
         <title>Atentai — Oportunidade de Aquisição Estratégica | Reforma 2026</title>
         <meta name="description" content="Adquira a plataforma fiscal completa do Brasil. IA proprietária, 6 linhas de receita e timing único da Reforma Tributária 2026. Pitch para grupos, fintechs e PE." />
