@@ -59,7 +59,7 @@ const IDEAL_BUYER = [
 const DEAL_INCLUDES = [
   "Código-fonte completo (frontend, backend, edge functions, IA)",
   "Domínios: atentai.com.br + subdomínios técnicos",
-  "Base de +2.400 usuários e histórico de conversão",
+  "Ativo pré-launch: sem passivos, sem legado, sem CAC gasto",
   "Playbooks de marketing, funil e onboarding validados",
   "Pipeline comercial ativo e contratos em negociação",
   "Transição técnica assistida (90 dias com founding team)",
