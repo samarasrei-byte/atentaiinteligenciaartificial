@@ -19,8 +19,8 @@ import { motion } from "framer-motion";
 const KPIS = [
   { value: "R$ 2,3 tri", label: "TAM fiscal Brasil", sub: "Arrecadação tributária 2025" },
   { value: "20 M+", label: "Empresas impactadas", sub: "Reforma Tributária 2026" },
-  { value: "63 M", label: "Consumidores negativados", sub: "Base Serasa/SPC" },
-  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita ativas" },
+  { value: "Pré-launch", label: "Ativo virgem de mercado", sub: "Sem queima de marca, sem CAC" },
+  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita prontas" },
 ];
 
 const ASSETS = [
