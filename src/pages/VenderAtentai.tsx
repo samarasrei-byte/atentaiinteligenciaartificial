@@ -29,7 +29,7 @@ const ASSETS = [
   { icon: Layers, title: "6 Módulos Monetizados", desc: "Simulador, Autônomo, Premium, IR, Limpa Nome e NF — todos com checkout interno via Mercado Pago.", tag: "PRODUTO" },
   { icon: Network, title: "Marketplace de Contadores", desc: "Rede de profissionais certificados prontos para escala nacional B2B/B2C.", tag: "REDE" },
   { icon: FileCheck2, title: "Compliance & Segurança", desc: "Auditoria de segurança zerada, RBAC completo, webhooks HMAC-SHA256, storage isolado por owner.", tag: "GOVERNANÇA" },
-  { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios, identidade visual madura, +2.400 usuários ativos e presença SEO consolidada.", tag: "BRAND" },
+  { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios técnicos, identidade visual madura, SEO estruturado — pronto para lançamento em Q1 2026.", tag: "BRAND" },
 ];
 
 const REVENUE_STREAMS = [
