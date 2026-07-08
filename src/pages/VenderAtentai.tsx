@@ -4,390 +4,521 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import {
-  Sparkles, ArrowRight, ShieldCheck, Zap, Bot, Users, TrendingUp, Calculator,
-  FileCheck2, MessageCircle, Crown, CheckCircle2, Star, Building2, Rocket,
-  BarChart3, Lock, Clock, Award, Target, Briefcase, HeartHandshake, Globe2
+  ArrowRight, ShieldCheck, TrendingUp, Users, Database, Cpu, Layers, Building2,
+  BarChart3, Lock, Award, Rocket, Sparkles, Target, Zap, LineChart, Globe2,
+  FileCheck2, Crown, CheckCircle2, DollarSign, Briefcase, Network, Mail, PhoneCall
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
-const DIFFERENTIALS = [
-  { icon: Calculator, title: "Simulador IBS + CBS", desc: "Compare cenários antes e depois da Reforma Tributária 2026 com precisão de LC 214/2025." },
-  { icon: Bot, title: "IA Fiscal Proprietária", desc: "Motor de IA treinado exclusivamente na legislação brasileira. Respostas em segundos, 24/7." },
-  { icon: FileCheck2, title: "Análise de IR com IA", desc: "OCR + validação legal automática. Detecta oportunidades de restituição e evita malha fina." },
-  { icon: HeartHandshake, title: "Limpa Nome Profissional", desc: "Negociação assistida com equipe especializada. Recuperação de crédito com transparência total." },
-  { icon: Briefcase, title: "Marketplace de Contadores", desc: "Rede de contadores certificados prontos para atender empresas, autônomos e MEIs." },
-  { icon: BarChart3, title: "BI Fiscal & Painel Empresa", desc: "Dashboards em tempo real: DRE, fluxo de caixa, compliance e projeções tributárias." },
+// ============================================================
+// ATENTAI — ENTERPRISE ACQUISITION / STRATEGIC SALE
+// Pitch B2B: venda da plataforma completa para uma empresa
+// ============================================================
+
+const KPIS = [
+  { value: "R$ 2,3 tri", label: "TAM fiscal Brasil", sub: "Arrecadação tributária 2025" },
+  { value: "20 M+", label: "Empresas impactadas", sub: "Reforma Tributária 2026" },
+  { value: "63 M", label: "Consumidores negativados", sub: "Base Serasa/SPC" },
+  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita ativas" },
 ];
 
-const MODULES = [
-  { name: "Simulador Tributário", price: "R$ 39,99/mês", tag: "Entry" },
-  { name: "Plano Autônomo", price: "R$ 65/mês", tag: "MEI & PF" },
-  { name: "Plano Premium", price: "R$ 157/mês", tag: "Empresa" },
-  { name: "IR — Simples/Completo", price: "R$ 89 / R$ 189", tag: "Anual" },
-  { name: "Limpa Nome", price: "R$ 840", tag: "One-shot" },
-  { name: "Emissão de NF", price: "R$ 97/mês", tag: "Recorrente" },
+const ASSETS = [
+  { icon: Cpu, title: "IA Fiscal Proprietária", desc: "Motor treinado em LC 214/2025, IBS, CBS e IR. Não é wrapper de LLM — é IP defensável.", tag: "TECNOLOGIA" },
+  { icon: Database, title: "Stack Full-Cloud Escalável", desc: "React 18 + Supabase + Edge Functions + RLS em 100% do banco. LGPD compliant end-to-end.", tag: "INFRA" },
+  { icon: Layers, title: "6 Módulos Monetizados", desc: "Simulador, Autônomo, Premium, IR, Limpa Nome e NF — todos com checkout interno via Mercado Pago.", tag: "PRODUTO" },
+  { icon: Network, title: "Marketplace de Contadores", desc: "Rede de profissionais certificados + hub SERAC + painéis Capassi para escritórios contábeis.", tag: "REDE" },
+  { icon: FileCheck2, title: "Compliance & Segurança", desc: "Auditoria de segurança zerada, RBAC completo, webhooks HMAC-SHA256, storage isolado por owner.", tag: "GOVERNANÇA" },
+  { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios, identidade visual madura, +2.400 usuários ativos e presença SEO consolidada.", tag: "BRAND" },
 ];
 
-const MARKET_STATS = [
-  { value: "R$ 2,3 tri", label: "Arrecadação tributária BR 2025" },
-  { value: "21 mi", label: "MEIs e autônomos ativos" },
-  { value: "20 mi", label: "Empresas impactadas pela reforma" },
-  { value: "63 mi", label: "Brasileiros negativados (SPC/Serasa)" },
+const REVENUE_STREAMS = [
+  { name: "Simulador Tributário", arpu: "R$ 39,99", freq: "mensal" },
+  { name: "Plano Autônomo", arpu: "R$ 65", freq: "mensal" },
+  { name: "Plano Premium", arpu: "R$ 157", freq: "mensal" },
+  { name: "Análise de IR", arpu: "R$ 89 – 189", freq: "anual" },
+  { name: "Limpa Nome", arpu: "R$ 840", freq: "one-shot" },
+  { name: "Emissão de NF", arpu: "R$ 97", freq: "mensal" },
 ];
 
-const COMPETITORS = [
-  { us: "IA proprietária treinada em LC 214/2025", them: "Chatbots genéricos sem base legal" },
-  { us: "Checkout interno, zero fricção", them: "Redirecionamentos e cadastros longos" },
-  { us: "Contadores humanos + IA no mesmo hub", them: "Ou software puro, ou consultoria cara" },
-  { us: "A partir de R$ 39,99/mês", them: "ERPs fiscais a partir de R$ 500/mês" },
-  { us: "Mobile-first, PWA instalável", them: "Sistemas desktop legados" },
+const WHY_BUY = [
+  { icon: Target, title: "Time-to-Market Zero", desc: "3 anos de engenharia embalados. Ligue o marketing e comece a faturar amanhã." },
+  { icon: TrendingUp, title: "Timing Regulatório", desc: "Reforma Tributária 2026-2033. Janela única de aquisição — depois de janeiro o preço triplica." },
+  { icon: Award, title: "Moat Técnico Real", desc: "IA proprietária + base legal curada. Concorrente demora 18 meses e R$ 4M pra chegar aqui." },
+  { icon: Globe2, title: "Nacional & Escalável", desc: "Arquitetura serverless suporta 10× volume sem refactor. Pronto pra rollout LATAM." },
 ];
 
-const TESTIMONIALS = [
-  { name: "Marina S.", role: "Autônoma — Design", text: "Descobri que pagaria R$ 4.200 a mais em 2027 sem me preparar. O simulador salvou meu negócio." },
-  { name: "Carlos R.", role: "MEI — E-commerce", text: "Em 3 minutos entendi o impacto real do IBS. A IA respondeu tudo que meu contador cobrava R$ 300 pra explicar." },
-  { name: "Contab. Priscila", role: "Escritório contábil", text: "Migrei 40 clientes pra plataforma. O painel de compliance economiza 12h/semana da minha equipe." },
+const IDEAL_BUYER = [
+  "Grupos contábeis regionais buscando produto SaaS proprietário",
+  "Fintechs querendo entrar em compliance fiscal B2B/B2C",
+  "ERPs legados precisando modernizar sem construir do zero",
+  "Family offices e PE buscando ativo digital com Reforma como catalisador",
+  "Bancos digitais expandindo para PJ / MEI / autônomos",
+];
+
+const DEAL_INCLUDES = [
+  "Código-fonte completo (frontend, backend, edge functions, IA)",
+  "Domínios: atentai.com.br + subdomínios técnicos",
+  "Base de +2.400 usuários e histórico de conversão",
+  "Playbooks de marketing, funil e onboarding validados",
+  "Contratos ativos e pipeline SERAC/Capassi",
+  "Transição técnica assistida (90 dias com founding team)",
+  "Identidade visual, presença SEO e conteúdo produzido",
 ];
 
 const FAQS = [
-  { q: "O que é o Atentai exatamente?", a: "É uma plataforma completa de inteligência fiscal com IA proprietária, simuladores, análise de IR, limpa nome, marketplace de contadores e BI. Um ecossistema fiscal em um só lugar." },
-  { q: "Preciso ser contador para usar?", a: "Não. A plataforma atende empresas, autônomos, MEIs e pessoas físicas com linguagem simples. Contadores têm um hub profissional dedicado." },
-  { q: "A IA substitui meu contador?", a: "Não substitui — potencializa. A IA cuida das dúvidas do dia a dia e cálculos; o contador fica livre para estratégia. Também temos contadores humanos no marketplace." },
-  { q: "Quanto tempo até ver resultado?", a: "O simulador mostra economia projetada em minutos. Assinantes acessam relatórios completos imediatamente." },
-  { q: "Existe garantia?", a: "Sim. 7 dias de garantia incondicional em todos os planos recorrentes. Cancele com 1 clique se não amar." },
-  { q: "Como funciona o pagamento?", a: "Mercado Pago — Pix, cartão ou boleto. Recorrência automática e segura, com nota fiscal emitida." },
-  { q: "Meus dados estão seguros?", a: "Sim. Criptografia ponta-a-ponta, RLS em 100% do banco, LGPD compliant e infraestrutura Supabase enterprise." },
+  { q: "Qual o modelo da transação?", a: "Aquisição total, participação majoritária ou joint venture estratégica. Aberto a estruturas com earn-out atrelado a metas de crescimento pós-integração." },
+  { q: "O time atual continua?", a: "Founding team disponível para 90 dias de transição técnica e comercial. Contratação permanente negociável conforme fit estratégico." },
+  { q: "Qual o ticket de referência?", a: "Múltiplos de ARR + valor estratégico do IP fiscal e timing regulatório. Range compartilhado sob NDA em reunião de qualificação." },
+  { q: "Existe due diligence pronta?", a: "Sim. Data room organizado: código, contratos, financeiro, jurídico, segurança e métricas. Acesso liberado após NDA assinado." },
+  { q: "E a Reforma Tributária, muda o valor?", a: "A janela 2026-2027 é o pico de demanda. Adquirir agora é comprar o ativo antes do mercado precificar corretamente o timing." },
+  { q: "Como iniciamos a conversa?", a: "Reunião de 30 minutos com o founding team. Sem compromisso, sob NDA. Agende pelo botão acima ou envie e-mail direto." },
 ];
 
 export default function VenderAtentai() {
-  const navigate = useNavigate();
+  const scrollTo = (id: string) => {
+    document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground">
       <Helmet>
-        <title>Atentai — A Plataforma Fiscal Completa para a Reforma Tributária 2026</title>
-        <meta name="description" content="Simulador IBS/CBS, IA fiscal 24/7, análise de IR, limpa nome e marketplace de contadores. A partir de R$ 39,99/mês. 7 dias de garantia." />
+        <title>Atentai — Oportunidade de Aquisição Estratégica | Reforma 2026</title>
+        <meta name="description" content="Adquira a plataforma fiscal completa do Brasil. IA proprietária, 6 linhas de receita e timing único da Reforma Tributária 2026. Pitch para grupos, fintechs e PE." />
         <link rel="canonical" href="https://www.atentai.com.br/vender-atentai" />
-        <meta property="og:title" content="Atentai — Inteligência Fiscal Completa" />
-        <meta property="og:description" content="Tudo que sua empresa precisa para a Reforma Tributária 2026 em uma única plataforma." />
-        <meta property="og:type" content="product" />
-        <meta property="og:url" content="https://www.atentai.com.br/vender-atentai" />
-        <meta name="twitter:card" content="summary_large_image" />
+        <meta property="og:title" content="Atentai — Aquisição Estratégica" />
+        <meta property="og:description" content="Plataforma fiscal com IA proprietária pronta para escala nacional. Oportunidade única antes da Reforma Tributária 2026." />
+        <meta property="og:type" content="website" />
       </Helmet>
 
-      {/* HERO */}
-      <section className="relative overflow-hidden pt-20 pb-24 md:pt-28 md:pb-32">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
-        <div className="absolute top-1/3 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[160px] opacity-40" />
-        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-accent/15 rounded-full blur-[140px] opacity-40" />
+      {/* ============ HERO — CINEMATIC ============ */}
+      <section className="relative min-h-screen flex items-center overflow-hidden">
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,hsl(var(--primary)/0.25),transparent_60%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_right,hsl(var(--accent)/0.2),transparent_50%)]" />
 
-        <div className="container mx-auto px-4 relative z-10">
+        {/* Grid */}
+        <div
+          className="absolute inset-0 opacity-[0.04]"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+
+        {/* Ambient orbs */}
+        <div className="absolute top-1/4 -left-32 w-[500px] h-[500px] rounded-full bg-primary/20 blur-[140px] animate-pulse" />
+        <div className="absolute bottom-1/4 -right-32 w-[600px] h-[600px] rounded-full bg-accent/20 blur-[160px]" />
+
+        <div className="container mx-auto px-6 relative z-10 py-20">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="max-w-4xl mx-auto text-center"
+            transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+            className="max-w-5xl"
           >
-            <Badge className="mb-6 bg-accent/15 text-accent border-accent/30 hover:bg-accent/20">
-              <Sparkles className="w-3.5 h-3.5 mr-1.5" />
-              Reforma Tributária 2026 · LC 214/2025
-            </Badge>
+            {/* Top marker */}
+            <div className="flex items-center gap-3 mb-10">
+              <div className="h-px w-12 bg-accent" />
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">
+                Confidencial · Oportunidade de Aquisição
+              </span>
+            </div>
 
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05] mb-6">
-              Toda a inteligência fiscal do Brasil,
-              <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary">
-                em uma plataforma só.
+            {/* Headline */}
+            <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-[-0.03em] leading-[0.95] mb-8">
+              Não vendemos<br />
+              <span className="text-muted-foreground/40">assinaturas.</span><br />
+              <span className="relative inline-block">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_auto] animate-[shimmer_4s_linear_infinite]">
+                  Vendemos o Atentai.
+                </span>
               </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
-              Simulador IBS + CBS, IA fiscal 24/7, análise de IR, limpa nome e marketplace
-              de contadores certificados. <span className="text-foreground font-semibold">Preparado para 2026.</span>
+            <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mb-4 leading-relaxed">
+              A plataforma fiscal mais completa do Brasil está disponível para{" "}
+              <span className="text-foreground font-semibold">aquisição estratégica</span>.
+            </p>
+            <p className="text-base md:text-lg text-muted-foreground/70 max-w-2xl mb-14">
+              IA proprietária. 6 módulos rodando. Marketplace ativo. Compliance zerado.
+              Timing perfeito da Reforma Tributária 2026.
             </p>
 
-            <p className="text-base text-muted-foreground/80 max-w-xl mx-auto mb-10">
-              Mais de <strong className="text-foreground">20 milhões de empresas</strong> serão impactadas.
-              Você pode ser uma das que economiza — ou uma das que paga a mais.
-            </p>
-
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
+            {/* CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4 mb-16">
               <Button
                 size="lg"
-                onClick={() => navigate('/pricing')}
-                className="w-full sm:w-auto text-lg px-10 py-7 bg-gradient-to-r from-accent to-orange-500 hover:opacity-90 shadow-2xl shadow-accent/30 group"
+                onClick={() => scrollTo("contact")}
+                className="group text-base px-8 py-7 bg-foreground text-background hover:bg-foreground/90 shadow-[0_20px_50px_-15px_hsl(var(--foreground)/0.5)]"
               >
-                <Crown className="w-5 h-5 mr-2" />
-                Começar agora — R$ 39,99/mês
+                Solicitar Data Room
                 <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => navigate('/simulador')}
-                className="w-full sm:w-auto text-lg px-8 py-7"
+                onClick={() => scrollTo("assets")}
+                className="text-base px-8 py-7 border-foreground/20 hover:border-foreground/40 backdrop-blur-sm"
               >
-                <Calculator className="w-5 h-5 mr-2" />
-                Testar simulador grátis
+                Ver o que está incluso
               </Button>
             </div>
 
-            <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground">
-              <div className="flex items-center gap-1.5"><ShieldCheck className="w-4 h-4 text-success" /> 7 dias de garantia</div>
-              <div className="flex items-center gap-1.5"><Lock className="w-4 h-4 text-success" /> LGPD compliant</div>
-              <div className="flex items-center gap-1.5"><Clock className="w-4 h-4 text-success" /> Cancele com 1 clique</div>
-              <div className="flex items-center gap-1.5"><Star className="w-4 h-4 text-accent fill-accent" /> 4.9/5 · +2.400 usuários</div>
+            {/* KPI strip */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-10 border-t border-foreground/10">
+              {KPIS.map((k, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 + i * 0.1 }}
+                >
+                  <div className="text-2xl md:text-3xl font-black tracking-tight mb-1">{k.value}</div>
+                  <div className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-0.5">{k.label}</div>
+                  <div className="text-[11px] text-muted-foreground/60">{k.sub}</div>
+                </motion.div>
+              ))}
             </div>
           </motion.div>
         </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground/50">
+          <span className="text-[10px] uppercase tracking-[0.3em]">Scroll</span>
+          <div className="w-px h-10 bg-gradient-to-b from-muted-foreground/50 to-transparent" />
+        </div>
+
+        <style>{`
+          @keyframes shimmer { to { background-position: 200% center; } }
+        `}</style>
       </section>
 
-      {/* MARKET STATS */}
-      <section className="py-16 bg-muted/30 border-y border-border">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-10">
-            <p className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-2">O mercado</p>
-            <h2 className="text-2xl md:text-3xl font-bold">Um oceano de oportunidade — e de risco.</h2>
+      {/* ============ THESIS ============ */}
+      <section className="py-32 border-t border-foreground/5">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="grid md:grid-cols-12 gap-12 items-start">
+            <div className="md:col-span-4">
+              <div className="sticky top-24">
+                <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">01 · Tese</span>
+                <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-4 leading-[1.05]">
+                  Uma janela<br />
+                  que <span className="text-accent">não volta.</span>
+                </h2>
+              </div>
+            </div>
+            <div className="md:col-span-8 space-y-8 text-lg md:text-xl leading-relaxed text-muted-foreground">
+              <p>
+                A Reforma Tributária brasileira reescreve, entre <span className="text-foreground font-semibold">2026 e 2033</span>,
+                as regras de <span className="text-foreground">R$ 2,3 trilhões</span> em arrecadação anual.
+              </p>
+              <p>
+                <span className="text-foreground font-semibold">20 milhões de empresas</span> precisam simular, migrar e recalcular.
+                O mercado inteiro está órfão de ferramentas — os ERPs legados não sabem, os contadores estão sobrecarregados,
+                e ninguém tem IA treinada em <span className="text-foreground">LC 214/2025</span>.
+              </p>
+              <p>
+                O Atentai já resolveu isso. <span className="text-foreground font-semibold">A pergunta não é se alguém vai dominar essa categoria.
+                A pergunta é quem chega primeiro — construindo por 3 anos, ou comprando pronto hoje.</span>
+              </p>
+            </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            {MARKET_STATS.map((s, i) => (
+        </div>
+      </section>
+
+      {/* ============ ASSETS INCLUDED ============ */}
+      <section id="assets" className="py-32 border-t border-foreground/5 bg-gradient-to-b from-background via-primary/[0.02] to-background">
+        <div className="container mx-auto px-6">
+          <div className="max-w-3xl mb-20">
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">02 · Ativos</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+              O que o comprador leva.
+            </h2>
+            <p className="text-lg text-muted-foreground mt-6">
+              Não é uma ideia. Não é um MVP. É um ecossistema em produção, com receita, usuários e IP defensável.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-foreground/10 rounded-3xl overflow-hidden border border-foreground/10">
+            {ASSETS.map((a, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className="group relative bg-background p-8 hover:bg-primary/[0.03] transition-colors"
+              >
+                <div className="flex items-start justify-between mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-foreground/5 border border-foreground/10 flex items-center justify-center group-hover:bg-accent/10 group-hover:border-accent/30 transition-all">
+                    <a.icon className="w-5 h-5" />
+                  </div>
+                  <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-semibold">{a.tag}</span>
+                </div>
+                <h3 className="text-xl font-bold mb-3">{a.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{a.desc}</p>
+                <div className="absolute bottom-0 left-0 h-px w-0 group-hover:w-full bg-gradient-to-r from-accent to-primary transition-all duration-500" />
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ REVENUE STREAMS ============ */}
+      <section className="py-32 border-t border-foreground/5">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="grid md:grid-cols-12 gap-12 items-end mb-16">
+            <div className="md:col-span-7">
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">03 · Monetização</span>
+              <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+                6 linhas de receita.<br />
+                <span className="text-muted-foreground/50">Um único checkout.</span>
+              </h2>
+            </div>
+            <div className="md:col-span-5">
+              <p className="text-lg text-muted-foreground">
+                Modular por design. Cada usuário entra por um produto e sobe o funil — recorrência mensal,
+                anual e one-shot no mesmo motor de pagamento.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {REVENUE_STREAMS.map((r, i) => (
               <motion.div
                 key={i}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
+                transition={{ delay: i * 0.05 }}
+                className="group relative overflow-hidden rounded-2xl border border-foreground/10 bg-background hover:border-accent/40 transition-all p-6"
               >
-                <div className="text-3xl md:text-4xl font-black bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                  {s.value}
+                <div className="flex items-baseline justify-between mb-4">
+                  <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-semibold">
+                    Stream · 0{i + 1}
+                  </span>
+                  <DollarSign className="w-4 h-4 text-accent" />
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">{s.label}</p>
+                <h3 className="text-lg font-bold mb-2">{r.name}</h3>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-black tracking-tight">{r.arpu}</span>
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider">{r.freq}</span>
+                </div>
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-primary via-accent to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* DIFFERENTIALS */}
-      <section className="py-20 md:py-28">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-14 max-w-2xl mx-auto">
-            <Badge variant="secondary" className="mb-4">Diferenciais</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Por que o Atentai é <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-accent">diferente</span>?
+      {/* ============ WHY BUY ============ */}
+      <section className="py-32 border-t border-foreground/5 relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,hsl(var(--accent)/0.08),transparent_50%)]" />
+        <div className="container mx-auto px-6 max-w-6xl relative">
+          <div className="mb-20 max-w-3xl">
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">04 · Por que comprar</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+              Construir custa 3 anos.<br />
+              <span className="text-accent">Comprar custa uma reunião.</span>
             </h2>
-            <p className="text-muted-foreground text-lg">
-              Não somos mais um chatbot. Somos o único ecossistema fiscal com IA proprietária,
-              contadores humanos e módulos completos rodando juntos.
-            </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {DIFFERENTIALS.map((d, i) => (
+          <div className="grid md:grid-cols-2 gap-6">
+            {WHY_BUY.map((w, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: i * 0.08 }}
+                initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="group flex gap-6 p-8 rounded-3xl border border-foreground/10 bg-gradient-to-br from-background to-primary/[0.03] hover:border-accent/40 transition-all"
               >
-                <Card className="h-full hover:-translate-y-1 hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-primary/20">
-                  <CardContent className="p-6">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mb-4 shadow-lg">
-                      <d.icon className="w-6 h-6 text-white" />
-                    </div>
-                    <h3 className="font-bold text-lg mb-2">{d.title}</h3>
-                    <p className="text-sm text-muted-foreground leading-relaxed">{d.desc}</p>
-                  </CardContent>
-                </Card>
+                <div className="flex-shrink-0 w-14 h-14 rounded-2xl bg-gradient-to-br from-primary to-accent flex items-center justify-center shadow-[0_15px_40px_-10px_hsl(var(--primary)/0.5)]">
+                  <w.icon className="w-6 h-6 text-primary-foreground" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold mb-2">{w.title}</h3>
+                  <p className="text-muted-foreground leading-relaxed">{w.desc}</p>
+                </div>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* MODULES / MARKETPLACE */}
-      <section className="py-20 bg-gradient-to-b from-muted/20 to-background">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-14 max-w-2xl mx-auto">
-            <Badge variant="secondary" className="mb-4">Módulos & Preços</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">
-              Um marketplace, <span className="text-accent">tudo dentro</span>.
-            </h2>
-            <p className="text-muted-foreground text-lg">
-              Escolha só o que precisa. Combine planos. Sem taxa de setup, sem fidelidade.
-            </p>
-          </div>
-
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 max-w-5xl mx-auto">
-            {MODULES.map((m, i) => (
-              <Card key={i} className="hover:border-primary/40 transition-colors">
-                <CardContent className="p-5 flex items-center justify-between">
-                  <div>
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="font-semibold">{m.name}</span>
-                      <Badge variant="outline" className="text-[10px]">{m.tag}</Badge>
-                    </div>
-                    <p className="text-lg font-bold text-primary">{m.price}</p>
-                  </div>
-                  <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-
-          <div className="text-center mt-10">
-            <Button size="lg" onClick={() => navigate('/pricing')} className="bg-primary hover:bg-primary/90">
-              Ver todos os planos <ArrowRight className="w-4 h-4 ml-2" />
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* VS COMPETITORS */}
-      <section className="py-20 md:py-28">
-        <div className="container mx-auto px-4 max-w-5xl">
-          <div className="text-center mb-14">
-            <Badge variant="secondary" className="mb-4">Comparativo</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Atentai vs. o resto do mercado</h2>
-          </div>
-
-          <div className="rounded-2xl border-2 border-border overflow-hidden">
-            <div className="grid grid-cols-2 bg-muted/50 p-4 font-semibold">
-              <div className="flex items-center gap-2 text-primary"><Award className="w-5 h-5" /> Atentai</div>
-              <div className="text-muted-foreground">Outros</div>
-            </div>
-            {COMPETITORS.map((c, i) => (
-              <div key={i} className={`grid grid-cols-2 p-4 border-t border-border ${i % 2 === 0 ? 'bg-background' : 'bg-muted/20'}`}>
-                <div className="flex items-start gap-2 pr-4">
-                  <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
-                  <span className="text-sm font-medium">{c.us}</span>
-                </div>
-                <div className="text-sm text-muted-foreground pl-4 border-l border-border">{c.them}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* SOCIAL PROOF */}
-      <section className="py-20 bg-muted/30 border-y border-border">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-14 max-w-2xl mx-auto">
-            <Badge variant="secondary" className="mb-4">Prova social</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold mb-4">Quem usa, não volta mais atrás.</h2>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {TESTIMONIALS.map((t, i) => (
-              <Card key={i} className="hover:shadow-xl transition-shadow">
-                <CardContent className="p-6">
-                  <div className="flex gap-1 mb-3">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} className="w-4 h-4 text-accent fill-accent" />
-                    ))}
-                  </div>
-                  <p className="text-foreground/90 italic mb-4">"{t.text}"</p>
-                  <div className="flex items-center gap-3 pt-3 border-t border-border">
-                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold">
-                      {t.name[0]}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{t.name}</p>
-                      <p className="text-xs text-muted-foreground">{t.role}</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* GUARANTEE */}
-      <section className="py-20">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <Card className="border-2 border-success/40 bg-gradient-to-br from-success/5 to-background">
-            <CardContent className="p-8 md:p-12 text-center">
-              <div className="inline-flex w-16 h-16 rounded-full bg-success/15 items-center justify-center mb-6">
-                <ShieldCheck className="w-8 h-8 text-success" />
-              </div>
-              <h2 className="text-2xl md:text-3xl font-bold mb-4">Garantia incondicional de 7 dias</h2>
-              <p className="text-muted-foreground text-lg mb-6">
-                Teste tudo. Se não sentir que economizou ao menos 10× o valor do plano em clareza fiscal,
-                devolvemos <strong>100%</strong> do valor. Sem perguntas, sem burocracia, cancele com 1 clique.
+      {/* ============ IDEAL BUYER ============ */}
+      <section className="py-32 border-t border-foreground/5">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="grid md:grid-cols-2 gap-16 items-start">
+            <div>
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">05 · Perfil do comprador</span>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-4 leading-[1.05] mb-6">
+                Quem faz sentido<br />nessa mesa.
+              </h2>
+              <p className="text-lg text-muted-foreground">
+                Estamos abertos a conversar com organizações que enxergam a Reforma Tributária como catalisador
+                — não como problema.
               </p>
-              <div className="flex flex-wrap justify-center gap-4 text-sm">
-                <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-success" /> Reembolso automático</div>
-                <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-success" /> Sem fidelidade</div>
-                <div className="flex items-center gap-1.5"><CheckCircle2 className="w-4 h-4 text-success" /> Suporte humano</div>
-              </div>
-            </CardContent>
-          </Card>
+            </div>
+
+            <div className="space-y-3">
+              {IDEAL_BUYER.map((b, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: 20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.08 }}
+                  className="flex items-start gap-4 p-5 rounded-2xl border border-foreground/10 hover:border-accent/40 hover:bg-primary/[0.02] transition-all"
+                >
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center">
+                    <span className="text-xs font-bold text-accent">{String(i + 1).padStart(2, "0")}</span>
+                  </div>
+                  <p className="text-foreground/90 leading-relaxed pt-1">{b}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section className="py-20 bg-muted/20">
-        <div className="container mx-auto px-4 max-w-3xl">
-          <div className="text-center mb-12">
-            <Badge variant="secondary" className="mb-4">Perguntas frequentes</Badge>
-            <h2 className="text-3xl md:text-5xl font-bold">Tudo que você precisa saber</h2>
+      {/* ============ WHAT'S INCLUDED — DEAL SHEET ============ */}
+      <section className="py-32 border-t border-foreground/5 bg-gradient-to-b from-background to-primary/[0.03]">
+        <div className="container mx-auto px-6 max-w-5xl">
+          <div className="text-center mb-16">
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">06 · Deal Sheet</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+              Tudo dentro da transação.
+            </h2>
+          </div>
+
+          <div className="rounded-3xl border border-foreground/10 overflow-hidden backdrop-blur-sm">
+            {DEAL_INCLUDES.map((item, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.05 }}
+                className={`flex items-center gap-6 px-8 py-6 ${i !== 0 ? "border-t border-foreground/5" : ""} hover:bg-primary/[0.03] transition-colors`}
+              >
+                <span className="text-xs font-mono text-muted-foreground/50 w-8">{String(i + 1).padStart(2, "0")}</span>
+                <CheckCircle2 className="w-5 h-5 text-accent flex-shrink-0" />
+                <span className="text-lg font-medium">{item}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ============ FAQ ============ */}
+      <section className="py-32 border-t border-foreground/5">
+        <div className="container mx-auto px-6 max-w-4xl">
+          <div className="mb-16">
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">07 · FAQ</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+              Perguntas de M&A.
+            </h2>
           </div>
 
           <Accordion type="single" collapsible className="space-y-3">
             {FAQS.map((f, i) => (
-              <AccordionItem key={i} value={`item-${i}`} className="border rounded-xl px-5 bg-background">
-                <AccordionTrigger className="text-left font-semibold hover:no-underline">{f.q}</AccordionTrigger>
-                <AccordionContent className="text-muted-foreground">{f.a}</AccordionContent>
+              <AccordionItem
+                key={i}
+                value={`item-${i}`}
+                className="border border-foreground/10 rounded-2xl px-6 bg-background hover:border-accent/30 transition-colors"
+              >
+                <AccordionTrigger className="text-left font-bold hover:no-underline py-5">
+                  <span className="flex items-center gap-4">
+                    <span className="text-xs font-mono text-accent">{String(i + 1).padStart(2, "0")}</span>
+                    {f.q}
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground leading-relaxed pl-10">{f.a}</AccordionContent>
               </AccordionItem>
             ))}
           </Accordion>
         </div>
       </section>
 
-      {/* FINAL CTA */}
-      <section className="py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary to-accent" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--accent)/0.4)_0%,transparent_50%)]" />
+      {/* ============ FINAL CTA — CONTACT ============ */}
+      <section id="contact" className="relative py-32 border-t border-foreground/5 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary via-primary/90 to-accent" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,hsl(var(--accent)/0.4),transparent_50%)]" />
+        <div
+          className="absolute inset-0 opacity-[0.08]"
+          style={{
+            backgroundImage:
+              "linear-gradient(hsl(var(--primary-foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary-foreground)) 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
 
-        <div className="container mx-auto px-4 relative z-10 text-center max-w-3xl">
-          <Rocket className="w-14 h-14 text-white mx-auto mb-6" />
-          <h2 className="text-3xl md:text-5xl font-black text-white mb-6 leading-tight">
-            A Reforma começa em 2026.<br />
-            <span className="text-accent-foreground">Você começa hoje.</span>
+        <div className="container mx-auto px-6 relative z-10 max-w-4xl text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 backdrop-blur-sm mb-8">
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <span className="text-xs tracking-[0.2em] uppercase text-primary-foreground/90 font-semibold">
+              Aceitando conversas até Q1 2026
+            </span>
+          </div>
+
+          <h2 className="text-4xl md:text-7xl font-black tracking-[-0.03em] leading-[0.95] text-primary-foreground mb-8">
+            A próxima categoria fiscal<br />
+            <span className="italic font-light">tem dono?</span>
           </h2>
-          <p className="text-lg text-white/90 mb-10 max-w-2xl mx-auto">
-            Cada mês sem se preparar é dinheiro deixado na mesa. Comece agora — leva 2 minutos.
+
+          <p className="text-lg md:text-xl text-primary-foreground/80 max-w-2xl mx-auto mb-12">
+            Reunião de 30 minutos com o founding team, sob NDA. Sem compromisso, sem apresentação genérica —
+            direto ao data room e aos números.
           </p>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
             <Button
               size="lg"
-              onClick={() => navigate('/pricing')}
-              className="w-full sm:w-auto text-lg px-10 py-7 bg-white text-primary hover:bg-white/95 shadow-2xl font-bold"
+              asChild
+              className="text-base px-10 py-7 bg-primary-foreground text-primary hover:bg-primary-foreground/95 shadow-2xl font-bold"
             >
-              <Crown className="w-5 h-5 mr-2" />
-              Assinar agora
-              <ArrowRight className="w-5 h-5 ml-2" />
+              <a href="mailto:contato@atentai.com.br?subject=Interesse em aquisição — Atentai">
+                <Mail className="w-5 h-5 mr-2" />
+                contato@atentai.com.br
+              </a>
             </Button>
             <Button
               size="lg"
               variant="outline"
-              onClick={() => navigate('/comecar')}
-              className="w-full sm:w-auto text-lg px-8 py-7 border-white/40 text-white hover:bg-white/15"
+              asChild
+              className="text-base px-8 py-7 border-primary-foreground/40 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"
             >
-              <MessageCircle className="w-5 h-5 mr-2" />
-              Falar com especialista
+              <a href="https://wa.me/5511999999999?text=Ol%C3%A1%2C%20tenho%20interesse%20em%20conversar%20sobre%20a%20aquisi%C3%A7%C3%A3o%20do%20Atentai.">
+                <PhoneCall className="w-5 h-5 mr-2" />
+                Agendar chamada
+              </a>
             </Button>
           </div>
 
-          <p className="text-white/70 text-sm mt-8">
-            A partir de <strong className="text-white">R$ 39,99/mês</strong> · 7 dias de garantia · Cancele quando quiser
-          </p>
+          <div className="pt-10 border-t border-primary-foreground/15 flex flex-wrap justify-center gap-x-8 gap-y-3 text-sm text-primary-foreground/60">
+            <span className="flex items-center gap-2"><Lock className="w-3.5 h-3.5" /> NDA disponível</span>
+            <span className="flex items-center gap-2"><ShieldCheck className="w-3.5 h-3.5" /> Data room organizado</span>
+            <span className="flex items-center gap-2"><Building2 className="w-3.5 h-3.5" /> Founding team disponível</span>
+          </div>
         </div>
       </section>
+
+      {/* ============ FOOTER MARK ============ */}
+      <footer className="py-12 border-t border-foreground/5">
+        <div className="container mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+              <Sparkles className="w-4 h-4 text-primary-foreground" />
+            </div>
+            <span className="font-black tracking-tight">Atentai</span>
+            <span className="text-xs text-muted-foreground">· Documento confidencial</span>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            © {new Date().getFullYear()} Atentai · Todos os direitos reservados.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
