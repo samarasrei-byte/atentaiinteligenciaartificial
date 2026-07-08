@@ -27,7 +27,7 @@ const ASSETS = [
   { icon: Cpu, title: "IA Fiscal Proprietária", desc: "Motor treinado em LC 214/2025, IBS, CBS e IR. Não é wrapper de LLM — é IP defensável.", tag: "TECNOLOGIA" },
   { icon: Database, title: "Stack Full-Cloud Escalável", desc: "React 18 + Supabase + Edge Functions + RLS em 100% do banco. LGPD compliant end-to-end.", tag: "INFRA" },
   { icon: Layers, title: "6 Módulos Monetizados", desc: "Simulador, Autônomo, Premium, IR, Limpa Nome e NF — todos com checkout interno via Mercado Pago.", tag: "PRODUTO" },
-  { icon: Network, title: "Marketplace de Contadores", desc: "Rede de profissionais certificados + hub SERAC + painéis Capassi para escritórios contábeis.", tag: "REDE" },
+  { icon: Network, title: "Marketplace de Contadores", desc: "Rede de profissionais certificados prontos para escala nacional B2B/B2C.", tag: "REDE" },
   { icon: FileCheck2, title: "Compliance & Segurança", desc: "Auditoria de segurança zerada, RBAC completo, webhooks HMAC-SHA256, storage isolado por owner.", tag: "GOVERNANÇA" },
   { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios, identidade visual madura, +2.400 usuários ativos e presença SEO consolidada.", tag: "BRAND" },
 ];
@@ -61,7 +61,7 @@ const DEAL_INCLUDES = [
   "Domínios: atentai.com.br + subdomínios técnicos",
   "Base de +2.400 usuários e histórico de conversão",
   "Playbooks de marketing, funil e onboarding validados",
-  "Contratos ativos e pipeline SERAC/Capassi",
+  "Pipeline comercial ativo e contratos em negociação",
   "Transição técnica assistida (90 dias com founding team)",
   "Identidade visual, presença SEO e conteúdo produzido",
 ];
