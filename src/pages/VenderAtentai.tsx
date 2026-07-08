@@ -61,7 +61,7 @@ const DEAL_INCLUDES = [
   "Domínios: atentai.com.br + subdomínios técnicos",
   "Base de +2.400 usuários e histórico de conversão",
   "Playbooks de marketing, funil e onboarding validados",
-  "Contratos ativos e pipeline SERAC/Capassi",
+  "Pipeline comercial ativo e contratos em negociação",
   "Transição técnica assistida (90 dias com founding team)",
   "Identidade visual, presença SEO e conteúdo produzido",
 ];
