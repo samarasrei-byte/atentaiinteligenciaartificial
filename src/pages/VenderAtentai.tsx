@@ -247,7 +247,7 @@ export default function VenderAtentai() {
               O que o comprador leva.
             </h2>
             <p className="text-lg text-muted-foreground mt-6">
-              Não é uma ideia. Não é um MVP. É um ecossistema em produção, com receita, usuários e IP defensável.
+              Não é uma ideia. Não é um MVP. É um ecossistema em produção, com arquitetura validada, motor de receita ativado e IP defensável.
             </p>
           </div>
 
