@@ -46,7 +46,7 @@ const CAPABILITIES = [
   { icon: Cpu, kpi: "3 camadas", title: "Motor Fiscal Proprietário", desc: "Pipeline de IA em 3 camadas: extração (OCR + parsing), raciocínio jurídico (LC 214/2025, IN RFB, IBS/CBS/IS) e simulação numérica com travas legais auditáveis." },
   { icon: Database, kpi: "100% RLS", title: "Arquitetura Zero-Trust", desc: "Supabase + Edge Functions com Row Level Security em toda tabela pública, RBAC por papel, storage isolado por owner e webhooks assinados em HMAC-SHA256." },
   { icon: FileCheck2, kpi: "0 findings", title: "Auditoria de Segurança Zerada", desc: "Scanner de segurança sem findings críticos. Segredos fora do frontend, service_role isolado, CORS restrito, LGPD compliant end-to-end." },
-  { icon: Layers, kpi: "6 módulos", title: "Metodologia Modular", desc: "Cada módulo (Simulador, Autônomo, Premium, IR, Limpa Nome, NF) é isolado, com checkout próprio, feature flags e rollout gradual — permite pivot sem quebrar o core." },
+  { icon: Layers, kpi: "5 módulos", title: "Metodologia Modular", desc: "Cada módulo (Simulador, Autônomo, Premium, IR e Emissão de Nota Fiscal) é isolado, com checkout próprio, feature flags e rollout gradual — permite pivot sem quebrar o core." },
   { icon: LineChart, kpi: "OCR + LLM", title: "IA Fiscal Treinada via API", desc: "Base curada de legislação, jurisprudência e IN, integrada a modelos de linguagem via API gateway próprio. Fallbacks determinísticos garantem previsibilidade fiscal." },
   { icon: Rocket, kpi: "CI/CD", title: "Engenharia Contínua", desc: "Deploy contínuo, migrations versionadas, edge functions serverless auto-escaláveis e observabilidade nativa. Pronto para 10× de volume sem refactor." },
 ];
