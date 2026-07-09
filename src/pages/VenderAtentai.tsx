@@ -17,16 +17,17 @@ import { motion } from "framer-motion";
 // ============================================================
 
 const KPIS = [
+  { value: "R$ 450k", label: "Ticket de aquisição", sub: "Valor fechado · sem earn-out" },
   { value: "R$ 2,3 tri", label: "TAM fiscal Brasil", sub: "Arrecadação tributária 2025" },
   { value: "20 M+", label: "Empresas impactadas", sub: "Reforma Tributária 2026" },
   { value: "Pré-launch", label: "Ativo virgem de mercado", sub: "Sem queima de marca, sem CAC" },
-  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita prontas" },
 ];
+
 
 const ASSETS = [
   { icon: Cpu, title: "IA Fiscal Proprietária", desc: "Motor treinado em LC 214/2025, IBS, CBS e IR. Não é wrapper de LLM — é IP defensável.", tag: "TECNOLOGIA" },
   { icon: Database, title: "Stack Full-Cloud Escalável", desc: "React 18 + Supabase + Edge Functions + RLS em 100% do banco. LGPD compliant end-to-end.", tag: "INFRA" },
-  { icon: Layers, title: "6 Módulos Monetizados", desc: "Simulador, Autônomo, Premium, IR, Limpa Nome e NF — todos com checkout interno via Mercado Pago.", tag: "PRODUTO" },
+  { icon: Layers, title: "5 Módulos Monetizados", desc: "Simulador, Autônomo, Premium, IR e Emissão de Nota Fiscal — todos com checkout interno via Mercado Pago.", tag: "PRODUTO" },
   { icon: Network, title: "Marketplace de Contadores", desc: "Rede de profissionais certificados prontos para escala nacional B2B/B2C.", tag: "REDE" },
   { icon: FileCheck2, title: "Compliance & Segurança", desc: "Auditoria de segurança zerada, RBAC completo, webhooks HMAC-SHA256, storage isolado por owner.", tag: "GOVERNANÇA" },
   { icon: Briefcase, title: "Marca & Domínios", desc: "atentai.com.br + subdomínios técnicos, identidade visual madura, SEO estruturado — pronto para lançamento em Q1 2026.", tag: "BRAND" },
@@ -37,15 +38,15 @@ const REVENUE_STREAMS = [
   { name: "Plano Autônomo", arpu: "R$ 65", freq: "mensal" },
   { name: "Plano Premium", arpu: "R$ 157", freq: "mensal" },
   { name: "Análise de IR", arpu: "R$ 89 – 189", freq: "anual" },
-  { name: "Limpa Nome", arpu: "R$ 840", freq: "one-shot" },
-  { name: "Emissão de NF", arpu: "R$ 97", freq: "mensal" },
+  { name: "Emissão de Nota Fiscal", arpu: "R$ 97", freq: "mensal recorrente" },
 ];
+
 
 const CAPABILITIES = [
   { icon: Cpu, kpi: "3 camadas", title: "Motor Fiscal Proprietário", desc: "Pipeline de IA em 3 camadas: extração (OCR + parsing), raciocínio jurídico (LC 214/2025, IN RFB, IBS/CBS/IS) e simulação numérica com travas legais auditáveis." },
   { icon: Database, kpi: "100% RLS", title: "Arquitetura Zero-Trust", desc: "Supabase + Edge Functions com Row Level Security em toda tabela pública, RBAC por papel, storage isolado por owner e webhooks assinados em HMAC-SHA256." },
   { icon: FileCheck2, kpi: "0 findings", title: "Auditoria de Segurança Zerada", desc: "Scanner de segurança sem findings críticos. Segredos fora do frontend, service_role isolado, CORS restrito, LGPD compliant end-to-end." },
-  { icon: Layers, kpi: "6 módulos", title: "Metodologia Modular", desc: "Cada módulo (Simulador, Autônomo, Premium, IR, Limpa Nome, NF) é isolado, com checkout próprio, feature flags e rollout gradual — permite pivot sem quebrar o core." },
+  { icon: Layers, kpi: "5 módulos", title: "Metodologia Modular", desc: "Cada módulo (Simulador, Autônomo, Premium, IR e Emissão de Nota Fiscal) é isolado, com checkout próprio, feature flags e rollout gradual — permite pivot sem quebrar o core." },
   { icon: LineChart, kpi: "OCR + LLM", title: "IA Fiscal Treinada via API", desc: "Base curada de legislação, jurisprudência e IN, integrada a modelos de linguagem via API gateway próprio. Fallbacks determinísticos garantem previsibilidade fiscal." },
   { icon: Rocket, kpi: "CI/CD", title: "Engenharia Contínua", desc: "Deploy contínuo, migrations versionadas, edge functions serverless auto-escaláveis e observabilidade nativa. Pronto para 10× de volume sem refactor." },
 ];
@@ -85,7 +86,7 @@ const DEAL_INCLUDES = [
 const FAQS = [
   { q: "Qual o modelo da transação?", a: "Aquisição total, participação majoritária ou joint venture estratégica. Aberto a estruturas com earn-out atrelado a metas de crescimento pós-integração." },
   { q: "O time atual continua?", a: "Founding team disponível para 90 dias de transição técnica e comercial. Contratação permanente negociável conforme fit estratégico." },
-  { q: "Qual o ticket de referência?", a: "Múltiplos de ARR + valor estratégico do IP fiscal e timing regulatório. Range compartilhado sob NDA em reunião de qualificação." },
+  { q: "Qual o ticket de referência?", a: "R$ 450.000,00 pela aquisição total do ativo — código, IP fiscal, domínios, marca e transição técnica assistida. Sem earn-out. Estruturas alternativas (participação majoritária ou JV estratégica) negociáveis sob NDA." },
   { q: "Existe due diligence pronta?", a: "Sim. Data room organizado: código, contratos, financeiro, jurídico, segurança e métricas. Acesso liberado após NDA assinado." },
   { q: "E a Reforma Tributária, muda o valor?", a: "A janela 2026-2027 é o pico de demanda. Adquirir agora é comprar o ativo antes do mercado precificar corretamente o timing." },
   { q: "Como iniciamos a conversa?", a: "Reunião de 30 minutos com o founding team. Sem compromisso, sob NDA. Agende pelo botão acima ou envie e-mail direto." },
@@ -169,8 +170,9 @@ export default function VenderAtentai() {
               <span className="text-foreground font-semibold">aquisição estratégica</span>.
             </p>
             <p className="text-base md:text-lg text-muted-foreground/70 max-w-2xl mb-14">
-              IA proprietária. 6 módulos rodando. Marketplace ativo. Compliance zerado.
-              Timing perfeito da Reforma Tributária 2026.
+              IA proprietária. 5 módulos rodando — incluindo emissão de nota fiscal. Marketplace ativo.
+              Compliance zerado. Timing perfeito da Reforma Tributária 2026.
+
             </p>
 
             {/* CTAs */}
@@ -299,14 +301,16 @@ export default function VenderAtentai() {
             <div className="md:col-span-7">
               <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">03 · Monetização</span>
               <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
-                6 linhas de receita.<br />
+                5 linhas de receita.<br />
                 <span className="text-muted-foreground/50">Um único checkout.</span>
+
               </h2>
             </div>
             <div className="md:col-span-5">
               <p className="text-lg text-muted-foreground">
-                Modular por design. Cada usuário entra por um produto e sobe o funil — recorrência mensal,
-                anual e one-shot no mesmo motor de pagamento.
+                Modular por design. Cada usuário entra por um produto e sobe o funil — assinaturas mensais,
+                análises anuais e emissão de nota fiscal recorrente no mesmo motor de pagamento.
+
               </p>
             </div>
           </div>
@@ -476,6 +480,45 @@ export default function VenderAtentai() {
               Tudo dentro da transação.
             </h2>
           </div>
+
+          {/* Price card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="relative mb-12 rounded-3xl border border-accent/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-10 md:p-14 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.15),transparent_50%)]" />
+            <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">
+                    Ticket de aquisição · valor fechado
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  <span className="text-5xl md:text-7xl font-black tracking-[-0.03em]">R$ 450.000</span>
+                  <span className="text-2xl md:text-3xl font-black tracking-tight text-muted-foreground/70">,00</span>
+                </div>
+                <p className="text-muted-foreground mt-4 max-w-lg leading-relaxed">
+                  Aquisição total do ativo. Sem earn-out, sem cláusulas ocultas. Pagamento em condições negociáveis sob NDA.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 md:items-end">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-semibold">Inclui</span>
+                <div className="flex flex-wrap gap-2 md:justify-end">
+                  {["Código-fonte", "IP fiscal", "Domínios", "Marca", "90d transição"].map((t) => (
+                    <span key={t} className="text-xs px-3 py-1.5 rounded-full border border-foreground/15 bg-background/60 backdrop-blur-sm">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
 
           <div className="rounded-3xl border border-foreground/10 overflow-hidden backdrop-blur-sm">
             {DEAL_INCLUDES.map((item, i) => (
