@@ -308,8 +308,9 @@ export default function VenderAtentai() {
             </div>
             <div className="md:col-span-5">
               <p className="text-lg text-muted-foreground">
-                Modular por design. Cada usuário entra por um produto e sobe o funil — recorrência mensal,
-                anual e one-shot no mesmo motor de pagamento.
+                Modular por design. Cada usuário entra por um produto e sobe o funil — assinaturas mensais,
+                análises anuais e emissão de nota fiscal recorrente no mesmo motor de pagamento.
+
               </p>
             </div>
           </div>
