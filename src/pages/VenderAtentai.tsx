@@ -17,11 +17,12 @@ import { motion } from "framer-motion";
 // ============================================================
 
 const KPIS = [
+  { value: "R$ 450k", label: "Ticket de aquisição", sub: "Valor fechado · sem earn-out" },
   { value: "R$ 2,3 tri", label: "TAM fiscal Brasil", sub: "Arrecadação tributária 2025" },
   { value: "20 M+", label: "Empresas impactadas", sub: "Reforma Tributária 2026" },
   { value: "Pré-launch", label: "Ativo virgem de mercado", sub: "Sem queima de marca, sem CAC" },
-  { value: "R$ 39-840", label: "ARPU modular", sub: "6 linhas de receita prontas" },
 ];
+
 
 const ASSETS = [
   { icon: Cpu, title: "IA Fiscal Proprietária", desc: "Motor treinado em LC 214/2025, IBS, CBS e IR. Não é wrapper de LLM — é IP defensável.", tag: "TECNOLOGIA" },
