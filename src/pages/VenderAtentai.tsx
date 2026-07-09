@@ -436,7 +436,7 @@ export default function VenderAtentai() {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-16 items-start">
             <div>
-              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">05 · Perfil do comprador</span>
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">06 · Perfil do comprador</span>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-4 leading-[1.05] mb-6">
                 Quem faz sentido<br />nessa mesa.
               </h2>
@@ -471,7 +471,7 @@ export default function VenderAtentai() {
       <section className="py-32 border-t border-foreground/5 bg-gradient-to-b from-background to-primary/[0.03]">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-16">
-            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">06 · Deal Sheet</span>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">07 · Deal Sheet</span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
               Tudo dentro da transação.
             </h2>
@@ -500,7 +500,7 @@ export default function VenderAtentai() {
       <section className="py-32 border-t border-foreground/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="mb-16">
-            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">07 · FAQ</span>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">08 · FAQ</span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
               Perguntas de M&A.
             </h2>
