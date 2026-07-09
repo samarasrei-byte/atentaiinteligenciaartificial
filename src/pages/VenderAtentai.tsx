@@ -170,8 +170,9 @@ export default function VenderAtentai() {
               <span className="text-foreground font-semibold">aquisição estratégica</span>.
             </p>
             <p className="text-base md:text-lg text-muted-foreground/70 max-w-2xl mb-14">
-              IA proprietária. 6 módulos rodando. Marketplace ativo. Compliance zerado.
-              Timing perfeito da Reforma Tributária 2026.
+              IA proprietária. 5 módulos rodando — incluindo emissão de nota fiscal. Marketplace ativo.
+              Compliance zerado. Timing perfeito da Reforma Tributária 2026.
+
             </p>
 
             {/* CTAs */}
