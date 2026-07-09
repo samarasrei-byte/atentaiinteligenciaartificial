@@ -481,6 +481,45 @@ export default function VenderAtentai() {
             </h2>
           </div>
 
+          {/* Price card */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.7 }}
+            className="relative mb-12 rounded-3xl border border-accent/30 bg-gradient-to-br from-primary/10 via-background to-accent/10 p-10 md:p-14 overflow-hidden"
+          >
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_80%_20%,hsl(var(--accent)/0.15),transparent_50%)]" />
+            <div className="relative flex flex-col md:flex-row md:items-end justify-between gap-8">
+              <div>
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">
+                    Ticket de aquisição · valor fechado
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-3 flex-wrap">
+                  <span className="text-5xl md:text-7xl font-black tracking-[-0.03em]">R$ 450.000</span>
+                  <span className="text-2xl md:text-3xl font-black tracking-tight text-muted-foreground/70">,00</span>
+                </div>
+                <p className="text-muted-foreground mt-4 max-w-lg leading-relaxed">
+                  Aquisição total do ativo. Sem earn-out, sem cláusulas ocultas. Pagamento em condições negociáveis sob NDA.
+                </p>
+              </div>
+              <div className="flex flex-col gap-2 md:items-end">
+                <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground font-semibold">Inclui</span>
+                <div className="flex flex-wrap gap-2 md:justify-end">
+                  {["Código-fonte", "IP fiscal", "Domínios", "Marca", "90d transição"].map((t) => (
+                    <span key={t} className="text-xs px-3 py-1.5 rounded-full border border-foreground/15 bg-background/60 backdrop-blur-sm">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+
           <div className="rounded-3xl border border-foreground/10 overflow-hidden backdrop-blur-sm">
             {DEAL_INCLUDES.map((item, i) => (
               <motion.div
