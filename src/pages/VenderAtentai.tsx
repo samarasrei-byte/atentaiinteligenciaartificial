@@ -301,8 +301,9 @@ export default function VenderAtentai() {
             <div className="md:col-span-7">
               <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">03 · Monetização</span>
               <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
-                6 linhas de receita.<br />
+                5 linhas de receita.<br />
                 <span className="text-muted-foreground/50">Um único checkout.</span>
+
               </h2>
             </div>
             <div className="md:col-span-5">
