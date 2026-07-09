@@ -339,12 +339,69 @@ export default function VenderAtentai() {
         </div>
       </section>
 
+      {/* ============ CAPABILITY PROOF ============ */}
+      <section className="py-32 border-t border-foreground/5 bg-gradient-to-b from-background via-accent/[0.02] to-background">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="max-w-3xl mb-16">
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">04 · Prova de capacidade</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+              Não é promessa.<br />
+              <span className="text-muted-foreground/50">É engenharia entregue.</span>
+            </h2>
+            <p className="text-lg text-muted-foreground mt-6">
+              A tese não depende de métricas de tração — depende do que já está construído.
+              Processo, metodologia e diferenciais técnicos auditáveis linha a linha no data room.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+            {CAPABILITIES.map((c, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+                className="group relative rounded-2xl border border-foreground/10 bg-background p-7 hover:border-accent/40 hover:bg-primary/[0.02] transition-all"
+              >
+                <div className="flex items-start justify-between mb-5">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-accent/20 flex items-center justify-center">
+                    <c.icon className="w-5 h-5 text-accent" />
+                  </div>
+                  <span className="text-[10px] font-mono tracking-wider text-accent/80 uppercase px-2 py-1 rounded-full border border-accent/20 bg-accent/5">
+                    {c.kpi}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold mb-2 tracking-tight">{c.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{c.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Differentials strip */}
+          <div className="rounded-3xl border border-foreground/10 bg-gradient-to-br from-primary/[0.04] to-accent/[0.04] p-8 md:p-10">
+            <div className="flex items-center gap-3 mb-6">
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">Diferenciais técnicos</span>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {DIFFERENTIALS.map((d, i) => (
+                <div key={i} className="border-l-2 border-accent/40 pl-4">
+                  <h4 className="font-bold text-base mb-1.5 tracking-tight">{d.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{d.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ============ WHY BUY ============ */}
       <section className="py-32 border-t border-foreground/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,hsl(var(--accent)/0.08),transparent_50%)]" />
         <div className="container mx-auto px-6 max-w-6xl relative">
           <div className="mb-20 max-w-3xl">
-            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">04 · Por que comprar</span>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">05 · Por que comprar</span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
               Construir custa 3 anos.<br />
               <span className="text-accent">Comprar custa uma reunião.</span>
