@@ -38,9 +38,9 @@ const REVENUE_STREAMS = [
   { name: "Plano Autônomo", arpu: "R$ 65", freq: "mensal" },
   { name: "Plano Premium", arpu: "R$ 157", freq: "mensal" },
   { name: "Análise de IR", arpu: "R$ 89 – 189", freq: "anual" },
-  { name: "Limpa Nome", arpu: "R$ 840", freq: "one-shot" },
-  { name: "Emissão de NF", arpu: "R$ 97", freq: "mensal" },
+  { name: "Emissão de Nota Fiscal", arpu: "R$ 97", freq: "mensal recorrente" },
 ];
+
 
 const CAPABILITIES = [
   { icon: Cpu, kpi: "3 camadas", title: "Motor Fiscal Proprietário", desc: "Pipeline de IA em 3 camadas: extração (OCR + parsing), raciocínio jurídico (LC 214/2025, IN RFB, IBS/CBS/IS) e simulação numérica com travas legais auditáveis." },
