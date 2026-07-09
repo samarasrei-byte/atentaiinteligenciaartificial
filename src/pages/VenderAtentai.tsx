@@ -41,6 +41,22 @@ const REVENUE_STREAMS = [
   { name: "Emissão de NF", arpu: "R$ 97", freq: "mensal" },
 ];
 
+const CAPABILITIES = [
+  { icon: Cpu, kpi: "3 camadas", title: "Motor Fiscal Proprietário", desc: "Pipeline de IA em 3 camadas: extração (OCR + parsing), raciocínio jurídico (LC 214/2025, IN RFB, IBS/CBS/IS) e simulação numérica com travas legais auditáveis." },
+  { icon: Database, kpi: "100% RLS", title: "Arquitetura Zero-Trust", desc: "Supabase + Edge Functions com Row Level Security em toda tabela pública, RBAC por papel, storage isolado por owner e webhooks assinados em HMAC-SHA256." },
+  { icon: FileCheck2, kpi: "0 findings", title: "Auditoria de Segurança Zerada", desc: "Scanner de segurança sem findings críticos. Segredos fora do frontend, service_role isolado, CORS restrito, LGPD compliant end-to-end." },
+  { icon: Layers, kpi: "6 módulos", title: "Metodologia Modular", desc: "Cada módulo (Simulador, Autônomo, Premium, IR, Limpa Nome, NF) é isolado, com checkout próprio, feature flags e rollout gradual — permite pivot sem quebrar o core." },
+  { icon: LineChart, kpi: "OCR + LLM", title: "IA Fiscal Treinada via API", desc: "Base curada de legislação, jurisprudência e IN, integrada a modelos de linguagem via API gateway próprio. Fallbacks determinísticos garantem previsibilidade fiscal." },
+  { icon: Rocket, kpi: "CI/CD", title: "Engenharia Contínua", desc: "Deploy contínuo, migrations versionadas, edge functions serverless auto-escaláveis e observabilidade nativa. Pronto para 10× de volume sem refactor." },
+];
+
+const DIFFERENTIALS = [
+  { title: "Não é wrapper de LLM", desc: "Motor fiscal com regras determinísticas + IA — decisões auditáveis, não caixa-preta." },
+  { title: "Base legal curada", desc: "LC 214/2025, transição 2026-2033, IBS 17,7%, CBS 8,8% e IS mapeados por setor." },
+  { title: "Checkout interno", desc: "Mercado Pago integrado com idempotência, webhooks assinados e fulfillment automático." },
+  { title: "Multi-persona nativo", desc: "PF, autônomo, MEI, PJ e contador — mesmo core, jornadas isoladas por RBAC." },
+];
+
 const WHY_BUY = [
   { icon: Target, title: "Time-to-Market Zero", desc: "3 anos de engenharia embalados. Ligue o marketing e comece a faturar amanhã." },
   { icon: TrendingUp, title: "Timing Regulatório", desc: "Reforma Tributária 2026-2033. Janela única de aquisição — depois de janeiro o preço triplica." },
