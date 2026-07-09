@@ -41,6 +41,22 @@ const REVENUE_STREAMS = [
   { name: "Emissão de NF", arpu: "R$ 97", freq: "mensal" },
 ];
 
+const CAPABILITIES = [
+  { icon: Cpu, kpi: "3 camadas", title: "Motor Fiscal Proprietário", desc: "Pipeline de IA em 3 camadas: extração (OCR + parsing), raciocínio jurídico (LC 214/2025, IN RFB, IBS/CBS/IS) e simulação numérica com travas legais auditáveis." },
+  { icon: Database, kpi: "100% RLS", title: "Arquitetura Zero-Trust", desc: "Supabase + Edge Functions com Row Level Security em toda tabela pública, RBAC por papel, storage isolado por owner e webhooks assinados em HMAC-SHA256." },
+  { icon: FileCheck2, kpi: "0 findings", title: "Auditoria de Segurança Zerada", desc: "Scanner de segurança sem findings críticos. Segredos fora do frontend, service_role isolado, CORS restrito, LGPD compliant end-to-end." },
+  { icon: Layers, kpi: "6 módulos", title: "Metodologia Modular", desc: "Cada módulo (Simulador, Autônomo, Premium, IR, Limpa Nome, NF) é isolado, com checkout próprio, feature flags e rollout gradual — permite pivot sem quebrar o core." },
+  { icon: LineChart, kpi: "OCR + LLM", title: "IA Fiscal Treinada via API", desc: "Base curada de legislação, jurisprudência e IN, integrada a modelos de linguagem via API gateway próprio. Fallbacks determinísticos garantem previsibilidade fiscal." },
+  { icon: Rocket, kpi: "CI/CD", title: "Engenharia Contínua", desc: "Deploy contínuo, migrations versionadas, edge functions serverless auto-escaláveis e observabilidade nativa. Pronto para 10× de volume sem refactor." },
+];
+
+const DIFFERENTIALS = [
+  { title: "Não é wrapper de LLM", desc: "Motor fiscal com regras determinísticas + IA — decisões auditáveis, não caixa-preta." },
+  { title: "Base legal curada", desc: "LC 214/2025, transição 2026-2033, IBS 17,7%, CBS 8,8% e IS mapeados por setor." },
+  { title: "Checkout interno", desc: "Mercado Pago integrado com idempotência, webhooks assinados e fulfillment automático." },
+  { title: "Multi-persona nativo", desc: "PF, autônomo, MEI, PJ e contador — mesmo core, jornadas isoladas por RBAC." },
+];
+
 const WHY_BUY = [
   { icon: Target, title: "Time-to-Market Zero", desc: "3 anos de engenharia embalados. Ligue o marketing e comece a faturar amanhã." },
   { icon: TrendingUp, title: "Timing Regulatório", desc: "Reforma Tributária 2026-2033. Janela única de aquisição — depois de janeiro o preço triplica." },
@@ -247,7 +263,7 @@ export default function VenderAtentai() {
               O que o comprador leva.
             </h2>
             <p className="text-lg text-muted-foreground mt-6">
-              Não é uma ideia. Não é um MVP. É um ecossistema em produção, com receita, usuários e IP defensável.
+              Não é uma ideia. Não é um MVP. É um ecossistema em produção, com arquitetura validada, motor de receita ativado e IP defensável.
             </p>
           </div>
 
@@ -323,12 +339,69 @@ export default function VenderAtentai() {
         </div>
       </section>
 
+      {/* ============ CAPABILITY PROOF ============ */}
+      <section className="py-32 border-t border-foreground/5 bg-gradient-to-b from-background via-accent/[0.02] to-background">
+        <div className="container mx-auto px-6 max-w-6xl">
+          <div className="max-w-3xl mb-16">
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">04 · Prova de capacidade</span>
+            <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
+              Não é promessa.<br />
+              <span className="text-muted-foreground/50">É engenharia entregue.</span>
+            </h2>
+            <p className="text-lg text-muted-foreground mt-6">
+              A tese não depende de métricas de tração — depende do que já está construído.
+              Processo, metodologia e diferenciais técnicos auditáveis linha a linha no data room.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mb-16">
+            {CAPABILITIES.map((c, i) => (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.06 }}
+                className="group relative rounded-2xl border border-foreground/10 bg-background p-7 hover:border-accent/40 hover:bg-primary/[0.02] transition-all"
+              >
+                <div className="flex items-start justify-between mb-5">
+                  <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-accent/20 flex items-center justify-center">
+                    <c.icon className="w-5 h-5 text-accent" />
+                  </div>
+                  <span className="text-[10px] font-mono tracking-wider text-accent/80 uppercase px-2 py-1 rounded-full border border-accent/20 bg-accent/5">
+                    {c.kpi}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold mb-2 tracking-tight">{c.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{c.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Differentials strip */}
+          <div className="rounded-3xl border border-foreground/10 bg-gradient-to-br from-primary/[0.04] to-accent/[0.04] p-8 md:p-10">
+            <div className="flex items-center gap-3 mb-6">
+              <Sparkles className="w-4 h-4 text-accent" />
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">Diferenciais técnicos</span>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {DIFFERENTIALS.map((d, i) => (
+                <div key={i} className="border-l-2 border-accent/40 pl-4">
+                  <h4 className="font-bold text-base mb-1.5 tracking-tight">{d.title}</h4>
+                  <p className="text-sm text-muted-foreground leading-relaxed">{d.desc}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ============ WHY BUY ============ */}
       <section className="py-32 border-t border-foreground/5 relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_50%,hsl(var(--accent)/0.08),transparent_50%)]" />
         <div className="container mx-auto px-6 max-w-6xl relative">
           <div className="mb-20 max-w-3xl">
-            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">04 · Por que comprar</span>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">05 · Por que comprar</span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
               Construir custa 3 anos.<br />
               <span className="text-accent">Comprar custa uma reunião.</span>
@@ -363,7 +436,7 @@ export default function VenderAtentai() {
         <div className="container mx-auto px-6 max-w-6xl">
           <div className="grid md:grid-cols-2 gap-16 items-start">
             <div>
-              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">05 · Perfil do comprador</span>
+              <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">06 · Perfil do comprador</span>
               <h2 className="text-4xl md:text-5xl font-black tracking-tight mt-4 leading-[1.05] mb-6">
                 Quem faz sentido<br />nessa mesa.
               </h2>
@@ -398,7 +471,7 @@ export default function VenderAtentai() {
       <section className="py-32 border-t border-foreground/5 bg-gradient-to-b from-background to-primary/[0.03]">
         <div className="container mx-auto px-6 max-w-5xl">
           <div className="text-center mb-16">
-            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">06 · Deal Sheet</span>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">07 · Deal Sheet</span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
               Tudo dentro da transação.
             </h2>
@@ -427,7 +500,7 @@ export default function VenderAtentai() {
       <section className="py-32 border-t border-foreground/5">
         <div className="container mx-auto px-6 max-w-4xl">
           <div className="mb-16">
-            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">07 · FAQ</span>
+            <span className="text-xs tracking-[0.3em] uppercase text-accent font-semibold">08 · FAQ</span>
             <h2 className="text-4xl md:text-6xl font-black tracking-tight mt-4 leading-[1.05]">
               Perguntas de M&A.
             </h2>
