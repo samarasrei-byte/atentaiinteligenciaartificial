@@ -86,7 +86,7 @@ const DEAL_INCLUDES = [
 const FAQS = [
   { q: "Qual o modelo da transação?", a: "Aquisição total, participação majoritária ou joint venture estratégica. Aberto a estruturas com earn-out atrelado a metas de crescimento pós-integração." },
   { q: "O time atual continua?", a: "Founding team disponível para 90 dias de transição técnica e comercial. Contratação permanente negociável conforme fit estratégico." },
-  { q: "Qual o ticket de referência?", a: "Múltiplos de ARR + valor estratégico do IP fiscal e timing regulatório. Range compartilhado sob NDA em reunião de qualificação." },
+  { q: "Qual o ticket de referência?", a: "R$ 450.000,00 pela aquisição total do ativo — código, IP fiscal, domínios, marca e transição técnica assistida. Sem earn-out. Estruturas alternativas (participação majoritária ou JV estratégica) negociáveis sob NDA." },
   { q: "Existe due diligence pronta?", a: "Sim. Data room organizado: código, contratos, financeiro, jurídico, segurança e métricas. Acesso liberado após NDA assinado." },
   { q: "E a Reforma Tributária, muda o valor?", a: "A janela 2026-2027 é o pico de demanda. Adquirir agora é comprar o ativo antes do mercado precificar corretamente o timing." },
   { q: "Como iniciamos a conversa?", a: "Reunião de 30 minutos com o founding team. Sem compromisso, sob NDA. Agende pelo botão acima ou envie e-mail direto." },
