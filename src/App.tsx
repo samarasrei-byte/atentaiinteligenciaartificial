@@ -65,6 +65,8 @@ const IRPage = lazy(() => import("./pages/IRPage"));
 const CartasContempladas = lazy(() => import("./pages/CartasContempladas"));
 const CartasContempladasQuiz = lazy(() => import("./pages/CartasContempladasQuiz"));
 const ConsorcioQuiz = lazy(() => import("./pages/ConsorcioQuiz"));
+const CartaCreditoEmpresasChat = lazy(() => import("./pages/CartaCreditoEmpresasChat"));
+const ConsorcioPlanejadoChat = lazy(() => import("./pages/ConsorcioPlanejadoChat"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
 const ServicosPage = lazy(() => import("./pages/ServicosPage").catch(() => {
   window.location.reload();
@@ -203,6 +205,12 @@ const App = () => (
               <Route path="/consorcio/quiz" element={<ConsorcioQuiz />} />
               <Route path="/consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
               <Route path="/quiz-consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
+
+              {/* Chat conversacional (LPs estilo assistente) */}
+              <Route path="/carta-credito-empresas" element={<CartaCreditoEmpresasChat />} />
+              <Route path="/carta-credito-empresas/chat" element={<CartaCreditoEmpresasChat />} />
+              <Route path="/consorcio-planejado" element={<ConsorcioPlanejadoChat />} />
+              <Route path="/consorcio-planejado/chat" element={<ConsorcioPlanejadoChat />} />
 
 
               <Route path="/auth" element={<Auth />} />
