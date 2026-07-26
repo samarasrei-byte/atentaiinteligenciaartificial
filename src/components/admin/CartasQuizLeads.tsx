@@ -460,14 +460,7 @@ export default function MentoriaCartasLeads() {
                       </div>
                     )}
 
-                    <CartaLeadTimeline lead={lead} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+
 
                     {/* Motivo de perda */}
                     {lead.status === "lost" && (
