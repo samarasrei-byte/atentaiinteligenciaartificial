@@ -92,6 +92,7 @@ export default function MentoriaCartasLeads() {
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [bandFilter, setBandFilter] = useState<string>("all");
   const [lostReasonFilter, setLostReasonFilter] = useState<string>("all");
+  const [productFilter, setProductFilter] = useState<string>("all");
   const [releaseNotes, setReleaseNotes] = useState<Record<string, string>>({});
   const [lostReasonDraft, setLostReasonDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
