@@ -1,12 +1,27 @@
 import type { ChatLPConfig, ScriptStep } from "../ConversationalChatLP";
 
+// ============================================================
+// CONSÓRCIO PLANEJADO (Lei 11.795/2008)
+// ⚠️ Produto de AUTOFINANCIAMENTO em grupo — SEM juros de crédito.
+// Custo = taxa de administração + fundo de reserva + seguro.
+// Contemplação por sorteio ou lance. Administradoras autorizadas
+// pelo BACEN. NÃO é empréstimo bancário (para crédito PJ com
+// liberação imediata e juros, temos página separada).
+// ============================================================
+
 const script: ScriptStep[] = [
-  { id: "b1", type: "bot", text: "Oi! 👋 Sou a Marina, consultora de Consórcio Planejado da AtentAI." },
+  { id: "b1", type: "bot", text: "Oi! 👋 Sou a Marina, consultora sênior de Consórcio da AtentAI (mais de 10 anos estruturando planos de contemplação)." },
   {
     id: "b2",
     type: "bot",
-    text: "Em 3 minutos eu monto seu plano ideal — parcela leve, com taxa administrativa reduzida (a partir de ~0,12% a.m., bem abaixo dos juros de financiamento) e estratégia de contemplação. Bora começar? 🎯",
+    text: "Antes de começar, deixo claro: aqui é CONSÓRCIO (Lei 11.795/2008, administradoras autorizadas pelo BACEN — Porto, Itaú, Bradesco, HS, Embracon, Âncora, etc.). Você NÃO paga juros de empréstimo — paga taxa de administração + fundo de reserva + seguro. A liberação do crédito é por sorteio ou lance (contemplação). É diferente de empréstimo bancário — para isso temos página própria.",
     delay: 900,
+  },
+  {
+    id: "b2b",
+    type: "bot",
+    text: "Taxa de administração diluída fica a partir de ~0,12% a.m. — muito abaixo dos juros de financiamento (1,3% a 2,5% a.m.). Bora montar seu plano? 🎯",
+    delay: 800,
   },
 
   // OBJETIVO
