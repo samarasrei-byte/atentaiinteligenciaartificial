@@ -124,7 +124,7 @@ const ESPERA_MEDIA_MESES = 24;
 
 const TOTAL_STEPS = 9; // 0..8
 
-export default function CartasContempladasQuiz() {
+export default function ConsorcioQuiz() {
   const { toast } = useToast();
   const [step, setStep] = useState(0);
   const [selected, setSelected] = useState<CartaKey | null>(null);
@@ -200,7 +200,7 @@ export default function CartasContempladasQuiz() {
         carta_type: carta.label,
         credit_range: credito ? brl(credito) : carta.ticket,
         message: "[LEAD PARCIAL - quiz não finalizado]",
-        source: "quiz_landing_partial",
+        source: "quiz_consorcio_partial",
         metadata: { carta_key: carta.key, urgencia, partial: true },
       });
       setPartialSaved(true);
@@ -246,7 +246,7 @@ export default function CartasContempladasQuiz() {
         carta_type: carta.label,
         credit_range: credito ? brl(credito) : carta.ticket,
         message: form.message.trim() || null,
-        source: "quiz_landing",
+        source: "quiz_consorcio",
         metadata: {
           carta_key: carta.key, urgencia, lgpd_consent: true,
           simulacao: simulacao ? {
@@ -296,7 +296,7 @@ export default function CartasContempladasQuiz() {
       {/* NAV com credibilidade */}
       <header className="flex-shrink-0 border-b border-border bg-background/85 backdrop-blur-xl">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 px-4 py-2.5 sm:px-6 sm:py-3">
-          <Link to="/cartas-contempladas" className="flex items-center gap-2">
+          <Link to="/consorcio" className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-6 w-6 rounded-full sm:h-7 sm:w-7" />
             <span className="text-xs font-semibold tracking-tight sm:text-sm">
               AtentAI · <span className="text-muted-foreground">Quiz Consórcio</span>
@@ -716,7 +716,7 @@ export default function CartasContempladasQuiz() {
                 <a href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto">
                   <Button className="w-full rounded-full px-6 sm:w-auto"><MessageCircle className="mr-2 h-4 w-4" /> Adiantar pelo WhatsApp</Button>
                 </a>
-                <Link to="/cartas-contempladas" className="w-full sm:w-auto">
+                <Link to="/consorcio" className="w-full sm:w-auto">
                   <Button variant="outline" className="w-full rounded-full px-6 sm:w-auto">Voltar para o site</Button>
                 </Link>
               </div>
