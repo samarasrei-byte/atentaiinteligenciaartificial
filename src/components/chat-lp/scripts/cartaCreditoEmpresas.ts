@@ -3,11 +3,11 @@ import rafaelAvatar from "@/assets/rafael-especialista-credito.jpg";
 
 
 const script: ScriptStep[] = [
-  { id: "b1", type: "bot", text: "Olá! 👋 Sou o Rafael, especialista em Crédito Corporativo da AtentAI." },
+  { id: "b1", type: "bot", text: "Olá! 👋 Sou o Rafael, especialista sênior em Carta de Crédito Corporativa da AtentAI (mais de 12 anos estruturando cartas para PMEs e grandes empresas)." },
   {
     id: "b2",
     type: "bot",
-    text: "Vou desenhar em 3 minutos uma carta de crédito sob medida para sua empresa — com taxa administrativa reduzida (a partir de ~0,15% a.m., bem abaixo dos juros de empréstimo tradicional) e poder de compra à vista. Posso te fazer algumas perguntas rápidas?",
+    text: "Trabalho com as principais administradoras autorizadas pelo Banco Central (Bradesco, Itaú, Porto, Âncora, HS, Embracon, Servopa). Vou desenhar em 3 minutos uma carta sob medida — taxa administrativa a partir de ~0,15% a.m. (equivalente a ~1,8% a.a., muito abaixo dos ~2,5% a.m. do capital de giro bancário), sem IOF e sem juros compostos. Posso te fazer algumas perguntas rápidas?",
     delay: 900,
   },
 
@@ -42,9 +42,9 @@ const script: ScriptStep[] = [
     type: "chips",
     field: "tipo_carta",
     chips: [
-      { label: "⚡ Já contemplada (uso imediato)", value: "contemplada" },
-      { label: "📆 Cota comum (economia máx.)", value: "comum" },
-      { label: "🤔 Ainda não sei", value: "indefinido" },
+      { label: "⚡ Contemplada (liberação 7–15 dias, ágio ~18–28%)", value: "contemplada" },
+      { label: "📆 Cota comum (economia máxima, entra no sorteio/lance)", value: "comum" },
+      { label: "🤔 Ainda não sei — o especialista me orienta", value: "indefinido" },
     ],
   },
 
@@ -163,7 +163,7 @@ const script: ScriptStep[] = [
   {
     id: "b6",
     type: "bot",
-    text: "Perfeito. Agora só preciso de um contato pro especialista fechar sua proposta personalizada. 🔒 Zero spam.",
+    text: "Perfeito. Agora preciso dos seus dados de contato para o especialista enviar sua proposta personalizada em até 24h úteis. 🔒 LGPD: usados só para essa proposta, zero spam.",
   },
   {
     id: "q_name",
@@ -175,14 +175,33 @@ const script: ScriptStep[] = [
   },
   { id: "q_empresa", type: "input", field: "empresa", kind: "text", placeholder: "Nome da empresa (Razão Social)" },
   { id: "q_cnpj", type: "input", field: "cnpj", kind: "cnpj", placeholder: "CNPJ da empresa" },
-  { id: "q_phone", type: "input", field: "phone", kind: "phone", placeholder: "WhatsApp com DDD" },
-  { id: "q_email", type: "input", field: "email", kind: "email", placeholder: "E-mail corporativo" },
+  {
+    id: "b_whats",
+    type: "bot",
+    text: "📱 Agora seu WhatsApp — é por aqui que o especialista vai te chamar (mais rápido que e-mail).",
+  },
+  {
+    id: "q_phone",
+    type: "input",
+    field: "phone",
+    kind: "phone",
+    placeholder: "WhatsApp com DDD (ex.: 11 98521-4895)",
+    validate: (v) => (v.replace(/\D/g, "").length < 10 ? "WhatsApp inválido — informe DDD + número" : null),
+  },
+  {
+    id: "q_email",
+    type: "input",
+    field: "email",
+    kind: "email",
+    placeholder: "E-mail corporativo (para envio da proposta em PDF)",
+    validate: (v) => (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? "E-mail inválido" : null),
+  },
 
   {
     id: "b7",
     type: "bot",
     text: (a) =>
-      `Fechando: ${a.full_name?.split(" ")[0]}, vou preparar sua proposta de ${a.credito} em até ${a.prazo} meses para ${a.empresa || "sua empresa"}. Só falta seu OK abaixo. 👇`,
+      `Fechando: ${a.full_name?.split(" ")[0]}, vou preparar sua proposta de ${a.credito} em até ${a.prazo} meses para ${a.empresa || "sua empresa"}. Retorno pelo WhatsApp ${a.phone} em até 24h úteis. Só falta seu OK abaixo. 👇`,
   },
   { id: "submit", type: "submit", label: "Receber minha proposta agora" },
 ];
