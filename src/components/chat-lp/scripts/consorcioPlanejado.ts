@@ -85,17 +85,31 @@ const script: ScriptStep[] = [
     text: (a) => `Perfeito, ${a.credito}. Agora escolhe o prazo que cabe na sua parcela.`,
   },
 
-  // PRAZO
+  // PRAZO (calibrado por objetivo — automóvel até 100m, imóvel até 240m)
   {
     id: "q_prazo",
     type: "chips",
     field: "prazo",
-    chips: [
-      { label: "60 meses", value: "60" },
-      { label: "100 meses", value: "100" },
-      { label: "180 meses", value: "180" },
-      { label: "240 meses", value: "240" },
-    ],
+    chips: (a) =>
+      a.objetivo === "imovel" || a.objetivo === "rural"
+        ? [
+            { label: "120 meses (10 anos)", value: "120" },
+            { label: "180 meses (15 anos)", value: "180" },
+            { label: "200 meses (16,5 anos)", value: "200" },
+            { label: "240 meses (20 anos)", value: "240" },
+          ]
+        : a.objetivo === "automovel"
+          ? [
+              { label: "60 meses (5 anos)", value: "60" },
+              { label: "80 meses", value: "80" },
+              { label: "100 meses (máx auto)", value: "100" },
+            ]
+          : [
+              { label: "60 meses", value: "60" },
+              { label: "80 meses", value: "80" },
+              { label: "100 meses", value: "100" },
+              { label: "120 meses", value: "120" },
+            ],
   },
 
   // LANCE
