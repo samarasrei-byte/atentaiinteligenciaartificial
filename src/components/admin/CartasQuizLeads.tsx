@@ -118,7 +118,7 @@ export default function MentoriaCartasLeads() {
       .select("*")
       .eq("lead_id", leadId)
       .order("created_at", { ascending: false });
-    setHistory((p) => ({ ...p, [leadId]: (data ?? []) as StatusHistory[] }));
+    setHistory((p) => ({ ...p, [leadId]: (data ?? []) as unknown as StatusHistory[] }));
   };
 
   useEffect(() => {
