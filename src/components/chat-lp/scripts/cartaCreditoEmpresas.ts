@@ -195,7 +195,7 @@ export const cartaCreditoEmpresasConfig: ChatLPConfig = {
   agentAvatarUrl: rafaelAvatar,
   title: "Carta de Crédito para Empresas | AtentAI",
   metaDescription:
-    "Carta de crédito sem juros para sua empresa: imóvel, frota, máquinas, capital de giro. Simulação personalizada em 3 minutos via chat.",
+    "Carta de crédito corporativa com taxa administrativa reduzida: imóvel, frota, máquinas, capital de giro. Simulação personalizada em 3 minutos via chat.",
   cartaType: "Carta de Crédito Empresarial",
   source: "chat_carta_credito_empresas",
   whatsapp: "5511985214895",
