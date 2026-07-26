@@ -64,6 +64,7 @@ const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const IRPage = lazy(() => import("./pages/IRPage"));
 const CartasContempladas = lazy(() => import("./pages/CartasContempladas"));
 const CartasContempladasQuiz = lazy(() => import("./pages/CartasContempladasQuiz"));
+const ConsorcioQuiz = lazy(() => import("./pages/ConsorcioQuiz"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
 const ServicosPage = lazy(() => import("./pages/ServicosPage").catch(() => {
   window.location.reload();
