@@ -48,18 +48,20 @@ const script: ScriptStep[] = [
     type: "bot",
     text: (a) =>
       a.objetivo === "capital_giro"
-        ? "Capital de giro PJ com garantia de recebíveis: CDI + 5,9% a 14% a.a. (hoje ~1,35% a 2,1% a.m.), dependendo do rating. Prazos de 12 a 36 meses, com carência de até 6 meses."
+        ? "Capital de giro PJ com garantia de recebíveis: CDI + 5,9% a 14% a.a. (hoje ~1,35% a 2,1% a.m.), dependendo do rating. Prazos típicos de 12 a 36 meses, com carência de até 6 meses."
         : a.objetivo === "imovel_comercial"
           ? "Crédito imobiliário PJ com alienação fiduciária do imóvel: IPCA + 8,5% a 11% a.a., prazo até 240 meses, LTV até 60%."
           : a.objetivo === "frota"
-            ? "CDC/Leasing PJ para frota: 1,30% a 1,75% a.m. (equivalente ~17% a 23% a.a.), prazo até 60 meses, com o próprio veículo em garantia."
+            ? "CDC/Leasing PJ para frota: 1,30% a 1,75% a.m. (~17% a 23% a.a.), prazo até 60 meses, com o próprio veículo em garantia."
             : a.objetivo === "maquinario"
               ? "Finame BNDES para máquinas nacionais: TLP + 2,5% a 4,5% a.a., prazo até 120 meses, carência de até 24 meses — a linha mais barata do mercado."
-              : a.objetivo === "antecipacao"
-                ? "Antecipação de recebíveis (duplicatas/cartão): 1,20% a 2,10% a.m., liberação em D+1. Não entra como dívida no balanço."
-                : a.objetivo === "refin"
-                  ? "Home Equity PJ (imóvel em garantia): IPCA + 9% a 12% a.a., prazo até 240 meses — ideal para trocar dívida cara por dívida barata."
-                  : "Perfeito. Vou calibrar a linha ideal e a garantia mais leve para você.",
+              : a.objetivo === "construcao"
+                ? "Crédito para obra/expansão: linhas construtivas com garantia do próprio empreendimento ou imóvel, IPCA + 10% a 13% a.a., liberação por medição, prazo até 120 meses."
+                : a.objetivo === "antecipacao"
+                  ? "Antecipação de recebíveis (duplicatas/cartão): 1,20% a 2,10% a.m., liberação em D+1. Não entra como dívida no balanço."
+                  : a.objetivo === "refin"
+                    ? "Home Equity PJ (imóvel em garantia): IPCA + 9% a 12% a.a., prazo até 240 meses — ideal para trocar dívida cara por dívida barata."
+                    : "Perfeito. Vou calibrar a linha ideal e a garantia mais leve para você.",
   },
 
   // VALOR

@@ -85,16 +85,26 @@ const script: ScriptStep[] = [
     text: (a) => `Perfeito, ${a.credito}. Agora escolhe o prazo que cabe na sua parcela.`,
   },
 
-  // PRAZO
+  // PRAZO — 240 meses só existe em consórcio imobiliário; auto vai até 100
+  {
+    id: "b_prazo",
+    type: "bot",
+    text: (a) =>
+      a.objetivo === "automovel"
+        ? "Para automóvel o prazo máximo em consórcio é 100 meses. Escolha:"
+        : a.objetivo === "imovel" || a.objetivo === "rural"
+          ? "Para imóvel/rural você pode ir até 240 meses (20 anos). Escolha:"
+          : "Escolha o prazo que cabe na sua parcela:",
+  },
   {
     id: "q_prazo",
     type: "chips",
     field: "prazo",
     chips: [
-      { label: "60 meses", value: "60" },
-      { label: "100 meses", value: "100" },
-      { label: "180 meses", value: "180" },
-      { label: "240 meses", value: "240" },
+      { label: "60 meses (5 anos)", value: "60" },
+      { label: "100 meses (máx. automóvel)", value: "100" },
+      { label: "180 meses (só imóvel/rural)", value: "180" },
+      { label: "240 meses (só imóvel — 20 anos)", value: "240" },
     ],
   },
 
@@ -241,7 +251,7 @@ const script: ScriptStep[] = [
     id: "b8",
     type: "bot",
     text: (a) =>
-      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de consórcio de ${a.credito} em ${a.prazo}x${
+      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de consórcio de ${a.credito} em até ${a.prazo} meses${
         a.tipo_cota === "contemplada" ? " (carta contemplada — uso imediato)" : ""
       }. Retorno pelo WhatsApp ${a.phone} em até 24h úteis. 👇`,
   },
