@@ -24,7 +24,7 @@ const script: ScriptStep[] = [
   {
     id: "b3",
     type: "bot",
-    text: "Consigo taxas a partir de CDI + 0,49% a.m. (aprox. 1,55% a.m. hoje) — bem abaixo do capital de giro de balcão. Posso te fazer algumas perguntas rápidas para desenhar sua proposta?",
+    text: "Consigo taxas a partir de CDI + 5,9% a.a. (equivalente a ~1,35% a.m. hoje, com CDI a 10,9% a.a.) — bem abaixo do capital de giro de balcão, que roda entre 2,5% e 4,5% a.m. Posso te fazer algumas perguntas rápidas para desenhar sua proposta?",
     delay: 800,
   },
 
