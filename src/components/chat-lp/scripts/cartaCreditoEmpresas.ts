@@ -7,7 +7,7 @@ const script: ScriptStep[] = [
   {
     id: "b2",
     type: "bot",
-    text: "Vou desenhar em 3 minutos uma carta de crédito sob medida para sua empresa — sem juros, com poder de compra à vista. Posso te fazer algumas perguntas rápidas?",
+    text: "Vou desenhar em 3 minutos uma carta de crédito sob medida para sua empresa — com taxa administrativa reduzida (a partir de ~0,15% a.m., bem abaixo dos juros de empréstimo tradicional) e poder de compra à vista. Posso te fazer algumas perguntas rápidas?",
     delay: 900,
   },
 
