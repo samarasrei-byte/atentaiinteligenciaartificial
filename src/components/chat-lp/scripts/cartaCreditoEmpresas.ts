@@ -1,4 +1,6 @@
 import type { ChatLPConfig, ScriptStep } from "../ConversationalChatLP";
+import rafaelAvatar from "@/assets/rafael-especialista-credito.jpg";
+
 
 const script: ScriptStep[] = [
   { id: "b1", type: "bot", text: "Olá! 👋 Sou o Rafael, especialista em Crédito Corporativo da AtentAI." },
