@@ -1,4 +1,6 @@
 import type { ChatLPConfig, ScriptStep } from "../ConversationalChatLP";
+import rafaelAvatar from "@/assets/rafael-especialista-credito.jpg";
+
 
 const script: ScriptStep[] = [
   { id: "b1", type: "bot", text: "Olá! 👋 Sou o Rafael, especialista em Crédito Corporativo da AtentAI." },
@@ -94,10 +96,10 @@ const script: ScriptStep[] = [
     type: "chips",
     field: "faturamento",
     chips: [
-      { label: "Até R$ 360 mil/ano", value: "mei_simples" },
-      { label: "R$ 360k a R$ 4,8 mi", value: "simples" },
-      { label: "R$ 4,8 mi a R$ 78 mi", value: "presumido" },
-      { label: "Acima de R$ 78 mi", value: "real" },
+      { label: "MEI (até R$ 81 mil/ano)", value: "mei" },
+      { label: "Simples — até R$ 4,8 mi/ano", value: "simples" },
+      { label: "Lucro Presumido — até R$ 78 mi", value: "presumido" },
+      { label: "Lucro Real — acima de R$ 78 mi", value: "real" },
     ],
   },
 
@@ -190,6 +192,7 @@ export const cartaCreditoEmpresasConfig: ChatLPConfig = {
   agentName: "Rafael",
   agentRole: "Especialista Corporativo",
   agentInitials: "RA",
+  agentAvatarUrl: rafaelAvatar,
   title: "Carta de Crédito para Empresas | AtentAI",
   metaDescription:
     "Carta de crédito sem juros para sua empresa: imóvel, frota, máquinas, capital de giro. Simulação personalizada em 3 minutos via chat.",
