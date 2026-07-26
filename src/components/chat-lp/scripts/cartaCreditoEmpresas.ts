@@ -163,7 +163,7 @@ const script: ScriptStep[] = [
   {
     id: "b6",
     type: "bot",
-    text: "Perfeito. Agora só preciso de um contato pro especialista fechar sua proposta personalizada. 🔒 Zero spam.",
+    text: "Perfeito. Agora preciso dos seus dados de contato para o especialista enviar sua proposta personalizada em até 24h úteis. 🔒 LGPD: usados só para essa proposta, zero spam.",
   },
   {
     id: "q_name",
@@ -175,14 +175,33 @@ const script: ScriptStep[] = [
   },
   { id: "q_empresa", type: "input", field: "empresa", kind: "text", placeholder: "Nome da empresa (Razão Social)" },
   { id: "q_cnpj", type: "input", field: "cnpj", kind: "cnpj", placeholder: "CNPJ da empresa" },
-  { id: "q_phone", type: "input", field: "phone", kind: "phone", placeholder: "WhatsApp com DDD" },
-  { id: "q_email", type: "input", field: "email", kind: "email", placeholder: "E-mail corporativo" },
+  {
+    id: "b_whats",
+    type: "bot",
+    text: "📱 Agora seu WhatsApp — é por aqui que o especialista vai te chamar (mais rápido que e-mail).",
+  },
+  {
+    id: "q_phone",
+    type: "input",
+    field: "phone",
+    kind: "phone",
+    placeholder: "WhatsApp com DDD (ex.: 11 98521-4895)",
+    validate: (v) => (v.replace(/\D/g, "").length < 10 ? "WhatsApp inválido — informe DDD + número" : null),
+  },
+  {
+    id: "q_email",
+    type: "input",
+    field: "email",
+    kind: "email",
+    placeholder: "E-mail corporativo (para envio da proposta em PDF)",
+    validate: (v) => (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? "E-mail inválido" : null),
+  },
 
   {
     id: "b7",
     type: "bot",
     text: (a) =>
-      `Fechando: ${a.full_name?.split(" ")[0]}, vou preparar sua proposta de ${a.credito} em até ${a.prazo} meses para ${a.empresa || "sua empresa"}. Só falta seu OK abaixo. 👇`,
+      `Fechando: ${a.full_name?.split(" ")[0]}, vou preparar sua proposta de ${a.credito} em até ${a.prazo} meses para ${a.empresa || "sua empresa"}. Retorno pelo WhatsApp ${a.phone} em até 24h úteis. Só falta seu OK abaixo. 👇`,
   },
   { id: "submit", type: "submit", label: "Receber minha proposta agora" },
 ];
