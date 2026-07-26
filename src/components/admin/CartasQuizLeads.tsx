@@ -135,10 +135,22 @@ export default function MentoriaCartasLeads() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("mentoria_cartas_leads").update({ status }).eq("id", id);
+  const updateStatus = async (id: string, status: string, extra?: { lost_reason?: string | null }) => {
+    const payload: any = { status };
+    if (extra && "lost_reason" in extra) payload.lost_reason = extra.lost_reason;
+    const { error } = await supabase.from("mentoria_cartas_leads").update(payload).eq("id", id);
     if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else toast({ title: "Status atualizado" });
+    else {
+      toast({ title: "Status atualizado" });
+      await logAudit("lead_status_change", id, true, { to: status, lost_reason: extra?.lost_reason });
+      if (openHistory[id]) loadHistory(id);
+    }
+  };
+
+  const toggleHistory = async (id: string) => {
+    const next = !openHistory[id];
+    setOpenHistory((p) => ({ ...p, [id]: next }));
+    if (next && !history[id]) await loadHistory(id);
   };
 
   const logAudit = async (action_type: string, resource_id: string, success: boolean, metadata: any = {}, failure_reason?: string) => {
