@@ -280,6 +280,40 @@ export default function MentoriaCartasLeads() {
         </div>
       </div>
 
+      {/* Segmentação por produto — SEPARAÇÃO CLARA entre Crédito Bancário PJ, Consórcio e Cartas Contempladas */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Separação por produto</CardTitle>
+          <CardDescription>
+            Crédito Bancário PJ (empréstimo com juros), Consórcio (sem juros, taxa administrativa) e Cartas Contempladas são produtos distintos — filtre e trate cada um isoladamente.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {([
+              { k: "all", label: "Todos os produtos", desc: "Todos os leads" },
+              { k: "credito_pj", label: "💼 Crédito Bancário PJ", desc: "Empréstimo com juros" },
+              { k: "consorcio", label: "📆 Consórcio", desc: "Sem juros, taxa adm." },
+              { k: "cartas_contempladas", label: "⚡ Cartas Contempladas", desc: "Crédito imediato" },
+            ] as const).map((p) => {
+              const count = p.k === "all" ? leads.length : leads.filter((l) => productOf(l) === p.k).length;
+              const active = productFilter === p.k;
+              return (
+                <button
+                  key={p.k}
+                  onClick={() => setProductFilter(p.k)}
+                  className={`rounded-lg border p-3 text-left transition ${active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                >
+                  <p className="text-xs font-semibold text-foreground">{p.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{p.desc}</p>
+                  <p className="mt-1 text-2xl font-bold">{count}</p>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
+
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
         {[
