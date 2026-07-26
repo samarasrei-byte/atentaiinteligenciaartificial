@@ -468,6 +468,68 @@ export default function MentoriaCartasLeads() {
           )}
         </CardContent>
       </Card>
+
+                    {/* Motivo de perda */}
+                    {lead.status === "lost" && (
+                      <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 space-y-2">
+                        <p className="text-[10px] font-semibold uppercase text-red-600">Motivo da perda</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Select
+                            value={lead.lost_reason ?? lostReasonDraft[lead.id] ?? ""}
+                            onValueChange={(v) => {
+                              setLostReasonDraft((p) => ({ ...p, [lead.id]: v }));
+                              updateStatus(lead.id, "lost", { lost_reason: v });
+                            }}
+                          >
+                            <SelectTrigger className="w-56"><SelectValue placeholder="Selecionar motivo" /></SelectTrigger>
+                            <SelectContent>
+                              {LOST_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Histórico de mudanças de status */}
+                    <div className="rounded-lg border border-border/60 bg-muted/20 p-2">
+                      <button
+                        onClick={() => toggleHistory(lead.id)}
+                        className="flex w-full items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                      >
+                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" />Histórico de status</span>
+                        <span>{openHistory[lead.id] ? "▲" : "▼"}</span>
+                      </button>
+                      {openHistory[lead.id] && (
+                        <div className="mt-2 space-y-1.5">
+                          {(history[lead.id] ?? []).length === 0 ? (
+                            <p className="text-xs text-muted-foreground">Nenhuma mudança registrada ainda.</p>
+                          ) : (
+                            (history[lead.id] ?? []).map((h) => (
+                              <div key={h.id} className="flex flex-wrap items-center gap-2 text-xs">
+                                <span className="text-muted-foreground">
+                                  {format(new Date(h.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                                </span>
+                                <Badge variant="outline" className="text-[10px]">
+                                  {STATUS[h.from_status ?? ""]?.label ?? h.from_status ?? "—"} → {STATUS[h.to_status]?.label ?? h.to_status}
+                                </Badge>
+                                <span className="text-muted-foreground">por</span>
+                                <span className="font-medium text-foreground">{h.changed_by_email ?? "sistema"}</span>
+                                {h.reason && <span className="text-muted-foreground">· {h.reason}</span>}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    <CartaLeadTimeline lead={lead} />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
