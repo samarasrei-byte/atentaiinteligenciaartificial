@@ -207,8 +207,10 @@ const App = () => (
               <Route path="/quiz-consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
 
               {/* Chat conversacional (LPs estilo assistente) */}
-              <Route path="/carta-credito-empresas" element={<CartaCreditoEmpresasChat />} />
-              <Route path="/carta-credito-empresas/chat" element={<CartaCreditoEmpresasChat />} />
+              <Route path="/carta-credito-empresas" element={<Navigate to="/creditoempresas/chat" replace />} />
+              <Route path="/carta-credito-empresas/chat" element={<Navigate to="/creditoempresas/chat" replace />} />
+              <Route path="/creditoempresas" element={<CartaCreditoEmpresasChat />} />
+              <Route path="/creditoempresas/chat" element={<CartaCreditoEmpresasChat />} />
               <Route path="/consorcio-planejado" element={<ConsorcioPlanejadoChat />} />
               <Route path="/consorcio-planejado/chat" element={<ConsorcioPlanejadoChat />} />
 
