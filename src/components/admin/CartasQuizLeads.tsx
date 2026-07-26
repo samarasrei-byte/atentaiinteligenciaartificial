@@ -92,6 +92,7 @@ export default function MentoriaCartasLeads() {
   const [stageFilter, setStageFilter] = useState<string>("all");
   const [bandFilter, setBandFilter] = useState<string>("all");
   const [lostReasonFilter, setLostReasonFilter] = useState<string>("all");
+  const [productFilter, setProductFilter] = useState<string>("all");
   const [releaseNotes, setReleaseNotes] = useState<Record<string, string>>({});
   const [lostReasonDraft, setLostReasonDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
@@ -208,6 +209,14 @@ export default function MentoriaCartasLeads() {
     }
   };
 
+  const productOf = (l: Lead): string => {
+    const s = l.source ?? "";
+    if (s === "chat_credito_bancario_pj" || s === "chat_carta_credito_empresas") return "credito_pj";
+    if (s === "chat_consorcio_planejado") return "consorcio";
+    if (s.startsWith("quiz_landing")) return "cartas_contempladas";
+    return "outros";
+  };
+
   const filtered = useMemo(() => leads.filter((l) => {
     const q = search.toLowerCase();
     const matchQ = !q || l.full_name.toLowerCase().includes(q) || l.email.toLowerCase().includes(q) || l.phone.includes(q);
@@ -215,8 +224,9 @@ export default function MentoriaCartasLeads() {
     const matchStage = stageFilter === "all" || l.approval_stage === stageFilter;
     const matchBand = bandFilter === "all" || (l.score_band ?? "—") === bandFilter;
     const matchLost = lostReasonFilter === "all" || (l.lost_reason ?? "") === lostReasonFilter;
-    return matchQ && matchS && matchStage && matchBand && matchLost;
-  }), [leads, search, statusFilter, stageFilter, bandFilter, lostReasonFilter]);
+    const matchProd = productFilter === "all" || productOf(l) === productFilter;
+    return matchQ && matchS && matchStage && matchBand && matchLost && matchProd;
+  }), [leads, search, statusFilter, stageFilter, bandFilter, lostReasonFilter, productFilter]);
 
   const kpi = {
     total: leads.length,
@@ -269,6 +279,40 @@ export default function MentoriaCartasLeads() {
           </a>
         </div>
       </div>
+
+      {/* Segmentação por produto — SEPARAÇÃO CLARA entre Crédito Bancário PJ, Consórcio e Cartas Contempladas */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Separação por produto</CardTitle>
+          <CardDescription>
+            Crédito Bancário PJ (empréstimo com juros), Consórcio (sem juros, taxa administrativa) e Cartas Contempladas são produtos distintos — filtre e trate cada um isoladamente.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {([
+              { k: "all", label: "Todos os produtos", desc: "Todos os leads" },
+              { k: "credito_pj", label: "💼 Crédito Bancário PJ", desc: "Empréstimo com juros" },
+              { k: "consorcio", label: "📆 Consórcio", desc: "Sem juros, taxa adm." },
+              { k: "cartas_contempladas", label: "⚡ Cartas Contempladas", desc: "Crédito imediato" },
+            ] as const).map((p) => {
+              const count = p.k === "all" ? leads.length : leads.filter((l) => productOf(l) === p.k).length;
+              const active = productFilter === p.k;
+              return (
+                <button
+                  key={p.k}
+                  onClick={() => setProductFilter(p.k)}
+                  className={`rounded-lg border p-3 text-left transition ${active ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+                >
+                  <p className="text-xs font-semibold text-foreground">{p.label}</p>
+                  <p className="text-[10px] text-muted-foreground">{p.desc}</p>
+                  <p className="mt-1 text-2xl font-bold">{count}</p>
+                </button>
+              );
+            })}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* KPIs */}
       <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
