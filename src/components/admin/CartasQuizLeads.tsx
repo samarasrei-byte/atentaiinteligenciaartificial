@@ -209,6 +209,14 @@ export default function MentoriaCartasLeads() {
     }
   };
 
+  const productOf = (l: Lead): string => {
+    const s = l.source ?? "";
+    if (s === "chat_credito_bancario_pj" || s === "chat_carta_credito_empresas") return "credito_pj";
+    if (s === "chat_consorcio_planejado") return "consorcio";
+    if (s.startsWith("quiz_landing")) return "cartas_contempladas";
+    return "outros";
+  };
+
   const filtered = useMemo(() => leads.filter((l) => {
     const q = search.toLowerCase();
     const matchQ = !q || l.full_name.toLowerCase().includes(q) || l.email.toLowerCase().includes(q) || l.phone.includes(q);
@@ -216,8 +224,9 @@ export default function MentoriaCartasLeads() {
     const matchStage = stageFilter === "all" || l.approval_stage === stageFilter;
     const matchBand = bandFilter === "all" || (l.score_band ?? "—") === bandFilter;
     const matchLost = lostReasonFilter === "all" || (l.lost_reason ?? "") === lostReasonFilter;
-    return matchQ && matchS && matchStage && matchBand && matchLost;
-  }), [leads, search, statusFilter, stageFilter, bandFilter, lostReasonFilter]);
+    const matchProd = productFilter === "all" || productOf(l) === productFilter;
+    return matchQ && matchS && matchStage && matchBand && matchLost && matchProd;
+  }), [leads, search, statusFilter, stageFilter, bandFilter, lostReasonFilter, productFilter]);
 
   const kpi = {
     total: leads.length,
