@@ -181,28 +181,60 @@ export default function ConversationalChatLP({ config }: { config: ChatLPConfig 
     commit(stored, raw, current.field);
   };
 
+  const computeLeadScore = (a: Record<string, string>): number => {
+    let s = 0;
+    // Crédito-alvo (poder de compra)
+    const cred = Number(digits(a.credito || "")) || 0;
+    if (cred >= 1_000_000) s += 25;
+    else if (cred >= 500_000) s += 20;
+    else if (cred >= 200_000) s += 15;
+    else if (cred >= 50_000) s += 10;
+    else if (cred > 0) s += 5;
+    // Score empresarial
+    s += ({ alto: 25, medio: 15, baixo: 8, restricao: 3, desconhecido: 8, "700+": 25, "500-699": 15, "300-499": 8 } as any)[a.score_empresa] ?? 0;
+    // Situação fiscal
+    s += ({ regular: 15, pendencia: 6, desconhecido: 8 } as any)[a.situacao_fiscal] ?? 0;
+    // Tempo de CNPJ
+    s += ({ ">5a": 15, "3-5a": 10, "1-3a": 6, "<1a": 2 } as any)[a.tempo_cnpj] ?? 0;
+    // Faturamento
+    s += ({ real: 15, presumido: 12, simples: 8, mei: 3 } as any)[a.faturamento] ?? 0;
+    // Urgência
+    s += ({ asap: 10, "3m": 7, "6m": 5, pesquisa: 2 } as any)[a.urgencia] ?? 0;
+    return Math.max(0, Math.min(100, s));
+  };
+
   const submitLead = async () => {
     if (!consent) {
       toast({ title: "Autorize o contato (LGPD) para continuar", variant: "destructive" });
+      return;
+    }
+    const phoneRaw = (answers.phone || "").trim();
+    if (digits(phoneRaw).length < 10) {
+      toast({ title: "WhatsApp obrigatório", description: "Informe seu WhatsApp com DDD para o especialista te retornar.", variant: "destructive" });
+      return;
+    }
+    if (!emailRegex.test((answers.email || "").trim())) {
+      toast({ title: "E-mail inválido", description: "Precisamos de um e-mail válido para enviar a proposta.", variant: "destructive" });
       return;
     }
     setSubmitting(true);
     try {
       const full_name = answers.full_name?.trim() || "Lead sem nome";
       const email = (answers.email || "").trim().toLowerCase();
-      const phone = (answers.phone || "").trim() || "pendente";
       const credit_range = answers.credito || answers.faturamento || null;
+      const score = computeLeadScore(answers);
       const { data, error } = await supabase
         .from("mentoria_cartas_leads")
         .insert({
           full_name,
           email,
-          phone,
+          phone: phoneRaw,
           carta_type: config.cartaType,
           credit_range,
           message: answers.message || null,
           source: config.source,
-          metadata: { chat_answers: answers, lgpd_consent: true },
+          score,
+          metadata: { chat_answers: answers, lgpd_consent: true, score },
         })
         .select("id")
         .single();
