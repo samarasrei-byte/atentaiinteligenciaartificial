@@ -42,9 +42,9 @@ const script: ScriptStep[] = [
     type: "chips",
     field: "tipo_carta",
     chips: [
-      { label: "⚡ Já contemplada (uso imediato)", value: "contemplada" },
-      { label: "📆 Cota comum (economia máx.)", value: "comum" },
-      { label: "🤔 Ainda não sei", value: "indefinido" },
+      { label: "⚡ Contemplada (liberação 7–15 dias, ágio ~18–28%)", value: "contemplada" },
+      { label: "📆 Cota comum (economia máxima, entra no sorteio/lance)", value: "comum" },
+      { label: "🤔 Ainda não sei — o especialista me orienta", value: "indefinido" },
     ],
   },
 
