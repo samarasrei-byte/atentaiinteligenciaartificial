@@ -221,7 +221,7 @@ export const consorcioPlanejadoConfig: ChatLPConfig = {
   agentInitials: "MA",
   title: "Consórcio Planejado + Cartas Contempladas | AtentAI",
   metaDescription:
-    "Consórcio sem juros ou carta já contemplada. Estratégia de contemplação personalizada em 3 minutos via chat conversacional.",
+    "Consórcio com taxa administrativa reduzida ou carta já contemplada. Estratégia de contemplação personalizada em 3 minutos via chat conversacional.",
   cartaType: "Consórcio Planejado",
   source: "chat_consorcio_planejado",
   whatsapp: "5511985214895",
