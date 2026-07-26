@@ -35,7 +35,37 @@ interface Lead {
   approval_stage: string;
   admin_released_at: string | null;
   admin_release_notes: string | null;
+  score: number | null;
+  score_band: string | null;
+  lost_reason: string | null;
 }
+
+interface StatusHistory {
+  id: string;
+  lead_id: string;
+  from_status: string | null;
+  to_status: string;
+  reason: string | null;
+  changed_by_email: string | null;
+  created_at: string;
+}
+
+const BAND: Record<string, { label: string; className: string }> = {
+  A: { label: "A · Alto (80+)", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
+  B: { label: "B · Bom (60-79)", className: "bg-blue-500/15 text-blue-600 border-blue-500/30" },
+  C: { label: "C · Médio (40-59)", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
+  D: { label: "D · Baixo (<40)", className: "bg-red-500/15 text-red-500 border-red-500/30" },
+};
+
+const LOST_REASONS = [
+  "Sem interesse",
+  "Sem orçamento",
+  "Sem perfil de crédito",
+  "Concorrente",
+  "Não respondeu",
+  "Contato inválido",
+  "Outro",
+];
 
 const STATUS: Record<string, { label: string; className: string }> = {
   new: { label: "Novo", className: "bg-amber-500/15 text-amber-500 border-amber-500/30" },
