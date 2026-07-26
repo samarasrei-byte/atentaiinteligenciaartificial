@@ -206,6 +206,12 @@ const App = () => (
               <Route path="/consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
               <Route path="/quiz-consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
 
+              {/* Chat conversacional (LPs estilo assistente) */}
+              <Route path="/carta-credito-empresas" element={<CartaCreditoEmpresasChat />} />
+              <Route path="/carta-credito-empresas/chat" element={<CartaCreditoEmpresasChat />} />
+              <Route path="/consorcio-planejado" element={<ConsorcioPlanejadoChat />} />
+              <Route path="/consorcio-planejado/chat" element={<ConsorcioPlanejadoChat />} />
+
 
               <Route path="/auth" element={<Auth />} />
               <Route path="/sobre" element={<SobrePage />} />
