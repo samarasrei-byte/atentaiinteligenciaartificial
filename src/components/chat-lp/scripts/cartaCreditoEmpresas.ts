@@ -7,7 +7,7 @@ const script: ScriptStep[] = [
   {
     id: "b2",
     type: "bot",
-    text: "Vou desenhar em 3 minutos uma carta de crédito sob medida para sua empresa — sem juros, com poder de compra à vista. Posso te fazer algumas perguntas rápidas?",
+    text: "Vou desenhar em 3 minutos uma carta de crédito sob medida para sua empresa — com taxa administrativa reduzida (a partir de ~0,15% a.m., bem abaixo dos juros de empréstimo tradicional) e poder de compra à vista. Posso te fazer algumas perguntas rápidas?",
     delay: 900,
   },
 
@@ -30,9 +30,9 @@ const script: ScriptStep[] = [
     type: "bot",
     text: (a) =>
       a.objetivo === "capital_giro"
-        ? "Ótimo. Capital de giro via carta substitui empréstimo caro por parcela leve, sem IOF extra."
+        ? "Ótimo. Capital de giro via carta troca juros altos de banco por uma taxa administrativa enxuta (aprox. 0,15%–0,25% a.m.), sem IOF."
         : a.objetivo === "frota"
-          ? "Perfeito. Para frota você negocia como cliente à vista — desconto médio de 8 a 15%."
+          ? "Perfeito. Para frota você negocia como cliente à vista — clientes costumam obter desconto significativo da concessionária/montadora."
           : "Excelente escolha. Vamos calibrar o crédito ideal.",
   },
 
@@ -195,7 +195,7 @@ export const cartaCreditoEmpresasConfig: ChatLPConfig = {
   agentAvatarUrl: rafaelAvatar,
   title: "Carta de Crédito para Empresas | AtentAI",
   metaDescription:
-    "Carta de crédito sem juros para sua empresa: imóvel, frota, máquinas, capital de giro. Simulação personalizada em 3 minutos via chat.",
+    "Carta de crédito corporativa com taxa administrativa reduzida: imóvel, frota, máquinas, capital de giro. Simulação personalizada em 3 minutos via chat.",
   cartaType: "Carta de Crédito Empresarial",
   source: "chat_carta_credito_empresas",
   whatsapp: "5511985214895",
