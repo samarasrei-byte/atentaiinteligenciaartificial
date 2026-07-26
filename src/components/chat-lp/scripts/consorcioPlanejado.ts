@@ -241,7 +241,7 @@ const script: ScriptStep[] = [
     id: "b8",
     type: "bot",
     text: (a) =>
-      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de consórcio de ${a.credito} em ${a.prazo}x${
+      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de consórcio de ${a.credito} em até ${a.prazo} meses${
         a.tipo_cota === "contemplada" ? " (carta contemplada — uso imediato)" : ""
       }. Retorno pelo WhatsApp ${a.phone} em até 24h úteis. 👇`,
   },
