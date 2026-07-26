@@ -3,11 +3,11 @@ import rafaelAvatar from "@/assets/rafael-especialista-credito.jpg";
 
 
 const script: ScriptStep[] = [
-  { id: "b1", type: "bot", text: "Olá! 👋 Sou o Rafael, especialista em Crédito Corporativo da AtentAI." },
+  { id: "b1", type: "bot", text: "Olá! 👋 Sou o Rafael, especialista sênior em Carta de Crédito Corporativa da AtentAI (mais de 12 anos estruturando cartas para PMEs e grandes empresas)." },
   {
     id: "b2",
     type: "bot",
-    text: "Vou desenhar em 3 minutos uma carta de crédito sob medida para sua empresa — com taxa administrativa reduzida (a partir de ~0,15% a.m., bem abaixo dos juros de empréstimo tradicional) e poder de compra à vista. Posso te fazer algumas perguntas rápidas?",
+    text: "Trabalho com as principais administradoras autorizadas pelo Banco Central (Bradesco, Itaú, Porto, Âncora, HS, Embracon, Servopa). Vou desenhar em 3 minutos uma carta sob medida — taxa administrativa a partir de ~0,15% a.m. (equivalente a ~1,8% a.a., muito abaixo dos ~2,5% a.m. do capital de giro bancário), sem IOF e sem juros compostos. Posso te fazer algumas perguntas rápidas?",
     delay: 900,
   },
 
