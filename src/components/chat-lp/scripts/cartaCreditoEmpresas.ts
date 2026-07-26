@@ -180,7 +180,7 @@ const script: ScriptStep[] = [
     id: "b7",
     type: "bot",
     text: (a) =>
-      `Fechando: ${a.full_name?.split(" ")[0]}, vou preparar sua proposta de ${a.credito} em ${a.prazo}x para ${a.empresa || "sua empresa"}. Só falta seu OK abaixo. 👇`,
+      `Fechando: ${a.full_name?.split(" ")[0]}, vou preparar sua proposta de ${a.credito} em até ${a.prazo} meses para ${a.empresa || "sua empresa"}. Só falta seu OK abaixo. 👇`,
   },
   { id: "submit", type: "submit", label: "Receber minha proposta agora" },
 ];
