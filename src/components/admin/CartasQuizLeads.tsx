@@ -35,7 +35,37 @@ interface Lead {
   approval_stage: string;
   admin_released_at: string | null;
   admin_release_notes: string | null;
+  score: number | null;
+  score_band: string | null;
+  lost_reason: string | null;
 }
+
+interface StatusHistory {
+  id: string;
+  lead_id: string;
+  from_status: string | null;
+  to_status: string;
+  reason: string | null;
+  changed_by_email: string | null;
+  created_at: string;
+}
+
+const BAND: Record<string, { label: string; className: string }> = {
+  A: { label: "A · Alto (80+)", className: "bg-emerald-500/15 text-emerald-600 border-emerald-500/30" },
+  B: { label: "B · Bom (60-79)", className: "bg-blue-500/15 text-blue-600 border-blue-500/30" },
+  C: { label: "C · Médio (40-59)", className: "bg-amber-500/15 text-amber-600 border-amber-500/30" },
+  D: { label: "D · Baixo (<40)", className: "bg-red-500/15 text-red-500 border-red-500/30" },
+};
+
+const LOST_REASONS = [
+  "Sem interesse",
+  "Sem orçamento",
+  "Sem perfil de crédito",
+  "Concorrente",
+  "Não respondeu",
+  "Contato inválido",
+  "Outro",
+];
 
 const STATUS: Record<string, { label: string; className: string }> = {
   new: { label: "Novo", className: "bg-amber-500/15 text-amber-500 border-amber-500/30" },
@@ -60,8 +90,13 @@ export default function MentoriaCartasLeads() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stageFilter, setStageFilter] = useState<string>("all");
+  const [bandFilter, setBandFilter] = useState<string>("all");
+  const [lostReasonFilter, setLostReasonFilter] = useState<string>("all");
   const [releaseNotes, setReleaseNotes] = useState<Record<string, string>>({});
+  const [lostReasonDraft, setLostReasonDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [history, setHistory] = useState<Record<string, StatusHistory[]>>({});
+  const [openHistory, setOpenHistory] = useState<Record<string, boolean>>({});
 
   const load = async () => {
     setLoading(true);
@@ -75,6 +110,15 @@ export default function MentoriaCartasLeads() {
       setLeads((data ?? []) as Lead[]);
     }
     setLoading(false);
+  };
+
+  const loadHistory = async (leadId: string) => {
+    const { data } = await supabase
+      .from("lead_status_history" as any)
+      .select("*")
+      .eq("lead_id", leadId)
+      .order("created_at", { ascending: false });
+    setHistory((p) => ({ ...p, [leadId]: (data ?? []) as unknown as StatusHistory[] }));
   };
 
   useEffect(() => {
@@ -91,10 +135,22 @@ export default function MentoriaCartasLeads() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("mentoria_cartas_leads").update({ status }).eq("id", id);
+  const updateStatus = async (id: string, status: string, extra?: { lost_reason?: string | null }) => {
+    const payload: any = { status };
+    if (extra && "lost_reason" in extra) payload.lost_reason = extra.lost_reason;
+    const { error } = await supabase.from("mentoria_cartas_leads").update(payload).eq("id", id);
     if (error) toast({ title: "Erro", description: error.message, variant: "destructive" });
-    else toast({ title: "Status atualizado" });
+    else {
+      toast({ title: "Status atualizado" });
+      await logAudit("lead_status_change", id, true, { to: status, lost_reason: extra?.lost_reason });
+      if (openHistory[id]) loadHistory(id);
+    }
+  };
+
+  const toggleHistory = async (id: string) => {
+    const next = !openHistory[id];
+    setOpenHistory((p) => ({ ...p, [id]: next }));
+    if (next && !history[id]) await loadHistory(id);
   };
 
   const logAudit = async (action_type: string, resource_id: string, success: boolean, metadata: any = {}, failure_reason?: string) => {
@@ -157,8 +213,10 @@ export default function MentoriaCartasLeads() {
     const matchQ = !q || l.full_name.toLowerCase().includes(q) || l.email.toLowerCase().includes(q) || l.phone.includes(q);
     const matchS = statusFilter === "all" || l.status === statusFilter;
     const matchStage = stageFilter === "all" || l.approval_stage === stageFilter;
-    return matchQ && matchS && matchStage;
-  }), [leads, search, statusFilter, stageFilter]);
+    const matchBand = bandFilter === "all" || (l.score_band ?? "—") === bandFilter;
+    const matchLost = lostReasonFilter === "all" || (l.lost_reason ?? "") === lostReasonFilter;
+    return matchQ && matchS && matchStage && matchBand && matchLost;
+  }), [leads, search, statusFilter, stageFilter, bandFilter, lostReasonFilter]);
 
   const kpi = {
     total: leads.length,
@@ -166,6 +224,12 @@ export default function MentoriaCartasLeads() {
     aguardando: leads.filter((l) => l.approval_stage === "partner_approved").length,
     liberados: leads.filter((l) => l.approval_stage === "admin_released").length,
   };
+
+  const bandCounts = useMemo(() => {
+    const c: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, "—": 0 };
+    leads.forEach((l) => { c[l.score_band ?? "—"] = (c[l.score_band ?? "—"] ?? 0) + 1; });
+    return c;
+  }, [leads]);
 
   const exportCsv = () => {
     const header = ["Data", "Nome", "Email", "WhatsApp", "Carta", "Crédito", "Etapa", "Status", "Mensagem", "Notas do parceiro"];
@@ -221,29 +285,68 @@ export default function MentoriaCartasLeads() {
         ))}
       </div>
 
+      {/* Ranking por score */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Ranking por score</CardTitle>
+          <CardDescription>Faixas do score empresarial/risco enviado pelo quiz.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+            {(["A","B","C","D","—"] as const).map((b) => (
+              <button
+                key={b}
+                onClick={() => setBandFilter(bandFilter === b ? "all" : b)}
+                className={`rounded-lg border p-3 text-left transition ${bandFilter === b ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {BAND[b]?.label ?? "Sem score"}
+                </p>
+                <p className="mt-1 text-2xl font-bold">{bandCounts[b] ?? 0}</p>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Inscrições</CardTitle>
           <CardDescription>Gerencie leads, valide e libere o contato para o parceiro.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input className="pl-10" placeholder="Buscar por nome, e-mail ou telefone..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <Select value={stageFilter} onValueChange={setStageFilter}>
-              <SelectTrigger className="w-full sm:w-56"><SelectValue placeholder="Etapa" /></SelectTrigger>
+              <SelectTrigger className="w-full lg:w-52"><SelectValue placeholder="Etapa" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as etapas</SelectItem>
                 {Object.entries(STAGE).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger className="w-full lg:w-40"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos status</SelectItem>
                 {Object.entries(STATUS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={bandFilter} onValueChange={setBandFilter}>
+              <SelectTrigger className="w-full lg:w-40"><SelectValue placeholder="Faixa" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as faixas</SelectItem>
+                {(["A","B","C","D"] as const).map((b) => <SelectItem key={b} value={b}>{BAND[b].label}</SelectItem>)}
+                <SelectItem value="—">Sem score</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={lostReasonFilter} onValueChange={setLostReasonFilter}>
+              <SelectTrigger className="w-full lg:w-48"><SelectValue placeholder="Motivo perda" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos motivos</SelectItem>
+                {LOST_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
@@ -270,6 +373,16 @@ export default function MentoriaCartasLeads() {
                           <Badge className={`border ${stg.className}`}><stg.Icon className="mr-1 h-3 w-3" />{stg.label}</Badge>
                           <Badge className={`border ${s.className}`}>{s.label}</Badge>
                           <Badge variant="secondary" className="text-xs">{lead.carta_type}</Badge>
+                          {lead.score_band && (
+                            <Badge className={`border ${BAND[lead.score_band]?.className ?? ""}`}>
+                              Faixa {lead.score_band}{lead.score != null ? ` · ${lead.score}` : ""}
+                            </Badge>
+                          )}
+                          {lead.lost_reason && (
+                            <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-500">
+                              Perda: {lead.lost_reason}
+                            </Badge>
+                          )}
                         </div>
                         <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                           <a href={`mailto:${lead.email}`} className="flex items-center gap-1 hover:text-primary"><Mail className="h-3 w-3" />{lead.email}</a>
@@ -346,6 +459,61 @@ export default function MentoriaCartasLeads() {
                         <p>{lead.admin_release_notes}</p>
                       </div>
                     )}
+
+
+
+                    {/* Motivo de perda */}
+                    {lead.status === "lost" && (
+                      <div className="rounded-lg border border-red-500/30 bg-red-500/5 p-3 space-y-2">
+                        <p className="text-[10px] font-semibold uppercase text-red-600">Motivo da perda</p>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Select
+                            value={lead.lost_reason ?? lostReasonDraft[lead.id] ?? ""}
+                            onValueChange={(v) => {
+                              setLostReasonDraft((p) => ({ ...p, [lead.id]: v }));
+                              updateStatus(lead.id, "lost", { lost_reason: v });
+                            }}
+                          >
+                            <SelectTrigger className="w-56"><SelectValue placeholder="Selecionar motivo" /></SelectTrigger>
+                            <SelectContent>
+                              {LOST_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
+                            </SelectContent>
+                          </Select>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Histórico de mudanças de status */}
+                    <div className="rounded-lg border border-border/60 bg-muted/20 p-2">
+                      <button
+                        onClick={() => toggleHistory(lead.id)}
+                        className="flex w-full items-center justify-between text-[11px] font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground"
+                      >
+                        <span className="flex items-center gap-1"><Clock className="h-3 w-3" />Histórico de status</span>
+                        <span>{openHistory[lead.id] ? "▲" : "▼"}</span>
+                      </button>
+                      {openHistory[lead.id] && (
+                        <div className="mt-2 space-y-1.5">
+                          {(history[lead.id] ?? []).length === 0 ? (
+                            <p className="text-xs text-muted-foreground">Nenhuma mudança registrada ainda.</p>
+                          ) : (
+                            (history[lead.id] ?? []).map((h) => (
+                              <div key={h.id} className="flex flex-wrap items-center gap-2 text-xs">
+                                <span className="text-muted-foreground">
+                                  {format(new Date(h.created_at), "dd/MM HH:mm", { locale: ptBR })}
+                                </span>
+                                <Badge variant="outline" className="text-[10px]">
+                                  {STATUS[h.from_status ?? ""]?.label ?? h.from_status ?? "—"} → {STATUS[h.to_status]?.label ?? h.to_status}
+                                </Badge>
+                                <span className="text-muted-foreground">por</span>
+                                <span className="font-medium text-foreground">{h.changed_by_email ?? "sistema"}</span>
+                                {h.reason && <span className="text-muted-foreground">· {h.reason}</span>}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </div>
 
                     <CartaLeadTimeline lead={lead} />
                   </div>

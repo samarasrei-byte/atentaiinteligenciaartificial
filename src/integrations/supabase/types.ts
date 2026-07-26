@@ -2918,6 +2918,47 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_status_history: {
+        Row: {
+          changed_by: string | null
+          changed_by_email: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          lead_id: string
+          reason: string | null
+          to_status: string
+        }
+        Insert: {
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          lead_id: string
+          reason?: string | null
+          to_status: string
+        }
+        Update: {
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          lead_id?: string
+          reason?: string | null
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_status_history_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "mentoria_cartas_leads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       mass_messages: {
         Row: {
           content: string
@@ -2966,6 +3007,7 @@ export type Database = {
           email: string
           full_name: string
           id: string
+          lost_reason: string | null
           message: string | null
           metadata: Json | null
           partner_approved_at: string | null
@@ -2976,6 +3018,8 @@ export type Database = {
           partner_validation_notes: string | null
           partner_validation_status: string | null
           phone: string
+          score: number | null
+          score_band: string | null
           source: string | null
           status: string
           updated_at: string
@@ -2991,6 +3035,7 @@ export type Database = {
           email: string
           full_name: string
           id?: string
+          lost_reason?: string | null
           message?: string | null
           metadata?: Json | null
           partner_approved_at?: string | null
@@ -3001,6 +3046,8 @@ export type Database = {
           partner_validation_notes?: string | null
           partner_validation_status?: string | null
           phone: string
+          score?: number | null
+          score_band?: string | null
           source?: string | null
           status?: string
           updated_at?: string
@@ -3016,6 +3063,7 @@ export type Database = {
           email?: string
           full_name?: string
           id?: string
+          lost_reason?: string | null
           message?: string | null
           metadata?: Json | null
           partner_approved_at?: string | null
@@ -3026,6 +3074,8 @@ export type Database = {
           partner_validation_notes?: string | null
           partner_validation_status?: string | null
           phone?: string
+          score?: number | null
+          score_band?: string | null
           source?: string | null
           status?: string
           updated_at?: string
@@ -4282,6 +4332,7 @@ export type Database = {
         Returns: Json
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
+      compute_score_band: { Args: { _score: number }; Returns: string }
       get_capassi_org_ids: { Args: { _user_id: string }; Returns: string[] }
       get_daily_question_count: { Args: { p_user_id: string }; Returns: number }
       get_partner_invitation_by_token: {
