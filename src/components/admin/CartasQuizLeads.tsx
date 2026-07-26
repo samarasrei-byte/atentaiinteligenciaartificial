@@ -90,8 +90,13 @@ export default function MentoriaCartasLeads() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [stageFilter, setStageFilter] = useState<string>("all");
+  const [bandFilter, setBandFilter] = useState<string>("all");
+  const [lostReasonFilter, setLostReasonFilter] = useState<string>("all");
   const [releaseNotes, setReleaseNotes] = useState<Record<string, string>>({});
+  const [lostReasonDraft, setLostReasonDraft] = useState<Record<string, string>>({});
   const [savingId, setSavingId] = useState<string | null>(null);
+  const [history, setHistory] = useState<Record<string, StatusHistory[]>>({});
+  const [openHistory, setOpenHistory] = useState<Record<string, boolean>>({});
 
   const load = async () => {
     setLoading(true);
@@ -105,6 +110,15 @@ export default function MentoriaCartasLeads() {
       setLeads((data ?? []) as Lead[]);
     }
     setLoading(false);
+  };
+
+  const loadHistory = async (leadId: string) => {
+    const { data } = await supabase
+      .from("lead_status_history" as any)
+      .select("*")
+      .eq("lead_id", leadId)
+      .order("created_at", { ascending: false });
+    setHistory((p) => ({ ...p, [leadId]: (data ?? []) as StatusHistory[] }));
   };
 
   useEffect(() => {
