@@ -215,16 +215,35 @@ const script: ScriptStep[] = [
     placeholder: "Seu nome completo",
     validate: (v) => (v.trim().split(/\s+/).length < 2 ? "Informe nome e sobrenome" : null),
   },
-  { id: "q_phone", type: "input", field: "phone", kind: "phone", placeholder: "WhatsApp com DDD" },
-  { id: "q_email", type: "input", field: "email", kind: "email", placeholder: "Seu melhor e-mail" },
+  {
+    id: "b_whats",
+    type: "bot",
+    text: "📱 Agora seu WhatsApp — é por aqui que a consultora fala com você (mais rápido que e-mail).",
+  },
+  {
+    id: "q_phone",
+    type: "input",
+    field: "phone",
+    kind: "phone",
+    placeholder: "WhatsApp com DDD (ex.: 11 98521-4895)",
+    validate: (v) => (v.replace(/\D/g, "").length < 10 ? "WhatsApp inválido — informe DDD + número" : null),
+  },
+  {
+    id: "q_email",
+    type: "input",
+    field: "email",
+    kind: "email",
+    placeholder: "Seu melhor e-mail (envio da proposta em PDF)",
+    validate: (v) => (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? "E-mail inválido" : null),
+  },
 
   {
     id: "b8",
     type: "bot",
     text: (a) =>
-      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de ${a.credito} em ${a.prazo}x${
-        a.tipo_cota === "contemplada" ? " (carta contemplada)" : ""
-      }. Confirma o envio abaixo. 👇`,
+      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de consórcio de ${a.credito} em ${a.prazo}x${
+        a.tipo_cota === "contemplada" ? " (carta contemplada — uso imediato)" : ""
+      }. Retorno pelo WhatsApp ${a.phone} em até 24h úteis. 👇`,
   },
   { id: "submit", type: "submit", label: "Receber minha proposta agora" },
 ];
