@@ -5,7 +5,7 @@ const script: ScriptStep[] = [
   {
     id: "b2",
     type: "bot",
-    text: "Em 3 minutos eu monto seu plano ideal — parcela leve, sem juros e com estratégia de contemplação. Bora começar? 🎯",
+    text: "Em 3 minutos eu monto seu plano ideal — parcela leve, com taxa administrativa reduzida (a partir de ~0,12% a.m., bem abaixo dos juros de financiamento) e estratégia de contemplação. Bora começar? 🎯",
     delay: 900,
   },
 
