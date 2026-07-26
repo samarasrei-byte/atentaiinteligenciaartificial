@@ -24,7 +24,7 @@ const script: ScriptStep[] = [
   {
     id: "b3",
     type: "bot",
-    text: "Consigo taxas a partir de CDI + 0,49% a.m. (aprox. 1,55% a.m. hoje) — bem abaixo do capital de giro de balcão. Posso te fazer algumas perguntas rápidas para desenhar sua proposta?",
+    text: "Consigo taxas a partir de CDI + 5,9% a.a. (equivalente a ~1,35% a.m. hoje, com CDI a 10,9% a.a.) — bem abaixo do capital de giro de balcão, que roda entre 2,5% e 4,5% a.m. Posso te fazer algumas perguntas rápidas para desenhar sua proposta?",
     delay: 800,
   },
 
@@ -48,17 +48,17 @@ const script: ScriptStep[] = [
     type: "bot",
     text: (a) =>
       a.objetivo === "capital_giro"
-        ? "Capital de giro PJ com garantia de recebíveis: consigo CDI + 0,49% a 1,20% a.m. dependendo do rating. Sem carência ou com até 6 meses de carência."
+        ? "Capital de giro PJ com garantia de recebíveis: CDI + 5,9% a 14% a.a. (hoje ~1,35% a 2,1% a.m.), dependendo do rating. Prazos de 12 a 36 meses, com carência de até 6 meses."
         : a.objetivo === "imovel_comercial"
-          ? "Crédito imobiliário PJ com o imóvel em garantia (alienação fiduciária): taxas de IPCA + 8,5% a 11% a.a., prazo até 20 anos, LTV até 60%."
+          ? "Crédito imobiliário PJ com alienação fiduciária do imóvel: IPCA + 8,5% a 11% a.a., prazo até 240 meses, LTV até 60%."
           : a.objetivo === "frota"
-            ? "CDC/Leasing PJ para frota: taxas de 1,30% a 1,75% a.m., prazo até 60 meses, com o próprio veículo em garantia (sem imobilizar caixa)."
+            ? "CDC/Leasing PJ para frota: 1,30% a 1,75% a.m. (equivalente ~17% a 23% a.a.), prazo até 60 meses, com o próprio veículo em garantia."
             : a.objetivo === "maquinario"
-              ? "Finame BNDES para máquinas nacionais: TLP + 2,5% a 4,5% a.a., prazo até 120 meses, carência de até 24 meses. Muito abaixo de qualquer outro crédito."
+              ? "Finame BNDES para máquinas nacionais: TLP + 2,5% a 4,5% a.a., prazo até 120 meses, carência de até 24 meses — a linha mais barata do mercado."
               : a.objetivo === "antecipacao"
-                ? "Antecipação de recebíveis (duplicatas/cartão): taxas de 1,20% a 2,10% a.m., liberação em D+1. Sem endividamento no balanço."
+                ? "Antecipação de recebíveis (duplicatas/cartão): 1,20% a 2,10% a.m., liberação em D+1. Não entra como dívida no balanço."
                 : a.objetivo === "refin"
-                  ? "Refinanciamento (Home Equity PJ) com imóvel dado em garantia: IPCA + 9% a 12% a.a., prazo até 20 anos — ideal para trocar dívida cara por dívida barata."
+                  ? "Home Equity PJ (imóvel em garantia): IPCA + 9% a 12% a.a., prazo até 240 meses — ideal para trocar dívida cara por dívida barata."
                   : "Perfeito. Vou calibrar a linha ideal e a garantia mais leve para você.",
   },
 
