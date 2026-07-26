@@ -30,9 +30,9 @@ const script: ScriptStep[] = [
     type: "bot",
     text: (a) =>
       a.objetivo === "capital_giro"
-        ? "Ótimo. Capital de giro via carta substitui empréstimo caro por parcela leve, sem IOF extra."
+        ? "Ótimo. Capital de giro via carta troca juros altos de banco por uma taxa administrativa enxuta (aprox. 0,15%–0,25% a.m.), sem IOF."
         : a.objetivo === "frota"
-          ? "Perfeito. Para frota você negocia como cliente à vista — desconto médio de 8 a 15%."
+          ? "Perfeito. Para frota você negocia como cliente à vista — clientes costumam obter desconto significativo da concessionária/montadora."
           : "Excelente escolha. Vamos calibrar o crédito ideal.",
   },
 
