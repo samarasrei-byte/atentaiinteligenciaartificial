@@ -30,7 +30,7 @@ const script: ScriptStep[] = [
       a.objetivo === "imovel"
         ? "Casa própria é o nº1 dos brasileiros. Consórcio paga até 40% menos que financiamento — e ainda usa FGTS no lance."
         : a.objetivo === "automovel"
-          ? "Ótimo! Carro no consórcio te dá poder de compra à vista — desconto médio de 8 a 15%."
+          ? "Ótimo! Carro no consórcio te dá poder de compra à vista — clientes costumam obter desconto significativo da concessionária."
           : "Excelente. Vamos calibrar seu plano.",
   },
 
