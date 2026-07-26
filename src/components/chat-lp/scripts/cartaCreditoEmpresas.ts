@@ -60,10 +60,10 @@ const script: ScriptStep[] = [
     type: "chips",
     field: "prazo",
     chips: [
-      { label: "Até 60 meses", value: "60" },
-      { label: "60 a 120 meses", value: "120" },
-      { label: "120 a 180 meses", value: "180" },
-      { label: "Mais de 180 meses", value: "240" },
+      { label: "Até 60 meses (5 anos)", value: "60" },
+      { label: "Até 120 meses (10 anos)", value: "120" },
+      { label: "Até 180 meses (15 anos)", value: "180" },
+      { label: "Até 200 meses (16,5 anos)", value: "200" },
     ],
   },
 
