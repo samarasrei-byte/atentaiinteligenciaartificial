@@ -285,29 +285,68 @@ export default function MentoriaCartasLeads() {
         ))}
       </div>
 
+      {/* Ranking por score */}
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-base">Ranking por score</CardTitle>
+          <CardDescription>Faixas do score empresarial/risco enviado pelo quiz.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+            {(["A","B","C","D","—"] as const).map((b) => (
+              <button
+                key={b}
+                onClick={() => setBandFilter(bandFilter === b ? "all" : b)}
+                className={`rounded-lg border p-3 text-left transition ${bandFilter === b ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"}`}
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                  {BAND[b]?.label ?? "Sem score"}
+                </p>
+                <p className="mt-1 text-2xl font-bold">{bandCounts[b] ?? 0}</p>
+              </button>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Inscrições</CardTitle>
           <CardDescription>Gerencie leads, valide e libere o contato para o parceiro.</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+          <div className="mb-4 flex flex-col gap-3 lg:flex-row">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
               <Input className="pl-10" placeholder="Buscar por nome, e-mail ou telefone..." value={search} onChange={(e) => setSearch(e.target.value)} />
             </div>
             <Select value={stageFilter} onValueChange={setStageFilter}>
-              <SelectTrigger className="w-full sm:w-56"><SelectValue placeholder="Etapa" /></SelectTrigger>
+              <SelectTrigger className="w-full lg:w-52"><SelectValue placeholder="Etapa" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todas as etapas</SelectItem>
                 {Object.entries(STAGE).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
               </SelectContent>
             </Select>
             <Select value={statusFilter} onValueChange={setStatusFilter}>
-              <SelectTrigger className="w-full sm:w-40"><SelectValue placeholder="Status" /></SelectTrigger>
+              <SelectTrigger className="w-full lg:w-40"><SelectValue placeholder="Status" /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos status</SelectItem>
                 {Object.entries(STATUS).map(([k, v]) => <SelectItem key={k} value={k}>{v.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Select value={bandFilter} onValueChange={setBandFilter}>
+              <SelectTrigger className="w-full lg:w-40"><SelectValue placeholder="Faixa" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as faixas</SelectItem>
+                {(["A","B","C","D"] as const).map((b) => <SelectItem key={b} value={b}>{BAND[b].label}</SelectItem>)}
+                <SelectItem value="—">Sem score</SelectItem>
+              </SelectContent>
+            </Select>
+            <Select value={lostReasonFilter} onValueChange={setLostReasonFilter}>
+              <SelectTrigger className="w-full lg:w-48"><SelectValue placeholder="Motivo perda" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todos motivos</SelectItem>
+                {LOST_REASONS.map((r) => <SelectItem key={r} value={r}>{r}</SelectItem>)}
               </SelectContent>
             </Select>
           </div>
