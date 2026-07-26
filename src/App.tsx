@@ -64,6 +64,7 @@ const CertificatesPage = lazy(() => import("./pages/CertificatesPage"));
 const IRPage = lazy(() => import("./pages/IRPage"));
 const CartasContempladas = lazy(() => import("./pages/CartasContempladas"));
 const CartasContempladasQuiz = lazy(() => import("./pages/CartasContempladasQuiz"));
+const ConsorcioQuiz = lazy(() => import("./pages/ConsorcioQuiz"));
 const QADashboard = lazy(() => import("./pages/QADashboard"));
 const ServicosPage = lazy(() => import("./pages/ServicosPage").catch(() => {
   window.location.reload();
@@ -199,6 +200,10 @@ const App = () => (
               <Route path="/carta-contemplada" element={<CartasContempladas />} />
               <Route path="/carta-contempladas" element={<CartasContempladas />} />
               <Route path="/quiz-cartas-contempladas" element={<Navigate to="/cartas-contempladas/quiz" replace />} />
+              <Route path="/consorcio/quiz" element={<ConsorcioQuiz />} />
+              <Route path="/consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
+              <Route path="/quiz-consorcio" element={<Navigate to="/consorcio/quiz" replace />} />
+
 
               <Route path="/auth" element={<Auth />} />
               <Route path="/sobre" element={<SobrePage />} />
