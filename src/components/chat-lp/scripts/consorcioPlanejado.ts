@@ -1,12 +1,27 @@
 import type { ChatLPConfig, ScriptStep } from "../ConversationalChatLP";
 
+// ============================================================
+// CONSÓRCIO PLANEJADO (Lei 11.795/2008)
+// ⚠️ Produto de AUTOFINANCIAMENTO em grupo — SEM juros de crédito.
+// Custo = taxa de administração + fundo de reserva + seguro.
+// Contemplação por sorteio ou lance. Administradoras autorizadas
+// pelo BACEN. NÃO é empréstimo bancário (para crédito PJ com
+// liberação imediata e juros, temos página separada).
+// ============================================================
+
 const script: ScriptStep[] = [
-  { id: "b1", type: "bot", text: "Oi! 👋 Sou a Marina, consultora de Consórcio Planejado da AtentAI." },
+  { id: "b1", type: "bot", text: "Oi! 👋 Sou a Marina, consultora sênior de Consórcio da AtentAI (mais de 10 anos estruturando planos de contemplação)." },
   {
     id: "b2",
     type: "bot",
-    text: "Em 3 minutos eu monto seu plano ideal — parcela leve, com taxa administrativa reduzida (a partir de ~0,12% a.m., bem abaixo dos juros de financiamento) e estratégia de contemplação. Bora começar? 🎯",
+    text: "Antes de começar, deixo claro: aqui é CONSÓRCIO (Lei 11.795/2008, administradoras autorizadas pelo BACEN — Porto, Itaú, Bradesco, HS, Embracon, Âncora, etc.). Você NÃO paga juros de empréstimo — paga taxa de administração + fundo de reserva + seguro. A liberação do crédito é por sorteio ou lance (contemplação). É diferente de empréstimo bancário — para isso temos página própria.",
     delay: 900,
+  },
+  {
+    id: "b2b",
+    type: "bot",
+    text: "Taxa de administração diluída fica a partir de ~0,12% a.m. — muito abaixo dos juros de financiamento (1,3% a 2,5% a.m.). Bora montar seu plano? 🎯",
+    delay: 800,
   },
 
   // OBJETIVO
@@ -200,16 +215,35 @@ const script: ScriptStep[] = [
     placeholder: "Seu nome completo",
     validate: (v) => (v.trim().split(/\s+/).length < 2 ? "Informe nome e sobrenome" : null),
   },
-  { id: "q_phone", type: "input", field: "phone", kind: "phone", placeholder: "WhatsApp com DDD" },
-  { id: "q_email", type: "input", field: "email", kind: "email", placeholder: "Seu melhor e-mail" },
+  {
+    id: "b_whats",
+    type: "bot",
+    text: "📱 Agora seu WhatsApp — é por aqui que a consultora fala com você (mais rápido que e-mail).",
+  },
+  {
+    id: "q_phone",
+    type: "input",
+    field: "phone",
+    kind: "phone",
+    placeholder: "WhatsApp com DDD (ex.: 11 98521-4895)",
+    validate: (v) => (v.replace(/\D/g, "").length < 10 ? "WhatsApp inválido — informe DDD + número" : null),
+  },
+  {
+    id: "q_email",
+    type: "input",
+    field: "email",
+    kind: "email",
+    placeholder: "Seu melhor e-mail (envio da proposta em PDF)",
+    validate: (v) => (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()) ? "E-mail inválido" : null),
+  },
 
   {
     id: "b8",
     type: "bot",
     text: (a) =>
-      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de ${a.credito} em ${a.prazo}x${
-        a.tipo_cota === "contemplada" ? " (carta contemplada)" : ""
-      }. Confirma o envio abaixo. 👇`,
+      `Show, ${a.full_name?.split(" ")[0]}! Vou preparar sua proposta de consórcio de ${a.credito} em ${a.prazo}x${
+        a.tipo_cota === "contemplada" ? " (carta contemplada — uso imediato)" : ""
+      }. Retorno pelo WhatsApp ${a.phone} em até 24h úteis. 👇`,
   },
   { id: "submit", type: "submit", label: "Receber minha proposta agora" },
 ];
