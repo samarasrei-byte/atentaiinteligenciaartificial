@@ -5,7 +5,7 @@ const script: ScriptStep[] = [
   {
     id: "b2",
     type: "bot",
-    text: "Em 3 minutos eu monto seu plano ideal — parcela leve, sem juros e com estratégia de contemplação. Bora começar? 🎯",
+    text: "Em 3 minutos eu monto seu plano ideal — parcela leve, com taxa administrativa reduzida (a partir de ~0,12% a.m., bem abaixo dos juros de financiamento) e estratégia de contemplação. Bora começar? 🎯",
     delay: 900,
   },
 
@@ -30,7 +30,7 @@ const script: ScriptStep[] = [
       a.objetivo === "imovel"
         ? "Casa própria é o nº1 dos brasileiros. Consórcio paga até 40% menos que financiamento — e ainda usa FGTS no lance."
         : a.objetivo === "automovel"
-          ? "Ótimo! Carro no consórcio te dá poder de compra à vista — desconto médio de 8 a 15%."
+          ? "Ótimo! Carro no consórcio te dá poder de compra à vista — clientes costumam obter desconto significativo da concessionária."
           : "Excelente. Vamos calibrar seu plano.",
   },
 
@@ -221,7 +221,7 @@ export const consorcioPlanejadoConfig: ChatLPConfig = {
   agentInitials: "MA",
   title: "Consórcio Planejado + Cartas Contempladas | AtentAI",
   metaDescription:
-    "Consórcio sem juros ou carta já contemplada. Estratégia de contemplação personalizada em 3 minutos via chat conversacional.",
+    "Consórcio com taxa administrativa reduzida ou carta já contemplada. Estratégia de contemplação personalizada em 3 minutos via chat conversacional.",
   cartaType: "Consórcio Planejado",
   source: "chat_consorcio_planejado",
   whatsapp: "5511985214895",
