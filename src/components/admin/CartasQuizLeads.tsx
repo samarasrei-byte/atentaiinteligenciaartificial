@@ -213,8 +213,10 @@ export default function MentoriaCartasLeads() {
     const matchQ = !q || l.full_name.toLowerCase().includes(q) || l.email.toLowerCase().includes(q) || l.phone.includes(q);
     const matchS = statusFilter === "all" || l.status === statusFilter;
     const matchStage = stageFilter === "all" || l.approval_stage === stageFilter;
-    return matchQ && matchS && matchStage;
-  }), [leads, search, statusFilter, stageFilter]);
+    const matchBand = bandFilter === "all" || (l.score_band ?? "—") === bandFilter;
+    const matchLost = lostReasonFilter === "all" || (l.lost_reason ?? "") === lostReasonFilter;
+    return matchQ && matchS && matchStage && matchBand && matchLost;
+  }), [leads, search, statusFilter, stageFilter, bandFilter, lostReasonFilter]);
 
   const kpi = {
     total: leads.length,
@@ -222,6 +224,12 @@ export default function MentoriaCartasLeads() {
     aguardando: leads.filter((l) => l.approval_stage === "partner_approved").length,
     liberados: leads.filter((l) => l.approval_stage === "admin_released").length,
   };
+
+  const bandCounts = useMemo(() => {
+    const c: Record<string, number> = { A: 0, B: 0, C: 0, D: 0, "—": 0 };
+    leads.forEach((l) => { c[l.score_band ?? "—"] = (c[l.score_band ?? "—"] ?? 0) + 1; });
+    return c;
+  }, [leads]);
 
   const exportCsv = () => {
     const header = ["Data", "Nome", "Email", "WhatsApp", "Carta", "Crédito", "Etapa", "Status", "Mensagem", "Notas do parceiro"];
