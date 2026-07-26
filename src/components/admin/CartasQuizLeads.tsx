@@ -373,6 +373,16 @@ export default function MentoriaCartasLeads() {
                           <Badge className={`border ${stg.className}`}><stg.Icon className="mr-1 h-3 w-3" />{stg.label}</Badge>
                           <Badge className={`border ${s.className}`}>{s.label}</Badge>
                           <Badge variant="secondary" className="text-xs">{lead.carta_type}</Badge>
+                          {lead.score_band && (
+                            <Badge className={`border ${BAND[lead.score_band]?.className ?? ""}`}>
+                              Faixa {lead.score_band}{lead.score != null ? ` · ${lead.score}` : ""}
+                            </Badge>
+                          )}
+                          {lead.lost_reason && (
+                            <Badge variant="outline" className="text-[10px] border-red-500/40 text-red-500">
+                              Perda: {lead.lost_reason}
+                            </Badge>
+                          )}
                         </div>
                         <div className="mt-2 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
                           <a href={`mailto:${lead.email}`} className="flex items-center gap-1 hover:text-primary"><Mail className="h-3 w-3" />{lead.email}</a>
