@@ -19,7 +19,7 @@ import { Helmet } from "react-helmet-async";
 
 const WHATSAPP_NUMBER = "5511985214895";
 const WHATSAPP_LINK = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-  "Olá! Fiz o Quiz de Cartas Contempladas e quero receber a proposta.",
+  "Olá! Fiz o Quiz de Consórcio e quero receber a proposta.",
 )}`;
 
 type CartaKey = "imovel" | "automovel" | "caminhao" | "reforma_servicos" | "rural" | "nautico";
@@ -274,7 +274,7 @@ export default function CartasContempladasQuiz() {
   };
 
   const stepTitles = [
-    "Benefícios da carta contemplada",
+    "Benefícios da consórcio",
     "Banco x Carta contemplada",
     "Qual seu objetivo?",
     "Vantagens específicas",
@@ -289,8 +289,8 @@ export default function CartasContempladasQuiz() {
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-background text-foreground antialiased">
       <Helmet>
-        <title>Quiz Cartas Contempladas | AtentAI</title>
-        <meta name="description" content="Descubra em 9 passos a carta contemplada ideal, simule sua parcela e receba proposta. Crédito à vista, sem juros, liberado em até 7 dias." />
+        <title>Quiz Consórcio Planejado | AtentAI</title>
+        <meta name="description" content="Descubra em 9 passos a consórcio ideal, simule sua parcela e receba proposta. Crédito à vista, sem juros, liberado em até 7 dias." />
       </Helmet>
 
       {/* NAV com credibilidade */}
@@ -299,7 +299,7 @@ export default function CartasContempladasQuiz() {
           <Link to="/cartas-contempladas" className="flex items-center gap-2">
             <img src="/logo-atentai.png" alt="AtentAI" className="h-6 w-6 rounded-full sm:h-7 sm:w-7" />
             <span className="text-xs font-semibold tracking-tight sm:text-sm">
-              AtentAI · <span className="text-muted-foreground">Quiz Cartas</span>
+              AtentAI · <span className="text-muted-foreground">Quiz Consórcio</span>
             </span>
           </Link>
           <div className="hidden items-center gap-3 sm:flex">
@@ -345,7 +345,7 @@ export default function CartasContempladasQuiz() {
                 {/* STEP 0 — benefícios */}
                 {step === 0 && (
                   <div>
-                    <h2 className="text-lg font-semibold sm:text-2xl">Por que uma carta contemplada?</h2>
+                    <h2 className="text-lg font-semibold sm:text-2xl">Por que uma consórcio?</h2>
                     <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                       3 vantagens que ninguém te conta no banco.
                     </p>
