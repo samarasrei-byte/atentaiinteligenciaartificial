@@ -2074,6 +2074,707 @@ export type Database = {
         }
         Relationships: []
       }
+      difal_calculation_results: {
+        Row: {
+          aliquota_interestadual: number | null
+          aliquota_interna: number | null
+          base_calculo_cents: number
+          created_at: string
+          difal_cents: number
+          fcp_cents: number
+          fcp_percentual: number | null
+          icms_interestadual_cents: number
+          id: string
+          memoria_calculo: Json
+          needs_review: boolean
+          nivel_confianca: string | null
+          parametros: Json
+          percentual_difal: number | null
+          regra_fonte: string | null
+          regra_vigencia_inicio: string | null
+          responsavel_recolhimento: string | null
+          review_reason: string | null
+          rule_id: string | null
+          simulation_id: string
+          total_estimado_cents: number
+          updated_at: string
+          valor_operacao_cents: number
+        }
+        Insert: {
+          aliquota_interestadual?: number | null
+          aliquota_interna?: number | null
+          base_calculo_cents?: number
+          created_at?: string
+          difal_cents?: number
+          fcp_cents?: number
+          fcp_percentual?: number | null
+          icms_interestadual_cents?: number
+          id?: string
+          memoria_calculo?: Json
+          needs_review?: boolean
+          nivel_confianca?: string | null
+          parametros?: Json
+          percentual_difal?: number | null
+          regra_fonte?: string | null
+          regra_vigencia_inicio?: string | null
+          responsavel_recolhimento?: string | null
+          review_reason?: string | null
+          rule_id?: string | null
+          simulation_id: string
+          total_estimado_cents?: number
+          updated_at?: string
+          valor_operacao_cents?: number
+        }
+        Update: {
+          aliquota_interestadual?: number | null
+          aliquota_interna?: number | null
+          base_calculo_cents?: number
+          created_at?: string
+          difal_cents?: number
+          fcp_cents?: number
+          fcp_percentual?: number | null
+          icms_interestadual_cents?: number
+          id?: string
+          memoria_calculo?: Json
+          needs_review?: boolean
+          nivel_confianca?: string | null
+          parametros?: Json
+          percentual_difal?: number | null
+          regra_fonte?: string | null
+          regra_vigencia_inicio?: string | null
+          responsavel_recolhimento?: string | null
+          review_reason?: string | null
+          rule_id?: string | null
+          simulation_id?: string
+          total_estimado_cents?: number
+          updated_at?: string
+          valor_operacao_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_calculation_results_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "difal_tax_rules"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "difal_calculation_results_simulation_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
+            referencedRelation: "difal_simulations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      difal_companies: {
+        Row: {
+          atividade_economica: string | null
+          cnpj: string
+          created_at: string
+          deleted_at: string | null
+          id: string
+          inscricao_estadual: string | null
+          logo_url: string | null
+          nome_fantasia: string | null
+          owner_id: string
+          razao_social: string
+          regime_tributario: string
+          responsavel_fiscal: string | null
+          uf: string
+          updated_at: string
+        }
+        Insert: {
+          atividade_economica?: string | null
+          cnpj: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          inscricao_estadual?: string | null
+          logo_url?: string | null
+          nome_fantasia?: string | null
+          owner_id?: string
+          razao_social: string
+          regime_tributario?: string
+          responsavel_fiscal?: string | null
+          uf: string
+          updated_at?: string
+        }
+        Update: {
+          atividade_economica?: string | null
+          cnpj?: string
+          created_at?: string
+          deleted_at?: string | null
+          id?: string
+          inscricao_estadual?: string | null
+          logo_url?: string | null
+          nome_fantasia?: string | null
+          owner_id?: string
+          razao_social?: string
+          regime_tributario?: string
+          responsavel_fiscal?: string | null
+          uf?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      difal_company_users: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          member_role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          member_role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          member_role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_company_users_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "difal_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      difal_legislative_alerts: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          fonte_url: string | null
+          id: string
+          norma: string | null
+          publicado: boolean
+          resumo: string | null
+          severidade: string
+          titulo: string
+          uf: string | null
+          updated_at: string
+          vigencia_em: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          fonte_url?: string | null
+          id?: string
+          norma?: string | null
+          publicado?: boolean
+          resumo?: string | null
+          severidade?: string
+          titulo: string
+          uf?: string | null
+          updated_at?: string
+          vigencia_em?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          fonte_url?: string | null
+          id?: string
+          norma?: string | null
+          publicado?: boolean
+          resumo?: string | null
+          severidade?: string
+          titulo?: string
+          uf?: string | null
+          updated_at?: string
+          vigencia_em?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_legislative_alerts_uf_fkey"
+            columns: ["uf"]
+            isOneToOne: false
+            referencedRelation: "difal_states"
+            referencedColumns: ["uf"]
+          },
+        ]
+      }
+      difal_product_tax_data: {
+        Row: {
+          created_at: string
+          fcp_percentual: number
+          id: string
+          observacoes: string | null
+          product_id: string
+          substituicao_tributaria: boolean
+          sujeito_fcp: boolean
+          uf: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          fcp_percentual?: number
+          id?: string
+          observacoes?: string | null
+          product_id: string
+          substituicao_tributaria?: boolean
+          sujeito_fcp?: boolean
+          uf?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          fcp_percentual?: number
+          id?: string
+          observacoes?: string | null
+          product_id?: string
+          substituicao_tributaria?: boolean
+          sujeito_fcp?: boolean
+          uf?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_product_tax_data_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "difal_products"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "difal_product_tax_data_uf_fkey"
+            columns: ["uf"]
+            isOneToOne: false
+            referencedRelation: "difal_states"
+            referencedColumns: ["uf"]
+          },
+        ]
+      }
+      difal_products: {
+        Row: {
+          cest: string | null
+          cfop: string | null
+          codigo_interno: string | null
+          company_id: string | null
+          created_at: string
+          created_by: string
+          descricao: string
+          id: string
+          ncm: string | null
+          updated_at: string
+        }
+        Insert: {
+          cest?: string | null
+          cfop?: string | null
+          codigo_interno?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          descricao: string
+          id?: string
+          ncm?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cest?: string | null
+          cfop?: string | null
+          codigo_interno?: string | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          descricao?: string
+          id?: string
+          ncm?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_products_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "difal_companies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      difal_rule_audit_logs: {
+        Row: {
+          changed_by: string | null
+          created_at: string
+          field_name: string
+          id: string
+          new_value: string | null
+          old_value: string | null
+          reason: string | null
+          rule_id: string | null
+        }
+        Insert: {
+          changed_by?: string | null
+          created_at?: string
+          field_name: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          reason?: string | null
+          rule_id?: string | null
+        }
+        Update: {
+          changed_by?: string | null
+          created_at?: string
+          field_name?: string
+          id?: string
+          new_value?: string | null
+          old_value?: string | null
+          reason?: string | null
+          rule_id?: string | null
+        }
+        Relationships: []
+      }
+      difal_simulation_items: {
+        Row: {
+          cest: string | null
+          cfop: string | null
+          codigo_interno: string | null
+          created_at: string
+          desconto_cents: number
+          descricao: string
+          fcp_percentual: number | null
+          id: string
+          ncm: string | null
+          quantidade: number
+          simulation_id: string
+          substituicao_tributaria: boolean
+          sujeito_fcp: boolean
+          updated_at: string
+          valor_unitario_cents: number
+        }
+        Insert: {
+          cest?: string | null
+          cfop?: string | null
+          codigo_interno?: string | null
+          created_at?: string
+          desconto_cents?: number
+          descricao: string
+          fcp_percentual?: number | null
+          id?: string
+          ncm?: string | null
+          quantidade?: number
+          simulation_id: string
+          substituicao_tributaria?: boolean
+          sujeito_fcp?: boolean
+          updated_at?: string
+          valor_unitario_cents?: number
+        }
+        Update: {
+          cest?: string | null
+          cfop?: string | null
+          codigo_interno?: string | null
+          created_at?: string
+          desconto_cents?: number
+          descricao?: string
+          fcp_percentual?: number | null
+          id?: string
+          ncm?: string | null
+          quantidade?: number
+          simulation_id?: string
+          substituicao_tributaria?: boolean
+          sujeito_fcp?: boolean
+          updated_at?: string
+          valor_unitario_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_simulation_items_simulation_id_fkey"
+            columns: ["simulation_id"]
+            isOneToOne: false
+            referencedRelation: "difal_simulations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      difal_simulations: {
+        Row: {
+          canal_venda: string | null
+          comissao_tipo: string | null
+          comissao_valor: number | null
+          company_id: string | null
+          created_at: string
+          created_by: string
+          created_by_email: string | null
+          data_operacao: string
+          descontos_cents: number
+          destinatario_contribuinte: boolean
+          finalidade: string
+          frete_cents: number
+          id: string
+          numero: number
+          observacoes: string | null
+          outras_despesas_cents: number
+          regime_comprador: string | null
+          regime_vendedor: string | null
+          responsavel_recolhimento: string | null
+          seguro_cents: number
+          status: string
+          tipo_operacao: string
+          uf_destino: string
+          uf_origem: string
+          updated_at: string
+          valor_produtos_cents: number
+          valor_total_cents: number
+        }
+        Insert: {
+          canal_venda?: string | null
+          comissao_tipo?: string | null
+          comissao_valor?: number | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          created_by_email?: string | null
+          data_operacao: string
+          descontos_cents?: number
+          destinatario_contribuinte?: boolean
+          finalidade?: string
+          frete_cents?: number
+          id?: string
+          numero?: number
+          observacoes?: string | null
+          outras_despesas_cents?: number
+          regime_comprador?: string | null
+          regime_vendedor?: string | null
+          responsavel_recolhimento?: string | null
+          seguro_cents?: number
+          status?: string
+          tipo_operacao?: string
+          uf_destino: string
+          uf_origem: string
+          updated_at?: string
+          valor_produtos_cents?: number
+          valor_total_cents?: number
+        }
+        Update: {
+          canal_venda?: string | null
+          comissao_tipo?: string | null
+          comissao_valor?: number | null
+          company_id?: string | null
+          created_at?: string
+          created_by?: string
+          created_by_email?: string | null
+          data_operacao?: string
+          descontos_cents?: number
+          destinatario_contribuinte?: boolean
+          finalidade?: string
+          frete_cents?: number
+          id?: string
+          numero?: number
+          observacoes?: string | null
+          outras_despesas_cents?: number
+          regime_comprador?: string | null
+          regime_vendedor?: string | null
+          responsavel_recolhimento?: string | null
+          seguro_cents?: number
+          status?: string
+          tipo_operacao?: string
+          uf_destino?: string
+          uf_origem?: string
+          updated_at?: string
+          valor_produtos_cents?: number
+          valor_total_cents?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_simulations_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "difal_companies"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "difal_simulations_uf_destino_fkey"
+            columns: ["uf_destino"]
+            isOneToOne: false
+            referencedRelation: "difal_states"
+            referencedColumns: ["uf"]
+          },
+          {
+            foreignKeyName: "difal_simulations_uf_origem_fkey"
+            columns: ["uf_origem"]
+            isOneToOne: false
+            referencedRelation: "difal_states"
+            referencedColumns: ["uf"]
+          },
+        ]
+      }
+      difal_states: {
+        Row: {
+          created_at: string
+          name: string
+          region: string
+          uf: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          name: string
+          region: string
+          uf: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          name?: string
+          region?: string
+          uf?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      difal_tax_rule_sources: {
+        Row: {
+          created_at: string
+          id: string
+          publicado_em: string | null
+          rule_id: string
+          titulo: string
+          updated_at: string
+          url: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          publicado_em?: string | null
+          rule_id: string
+          titulo: string
+          updated_at?: string
+          url?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          publicado_em?: string | null
+          rule_id?: string
+          titulo?: string
+          updated_at?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_tax_rule_sources_rule_id_fkey"
+            columns: ["rule_id"]
+            isOneToOne: false
+            referencedRelation: "difal_tax_rules"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      difal_tax_rules: {
+        Row: {
+          aliquota_interestadual: number
+          aliquota_interna: number
+          atualizado_por: string | null
+          base_calculo_metodo: string
+          codigo_receita: string | null
+          created_at: string
+          fcp_percentual: number
+          fonte_oficial: string | null
+          id: string
+          is_demo: boolean
+          nivel_confianca: string
+          norma: string | null
+          observacoes: string | null
+          responsavel_recolhimento: string
+          status: string
+          tipo_operacao: string
+          trat_consumidor_final_contribuinte: string | null
+          trat_consumidor_final_nao_contribuinte: string | null
+          trat_marketplace: string | null
+          trat_revenda: string | null
+          uf_destino: string
+          uf_origem: string | null
+          ultima_revisao_em: string | null
+          updated_at: string
+          vigencia_fim: string | null
+          vigencia_inicio: string
+        }
+        Insert: {
+          aliquota_interestadual: number
+          aliquota_interna: number
+          atualizado_por?: string | null
+          base_calculo_metodo?: string
+          codigo_receita?: string | null
+          created_at?: string
+          fcp_percentual?: number
+          fonte_oficial?: string | null
+          id?: string
+          is_demo?: boolean
+          nivel_confianca?: string
+          norma?: string | null
+          observacoes?: string | null
+          responsavel_recolhimento?: string
+          status?: string
+          tipo_operacao?: string
+          trat_consumidor_final_contribuinte?: string | null
+          trat_consumidor_final_nao_contribuinte?: string | null
+          trat_marketplace?: string | null
+          trat_revenda?: string | null
+          uf_destino: string
+          uf_origem?: string | null
+          ultima_revisao_em?: string | null
+          updated_at?: string
+          vigencia_fim?: string | null
+          vigencia_inicio: string
+        }
+        Update: {
+          aliquota_interestadual?: number
+          aliquota_interna?: number
+          atualizado_por?: string | null
+          base_calculo_metodo?: string
+          codigo_receita?: string | null
+          created_at?: string
+          fcp_percentual?: number
+          fonte_oficial?: string | null
+          id?: string
+          is_demo?: boolean
+          nivel_confianca?: string
+          norma?: string | null
+          observacoes?: string | null
+          responsavel_recolhimento?: string
+          status?: string
+          tipo_operacao?: string
+          trat_consumidor_final_contribuinte?: string | null
+          trat_consumidor_final_nao_contribuinte?: string | null
+          trat_marketplace?: string | null
+          trat_revenda?: string | null
+          uf_destino?: string
+          uf_origem?: string | null
+          ultima_revisao_em?: string | null
+          updated_at?: string
+          vigencia_fim?: string | null
+          vigencia_inicio?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "difal_tax_rules_uf_destino_fkey"
+            columns: ["uf_destino"]
+            isOneToOne: false
+            referencedRelation: "difal_states"
+            referencedColumns: ["uf"]
+          },
+          {
+            foreignKeyName: "difal_tax_rules_uf_origem_fkey"
+            columns: ["uf_origem"]
+            isOneToOne: false
+            referencedRelation: "difal_states"
+            referencedColumns: ["uf"]
+          },
+        ]
+      }
       document_expiration_logs: {
         Row: {
           created_at: string
@@ -4333,6 +5034,12 @@ export type Database = {
       }
       cleanup_old_rate_limits: { Args: never; Returns: undefined }
       compute_score_band: { Args: { _score: number }; Returns: string }
+      difal_can_access_simulation: {
+        Args: { _sim_id: string }
+        Returns: boolean
+      }
+      difal_is_admin: { Args: never; Returns: boolean }
+      difal_is_member: { Args: { _company_id: string }; Returns: boolean }
       get_capassi_org_ids: { Args: { _user_id: string }; Returns: string[] }
       get_daily_question_count: { Args: { p_user_id: string }; Returns: number }
       get_partner_invitation_by_token: {
