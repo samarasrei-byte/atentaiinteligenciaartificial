@@ -123,6 +123,7 @@ const servicosGroup: SidebarGroup = {
     { icon: Scale, label: 'Análise Fiscal', tabId: 'chat-fiscal', badge: 'Chat' },
     { icon: Calculator, label: 'Imposto de Renda', tabId: 'ir-declaracao', badge: 'IA' },
     { icon: FileText, label: 'Emissão de NF', tabId: 'emissao-nf', badge: 'Novo' },
+    { icon: ShoppingBag, label: 'DIFAL Marketplace', tabId: 'difal-marketplace', badge: 'Novo' },
   ],
 };
 
@@ -325,6 +326,12 @@ const AppSidebar: React.FC<AppSidebarProps> = ({
 
   const handleItemClick = (item: SidebarItem) => {
     const { tabId, isService, serviceKey } = item;
+
+    // DIFAL Marketplace → módulo dedicado
+    if (tabId === 'difal-marketplace') {
+      navigate('/difal');
+      return;
+    }
 
     // Emissão de NF → navega para dashboard dedicado
     if (tabId === 'emissao-nf') {
