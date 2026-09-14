@@ -279,6 +279,22 @@ const App = () => (
               <Route path="/placas-solares" element={<PlacasSolares />} />
               <Route path="/simulador-carta" element={<SimuladorCarta />} />
               <Route path="/test-login" element={<Navigate to="/auth" replace />} />
+              {/* DIFAL Marketplace */}
+              <Route path="/difal" element={
+                <ProtectedRoute>
+                  <DifalLayout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<DifalDashboard />} />
+                <Route path="nova-simulacao" element={<DifalNovaSimulacao />} />
+                <Route path="historico" element={<DifalHistorico />} />
+                <Route path="comparar" element={<DifalComparar />} />
+                <Route path="regras" element={<DifalRegras />} />
+                <Route path="produtos" element={<DifalProdutos />} />
+                <Route path="alertas" element={<DifalAlertas />} />
+                <Route path="relatorios" element={<DifalRelatorios />} />
+                <Route path="configuracoes" element={<DifalConfiguracoes />} />
+              </Route>
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
               <Route path="/emissao-nf/dashboard" element={
