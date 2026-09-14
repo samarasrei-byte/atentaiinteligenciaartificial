@@ -85,22 +85,37 @@ export default function DifalHistorico() {
       toast({ title: 'Erro ao duplicar', variant: 'destructive' });
       return;
     }
-    const { id, numero, created_at, updated_at, created_by, difal_simulation_items, ...rest } = original as never as Record<string, unknown> & { difal_simulation_items: Array<Record<string, unknown>> };
+    const originalRow = original as unknown as Record<string, unknown> & {
+      difal_simulation_items?: Array<Record<string, unknown>>;
+    };
+    const itensOriginais: Array<Record<string, unknown>> = originalRow.difal_simulation_items ?? [];
+    const rest: Record<string, unknown> = { ...originalRow };
+    delete rest.id;
+    delete rest.numero;
+    delete rest.created_at;
+    delete rest.updated_at;
+    delete rest.created_by;
+    delete rest.difal_simulation_items;
+
     const { data: nova, error: insErr } = await supabase
       .from('difal_simulations')
-      .insert({ ...(rest as never), status: 'rascunho' })
+      .insert({ ...rest, status: 'rascunho' } as never)
       .select('id')
       .single();
     if (insErr || !nova) {
       toast({ title: 'Erro ao duplicar', variant: 'destructive' });
       return;
     }
-    if (difal_simulation_items?.length) {
+    if (itensOriginais.length) {
       await supabase.from('difal_simulation_items').insert(
-        difal_simulation_items.map((i) => {
-          const { id: _i, simulation_id: _s, created_at: _c, updated_at: _u, ...item } = i;
-          return { ...(item as never), simulation_id: nova.id };
-        }),
+        itensOriginais.map((i) => {
+          const item: Record<string, unknown> = { ...i };
+          delete item.id;
+          delete item.simulation_id;
+          delete item.created_at;
+          delete item.updated_at;
+          return { ...item, simulation_id: nova.id };
+        }) as never,
       );
     }
     toast({ title: 'Simulação duplicada', description: 'Criada como rascunho.' });

@@ -141,6 +141,16 @@ const SeracRelatorios = lazy(() => import("./pages/serac/SeracRelatorios"));
 const SeracConfiguracoes = lazy(() => import("./pages/serac/SeracConfiguracoes"));
 const SeracLogin = lazy(() => import("./pages/serac/SeracLogin"));
 const SeracProtectedRoute = lazy(() => import("./pages/serac/SeracProtectedRoute"));
+const DifalLayout = lazy(() => import("./pages/difal/DifalLayout"));
+const DifalDashboard = lazy(() => import("./pages/difal/DifalDashboard"));
+const DifalNovaSimulacao = lazy(() => import("./pages/difal/DifalNovaSimulacao"));
+const DifalHistorico = lazy(() => import("./pages/difal/DifalHistorico"));
+const DifalComparar = lazy(() => import("./pages/difal/DifalComparar"));
+const DifalRegras = lazy(() => import("./pages/difal/DifalRegras"));
+const DifalProdutos = lazy(() => import("./pages/difal/DifalProdutos"));
+const DifalAlertas = lazy(() => import("./pages/difal/DifalAlertas"));
+const DifalRelatorios = lazy(() => import("./pages/difal/DifalRelatorios"));
+const DifalConfiguracoes = lazy(() => import("./pages/difal/DifalConfiguracoes"));
 const SeracCampanhas = lazy(() => import("./pages/serac/SeracCampanhas"));
 const SeracMarketplace = lazy(() => import("./pages/serac/SeracMarketplace"));
 const SeracCRM = lazy(() => import("./pages/serac/SeracCRM"));
@@ -279,6 +289,22 @@ const App = () => (
               <Route path="/placas-solares" element={<PlacasSolares />} />
               <Route path="/simulador-carta" element={<SimuladorCarta />} />
               <Route path="/test-login" element={<Navigate to="/auth" replace />} />
+              {/* DIFAL Marketplace */}
+              <Route path="/difal" element={
+                <ProtectedRoute>
+                  <DifalLayout />
+                </ProtectedRoute>
+              }>
+                <Route index element={<DifalDashboard />} />
+                <Route path="nova-simulacao" element={<DifalNovaSimulacao />} />
+                <Route path="historico" element={<DifalHistorico />} />
+                <Route path="comparar" element={<DifalComparar />} />
+                <Route path="regras" element={<DifalRegras />} />
+                <Route path="produtos" element={<DifalProdutos />} />
+                <Route path="alertas" element={<DifalAlertas />} />
+                <Route path="relatorios" element={<DifalRelatorios />} />
+                <Route path="configuracoes" element={<DifalConfiguracoes />} />
+              </Route>
               {/* Emissão de NF routes */}
               <Route path="/emissao-nf" element={<EmissaoNFLanding />} />
               <Route path="/emissao-nf/dashboard" element={
