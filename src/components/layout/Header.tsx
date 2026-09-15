@@ -23,6 +23,7 @@ export function Header({ onNavigate }: HeaderProps) {
   // Navigation menu items - Simplified header (2026-02-03)
   const navItems = [
     { label: "Módulo Fiscal", icon: Shield, section: "fiscal" },
+    { label: "DIFAL", icon: Calculator, href: "/difal" },
     { label: "Emissão de NF", icon: Briefcase, href: "/emissao-nf" },
     { label: "Marketplace", icon: Briefcase, href: "/servicos" },
   ];

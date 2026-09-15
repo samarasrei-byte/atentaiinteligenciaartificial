@@ -28,6 +28,7 @@ import {
   Ticket,
   Droplets,
   Sun,
+  Calculator,
 } from 'lucide-react';
 import { LimpaNomePromoCard } from '@/components/limpa-nome/LimpaNomePromoCard';
 import { SUBSCRIBER_DISCOUNTS, formatPrice } from '@/lib/plans';
@@ -52,6 +53,8 @@ interface ServiceCardProps {
   isComingSoon?: boolean;
   isOutOfSeason?: boolean;
   outOfSeasonMessage?: string;
+  isTool?: boolean;
+  ctaLabel?: string;
 }
 
 const ServiceCard: React.FC<ServiceCardProps> = ({
@@ -73,6 +76,8 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
   isComingSoon,
   isOutOfSeason,
   outOfSeasonMessage,
+  isTool,
+  ctaLabel,
 }) => {
   return (
     <motion.div
@@ -161,7 +166,16 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
                 isSubscribed ? 'bg-gradient-to-br from-emerald-50 to-teal-50 border border-emerald-200' : 
                 'bg-muted/50 border border-border'}
             `}>
-              {isCustomPricing ? (
+              {isTool ? (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl font-black text-primary">Acesso ao módulo</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    Entre para simular e gerenciar suas operações
+                  </p>
+                </div>
+              ) : isCustomPricing ? (
                 <div className="space-y-2">
                   <div className="flex items-center gap-3">
                     <span className="text-2xl font-black bg-gradient-to-r from-indigo-600 to-violet-600 bg-clip-text text-transparent">
@@ -242,7 +256,7 @@ const ServiceCard: React.FC<ServiceCardProps> = ({
               `}
             >
               <span className="relative z-10 flex items-center justify-center gap-2">
-                {isOutOfSeason ? 'Indisponível' : isComingSoon ? 'Em Breve' : 'Solicitar Serviço'}
+                {isOutOfSeason ? 'Indisponível' : isComingSoon ? 'Em Breve' : ctaLabel ?? 'Solicitar Serviço'}
                 {!isComingSoon && !isOutOfSeason && <ArrowRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />}
               </span>
             </Button>
@@ -260,6 +274,25 @@ export const ServicesHubModern: React.FC = () => {
   const isSubscribed = subscription?.subscribed || false;
 
   const services = [
+    {
+      title: 'DIFAL Marketplace',
+      description: 'Simule, analise e gerencie o DIFAL de operações interestaduais.',
+      icon: Calculator,
+      basePrice: 0,
+      discountedPrice: 0,
+      discountPercent: 0,
+      features: [
+        'Memória de cálculo completa',
+        'Comparação entre estados',
+        'Histórico e relatórios em PDF',
+      ],
+      gradient: 'from-primary/40 to-success/40',
+      iconGradient: 'from-primary to-success',
+      onClick: () => navigate('/difal'),
+      badge: 'NOVO',
+      isTool: true,
+      ctaLabel: 'Acessar DIFAL',
+    },
     {
       title: 'Emissão de NF Automática',
       description: 'Emita notas fiscais automaticamente após cada pagamento. Zero trabalho manual.',
