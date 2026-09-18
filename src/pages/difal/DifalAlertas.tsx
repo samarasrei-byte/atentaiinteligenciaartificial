@@ -20,9 +20,15 @@ interface AlertaRow {
   created_at: string;
 }
 
-const severidadeVariant = (s: string): 'default' | 'secondary' | 'destructive' | 'outline' => {
-  if (s === 'alta' || s === 'critica') return 'destructive';
-  if (s === 'media') return 'default';
+const severidadeLabel: Record<string, string> = {
+  info: 'Informativo',
+  atencao: 'Atenção',
+  critico: 'Crítico',
+};
+
+const severidadeVariant = (severidade: string): 'default' | 'secondary' | 'destructive' => {
+  if (severidade === 'critico') return 'destructive';
+  if (severidade === 'atencao') return 'default';
   return 'secondary';
 };
 
@@ -44,16 +50,16 @@ export default function DifalAlertas() {
   });
 
   const ufs = useMemo(
-    () => Array.from(new Set((data ?? []).map((a) => a.uf).filter(Boolean) as string[])).sort(),
+    () => Array.from(new Set((data ?? []).map((alerta) => alerta.uf).filter(Boolean) as string[])).sort(),
     [data],
   );
 
   const filtrados = useMemo(() => {
     const termo = busca.trim().toLowerCase();
-    return (data ?? []).filter((a) => {
-      if (uf !== 'todas' && a.uf !== uf) return false;
+    return (data ?? []).filter((alerta) => {
+      if (uf !== 'todas' && alerta.uf !== uf) return false;
       if (!termo) return true;
-      return [a.titulo, a.resumo ?? '', a.norma ?? ''].join(' ').toLowerCase().includes(termo);
+      return [alerta.titulo, alerta.resumo ?? '', alerta.norma ?? ''].join(' ').toLowerCase().includes(termo);
     });
   }, [data, busca, uf]);
 
@@ -62,30 +68,32 @@ export default function DifalAlertas() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Alertas legislativos</h1>
         <p className="text-sm text-muted-foreground">
-          Mudanças de legislação que podem afetar o cálculo do DIFAL nas suas operações.
+          Atualizações publicadas que podem afetar a análise de DIFAL das suas operações.
         </p>
       </div>
 
       <Card>
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">Filtros</CardTitle>
+          <CardTitle className="text-base">Filtrar alertas</CardTitle>
         </CardHeader>
         <CardContent className="grid gap-3 sm:grid-cols-2">
-          <Input placeholder="Buscar por título, resumo ou norma" value={busca} onChange={(e) => setBusca(e.target.value)} />
+          <Input
+            placeholder="Buscar por título, resumo ou norma"
+            value={busca}
+            onChange={(event) => setBusca(event.target.value)}
+          />
           <Select value={uf} onValueChange={setUf}>
             <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="todas">Todos os estados</SelectItem>
-              {ufs.map((u) => (
-                <SelectItem key={u} value={u}>{u}</SelectItem>
-              ))}
+              {ufs.map((estado) => <SelectItem key={estado} value={estado}>{estado}</SelectItem>)}
             </SelectContent>
           </Select>
         </CardContent>
       </Card>
 
       {isLoading ? (
-        <div className="py-12 flex justify-center">
+        <div className="py-12 flex justify-center" aria-label="Carregando alertas">
           <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
         </div>
       ) : filtrados.length === 0 ? (
@@ -93,38 +101,39 @@ export default function DifalAlertas() {
           <CardContent className="py-12 text-center space-y-2">
             <Bell className="h-8 w-8 mx-auto text-muted-foreground" />
             <p className="text-sm text-muted-foreground">
-              Nenhum alerta publicado no momento. Os alertas aparecem aqui quando um administrador autorizado publica
-              uma atualização de legislação.
+              Não há alertas legislativos publicados para os filtros selecionados.
             </p>
           </CardContent>
         </Card>
       ) : (
         <div className="space-y-3">
-          {filtrados.map((a) => (
-            <Card key={a.id}>
+          {filtrados.map((alerta) => (
+            <Card key={alerta.id}>
               <CardContent className="pt-6 space-y-2">
                 <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={severidadeVariant(a.severidade)}>{a.severidade}</Badge>
-                  {a.uf && <Badge variant="outline">{a.uf}</Badge>}
-                  {a.vigencia_em && (
-                    <span className="text-xs text-muted-foreground">Vigência: {dateBR(a.vigencia_em)}</span>
+                  <Badge variant={severidadeVariant(alerta.severidade)}>
+                    {severidadeLabel[alerta.severidade] ?? alerta.severidade}
+                  </Badge>
+                  {alerta.uf && <Badge variant="outline">{alerta.uf}</Badge>}
+                  {alerta.vigencia_em && (
+                    <span className="text-xs text-muted-foreground">Vigência: {dateBR(alerta.vigencia_em)}</span>
                   )}
                 </div>
-                <h2 className="font-semibold tracking-tight">{a.titulo}</h2>
-                {a.resumo && <p className="text-sm text-muted-foreground">{a.resumo}</p>}
+                <h2 className="font-semibold tracking-tight">{alerta.titulo}</h2>
+                {alerta.resumo && <p className="text-sm text-muted-foreground">{alerta.resumo}</p>}
                 <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                  {a.norma && <span>Norma: {a.norma}</span>}
-                  {a.fonte_url && (
+                  {alerta.norma && <span>Norma: {alerta.norma}</span>}
+                  {alerta.fonte_url && (
                     <a
-                      href={a.fonte_url}
+                      href={alerta.fonte_url}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-1 text-primary hover:underline"
                     >
-                      Ver fonte oficial <ExternalLink className="h-3 w-3" />
+                      Consultar fonte <ExternalLink className="h-3 w-3" />
                     </a>
                   )}
-                  <span>Publicado em {dateBR(a.created_at)}</span>
+                  <span>Publicado em {dateBR(alerta.created_at)}</span>
                 </div>
               </CardContent>
             </Card>
