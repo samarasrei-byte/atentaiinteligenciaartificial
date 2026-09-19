@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { motion, useInView } from 'framer-motion';
@@ -11,50 +11,37 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { 
   Calculator, Scale, ShieldCheck, TrendingUp, ArrowRight, CheckCircle2,
-  AlertTriangle, Sparkles, FileText, GitCompare, Building2,
-  FileCheck, Star, Users, PieChart, Layers, HelpCircle, Eye
+  Sparkles, FileText, GitCompare, FileCheck, Users, PieChart, Layers,
+  HelpCircle, Eye, Info, MapPin
 } from 'lucide-react';
 import { UFS } from '@/lib/difal/types';
 import { brl, perc } from '@/lib/difal/format';
-
-const alíquotasPadrao: Record<string, { interna: number; interestadual7: boolean; fcp: number }> = {
-  SP: { interna: 18, interestadual7: false, fcp: 0 },
-  RJ: { interna: 20, interestadual7: false, fcp: 2 },
-  MG: { interna: 18, interestadual7: false, fcp: 0 },
-  RS: { interna: 17, interestadual7: false, fcp: 0 },
-  PR: { interna: 19.5, interestadual7: false, fcp: 0 },
-  SC: { interna: 17, interestadual7: false, fcp: 0 },
-  BA: { interna: 20.5, interestadual7: true, fcp: 2 },
-  PE: { interna: 20.5, interestadual7: true, fcp: 2 },
-  CE: { interna: 20, interestadual7: true, fcp: 2 },
-  GO: { interna: 19, interestadual7: true, fcp: 0 },
-  DF: { interna: 20, interestadual7: true, fcp: 0 },
-  AM: { interna: 20, interestadual7: true, fcp: 2 },
-};
+import { BRAZIL_STATES_TAX_DATA, calcularDifalRapido } from '@/lib/difal/taxTable';
 
 export default function DifalLanding() {
   const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
   const isHeroInView = useInView(heroRef, { once: true });
 
-  // Simulador rápido na Landing
+  // Simulador rápido na Landing com parâmetros padrão
   const [origem, setOrigem] = useState('SP');
   const [destino, setDestino] = useState('BA');
   const [valorStr, setValorStr] = useState('1000');
   const [tipoDest, setTipoDest] = useState<'nao_contribuinte' | 'contribuinte'>('nao_contribuinte');
+  const [comFcp, setComFcp] = useState(true);
 
   const valor = Math.max(0, Number(valorStr) || 0);
-  
-  // Regra aproximada para a demo instantânea
-  const regOrigemSulSudeste = ['SP', 'RJ', 'MG', 'RS', 'PR', 'SC'].includes(origem);
-  const regDestinoNNECO = !['SP', 'RJ', 'MG', 'RS', 'PR', 'SC'].includes(destino);
-  const aliqInterestadual = (regOrigemSulSudeste && regDestinoNNECO) ? 7 : 12;
-  const infoDest = alíquotasPadrao[destino] ?? { interna: 18, interestadual7: true, fcp: 0 };
-  const aliqInterna = infoDest.interna;
-  const difPercent = Math.max(0, aliqInterna - aliqInterestadual);
-  const difalEstimado = valor * (difPercent / 100);
-  const fcpEstimado = valor * (infoDest.fcp / 100);
-  const totalEstimado = difalEstimado + fcpEstimado;
+
+  // Cálculo preciso usando a base das 27 UFs do Brasil
+  const resultado = useMemo(() => {
+    return calcularDifalRapido({
+      origem,
+      destino,
+      valor,
+      destinatarioContribuinte: tipoDest === 'contribuinte',
+      comFcp,
+    });
+  }, [origem, destino, valor, tipoDest, comFcp]);
 
   const handleComecar = () => {
     sessionStorage.setItem('postAuthRedirect', '/difal/nova-simulacao');
@@ -112,7 +99,7 @@ export default function DifalLanding() {
               </h1>
 
               <p className="text-base sm:text-lg text-slate-300 max-w-xl leading-relaxed">
-                Automatize a apuração de diferencial de alíquotas (EC 87/2015 e LC 190/2022), FCP por estado, memória de cálculo passo a passo e emissão de laudos em PDF auditáveis.
+                Automatize a apuração de diferencial de alíquotas (EC 87/2015 e LC 190/2022), FCP de todos os 26 estados e DF, memória de cálculo transparente e laudos auditáveis.
               </p>
 
               <div className="flex flex-wrap gap-4 pt-2">
@@ -186,7 +173,11 @@ export default function DifalLanding() {
                       <Select value={origem} onValueChange={setOrigem}>
                         <SelectTrigger className="mt-1 h-9"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          {UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
+                          {UFS.map((uf) => (
+                            <SelectItem key={uf} value={uf}>
+                              {uf} - {BRAZIL_STATES_TAX_DATA[uf]?.nome ?? uf}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -196,7 +187,11 @@ export default function DifalLanding() {
                       <Select value={destino} onValueChange={setDestino}>
                         <SelectTrigger className="mt-1 h-9"><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          {UFS.map((uf) => <SelectItem key={uf} value={uf}>{uf}</SelectItem>)}
+                          {UFS.map((uf) => (
+                            <SelectItem key={uf} value={uf}>
+                              {uf} - {BRAZIL_STATES_TAX_DATA[uf]?.nome ?? uf}
+                            </SelectItem>
+                          ))}
                         </SelectContent>
                       </Select>
                     </div>
@@ -228,34 +223,34 @@ export default function DifalLanding() {
                   <div className="bg-muted/40 rounded-xl p-4 border border-border/70 space-y-2 mt-4">
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Alíquota Interestadual ({origem} → {destino})</span>
-                      <span className="font-semibold text-foreground">{perc(aliqInterestadual)}</span>
+                      <span className="font-semibold text-foreground">{perc(resultado.aliquotaInterestadual)}</span>
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Alíquota Interna de Destino ({destino})</span>
-                      <span className="font-semibold text-foreground">{perc(aliqInterna)}</span>
+                      <span className="font-semibold text-foreground">{perc(resultado.aliquotaInternaDestino)}</span>
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground">
                       <span>Diferencial apurado</span>
-                      <span className="font-semibold text-foreground">{perc(difPercent)}</span>
+                      <span className="font-semibold text-foreground">{perc(resultado.diferencialApurado)}</span>
                     </div>
-                    {infoDest.fcp > 0 && (
+                    {resultado.fcpPercentual > 0 && (
                       <div className="flex justify-between text-xs text-amber-600 dark:text-amber-400">
                         <span>Fundo de Combate à Pobreza (FCP)</span>
-                        <span className="font-semibold">+{perc(infoDest.fcp)}</span>
+                        <span className="font-semibold">+{perc(resultado.fcpPercentual)}</span>
                       </div>
                     )}
                     
                     <div className="pt-2 border-t border-border/80 flex items-center justify-between">
                       <span className="font-medium text-sm">DIFAL Estimado:</span>
                       <span className="text-xl font-bold text-emerald-600 dark:text-emerald-400 tabular-nums">
-                        {brl(Math.round(totalEstimado * 100))}
+                        {brl(Math.round(resultado.totalEstimado * 100))}
                       </span>
                     </div>
                   </div>
 
                   <Button 
                     onClick={handleComecar}
-                    className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg"
+                    className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-lg shadow-sm"
                   >
                     Abrir Simulação Completa
                     <ArrowRight className="h-4 w-4 ml-2" />
@@ -368,7 +363,7 @@ export default function DifalLanding() {
             <div className="rounded-2xl border border-border bg-card p-6 shadow-lg">
               <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
                 <PieChart className="h-5 w-5 text-primary" />
-                Alíquotas Interestaduais Padrão
+                Alíquotas Interestaduais Constitucionais
               </h3>
               
               <div className="space-y-3 text-sm">
@@ -382,10 +377,10 @@ export default function DifalLanding() {
 
                 <div className="p-3.5 rounded-lg bg-muted/50 border border-border/50">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="font-semibold text-foreground">Demais operações entre estados</span>
+                    <span className="font-semibold text-foreground">Demais operações interestaduais entre estados</span>
                     <Badge variant="secondary" className="font-mono font-bold">12%</Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground">Aplicável a operações entre mesmos blocos ou Norte/NE para Sul/SE.</p>
+                  <p className="text-xs text-muted-foreground">Aplicável a operações entre estados do mesmo bloco regional ou N/NE/CO para S/SE.</p>
                 </div>
 
                 <div className="p-3.5 rounded-lg bg-muted/50 border border-border/50">
@@ -401,8 +396,59 @@ export default function DifalLanding() {
         </div>
       </section>
 
+      {/* ━━━ TABELA COMPLETA DAS 27 UFs ━━━ */}
+      <section className="py-20 bg-muted/20 border-t border-border/50">
+        <div className="container max-w-6xl mx-auto px-4">
+          <div className="text-center max-w-3xl mx-auto mb-12 space-y-3">
+            <Badge variant="outline" className="px-3 py-1 text-xs">
+              <MapPin className="h-3.5 w-3.5 mr-1 text-primary" />
+              Cobertura Nacional Completa
+            </Badge>
+            <h2 className="text-3xl font-extrabold tracking-tight">
+              Alíquotas Internas e FCP de Todos os Estados
+            </h2>
+            <p className="text-muted-foreground text-sm">
+              Consulte os parâmetros cadastrados para todas as 27 Unidades Federativas do Brasil.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+            {UFS.map((uf) => {
+              const info = BRAZIL_STATES_TAX_DATA[uf];
+              if (!info) return null;
+              return (
+                <div 
+                  key={uf}
+                  onClick={() => {
+                    setDestino(uf);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                  }}
+                  className="p-3.5 rounded-xl border border-border bg-card hover:border-primary/50 hover:bg-muted/40 transition-all cursor-pointer group shadow-sm"
+                >
+                  <div className="flex items-center justify-between mb-1.5">
+                    <span className="font-bold text-base text-foreground group-hover:text-primary transition-colors">{uf}</span>
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0">{info.regiao}</Badge>
+                  </div>
+                  <p className="text-xs text-muted-foreground truncate">{info.nome}</p>
+                  <div className="mt-2 pt-2 border-t border-border/60 flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Interna:</span>
+                    <span className="font-semibold text-foreground">{perc(info.aliquotaInterna)}</span>
+                  </div>
+                  {info.fcpPadrao > 0 && (
+                    <div className="flex items-center justify-between text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                      <span>FCP:</span>
+                      <span className="font-semibold">+{perc(info.fcpPadrao)}</span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* ━━━ PARA QUEM É O MÓDULO DIFAL ━━━ */}
-      <section className="py-20 bg-muted/30">
+      <section className="py-20 bg-background">
         <div className="container max-w-6xl mx-auto px-4 text-center">
           <Badge variant="outline" className="mb-4">
             <Users className="h-3.5 w-3.5 mr-1" />
