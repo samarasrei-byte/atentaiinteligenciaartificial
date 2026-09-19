@@ -141,6 +141,7 @@ const SeracRelatorios = lazy(() => import("./pages/serac/SeracRelatorios"));
 const SeracConfiguracoes = lazy(() => import("./pages/serac/SeracConfiguracoes"));
 const SeracLogin = lazy(() => import("./pages/serac/SeracLogin"));
 const SeracProtectedRoute = lazy(() => import("./pages/serac/SeracProtectedRoute"));
+const DifalLanding = lazy(() => import("./pages/DifalLanding"));
 const DifalLayout = lazy(() => import("./pages/difal/DifalLayout"));
 const DifalDashboard = lazy(() => import("./pages/difal/DifalDashboard"));
 const DifalNovaSimulacao = lazy(() => import("./pages/difal/DifalNovaSimulacao"));
@@ -289,7 +290,13 @@ const App = () => (
               <Route path="/placas-solares" element={<PlacasSolares />} />
               <Route path="/simulador-carta" element={<SimuladorCarta />} />
               <Route path="/test-login" element={<Navigate to="/auth" replace />} />
-              {/* DIFAL Marketplace */}
+              
+              {/* DIFAL Public Landing and Presentation */}
+              <Route path="/difal-info" element={<DifalLanding />} />
+              <Route path="/difal-landing" element={<Navigate to="/difal-info" replace />} />
+              <Route path="/difal/apresentacao" element={<Navigate to="/difal-info" replace />} />
+
+              {/* DIFAL Marketplace App */}
               <Route path="/difal" element={
                 <ProtectedRoute>
                   <DifalLayout />
