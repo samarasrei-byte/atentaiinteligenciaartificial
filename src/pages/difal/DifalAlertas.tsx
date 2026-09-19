@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { dateBR } from '@/lib/difal/format';
-import { Bell, ExternalLink, Loader2 } from 'lucide-react';
+import { Bell, ExternalLink, Loader2, Search } from 'lucide-react';
 
 interface AlertaRow {
   id: string;
@@ -73,17 +73,23 @@ export default function DifalAlertas() {
       </div>
 
       <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Filtrar alertas</CardTitle>
+        <CardHeader className="pb-3 border-b border-border/50">
+          <CardTitle className="text-base">Filtros de Alerta</CardTitle>
         </CardHeader>
-        <CardContent className="grid gap-3 sm:grid-cols-2">
-          <Input
-            placeholder="Buscar por título, resumo ou norma"
-            value={busca}
-            onChange={(event) => setBusca(event.target.value)}
-          />
+        <CardContent className="grid gap-4 sm:grid-cols-2 pt-4">
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar por título, resumo ou norma..."
+              className="pl-9 w-full"
+              value={busca}
+              onChange={(event) => setBusca(event.target.value)}
+            />
+          </div>
           <Select value={uf} onValueChange={setUf}>
-            <SelectTrigger><SelectValue placeholder="Estado" /></SelectTrigger>
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Filtrar por Estado" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="todas">Todos os estados</SelectItem>
               {ufs.map((estado) => <SelectItem key={estado} value={estado}>{estado}</SelectItem>)}
@@ -99,41 +105,53 @@ export default function DifalAlertas() {
       ) : filtrados.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center space-y-2">
-            <Bell className="h-8 w-8 mx-auto text-muted-foreground" />
+            <Bell className="h-8 w-8 mx-auto text-muted-foreground/50" />
             <p className="text-sm text-muted-foreground">
               Não há alertas legislativos publicados para os filtros selecionados.
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filtrados.map((alerta) => (
-            <Card key={alerta.id}>
-              <CardContent className="pt-6 space-y-2">
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant={severidadeVariant(alerta.severidade)}>
-                    {severidadeLabel[alerta.severidade] ?? alerta.severidade}
-                  </Badge>
-                  {alerta.uf && <Badge variant="outline">{alerta.uf}</Badge>}
-                  {alerta.vigencia_em && (
-                    <span className="text-xs text-muted-foreground">Vigência: {dateBR(alerta.vigencia_em)}</span>
-                  )}
+            <Card key={alerta.id} className="overflow-hidden">
+              <CardContent className="p-0">
+                <div className="p-6 space-y-4">
+                  <div className="flex flex-wrap items-center justify-between gap-4">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge variant={severidadeVariant(alerta.severidade)}>
+                        {severidadeLabel[alerta.severidade] ?? alerta.severidade}
+                      </Badge>
+                      {alerta.uf && <Badge variant="outline" className="bg-muted/50">{alerta.uf}</Badge>}
+                    </div>
+                    {alerta.vigencia_em && (
+                      <span className="text-xs font-medium px-2.5 py-1 rounded-md bg-secondary/50 text-muted-foreground">
+                        Vigência: {dateBR(alerta.vigencia_em)}
+                      </span>
+                    )}
+                  </div>
+                  
+                  <div>
+                    <h2 className="text-lg font-semibold tracking-tight mb-2">{alerta.titulo}</h2>
+                    {alerta.resumo && <p className="text-sm text-muted-foreground leading-relaxed">{alerta.resumo}</p>}
+                  </div>
                 </div>
-                <h2 className="font-semibold tracking-tight">{alerta.titulo}</h2>
-                {alerta.resumo && <p className="text-sm text-muted-foreground">{alerta.resumo}</p>}
-                <div className="flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-                  {alerta.norma && <span>Norma: {alerta.norma}</span>}
+                
+                <div className="bg-muted/30 px-6 py-3 border-t border-border/50 flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
+                    {alerta.norma && <span className="font-medium text-foreground/80">Norma: {alerta.norma}</span>}
+                    <span className="flex items-center gap-1.5"><Bell className="h-3.5 w-3.5" /> Publicado em {dateBR(alerta.created_at)}</span>
+                  </div>
                   {alerta.fonte_url && (
                     <a
                       href={alerta.fonte_url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 text-primary hover:underline"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors"
                     >
-                      Consultar fonte <ExternalLink className="h-3 w-3" />
+                      Consultar fonte oficial <ExternalLink className="h-3.5 w-3.5" />
                     </a>
                   )}
-                  <span>Publicado em {dateBR(alerta.created_at)}</span>
                 </div>
               </CardContent>
             </Card>
